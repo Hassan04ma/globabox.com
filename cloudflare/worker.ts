@@ -1,14 +1,11 @@
 import { PRODUCTS } from '../src/data';
+import { isAdmin, handleAdminAuth } from './auth';
 
 interface Env { DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string }
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const readBody = async (request: Request) => { try { return await request.json() as any; } catch { return null; } };
 const publicProduct = (p: any) => p && p.isActive !== false;
-async function auth(request: Request, env: Env): Promise<boolean> {
-  const key = request.headers.get('x-admin-api-key');
-  if (key && env.ADMIN_API_KEY && env.ADMIN_API_KEY.length >= 32) return key === env.ADMIN_API_KEY;
-  return false;
-}
+const auth = isAdmin;
 async function listProducts(db: D1Database, includeDrafts: boolean) {
   const rows = await db.prepare(includeDrafts ? 'SELECT data_json FROM products ORDER BY created_at DESC' : 'SELECT data_json FROM products WHERE active = 1 ORDER BY created_at DESC').all<{ data_json: string }>();
   if (!includeDrafts && rows.results.length === 0) return PRODUCTS.filter(publicProduct);
@@ -18,6 +15,8 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url), path = url.pathname, method = request.method;
     if (!path.startsWith('/api/')) return env.ASSETS.fetch(request);
+    const authResponse = await handleAdminAuth(request, env);
+    if (authResponse) return authResponse;
     if (!env.DB) return json({ error: 'Database binding missing' }, 503);
     try {
       if (path === '/api/products' && method === 'GET') return json(await listProducts(env.DB, false));
