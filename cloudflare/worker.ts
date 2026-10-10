@@ -38,6 +38,54 @@ export default {
           .bind(id, 'pending', Number(data.total) || 0, JSON.stringify(record)).run();
         return json({ success: true, order: record }, 201);
       }
+      const orderMatch = path.match(/^\/api\/orders\/([^/]+)$/);
+      if (orderMatch && ['PUT','DELETE'].includes(method)) {
+        if (!await auth(request, env)) return json({error:'Unauthorized'},401);
+        const id = decodeURIComponent(orderMatch[1]);
+        const existing = await env.DB.prepare('SELECT data_json FROM orders WHERE id=?').bind(id).first<{data_json:string}>();
+        if (!existing) return json({error:'Order not found'},404);
+        if (method === 'DELETE') {
+          await env.DB.prepare('DELETE FROM orders WHERE id=?').bind(id).run();
+          return json({success:true});
+        }
+        const update = await readBody(request);
+        const allowed = ['pending','confirmed','processing','shipped','delivered','cancelled'];
+        if (!allowed.includes(update?.status)) return json({error:'Invalid order status'},400);
+        const order = {...JSON.parse(existing.data_json),status:update.status,updatedAt:new Date().toISOString()};
+        await env.DB.prepare('UPDATE orders SET status=?,data_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?')
+          .bind(update.status,JSON.stringify(order),id).run();
+        return json({success:true,order});
+      }
+      if (path === '/api/orders-clear' && method === 'DELETE') {
+        if (!await auth(request,env)) return json({error:'Unauthorized'},401);
+        return json({error:'Bulk deletion disabled for safety'},403);
+      }
+      if (path === '/api/import-products' && method === 'POST') {
+        if (!await auth(request,env)) return json({error:'Unauthorized'},401);
+        const body = await readBody(request);
+        if (!Array.isArray(body?.products) || !body.products.length || body.products.length>50)
+          return json({error:'Expected 1-50 products'},400);
+        const created:string[]=[],skipped:string[]=[],rejected:number[]=[];
+        for (const [index,p] of body.products.entries()) {
+          let source:URL,img:URL;
+          try { source=new URL(p.sourceUrl); img=new URL(p.image); } catch { rejected.push(index);continue; }
+          if (source.protocol!=='https:' || !['atwache.ma','www.atwache.ma'].includes(source.hostname) ||
+              img.protocol!=='https:' || typeof p.name?.fr!=='string' || !p.name.fr.trim() ||
+              typeof p.price!=='number' || !Number.isFinite(p.price) || p.price<=0) { rejected.push(index);continue; }
+          const id='atwache_'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(source.href))))
+            .slice(0,8).map(b=>b.toString(16).padStart(2,'0')).join('');
+          const row={id,sourceUrl:source.href,supplier:'Atwache',name:{fr:p.name.fr,ar:p.name.ar||p.name.fr,en:p.name.en||p.name.fr},
+            description:{fr:p.description?.fr||'',ar:p.description?.ar||'',en:p.description?.en||''},
+            price:p.price,image:img.href,images:[img.href],category:String(p.category||'camping'),
+            features:{fr:[],ar:[],en:[]},inStock:true,isActive:false,rating:0,reviewsCount:0};
+          const result=await env.DB.prepare('INSERT OR IGNORE INTO products (id,source_url,supplier,category,name_fr,price_mad,image_url,active,data_json) VALUES (?,?,?,?,?,?,?,?,?)')
+            .bind(id,source.href,'Atwache',row.category,p.name.fr,p.price,img.href,0,JSON.stringify(row)).run();
+          if (result.meta.changes) created.push(id); else skipped.push(id);
+        }
+        await env.DB.prepare('INSERT INTO import_log (source,imported_count,skipped_count) VALUES (?,?,?)')
+          .bind('Atwache',created.length,skipped.length).run();
+        return json({status:'draft',created,skipped,rejected});
+      }
       const productMatch = path.match(/^\/api\/products\/([^/]+)$/);
       if ((path === '/api/products' && method === 'POST') || (productMatch && ['PUT','DELETE'].includes(method))) {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
