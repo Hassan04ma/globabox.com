@@ -475,7 +475,7 @@ export default function AdminPanel({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    fileReader.onload = (event) => {
+    fileReader.onload = async (event) => {
       try {
         const text = event.target?.result as string;
         const lines: string[] = [];
@@ -596,15 +596,32 @@ export default function AdminPanel({
           return;
         }
 
-        if (window.confirm(`Voulez-vous importer ${parsedProducts.length} produits du fichier CSV ?`)) {
-          const mergedMap = new Map<string, Product>();
-          products.forEach(p => mergedMap.set(p.id, p));
-          parsedProducts.forEach(p => mergedMap.set(p.id, p));
-
-          const list = Array.from(mergedMap.values());
-          setProducts(list);
-          localStorage.setItem('globabox_products_v1', JSON.stringify(list));
-          alert("Produits CSV importés avec succès !");
+        if (window.confirm(`Importer ${parsedProducts.length} produits comme BROUILLONS dans la base D1 ?`)) {
+          // Import into the server database, never localStorage-only, and never publish automatically.
+          let created = 0, failed = 0;
+          for (const product of parsedProducts) {
+            if (!Number.isFinite(product.price) || product.price <= 0 ||
+                !/^https:\/\//.test(product.image) || !/^[a-zA-Z0-9_-]{1,100}$/.test(product.id)) {
+              failed++;
+              continue;
+            }
+            try {
+              const response = await fetch('/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ ...product, isActive: false })
+              });
+              if (!response.ok) { failed++; continue; }
+              created++;
+            } catch { failed++; }
+          }
+          const refreshed = await fetch('/api/admin/products', { credentials: 'same-origin' });
+          if (refreshed.ok) {
+            const all = await refreshed.json();
+            if (Array.isArray(all)) setAdminProducts(all);
+          }
+          alert(`Import D1 terminé : ${created} brouillons créés, ${failed} rejetés. Aucun produit publié.`);
         }
       } catch (err) {
         console.error(err);
