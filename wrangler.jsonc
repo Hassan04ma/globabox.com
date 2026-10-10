@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "globabox-com",
+  "main": "cloudflare/worker.ts",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "globabox-db",
+      "database_id": "3a61a1b3-2351-419a-bab2-a9ae19bd4ef6",
+      "migrations_dir": "cloudflare/migrations"
+    }
+  ]
+}
