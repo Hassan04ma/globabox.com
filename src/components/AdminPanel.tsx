@@ -735,7 +735,7 @@ export default function AdminPanel({
       bestSeller: productForm.bestSeller,
       newArrival: productForm.newArrival,
       featured: productForm.featured,
-      isActive: editingProduct ? (editingProduct.isActive === false ? false : productForm.isActive) : productForm.isActive,
+      isActive: productForm.isActive,
       createdAt: editingProduct ? editingProduct.createdAt : new Date().toISOString(),
     };
 
