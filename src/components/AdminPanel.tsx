@@ -116,6 +116,16 @@ export default function AdminPanel({
 
   // Searching Products
   const [productQuery, setProductQuery] = useState('');
+  const [adminProducts, setAdminProducts] = useState<Product[]>([]);
+  const [catalogLoadError, setCatalogLoadError] = useState('');
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    fetch('/api/admin/products', { credentials: 'same-origin' })
+      .then(async r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(items => { if (Array.isArray(items)) setAdminProducts(items); })
+      .catch(err => { console.error('Admin catalog load error',err); setCatalogLoadError('Catalogue administrateur indisponible'); });
+  }, [isAuthenticated]);
+
 
   // Editing Product states
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -657,7 +667,7 @@ export default function AdminPanel({
       bestSeller: !!prod.bestSeller,
       newArrival: !!prod.newArrival,
       featured: !!prod.featured,
-      isActive: prod.isActive !== false,
+      isActive: prod.isActive === true,
       fallbackImage: prod.fallbackImage || '',
       fallbackImages: prod.fallbackImages || [],
       featuresFr: prod.features?.fr || [],
@@ -725,7 +735,7 @@ export default function AdminPanel({
       bestSeller: productForm.bestSeller,
       newArrival: productForm.newArrival,
       featured: productForm.featured,
-      isActive: productForm.isActive,
+      isActive: editingProduct ? (editingProduct.isActive === false ? false : productForm.isActive) : productForm.isActive,
       createdAt: editingProduct ? editingProduct.createdAt : new Date().toISOString(),
     };
 
@@ -743,6 +753,7 @@ export default function AdminPanel({
       .then(data => {
         const updatedList = products.map(p => p.id === editingProduct.id ? data.product : p);
         setProducts(updatedList);
+        setAdminProducts(current => current.map(p => p.id === editingProduct.id ? data.product : p));
         localStorage.setItem('globabox_products_v1', JSON.stringify(updatedList));
         setEditingProduct(null);
         setIsAddingProduct(false);
@@ -771,6 +782,7 @@ export default function AdminPanel({
       .then(data => {
         const updatedList = [data.product, ...products];
         setProducts(updatedList);
+        setAdminProducts(current => [data.product, ...current]);
         localStorage.setItem('globabox_products_v1', JSON.stringify(updatedList));
         setEditingProduct(null);
         setIsAddingProduct(false);
@@ -791,6 +803,7 @@ export default function AdminPanel({
       .then(res => {
         if (!res.ok) throw new Error("Erreur de suppression");
         const updated = products.filter(p => p.id !== productId);
+        setAdminProducts(current => current.filter(p => p.id !== productId));
         setProducts(updated);
         localStorage.setItem('globabox_products_v1', JSON.stringify(updated));
       })
@@ -855,7 +868,7 @@ export default function AdminPanel({
     return matchesQuery && matchesStatus && matchesCity;
   });
 
-  const filteredProductsList = products.filter(p => 
+  const filteredProductsList = (adminProducts.length ? adminProducts : products).filter(p => 
     p.name.fr.toLowerCase().includes(productQuery.toLowerCase()) ||
     (p.name.ar && p.name.ar.includes(productQuery)) ||
     p.category.toLowerCase().includes(productQuery.toLowerCase())
