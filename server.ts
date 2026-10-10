@@ -163,7 +163,7 @@ app.get('/api/products', async (req, res) => {
           });
 
           writeLocalProducts(processed);
-          return res.json(processed);
+          return res.json(processed.filter((p: any) => p.isActive !== false));
         }
       }
     } catch (err: any) {
@@ -173,7 +173,7 @@ app.get('/api/products', async (req, res) => {
 
   console.log(`[PRODUCTS] fallback to local data`);
   const products = readLocalProducts();
-  res.json(products);
+  res.json(products.filter((p: any) => p.isActive !== false));
 });
 
 app.post('/api/products', async (req, res) => {
