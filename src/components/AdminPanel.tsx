@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Package, ClipboardList, Settings, Plus, Trash2, Edit2, CheckCircle2, RefreshCw, X, Search, ChevronRight, Ban, Truck, ShieldCheck, CornerDownRight, BarChart3, MapPin, Phone, ShoppingCart, BadgeCheck, Compass } from 'lucide-react';
 import { Product, Category, Order, Language } from '../types';
 import { MOROCCAN_CITIES } from '../data';
@@ -30,40 +30,29 @@ export default function AdminPanel({
 }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'products' | 'categories' | 'marketing'>('dashboard');
 
-  const metaEnv = (import.meta as any).env || {};
-  const isUsingDefaultPassword = (metaEnv.VITE_ADMIN_PASSWORD || 'CHANGE_THIS_PASSWORD').trim() === 'CHANGE_THIS_PASSWORD';
-
-  // --- Secure Authentication State ---
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return sessionStorage.getItem('globabox_admin_auth') === 'true';
-  });
+  const isUsingDefaultPassword = false;
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
-  const handleLogin = (e: React.FormEvent) => {
+  useEffect(() => {
+    fetch('/api/admin/session').then(r => r.ok ? r.json() : { authenticated: false })
+      .then(d => setIsAuthenticated(d.authenticated === true))
+      .catch(() => setIsAuthenticated(false)).finally(() => setAuthLoading(false));
+  }, []);
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const normalizedUsername = usernameInput.trim().toLowerCase();
-    const enteredPassword = passwordInput.trim();
-    
-    const metaEnv = (import.meta as any).env || {};
-    const expectedUsername = (metaEnv.VITE_ADMIN_USERNAME || 'admin').trim().toLowerCase();
-    const expectedPassword = (metaEnv.VITE_ADMIN_PASSWORD || 'CHANGE_THIS_PASSWORD').trim();
-
-    if (normalizedUsername === expectedUsername && enteredPassword === expectedPassword) {
-      sessionStorage.setItem('globabox_admin_auth', 'true');
-      setIsAuthenticated(true);
-      setErrorMessage('');
-    } else {
-      setErrorMessage('Identifiants incorrects');
-    }
+    const res = await fetch('/api/admin/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: usernameInput, password: passwordInput })
+    }).catch(() => null);
+    if (res?.ok) { setIsAuthenticated(true); setPasswordInput(''); setErrorMessage(''); }
+    else setErrorMessage('Identifiants incorrects ou serveur non configuré');
   };
-
-  const handleLogout = () => {
-    sessionStorage.removeItem('globabox_admin_auth');
-    setIsAuthenticated(false);
-    setUsernameInput('');
-    setPasswordInput('');
+  const handleLogout = async () => {
+    await fetch('/api/admin/logout', { method: 'POST' }).catch(() => {});
+    setIsAuthenticated(false); setPasswordInput(''); setUsernameInput('');
   };
 
   // --- Segmented Moroccan E-commerce Dashboard KPI Calculations ---
@@ -865,6 +854,7 @@ export default function AdminPanel({
     p.category.toLowerCase().includes(productQuery.toLowerCase())
   );
 
+  if (authLoading) return <div className='fixed inset-0 z-50 bg-slate-950 text-white flex items-center justify-center'>Vérification…</div>;
   if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 z-50 bg-[#070d1a] backdrop-blur-md flex items-center justify-center font-sans p-4">
