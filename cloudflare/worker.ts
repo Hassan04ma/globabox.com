@@ -111,7 +111,13 @@ export default {
           const already = await env.DB.prepare('SELECT id FROM products WHERE id=?').bind(id).first();
           if (already) return json({error:'Product ID already exists'},409);
         }
-        const row = { ...p, id, isActive: p.isActive !== false };
+        // Preserve the stored visibility on edits, unless the caller explicitly supplies a boolean.
+        const previous = method === 'PUT'
+          ? await env.DB.prepare('SELECT active FROM products WHERE id=?').bind(id).first<{active:number}>()
+          : null;
+        const active = typeof p.isActive === 'boolean' ? p.isActive
+          : previous ? previous.active === 1 : false;
+        const row = { ...p, id, isActive: active };
         await env.DB.prepare('INSERT INTO products (id,source_url,supplier,category,name_fr,price_mad,image_url,active,data_json) VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET category=excluded.category,name_fr=excluded.name_fr,price_mad=excluded.price_mad,image_url=excluded.image_url,active=excluded.active,data_json=excluded.data_json,updated_at=CURRENT_TIMESTAMP')
           .bind(id,p.sourceUrl || null,p.supplier || null,p.category || '',p.name.fr,p.price,p.image || '',row.isActive ? 1 : 0,JSON.stringify(row)).run();
         return json({success:true,product:row});
