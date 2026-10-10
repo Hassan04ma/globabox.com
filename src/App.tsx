@@ -366,8 +366,11 @@ export default function App() {
         return res.json();
       })
       .then(fetchedProducts => {
-        if (Array.isArray(fetchedProducts) && fetchedProducts.length > 0) {
+        if (Array.isArray(fetchedProducts)) {
+          // The server catalogue is authoritative, including an intentional empty list.
+          // Do not revive obsolete products from browser localStorage.
           setProducts(fetchedProducts);
+          localStorage.removeItem('globabox_products_v1');
         }
       })
       .catch(err => {
