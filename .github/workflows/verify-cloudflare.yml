@@ -1,0 +1,16 @@
+name: Verify Cloudflare build
+on:
+  pull_request:
+  push:
+    branches: [security-and-import-prep]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npm run build:cloudflare
+      - run: npx wrangler deploy --dry-run
