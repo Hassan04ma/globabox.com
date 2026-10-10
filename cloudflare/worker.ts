@@ -23,11 +23,14 @@ async function importAuthorized(request: Request, env: Env): Promise<boolean> {
 async function listProducts(db: D1Database, includeDrafts: boolean) {
   const rows = await db.prepare(includeDrafts ? 'SELECT data_json FROM products ORDER BY created_at DESC' : 'SELECT data_json FROM products WHERE active = 1 ORDER BY created_at DESC').all<{ data_json: string }>();
   const databaseProducts = rows.results.map(x => JSON.parse(x.data_json));
-  if (includeDrafts) return databaseProducts;
-  // Keep bundled products visible when the first supplier item is published.
-  // D1 entries take precedence over bundled records with the same id.
-  const storedIds = new Set(databaseProducts.map((p: any) => p.id));
-  return [...databaseProducts, ...PRODUCTS.filter(p => publicProduct(p) && !storedIds.has(p.id))];
+  if (includeDrafts) {
+    const ids = new Set(databaseProducts.map((p: any) => p.id));
+    return [...databaseProducts, ...PRODUCTS.filter(p => !ids.has(p.id))];
+  }
+  // A disabled D1 product must suppress a matching bundled product as well.
+  const allStoredIds = await db.prepare('SELECT id FROM products').all<{id:string}>();
+  const storedIds = new Set(allStoredIds.results.map(p => p.id));
+  return [...databaseProducts.filter(publicProduct), ...PRODUCTS.filter(p => publicProduct(p) && !storedIds.has(p.id))];
 }
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
