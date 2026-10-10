@@ -51,6 +51,14 @@ function parseJsonOrCsv(val: any): string[] {
 
 app.use(express.json());
 
+import { requireAdminApiKey, adminLogin, adminSession, adminLogout } from './src/server/adminAuth';
+import { importProductsRouter } from './src/server/importProducts';
+// All administrative operations are protected on the server.
+app.use('/api/products', (req, res, next) => req.method === 'GET' ? next() : requireAdminApiKey(req, res, next));
+app.use('/api/orders-clear', requireAdminApiKey);
+app.use('/api/orders', (req, res, next) => (req.method === 'POST' && req.path === '/') ? next() : requireAdminApiKey(req, res, next));
+
+
 // Helper to read orders
 function readOrders(): any[] {
   try {
@@ -78,6 +86,12 @@ function writeOrders(orders: any[]) {
 if (!fs.existsSync(DB_FILE)) {
   writeOrders([]);
 }
+
+app.use('/api/import-products', importProductsRouter(readLocalProducts, writeLocalProducts));
+
+app.post('/api/admin/login', adminLogin);
+app.get('/api/admin/session', adminSession);
+app.post('/api/admin/logout', adminLogout);
 
 // API Routes
 
@@ -153,7 +167,7 @@ app.get('/api/products', async (req, res) => {
           });
 
           writeLocalProducts(processed);
-          return res.json(processed);
+          return res.json(processed.filter((p: any) => p.isActive !== false));
         }
       }
     } catch (err: any) {
@@ -163,7 +177,7 @@ app.get('/api/products', async (req, res) => {
 
   console.log(`[PRODUCTS] fallback to local data`);
   const products = readLocalProducts();
-  res.json(products);
+  res.json(products.filter((p: any) => p.isActive !== false));
 });
 
 app.post('/api/products', async (req, res) => {
