@@ -1,0 +1,6 @@
+{
+  "name": "Globabox",
+  "description": "Modern, premium e-commerce redesign for Globabox / جلوبابوكس, a trustworthy store tailored for Morocco.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
