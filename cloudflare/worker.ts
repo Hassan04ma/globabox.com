@@ -6,6 +6,20 @@ const json = (data: unknown, status = 200) => Response.json(data, { status, head
 const readBody = async (request: Request) => { try { return await request.json() as any; } catch { return null; } };
 const publicProduct = (p: any) => p && p.isActive !== false;
 const auth = isAdmin;
+async function importAuthorized(request: Request, env: Env): Promise<boolean> {
+  if (await auth(request, env)) return true;
+  const key = request.headers.get('x-admin-api-key');
+  if (!key || !env.ADMIN_API_KEY || env.ADMIN_API_KEY.length < 32 || key.length !== env.ADMIN_API_KEY.length) return false;
+  const encoder = new TextEncoder();
+  const [a, b] = await Promise.all([
+    crypto.subtle.digest('SHA-256', encoder.encode(key)),
+    crypto.subtle.digest('SHA-256', encoder.encode(env.ADMIN_API_KEY)),
+  ]);
+  const left = new Uint8Array(a), right = new Uint8Array(b);
+  let diff = 0;
+  for (let i = 0; i < left.length; i++) diff |= left[i] ^ right[i];
+  return diff === 0;
+}
 async function listProducts(db: D1Database, includeDrafts: boolean) {
   const rows = await db.prepare(includeDrafts ? 'SELECT data_json FROM products ORDER BY created_at DESC' : 'SELECT data_json FROM products WHERE active = 1 ORDER BY created_at DESC').all<{ data_json: string }>();
   if (!includeDrafts && rows.results.length === 0) return PRODUCTS.filter(publicProduct);
@@ -70,7 +84,7 @@ export default {
         return json({error:'Bulk deletion disabled for safety'},403);
       }
       if (path === '/api/import-products' && method === 'POST') {
-        if (!await auth(request,env)) return json({error:'Unauthorized'},401);
+        if (!await importAuthorized(request,env)) return json({error:'Unauthorized'},401);
         const body = await readBody(request);
         if (!Array.isArray(body?.products) || !body.products.length || body.products.length>50)
           return json({error:'Expected 1-50 products'},400);
