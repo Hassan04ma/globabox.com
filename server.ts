@@ -52,6 +52,7 @@ function parseJsonOrCsv(val: any): string[] {
 app.use(express.json());
 
 import { requireAdminApiKey } from './src/server/adminAuth';
+import { importProductsRouter } from './src/server/importProducts';
 // All administrative operations are protected on the server.
 app.use('/api/products', (req, res, next) => req.method === 'GET' ? next() : requireAdminApiKey(req, res, next));
 app.use('/api/orders-clear', requireAdminApiKey);
@@ -85,6 +86,8 @@ function writeOrders(orders: any[]) {
 if (!fs.existsSync(DB_FILE)) {
   writeOrders([]);
 }
+
+app.use('/api/import-products', importProductsRouter(readLocalProducts, writeLocalProducts));
 
 // API Routes
 
