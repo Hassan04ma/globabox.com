@@ -12,7 +12,7 @@
     {
       "binding": "DB",
       "database_name": "globabox-staging-db",
-      "database_id": "REPLACE_WITH_STAGING_DATABASE_ID",
+      "database_id": "af11126a-6bc1-4711-a8a1-9dd1396f03a7",
       "migrations_dir": "./migrations"
     }
   ]
