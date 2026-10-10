@@ -51,6 +51,13 @@ function parseJsonOrCsv(val: any): string[] {
 
 app.use(express.json());
 
+import { requireAdminApiKey } from './src/server/adminAuth';
+// All administrative operations are protected on the server.
+app.use('/api/products', (req, res, next) => req.method === 'GET' ? next() : requireAdminApiKey(req, res, next));
+app.use('/api/orders-clear', requireAdminApiKey);
+app.use('/api/orders', (req, res, next) => (req.method === 'POST' && req.path === '/') ? next() : requireAdminApiKey(req, res, next));
+
+
 // Helper to read orders
 function readOrders(): any[] {
   try {
