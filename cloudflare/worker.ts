@@ -42,10 +42,19 @@ export default {
       if (orderMatch && ['PUT','DELETE'].includes(method)) {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
         const id = decodeURIComponent(orderMatch[1]);
-        const existing = await env.DB.prepare('SELECT data_json FROM orders WHERE id=?').bind(id).first<{data_json:string}>();
+        let resolvedId = id;
+        let existing = await env.DB.prepare('SELECT data_json FROM orders WHERE id=?').bind(id).first<{data_json:string}>();
+        if (!existing) {
+          const all = await env.DB.prepare('SELECT id, data_json FROM orders').all<{id:string,data_json:string}>();
+          const match = all.results.find(entry => {
+            const order = JSON.parse(entry.data_json);
+            return order.reference === id || order.orderId === id;
+          });
+          if (match) { resolvedId = match.id; existing = {data_json:match.data_json}; }
+        }
         if (!existing) return json({error:'Order not found'},404);
         if (method === 'DELETE') {
-          await env.DB.prepare('DELETE FROM orders WHERE id=?').bind(id).run();
+          await env.DB.prepare('DELETE FROM orders WHERE id=?').bind(resolvedId).run();
           return json({success:true});
         }
         const update = await readBody(request);
@@ -53,7 +62,7 @@ export default {
         if (!allowed.includes(update?.status)) return json({error:'Invalid order status'},400);
         const order = {...JSON.parse(existing.data_json),status:update.status,updatedAt:new Date().toISOString()};
         await env.DB.prepare('UPDATE orders SET status=?,data_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?')
-          .bind(update.status,JSON.stringify(order),id).run();
+          .bind(update.status,JSON.stringify(order),resolvedId).run();
         return json({success:true,order});
       }
       if (path === '/api/orders-clear' && method === 'DELETE') {
