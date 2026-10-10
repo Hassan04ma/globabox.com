@@ -32,7 +32,7 @@ export default {
       }
       if (path === '/api/orders' && method === 'POST') {
         const data = await readBody(request);
-        if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !data.items.length || !data.customer)
+        if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !data.items.length || typeof data.fullName !== 'string' || !data.fullName.trim() || typeof data.phoneNumber !== 'string' || !data.phoneNumber.trim())
           return json({ error: 'Invalid order' }, 400);
         const id = crypto.randomUUID(), record = { ...data, id, status: 'pending', createdAt: new Date().toISOString() };
         await env.DB.prepare('INSERT INTO orders (id,status,total_mad,data_json) VALUES (?,?,?,?)')
