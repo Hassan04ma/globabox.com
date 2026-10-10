@@ -48,7 +48,10 @@ export default function AdminPanel({
       body: JSON.stringify({ username: usernameInput, password: passwordInput })
     }).catch(() => null);
     if (res?.ok) { setIsAuthenticated(true); setPasswordInput(''); setErrorMessage(''); }
-    else setErrorMessage('Identifiants incorrects ou serveur non configuré');
+    else if (res?.status === 503) setErrorMessage('Serveur non configuré : vérifiez ADMIN_PASSWORD (12+ caractères) et ADMIN_SESSION_SECRET (32+ caractères) dans Runtime Secrets.');
+    else if (res?.status === 401) setErrorMessage('Nom d’utilisateur ou mot de passe incorrect.');
+    else if (res?.status === 403) setErrorMessage('Origine du site refusée. Ouvrez directement le lien workers.dev.');
+    else setErrorMessage('Connexion impossible : erreur HTTP ' + (res?.status || 'réseau'));
   };
   const handleLogout = async () => {
     await fetch('/api/admin/logout', { method: 'POST' }).catch(() => {});
