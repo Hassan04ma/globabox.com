@@ -186,35 +186,39 @@ export default function AdminPanel({
     image: '',
   });
 
-  // Handle Order status transition
-  const handleUpdateOrderStatus = (orderId: string, newStatus: Order['status']) => {
-    const updated = orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o);
-    setOrders(updated);
-    localStorage.setItem('globabox_orders', JSON.stringify(updated));
-
-    // Persist status change to Server DB
-    fetch(`/api/orders/${orderId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: newStatus })
-    }).catch(err => {
-      console.error('[GLOBABOX SERVER] Error syncing status change:', err);
-    });
+  // Persist before updating the visible order; never report an unsaved state as successful.
+  const handleUpdateOrderStatus = async (orderId: string, newStatus: Order['status']) => {
+    try {
+      const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const updated = orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o);
+      setOrders(updated);
+      localStorage.setItem('globabox_orders', JSON.stringify(updated));
+    } catch (err) {
+      console.error('[GLOBABOX] Order status could not be saved', err);
+      alert("La modification n'a pas été enregistrée. Veuillez actualiser les commandes.");
+      setRefreshError("Modification non enregistrée sur le serveur");
+    }
   };
 
-  // Delete Order
-  const handleDeleteOrder = (orderId: string) => {
-    if (window.confirm('Voulez-vous vraiment supprimer cette commande ?')) {
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!window.confirm('Voulez-vous vraiment supprimer cette commande ?')) return;
+    try {
+      const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, {
+        method: 'DELETE', credentials: 'same-origin'
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const updated = orders.filter(o => o.id !== orderId);
       setOrders(updated);
       localStorage.setItem('globabox_orders', JSON.stringify(updated));
-
-      // Persist deletion to Server DB
-      fetch(`/api/orders/${orderId}`, {
-        method: 'DELETE'
-      }).catch(err => {
-        console.error('[GLOBABOX SERVER] Error syncing command deletion:', err);
-      });
+    } catch (err) {
+      console.error('[GLOBABOX] Order deletion failed', err);
+      alert("La commande n'a pas été supprimée sur le serveur.");
     }
   };
 
