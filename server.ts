@@ -51,7 +51,7 @@ function parseJsonOrCsv(val: any): string[] {
 
 app.use(express.json());
 
-import { requireAdminApiKey } from './src/server/adminAuth';
+import { requireAdminApiKey, adminLogin, adminSession, adminLogout } from './src/server/adminAuth';
 import { importProductsRouter } from './src/server/importProducts';
 // All administrative operations are protected on the server.
 app.use('/api/products', (req, res, next) => req.method === 'GET' ? next() : requireAdminApiKey(req, res, next));
@@ -88,6 +88,10 @@ if (!fs.existsSync(DB_FILE)) {
 }
 
 app.use('/api/import-products', importProductsRouter(readLocalProducts, writeLocalProducts));
+
+app.post('/api/admin/login', adminLogin);
+app.get('/api/admin/session', adminSession);
+app.post('/api/admin/logout', adminLogout);
 
 // API Routes
 
