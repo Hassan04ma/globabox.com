@@ -22,8 +22,12 @@ async function importAuthorized(request: Request, env: Env): Promise<boolean> {
 }
 async function listProducts(db: D1Database, includeDrafts: boolean) {
   const rows = await db.prepare(includeDrafts ? 'SELECT data_json FROM products ORDER BY created_at DESC' : 'SELECT data_json FROM products WHERE active = 1 ORDER BY created_at DESC').all<{ data_json: string }>();
-  if (!includeDrafts && rows.results.length === 0) return PRODUCTS.filter(publicProduct);
-  return rows.results.map(x => JSON.parse(x.data_json));
+  const databaseProducts = rows.results.map(x => JSON.parse(x.data_json));
+  if (includeDrafts) return databaseProducts;
+  // Keep bundled products visible when the first supplier item is published.
+  // D1 entries take precedence over bundled records with the same id.
+  const storedIds = new Set(databaseProducts.map((p: any) => p.id));
+  return [...databaseProducts, ...PRODUCTS.filter(p => publicProduct(p) && !storedIds.has(p.id))];
 }
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
