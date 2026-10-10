@@ -98,14 +98,20 @@ export default {
       const productMatch = path.match(/^\/api\/products\/([^/]+)$/);
       if ((path === '/api/products' && method === 'POST') || (productMatch && ['PUT','DELETE'].includes(method))) {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
-        const id = productMatch?.[1] || crypto.randomUUID();
+        const payload = method === 'DELETE' ? null : await readBody(request);
+        const id = productMatch?.[1] || (typeof payload?.id === 'string' ? payload.id.trim() : '');
+        if (!id || id.length > 100 || !/^[a-zA-Z0-9_-]+$/.test(id)) return json({error:'Invalid product ID'},400);
         if (method === 'DELETE') {
           await env.DB.prepare('DELETE FROM products WHERE id=?').bind(id).run();
           return json({success:true});
         }
-        const p = await readBody(request);
+        const p = payload;
         if (!p || typeof p.name?.fr !== 'string' || !Number.isFinite(p.price) || p.price <= 0) return json({error:'Invalid product'},400);
-        const row = { ...p, id, isActive: p.isActive === true };
+        if (method === 'POST') {
+          const already = await env.DB.prepare('SELECT id FROM products WHERE id=?').bind(id).first();
+          if (already) return json({error:'Product ID already exists'},409);
+        }
+        const row = { ...p, id, isActive: p.isActive !== false };
         await env.DB.prepare('INSERT INTO products (id,source_url,supplier,category,name_fr,price_mad,image_url,active,data_json) VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET category=excluded.category,name_fr=excluded.name_fr,price_mad=excluded.price_mad,image_url=excluded.image_url,active=excluded.active,data_json=excluded.data_json,updated_at=CURRENT_TIMESTAMP')
           .bind(id,p.sourceUrl || null,p.supplier || null,p.category || '',p.name.fr,p.price,p.image || '',row.isActive ? 1 : 0,JSON.stringify(row)).run();
         return json({success:true,product:row});
