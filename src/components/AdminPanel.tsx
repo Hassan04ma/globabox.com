@@ -1240,8 +1240,9 @@ export default function AdminPanel({
             </div>
             {/* Final Launch Checklist Card */}
             {(() => {
-              const productsWithImagesCount = products.filter(p => p.image && p.image.trim() !== '').length;
-              const allProductsHaveImages = products.length > 0 && productsWithImagesCount === products.length;
+              const productsWithImagesCount = adminProducts.filter(p => typeof p.image === 'string' && /^https:\/\//.test(p.image)).length;
+              const allProductsHaveImages = adminProducts.length > 0 && productsWithImagesCount === adminProducts.length;
+              const domainConnected = window.location.hostname === 'globabox.com' && window.location.protocol === 'https:';
               const trackingConfigured = isTrackerValid(trackingForm.metaPixelId) && 
                                          isTrackerValid(trackingForm.tikTokPixelId) && 
                                          isTrackerValid(trackingForm.googleAnalyticsId);
@@ -1274,8 +1275,8 @@ export default function AdminPanel({
                 {
                   id: 'domain',
                   label: 'Domaine globabox.com connecté au nouveau Worker',
-                  desc: 'Bascule DNS non vérifiée. Ne pas considérer le domaine comme prêt.',
-                  ok: false,
+                  desc: domainConnected ? 'Dashboard accessible en HTTPS sur globabox.com (domaine racine confirmé).' : 'Accès via un autre hôte : globabox.com à vérifier.',
+                  ok: domainConnected,
                   severity: 'warning' as const,
                   configInfo: 'www.globabox.com'
                 },
@@ -1283,8 +1284,8 @@ export default function AdminPanel({
                   id: 'images',
                   label: 'Products have valid images',
                   desc: allProductsHaveImages 
-                    ? 'Tous les articles de votre boutique possèdent des visuels valides.' 
-                    : `${products.length - productsWithImagesCount} produit(s) requièrent l'attribution de liens d'images valides.`,
+                    ? 'Tous les produits enregistrés possèdent une URL image HTTPS (chargement non vérifié).' 
+                    : `${adminProducts.length - productsWithImagesCount} produit(s) n’ont pas encore d’URL image HTTPS.`, 
                   ok: allProductsHaveImages,
                   severity: 'warning' as const,
                   configInfo: 'Catalogue Images'
@@ -1317,9 +1318,9 @@ export default function AdminPanel({
                 },
                 {
                   id: 'sheets_sync',
-                  label: 'Commande D1 réelle testée',
-                  desc: 'Aucune commande distante de test vérifiée; vente maintenue fermée.',
-                  ok: launchStatus?.checkoutVerified === true && launchStatus?.checkoutEnabled === true,
+                  label: 'Diagnostic Checkout D1 (test interne)',
+                  desc: checkoutDiagnostic?.success && checkoutDiagnostic.cleanupVerified ? 'Test interne : calcul COD, écriture, lecture et suppression D1 confirmés. Parcours client public non testé.' : 'Tester le diagnostic interne (ne vérifie pas le parcours client public).',
+                  ok: checkoutDiagnostic?.success === true && checkoutDiagnostic.cleanupVerified === true,
                   severity: 'warning' as const,
                   configInfo: 'Remote D1 order verification'
                 }
@@ -1539,19 +1540,19 @@ export default function AdminPanel({
                     <div className="bg-[#070d1a] p-3 rounded-xl border border-[#1c2e4a]">
                       <span className="text-[11px] font-bold text-emerald-400 block">🟢 En Stock</span>
                       <span className="text-lg font-black font-mono text-white mt-1 block">
-                        {products.filter(p => !p.stockStatus || p.stockStatus === 'in_stock').length}
+                        {adminProducts.filter(p => p.inStock !== false && (!p.stockStatus || p.stockStatus === 'in_stock')).length}
                       </span>
                     </div>
                     <div className="bg-[#070d1a] p-3 rounded-xl border border-[#1c2e4a]">
                       <span className="text-[11px] font-bold text-amber-400 block">🟡 Limité</span>
                       <span className="text-lg font-black font-mono text-white mt-1 block">
-                        {products.filter(p => p.stockStatus === 'limited').length}
+                        {adminProducts.filter(p => p.inStock !== false && p.stockStatus === 'limited').length}
                       </span>
                     </div>
                     <div className="bg-[#070d1a] p-3 rounded-xl border border-[#1c2e4a]">
                       <span className="text-[11px] font-bold text-red-500 block">🔴 Rupture</span>
                       <span className="text-lg font-black font-mono text-white mt-1 block">
-                        {products.filter(p => !p.inStock || p.stockStatus === 'out_of_stock').length}
+                        {adminProducts.filter(p => p.inStock === false || p.stockStatus === 'out_of_stock').length}
                       </span>
                     </div>
                   </div>
