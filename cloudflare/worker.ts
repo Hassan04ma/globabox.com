@@ -93,9 +93,9 @@ export default {
       const mediaMatch = path.match(/^\/api\/product-media\/([a-f0-9-]{36})$/);
       if (mediaMatch && method === 'GET') {
         const row = await env.DB.prepare('SELECT content_type,body FROM product_media WHERE id=?')
-          .bind(mediaMatch[1]).first<{content_type:string;body:number[]}>();
-        if (!row || !Array.isArray(row.body)) return json({error:'Image not found'},404);
-        return new Response(Uint8Array.from(row.body), {
+          .bind(mediaMatch[1]).first<{content_type:string;body:ArrayBuffer}>();
+        if (!row || !row.body) return json({error:'Image not found'},404);
+        return new Response(new Uint8Array(row.body), {
           headers: {'Content-Type':row.content_type,'X-Content-Type-Options':'nosniff',
             'Cache-Control':'public, max-age=86400'}
         });
