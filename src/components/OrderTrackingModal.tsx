@@ -272,58 +272,14 @@ export default function OrderTrackingModal({ isOpen, onClose, language }: OrderT
       return;
     }
 
-    setIsLoading(true);
-    let allOrders: Order[] = [];
-
-    // Prioritize loading freshest orders from server
-    try {
-      const res = await fetch('/api/orders');
-      if (res.ok) {
-        const serverOrders = await res.json();
-        if (Array.isArray(serverOrders)) {
-          allOrders = serverOrders;
-          localStorage.setItem('globabox_orders', JSON.stringify(serverOrders));
-        }
-      }
-    } catch (err) {
-      console.warn('[TRACKING FETCH] Failed to load server orders, fallback to local storage cache:', err);
-    }
-
-    if (allOrders.length === 0) {
-      const saved = localStorage.getItem('globabox_orders');
-      allOrders = saved ? JSON.parse(saved) : [];
-    }
-
-    // Filter matching orders by BOTH inputs or either as provided
-    const matches = allOrders.filter(order => {
-      let matchesRef = false;
-      let matchesPhone = false;
-
-      if (refQuery) {
-        const idMatch = order.id.toLowerCase().includes(refQuery);
-        const refMatch = order.reference && order.reference.toLowerCase().includes(refQuery);
-        matchesRef = !!(idMatch || refMatch);
-      }
-
-      if (phoneQuery) {
-        const cleanInput = cleanPhoneString(phoneQuery);
-        const cleanSaved = order.phoneNumber ? cleanPhoneString(order.phoneNumber) : '';
-        matchesPhone = cleanInput.length >= 6 && (cleanSaved.includes(cleanInput) || cleanInput.includes(cleanSaved));
-      }
-
-      // If they provided both, we check both (OR condition to match either of them)
-      if (refQuery && phoneQuery) {
-        return matchesRef || matchesPhone;
-      }
-      if (refQuery) return matchesRef;
-      if (phoneQuery) return matchesPhone;
-      return false;
-    });
-
-    setMatchedOrders(matches);
-    if (matches.length === 1) {
-      setSelectedOrder(matches[0]);
-    }
+    // Customer tracking must not read all private orders or local cached PII.
+    // Keep self-service lookup disabled until a scoped, rate-limited API is available.
+    setMatchedOrders([]);
+    setValidationError(language === 'ar'
+      ? 'التتبع عبر الموقع غير متوفر مؤقتاً. تواصل معنا عبر واتساب مع رقم طلبك.'
+      : language === 'en'
+        ? 'Online tracking is temporarily unavailable. Contact us on WhatsApp with your order reference.'
+        : 'Suivi en ligne temporairement indisponible. Contactez-nous sur WhatsApp avec votre référence.');
     setIsLoading(false);
   };
 
