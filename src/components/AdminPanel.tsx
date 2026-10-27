@@ -31,6 +31,15 @@ export default function AdminPanel({
   const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'products' | 'categories' | 'marketing'>('dashboard');
 
   const [launchStatus, setLaunchStatus] = useState<{databaseReady:boolean;adminConfigured:boolean;checkoutEnabled:boolean;checkoutVerified:boolean}|null>(null);
+  const [d1ProbeStatus, setD1ProbeStatus] = useState<'idle'|'running'|'success'|'error'>('idle');
+  const runD1Probe = async () => {
+    setD1ProbeStatus('running');
+    try {
+      const response = await fetch('/api/admin/verify-d1-write', {method:'POST', credentials:'same-origin'});
+      const data = await response.json();
+      setD1ProbeStatus(response.ok && data?.databaseWriteVerified === true ? 'success' : 'error');
+    } catch {setD1ProbeStatus('error');}
+  };
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
   const [usernameInput, setUsernameInput] = useState('');
@@ -1140,6 +1149,18 @@ export default function AdminPanel({
               </p>
             </div>
 
+            <div className="bg-[#0b1528] border border-[#1c2e4a] rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-xs font-bold text-white">Vérification D1 distante (administrateur)</h3>
+                <p className="text-[11px] text-slate-400">Écrit, relit et supprime une ligne de diagnostic temporaire, sans commande client.</p>
+                {d1ProbeStatus === 'success' && <p className="text-xs text-emerald-400 mt-2">Écriture, lecture et nettoyage D1 validés. Checkout client toujours non vérifié.</p>}
+                {d1ProbeStatus === 'error' && <p className="text-xs text-red-400 mt-2">Vérification échouée. Ne pas activer les commandes.</p>}
+              </div>
+              <button type="button" onClick={runD1Probe} disabled={d1ProbeStatus === 'running'}
+                className="bg-orange-600 hover:bg-orange-500 disabled:opacity-60 px-4 py-2.5 rounded-xl text-xs text-white font-bold cursor-pointer">
+                {d1ProbeStatus === 'running' ? 'Vérification…' : 'Tester écriture D1'}
+              </button>
+            </div>
             {/* Final Launch Checklist Card */}
             {(() => {
               const productsWithImagesCount = products.filter(p => p.image && p.image.trim() !== '').length;
