@@ -964,7 +964,7 @@ export default function AdminPanel({
     return matchesQuery && matchesStatus && matchesCity;
   });
 
-  const filteredProductsList = (adminProducts.length ? adminProducts : products).filter(p => 
+  const filteredProductsList = adminProducts.filter(p => 
     p.name.fr.toLowerCase().includes(productQuery.toLowerCase()) ||
     (p.name.ar && p.name.ar.includes(productQuery)) ||
     p.category.toLowerCase().includes(productQuery.toLowerCase())
@@ -1119,7 +1119,7 @@ export default function AdminPanel({
             }`}
           >
             <Package className="w-4 h-4" />
-            <span>Catalogue Produits ({products.length})</span>
+            <span>Catalogue Produits ({adminProducts.length})</span>
           </button>
 
           {/* TAB 3: Categories */}
@@ -2415,6 +2415,11 @@ export default function AdminPanel({
                         <p className="font-extrabold text-white text-[12px]">{prod.name.fr}</p>
                         <p className="text-right text-[10px] text-slate-400 font-sans mt-0.5">{prod.name.ar}</p>
                         <div className="flex gap-1.5 flex-wrap pt-1 font-sans">
+                          {prod.isActive === true ? (
+                            <span className="bg-emerald-950/40 text-emerald-400 text-[9px] font-bold px-2 py-0.5 rounded border border-emerald-800/50">PUBLIÉ</span>
+                          ) : (
+                            <span className="bg-amber-950/40 text-amber-400 text-[9px] font-bold px-2 py-0.5 rounded border border-amber-800/50">BROUILLON — NON VISIBLE</span>
+                          )}
                           {prod.bestSeller && (
                             <span className="bg-orange-950/40 text-orange-400 text-[8px] font-bold px-1.5 py-0.5 rounded border border-orange-900/30">BEST</span>
                           )}
