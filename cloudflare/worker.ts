@@ -168,10 +168,10 @@ export default {
           subtotal,shippingCost,total:subtotal+shippingCost
         };
         const quote = quoteOrder(data,[{...product,isActive:true}]);
-        if (!quote.ok) return json({error:'COD quote failed',reason:quote.error},409);
+        if ('error' in quote) return json({error:'COD quote failed',reason:quote.error},409);
         // Verify an altered customer total would be rejected.
         const tampered = quoteOrder({...data,total:1},[{...product,isActive:true}]);
-        if (tampered.ok || tampered.status !== 409)
+        if (!('error' in tampered) || tampered.status !== 409)
           return json({error:'Tampered checkout was not rejected'},503);
         let orderId:string|undefined;
         let cleaned=false;
