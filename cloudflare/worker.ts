@@ -1,5 +1,6 @@
 import { PRODUCTS } from '../src/data';
 import { isAdmin, handleAdminAuth } from './auth';
+import { quoteOrder } from './orderQuote';
 
 interface Env { DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string }
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
@@ -51,12 +52,20 @@ export default {
         return json(rows.results.map(row => JSON.parse(row.data_json)));
       }
       if (path === '/api/orders' && method === 'POST') {
-        const data = await readBody(request);
-        if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !data.items.length || typeof data.fullName !== 'string' || !data.fullName.trim() || typeof data.phoneNumber !== 'string' || !data.phoneNumber.trim())
-          return json({ error: 'Invalid order' }, 400);
-        const id = crypto.randomUUID(), record = { ...data, id, status: 'pending', createdAt: new Date().toISOString() };
+        const requestBody = await readBody(request);
+        const catalog = await listProducts(env.DB, false);
+        const quote = quoteOrder(requestBody, catalog);
+        if (!quote.ok) return json({ error: quote.error }, quote.status);
+        const id = crypto.randomUUID();
+        const now = new Date().toISOString();
+        const record = {
+          ...quote.order,
+          id, reference: 'GB-' + id.slice(0, 8).toUpperCase(),
+          date: now, createdAt: now, status: 'pending',
+          paymentMethod: 'Cash on delivery', source: 'website', syncStatus: 'synced'
+        };
         await env.DB.prepare('INSERT INTO orders (id,status,total_mad,data_json) VALUES (?,?,?,?)')
-          .bind(id, 'pending', Number(data.total) || 0, JSON.stringify(record)).run();
+          .bind(id, 'pending', record.total, JSON.stringify(record)).run();
         return json({ success: true, order: record }, 201);
       }
       const orderMatch = path.match(/^\/api\/orders\/([^/]+)$/);
