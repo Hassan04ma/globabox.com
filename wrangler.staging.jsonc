@@ -29,5 +29,8 @@
         "database_id": "af11126a-6bc1-4711-a8a1-9dd1396f03a7"
       }
     ]
+  },
+  "build": {
+    "command": "npm run build:cloudflare"
   }
 }
