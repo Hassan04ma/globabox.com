@@ -55,7 +55,7 @@ export default {
         const requestBody = await readBody(request);
         const catalog = await listProducts(env.DB, false);
         const quote = quoteOrder(requestBody, catalog);
-        if (!quote.ok) return json({ error: quote.error }, quote.status);
+        if ('error' in quote) return json({ error: quote.error }, quote.status);
         const id = crypto.randomUUID();
         const now = new Date().toISOString();
         const record = {
