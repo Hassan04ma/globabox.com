@@ -6,7 +6,9 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": [
+      "/api/*"
+    ]
   },
   "d1_databases": [
     {
@@ -15,5 +17,17 @@
       "database_id": "3a61a1b3-2351-419a-bab2-a9ae19bd4ef6",
       "migrations_dir": "cloudflare/migrations"
     }
-  ]
+  ],
+  "previews": {
+    "vars": {
+      "ADMIN_USERNAME": "admin"
+    },
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "globabox-staging-db",
+        "database_id": "af11126a-6bc1-4711-a8a1-9dd1396f03a7"
+      }
+    ]
+  }
 }
