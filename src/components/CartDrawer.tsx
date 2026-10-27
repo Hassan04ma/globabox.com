@@ -150,6 +150,7 @@ export default function CartDrawer({
       setNotes('');
     } catch (err) {
       console.error('[GLOBABOX] Order completion error:', err);
+      setFormErrors({ submit: err instanceof Error ? err.message : (language === 'ar' ? 'تعذر تسجيل الطلب. حاول مرة أخرى.' : 'Commande non enregistrée. Réessayez.') });
     } finally {
       setIsSubmitting(false);
     }
