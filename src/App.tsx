@@ -350,8 +350,9 @@ export default function App() {
         if (!res.ok) throw new Error('Config route not OK');
         return res.json();
       })
-      .then(config => {
-        setIsOrdersApiConfigured(!!config.isConfigured);
+      .then((config: unknown) => {
+        const configured = !!(config && typeof config === 'object' && 'isConfigured' in config && config.isConfigured);
+        setIsOrdersApiConfigured(configured);
       })
       .catch(err => {
         console.warn('[GLOBABOX CONFIG] Failed to load server config info:', err);
