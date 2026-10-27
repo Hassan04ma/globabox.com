@@ -821,8 +821,18 @@ Merci de confirmer la disponibilité et la livraison.`;
       throw new Error(persisted.error || 'Commande non enregistrée. Veuillez réessayer.');
     }
 
-    // Save locally first to ensure a reliable contingency backup is immediately captured
-    const initialOrdersList = [newOrder, ...orders];
+    const confirmedOrder = persisted.savedOrder!;
+    // Use the server-generated order ID, reference, item prices and delivery total.
+    const confirmedSuccessData = {
+      ...successData,
+      reference: confirmedOrder.reference,
+      subtotal: confirmedOrder.subtotal,
+      shippingCost: confirmedOrder.shippingCost,
+      total: confirmedOrder.total,
+      freeShipping: confirmedOrder.freeShipping
+    };
+    // Cache only the newly confirmed order for admin convenience.
+    const initialOrdersList = [confirmedOrder, ...orders.filter(o => o.id !== confirmedOrder.id)];
     setOrders(initialOrdersList);
     localStorage.setItem('globabox_orders', JSON.stringify(initialOrdersList));
     console.log("[ORDER LOCAL] saved to localStorage");
@@ -831,22 +841,22 @@ Merci de confirmer la disponibilité et la livraison.`;
     setCart([]);
 
     // The server confirmed persistence; now show success and store a local cache
-    sessionStorage.setItem('globabox_last_success_order', JSON.stringify(successData));
-    setOrderSuccessData(successData);
+    sessionStorage.setItem('globabox_last_success_order', JSON.stringify(confirmedSuccessData));
+    setOrderSuccessData(confirmedSuccessData);
     setIsSuccessModalOpen(true);
     setIsCartOpen(false);
     console.log("[ORDER UI] success modal opened");
 
     // Trigger purchase events (lead and completed purchase tracking)
     triggerPurchase(
-      newOrder.reference, 
-      successData.items.map((it: any) => ({
-        id: it.product.id,
-        name: it.product.name[language] || it.product.name['fr'],
-        price: it.product.price,
+      confirmedOrder.reference, 
+      confirmedOrder.items.map((it: any) => ({
+        id: it.productId,
+        name: it.productName,
+        price: it.price,
         quantity: it.quantity
       })), 
-      successData.total
+      confirmedOrder.total
     );
 
 
