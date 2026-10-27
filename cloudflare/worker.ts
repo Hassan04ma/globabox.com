@@ -4,7 +4,15 @@ import { quoteOrder } from './orderQuote';
 
 interface Env { DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string }
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
-const readBody = async (request: Request) => { try { return await request.json() as any; } catch { return null; } };
+const MAX_JSON_BYTES = 64 * 1024;
+const readBody = async (request: Request) => {
+  try {
+    if (Number(request.headers.get('content-length') || 0) > MAX_JSON_BYTES) return null;
+    const raw = await request.text();
+    if (new TextEncoder().encode(raw).byteLength > MAX_JSON_BYTES) return null;
+    return JSON.parse(raw) as any;
+  } catch { return null; }
+};
 const publicProduct = (p: any) => p && p.isActive !== false;
 const auth = isAdmin;
 async function importAuthorized(request: Request, env: Env): Promise<boolean> {
@@ -37,6 +45,9 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url), path = url.pathname, method = request.method;
     if (!path.startsWith('/api/')) return env.ASSETS.fetch(request);
+    if (['POST','PUT','PATCH'].includes(method) &&
+        Number(request.headers.get('content-length') || 0) > MAX_JSON_BYTES)
+      return json({error:'Request body too large'},413);
     if (path === '/api/launch-readiness' && method === 'GET') {
       // Safe public preflight: no tokens, credentials, order data or table contents.
       const adminConfigured = !!(env.ADMIN_PASSWORD && env.ADMIN_PASSWORD.length >= 12 &&
