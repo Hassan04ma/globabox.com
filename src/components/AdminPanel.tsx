@@ -662,7 +662,7 @@ export default function AdminPanel({
       bestSeller: false,
       newArrival: true,
       featured: false,
-      isActive: true,
+      isActive: false,
       fallbackImage: '',
       fallbackImages: [],
       featuresFr: ['Haute qualité', 'Robuste & Durable'],
@@ -761,7 +761,7 @@ export default function AdminPanel({
       bestSeller: productForm.bestSeller,
       newArrival: productForm.newArrival,
       featured: productForm.featured,
-      isActive: productForm.isActive,
+      isActive: editingProduct ? productForm.isActive : false,
       visibilityChanged: editingProduct ? productForm.isActive !== (editingProduct.isActive === true) : true,
       createdAt: editingProduct ? editingProduct.createdAt : new Date().toISOString(),
     };
