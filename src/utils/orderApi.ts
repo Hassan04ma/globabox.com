@@ -27,7 +27,9 @@ export async function saveOrderToBackend(order: Order): Promise<{
     }
 
     const data = await response.json().catch(() => null);
-    if (data?.success !== true || typeof data?.order?.id !== 'string' || !data.order.id) {
+    if (!data || typeof data !== 'object' || !('success' in data) || data.success !== true ||
+        !('order' in data) || !data.order || typeof data.order !== 'object' ||
+        !('id' in data.order) || typeof data.order.id !== 'string' || !data.order.id) {
       return { success: false, syncStatus: 'failed', error: 'La sauvegarde de la commande n’a pas été confirmée.' };
     }
 
