@@ -23,6 +23,7 @@ const db = {
 } as any;
 const env = {
   DB: db,
+  STORE_ACCEPTING_ORDERS: 'true',
   ASSETS: { fetch: async () => new Response('assets') },
 } as any;
 
