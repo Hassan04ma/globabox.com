@@ -217,10 +217,8 @@ export default function App() {
     return saved ? JSON.parse(saved) : CATEGORIES;
   });
 
-  const [orders, setOrders] = useState<Order[]>(() => {
-    const saved = localStorage.getItem('globabox_orders');
-    return saved ? JSON.parse(saved) : [];
-  });
+  // Admin-only order state: never hydrate customers' private orders from browser storage.
+  const [orders, setOrders] = useState<Order[]>([]);
 
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isOrdersApiConfigured, setIsOrdersApiConfigured] = useState<boolean>(false);
@@ -326,24 +324,8 @@ export default function App() {
     }
   }, [products]);
 
-  // Load orders list from our Express backend as the source of truth for permanent storage
+  // Load non-sensitive storefront configuration only; order data belongs to the authenticated admin session.
   useEffect(() => {
-    // Fetch orders from backend
-    fetch('/api/orders')
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to retrieve orders from server');
-        return res.json();
-      })
-      .then(serverOrders => {
-        if (Array.isArray(serverOrders)) {
-          setOrders(serverOrders);
-          localStorage.setItem('globabox_orders', JSON.stringify(serverOrders));
-        }
-      })
-      .catch(err => {
-        console.warn('[GLOBABOX BACKEND] Could not load orders from server, using local cache:', err);
-      });
-
     // Fetch config status
     fetch('/api/config')
       .then(res => {
@@ -674,59 +656,10 @@ Paiement à la livraison
 Merci de confirmer la disponibilité et la livraison.`;
     }
 
-    // Create real Order object
-    const newOrder: Order = {
-      id: `ORD-WA-${Date.now()}`,
-      reference: `GB-WA-${Math.floor(100000 + Math.random() * 900000)}`,
-      fullName: finalForm.fullName,
-      phoneNumber: finalForm.phoneNumber,
-      city: finalForm.city,
-      deliveryAddress: finalForm.deliveryAddress,
-      notes: finalForm.notes || "",
-      items: activeItems.map((it) => ({
-        productName: it.product.name[language] || it.product.name['fr'],
-        productId: it.product.id,
-        price: it.product.price,
-        quantity: it.quantity,
-        image: it.product.image,
-        selectedSize: it.selectedSize,
-        selectedColor: it.selectedColor
-      })),
-      total: totalVal,
-      subtotal: subtotalVal,
-      shippingCost: shippingCostVal,
-      finalTotal: totalVal,
-      freeShipping: isFree,
-      date: new Date().toLocaleDateString('fr-FR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      } as any),
-      status: 'pending',
-      paymentMethod: 'Cash on delivery',
-      whatsappMessage: whatsappMessage,
-      source: 'whatsapp',
-      syncStatus: 'not-configured'
-    };
-
-    // Save locally
-    const initialOrdersList = [newOrder, ...orders];
-    setOrders(initialOrdersList);
-    localStorage.setItem('globabox_orders', JSON.stringify(initialOrdersList));
-
-    // Redirect to whatsapp
+    // WhatsApp button is a lead, not a confirmed order.
+    // Do not manufacture customer records or save private details to localStorage.
     const encodedMessage = encodeURIComponent(whatsappMessage);
-    const whatsappLink = `https://api.whatsapp.com/send?phone=+${WHATSAPP_NUMBER}&text=${encodedMessage}`;
-    window.open(whatsappLink, '_blank');
-
-    // Sync to backend sheets
-    try {
-      await saveOrderToBackend(newOrder);
-    } catch (err) {
-      console.warn("WhatsApp order sync failed:", err);
-    }
+    window.open(`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodedMessage}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleOrderSuccess = async (successData: any) => {
@@ -832,12 +765,7 @@ Merci de confirmer la disponibilité et la livraison.`;
       total: confirmedOrder.total,
       freeShipping: confirmedOrder.freeShipping
     };
-    // Cache only the newly confirmed order for admin convenience.
-    const initialOrdersList = [confirmedOrder, ...orders.filter(o => o.id !== confirmedOrder.id)];
-    setOrders(initialOrdersList);
-    localStorage.setItem('globabox_orders', JSON.stringify(initialOrdersList));
-    console.log("[ORDER LOCAL] saved to localStorage");
-
+    // The order lives in D1; admin fetches it only after authentication.
     // Clear the cart only after building/local saving of order object is completed
     setCart([]);
 
