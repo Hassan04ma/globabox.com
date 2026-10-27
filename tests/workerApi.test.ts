@@ -5,12 +5,14 @@ const savedOrders: any[] = [];
 const db = {
   prepare(sql: string) {
     const execute = (...params: unknown[]) => ({
+      async first() { return null; },
       async all() {
         if (sql.includes('FROM products')) return { results: [] };
         if (sql.includes('FROM orders')) return { results: savedOrders.map(order => ({data_json: JSON.stringify(order)})) };
         throw new Error('Unexpected all(): ' + sql);
       },
       async run() {
+        if (sql.startsWith('INSERT INTO products')) return {success:true,meta:{changes:1}};
         if (sql.startsWith('INSERT INTO orders')) {
           savedOrders.push(JSON.parse(params[3] as string));
           return { success: true, meta: { changes: 1 } };
