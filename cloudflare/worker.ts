@@ -84,6 +84,35 @@ export default {
     if (authResponse) return authResponse;
     if (!env.DB) return json({ error: 'Database binding missing' }, 503);
     try {
+      if (path === '/api/admin/verify-d1-write' && method === 'POST') {
+        if (!await auth(request, env)) return json({error:'Unauthorized'},401);
+        // A disposable synthetic record tests the real remote orders table,
+        // without collecting customer details or enabling public checkout.
+        const id = 'd1_probe_' + crypto.randomUUID();
+        const probe = JSON.stringify({id,diagnostic:true,createdAt:new Date().toISOString()});
+        let writeVerified = false;
+        let cleanupVerified = false;
+        try {
+          const inserted = await env.DB.prepare(
+            'INSERT INTO orders (id,status,total_mad,data_json) VALUES (?,?,?,?)'
+          ).bind(id,'diagnostic',0,probe).run();
+          if (!inserted.success) throw new Error('D1 diagnostic insert failed');
+          const saved = await env.DB.prepare('SELECT data_json FROM orders WHERE id=?')
+            .bind(id).first<{data_json:string}>();
+          writeVerified = saved?.data_json === probe;
+        } finally {
+          const removed = await env.DB.prepare('DELETE FROM orders WHERE id=?').bind(id).run();
+          const remaining = await env.DB.prepare('SELECT id FROM orders WHERE id=?')
+            .bind(id).first();
+          cleanupVerified = removed.success && !remaining;
+        }
+        return json({
+          databaseWriteVerified:writeVerified && cleanupVerified,
+          cleanupVerified,
+          checkoutVerified:false,
+          note:'Remote D1 insert/read/delete check only. This is not an end-to-end customer checkout test.'
+        },writeVerified && cleanupVerified ? 200 : 503);
+      }
       if (path === '/api/products' && method === 'GET') return json(await listProducts(env.DB, false, env.STORE_DEMO_CATALOG === 'true'));
       if (path === '/api/admin/products' && method === 'GET') {
         if (!await auth(request, env)) return json({ error: 'Unauthorized' }, 401);
