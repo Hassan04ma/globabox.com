@@ -2,7 +2,7 @@ import { PRODUCTS } from '../src/data';
 import { isAdmin, handleAdminAuth } from './auth';
 import { quoteOrder } from './orderQuote';
 
-interface Env { ADMIN_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; CHECKOUT_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string }
+interface Env { ADMIN_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; CHECKOUT_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string; STORE_DEMO_CATALOG?: string }
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const MAX_JSON_BYTES = 64 * 1024;
 const readBody = async (request: Request) => {
@@ -29,17 +29,16 @@ async function importAuthorized(request: Request, env: Env): Promise<boolean> {
   for (let i = 0; i < left.length; i++) diff |= left[i] ^ right[i];
   return diff === 0;
 }
-async function listProducts(db: D1Database, includeDrafts: boolean) {
+async function listProducts(db: D1Database, includeDrafts: boolean, allowDemoCatalog = false) {
   const rows = await db.prepare(includeDrafts ? 'SELECT data_json FROM products ORDER BY created_at DESC' : 'SELECT data_json FROM products WHERE active = 1 ORDER BY created_at DESC').all<{ data_json: string }>();
   const databaseProducts = rows.results.map(x => JSON.parse(x.data_json));
-  if (includeDrafts) {
-    const ids = new Set(databaseProducts.map((p: any) => p.id));
-    return [...databaseProducts, ...PRODUCTS.filter(p => !ids.has(p.id))];
-  }
-  // A disabled D1 product must suppress a matching bundled product as well.
-  const allStoredIds = await db.prepare('SELECT id FROM products').all<{id:string}>();
-  const storedIds = new Set(allStoredIds.results.map(p => p.id));
-  return [...databaseProducts.filter(publicProduct), ...PRODUCTS.filter(p => publicProduct(p) && !storedIds.has(p.id))];
+  // Never sell bundled sample products in production just because D1 has no
+  // inventory yet. Opt-in remains available solely for isolated smoke tests.
+  if (!allowDemoCatalog) return databaseProducts.filter(p => includeDrafts || publicProduct(p));
+  const ids = await db.prepare('SELECT id FROM products').all<{id:string}>();
+  const storedIds = new Set(ids.results.map(p => p.id));
+  return [...databaseProducts.filter(p => includeDrafts || publicProduct(p)),
+    ...PRODUCTS.filter(p => (includeDrafts || publicProduct(p)) && !storedIds.has(p.id))];
 }
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -81,10 +80,10 @@ export default {
     if (authResponse) return authResponse;
     if (!env.DB) return json({ error: 'Database binding missing' }, 503);
     try {
-      if (path === '/api/products' && method === 'GET') return json(await listProducts(env.DB, false));
+      if (path === '/api/products' && method === 'GET') return json(await listProducts(env.DB, false, env.STORE_DEMO_CATALOG === 'true'));
       if (path === '/api/admin/products' && method === 'GET') {
         if (!await auth(request, env)) return json({ error: 'Unauthorized' }, 401);
-        return json(await listProducts(env.DB, true));
+        return json(await listProducts(env.DB, true, env.STORE_DEMO_CATALOG === 'true'));
       }
       if (path === '/api/orders' && method === 'GET') {
         if (!await auth(request, env)) return json({ error: 'Unauthorized' }, 401);
@@ -97,7 +96,7 @@ export default {
         if (env.STORE_ACCEPTING_ORDERS !== 'true')
           return json({error:'La boutique n’accepte pas encore de commandes. Veuillez revenir bientôt.'},503);
         const requestBody = await readBody(request);
-        const catalog = await listProducts(env.DB, false);
+        const catalog = await listProducts(env.DB, false, env.STORE_DEMO_CATALOG === 'true');
         const quote = quoteOrder(requestBody, catalog);
         if ('error' in quote) return json({ error: quote.error }, quote.status);
         const id = crypto.randomUUID();
