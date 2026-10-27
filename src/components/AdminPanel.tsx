@@ -38,7 +38,7 @@ export default function AdminPanel({
   const [errorMessage, setErrorMessage] = useState('');
   useEffect(() => {
     fetch('/api/admin/session').then(r => r.ok ? r.json() : { authenticated: false })
-      .then(d => setIsAuthenticated(d.authenticated === true))
+      .then((d: unknown) => setIsAuthenticated(!!(d && typeof d === 'object' && 'authenticated' in d && d.authenticated === true)))
       .catch(() => setIsAuthenticated(false)).finally(() => setAuthLoading(false));
   }, []);
   const handleLogin = async (e: React.FormEvent) => {
@@ -768,10 +768,12 @@ export default function AdminPanel({
         if (!res.ok) throw new Error("Erreur de mise à jour");
         return res.json();
       })
-      .then(data => {
-        const updatedList = products.map(p => p.id === editingProduct.id ? data.product : p);
+      .then((data: unknown) => {
+        if (!data || typeof data !== 'object' || !('product' in data) || !data.product || typeof data.product !== 'object') throw new Error('Réponse de produit invalide');
+        const updatedProduct = data.product as Product;
+        const updatedList = products.map(p => p.id === editingProduct.id ? updatedProduct : p);
         setProducts(updatedList);
-        setAdminProducts(current => current.map(p => p.id === editingProduct.id ? data.product : p));
+        setAdminProducts(current => current.map(p => p.id === editingProduct.id ? updatedProduct : p));
         localStorage.setItem('globabox_products_v1', JSON.stringify(updatedList));
         setEditingProduct(null);
         setIsAddingProduct(false);
@@ -797,10 +799,12 @@ export default function AdminPanel({
         if (!res.ok) throw new Error("Erreur de création");
         return res.json();
       })
-      .then(data => {
-        const updatedList = [data.product, ...products];
+      .then((data: unknown) => {
+        if (!data || typeof data !== 'object' || !('product' in data) || !data.product || typeof data.product !== 'object') throw new Error('Réponse de produit invalide');
+        const updatedProduct = data.product as Product;
+        const updatedList = [updatedProduct, ...products];
         setProducts(updatedList);
-        setAdminProducts(current => [data.product, ...current]);
+        setAdminProducts(current => [updatedProduct, ...current]);
         localStorage.setItem('globabox_products_v1', JSON.stringify(updatedList));
         setEditingProduct(null);
         setIsAddingProduct(false);
