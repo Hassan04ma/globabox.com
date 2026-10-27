@@ -93,4 +93,14 @@ assert.equal(freeResponse.status, 201);
 assert.equal((await freeResponse.json() as any).order.freeShipping,true);
 assert.equal(savedOrders.length,2);
 
-console.log('Worker API smoke tests passed: admin protection, tampering, persisted checkout, free delivery');
+// A trusted admin creating a product cannot make it public in a single POST.
+const adminEnv = {...env, ADMIN_API_KEY:'ci_dummy_admin_api_key_very_long_not_a_secret_00001'};
+const draft = await worker.fetch(new Request('https://preview.example.test/api/products', {
+  method:'POST',headers:{'Content-Type':'application/json','x-admin-api-key':'ci_dummy_admin_api_key_very_long_not_a_secret_00001'},
+  body:JSON.stringify({id:'safe-demo-draft',name:{fr:'Draft Test'},price:99,
+    image:'https://example.test/draft.jpg',isActive:true})
+}),adminEnv);
+assert.equal(draft.status,200);
+const draftPayload = await draft.json() as any;
+assert.equal(draftPayload.product.isActive,false,'New admin products cannot auto-publish');
+console.log('Worker API smoke tests passed: admin protection, tampering, persisted checkout, free delivery and draft creation');
