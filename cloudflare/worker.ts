@@ -132,8 +132,22 @@ export default {
         const id = productMatch?.[1] || (typeof payload?.id === 'string' ? payload.id.trim() : '');
         if (!id || id.length > 100 || !/^[a-zA-Z0-9_-]+$/.test(id)) return json({error:'Invalid product ID'},400);
         if (method === 'DELETE') {
-          await env.DB.prepare('DELETE FROM products WHERE id=?').bind(id).run();
-          return json({success:true});
+          // Keep a disabled row rather than deleting it: a hard delete would
+          // reveal a bundled fallback product with the same ID again.
+          const stored = await env.DB.prepare('SELECT data_json FROM products WHERE id=?')
+            .bind(id).first<{data_json:string}>();
+          const oldProduct = stored ? JSON.parse(stored.data_json) : PRODUCTS.find(p => p.id === id);
+          if (!oldProduct) return json({error:'Product not found'},404);
+          const hidden = {...oldProduct,id,isActive:false};
+          if (stored) {
+            await env.DB.prepare('UPDATE products SET active=0,data_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?')
+              .bind(JSON.stringify(hidden),id).run();
+          } else {
+            await env.DB.prepare('INSERT INTO products (id,source_url,supplier,category,name_fr,price_mad,image_url,active,data_json) VALUES (?,?,?,?,?,?,?,?,?)')
+              .bind(id,null,null,oldProduct.category || '',oldProduct.name?.fr || id,
+                oldProduct.price,oldProduct.image || '',0,JSON.stringify(hidden)).run();
+          }
+          return json({success:true,product:hidden});
         }
         const p = payload;
         if (!p || typeof p.name?.fr !== 'string' || !Number.isFinite(p.price) || p.price <= 0) return json({error:'Invalid product'},400);
