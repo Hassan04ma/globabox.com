@@ -217,10 +217,8 @@ export default function App() {
     return saved ? JSON.parse(saved) : CATEGORIES;
   });
 
-  const [orders, setOrders] = useState<Order[]>(() => {
-    const saved = localStorage.getItem('globabox_orders');
-    return saved ? JSON.parse(saved) : [];
-  });
+  // Admin-only order state: never hydrate customers' private orders from browser storage.
+  const [orders, setOrders] = useState<Order[]>([]);
 
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isOrdersApiConfigured, setIsOrdersApiConfigured] = useState<boolean>(false);
@@ -326,32 +324,17 @@ export default function App() {
     }
   }, [products]);
 
-  // Load orders list from our Express backend as the source of truth for permanent storage
+  // Load non-sensitive storefront configuration only; order data belongs to the authenticated admin session.
   useEffect(() => {
-    // Fetch orders from backend
-    fetch('/api/orders')
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to retrieve orders from server');
-        return res.json();
-      })
-      .then(serverOrders => {
-        if (Array.isArray(serverOrders)) {
-          setOrders(serverOrders);
-          localStorage.setItem('globabox_orders', JSON.stringify(serverOrders));
-        }
-      })
-      .catch(err => {
-        console.warn('[GLOBABOX BACKEND] Could not load orders from server, using local cache:', err);
-      });
-
     // Fetch config status
     fetch('/api/config')
       .then(res => {
         if (!res.ok) throw new Error('Config route not OK');
         return res.json();
       })
-      .then(config => {
-        setIsOrdersApiConfigured(!!config.isConfigured);
+      .then((config: unknown) => {
+        const configured = !!(config && typeof config === 'object' && 'isConfigured' in config && config.isConfigured);
+        setIsOrdersApiConfigured(configured);
       })
       .catch(err => {
         console.warn('[GLOBABOX CONFIG] Failed to load server config info:', err);
@@ -366,8 +349,11 @@ export default function App() {
         return res.json();
       })
       .then(fetchedProducts => {
-        if (Array.isArray(fetchedProducts) && fetchedProducts.length > 0) {
+        if (Array.isArray(fetchedProducts)) {
+          // The server catalogue is authoritative, including an intentional empty list.
+          // Do not revive obsolete products from browser localStorage.
           setProducts(fetchedProducts);
+          localStorage.removeItem('globabox_products_v1');
         }
       })
       .catch(err => {
@@ -670,59 +656,10 @@ Paiement à la livraison
 Merci de confirmer la disponibilité et la livraison.`;
     }
 
-    // Create real Order object
-    const newOrder: Order = {
-      id: `ORD-WA-${Date.now()}`,
-      reference: `GB-WA-${Math.floor(100000 + Math.random() * 900000)}`,
-      fullName: finalForm.fullName,
-      phoneNumber: finalForm.phoneNumber,
-      city: finalForm.city,
-      deliveryAddress: finalForm.deliveryAddress,
-      notes: finalForm.notes || "",
-      items: activeItems.map((it) => ({
-        productName: it.product.name[language] || it.product.name['fr'],
-        productId: it.product.id,
-        price: it.product.price,
-        quantity: it.quantity,
-        image: it.product.image,
-        selectedSize: it.selectedSize,
-        selectedColor: it.selectedColor
-      })),
-      total: totalVal,
-      subtotal: subtotalVal,
-      shippingCost: shippingCostVal,
-      finalTotal: totalVal,
-      freeShipping: isFree,
-      date: new Date().toLocaleDateString('fr-FR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      } as any),
-      status: 'pending',
-      paymentMethod: 'Cash on delivery',
-      whatsappMessage: whatsappMessage,
-      source: 'whatsapp',
-      syncStatus: 'not-configured'
-    };
-
-    // Save locally
-    const initialOrdersList = [newOrder, ...orders];
-    setOrders(initialOrdersList);
-    localStorage.setItem('globabox_orders', JSON.stringify(initialOrdersList));
-
-    // Redirect to whatsapp
+    // WhatsApp button is a lead, not a confirmed order.
+    // Do not manufacture customer records or save private details to localStorage.
     const encodedMessage = encodeURIComponent(whatsappMessage);
-    const whatsappLink = `https://api.whatsapp.com/send?phone=+${WHATSAPP_NUMBER}&text=${encodedMessage}`;
-    window.open(whatsappLink, '_blank');
-
-    // Sync to backend sheets
-    try {
-      await saveOrderToBackend(newOrder);
-    } catch (err) {
-      console.warn("WhatsApp order sync failed:", err);
-    }
+    window.open(`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodedMessage}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleOrderSuccess = async (successData: any) => {
@@ -812,67 +749,46 @@ Merci de confirmer la disponibilité et la livraison.`;
 
     console.log("[ORDER CREATE] order object created");
 
-    // Save locally first to ensure a reliable contingency backup is immediately captured
-    const initialOrdersList = [newOrder, ...orders];
-    setOrders(initialOrdersList);
-    localStorage.setItem('globabox_orders', JSON.stringify(initialOrdersList));
-    console.log("[ORDER LOCAL] saved to localStorage");
+    // Do not show a success screen or clear the cart until the database confirms the write.
+    const persisted = await saveOrderToBackend(newOrder);
+    if (!persisted.success) {
+      throw new Error(persisted.error || 'Commande non enregistrée. Veuillez réessayer.');
+    }
 
+    const confirmedOrder = persisted.savedOrder!;
+    // Use the server-generated order ID, reference, item prices and delivery total.
+    const confirmedSuccessData = {
+      ...successData,
+      reference: confirmedOrder.reference,
+      subtotal: confirmedOrder.subtotal,
+      shippingCost: confirmedOrder.shippingCost,
+      total: confirmedOrder.total,
+      freeShipping: confirmedOrder.freeShipping
+    };
+    // The order lives in D1; admin fetches it only after authentication.
     // Clear the cart only after building/local saving of order object is completed
     setCart([]);
 
-    // Open Success Modal Immediately & Store globally in session storage
-    sessionStorage.setItem('globabox_last_success_order', JSON.stringify(successData));
-    setOrderSuccessData(successData);
+    // The server confirmed persistence; now show success and store a local cache
+    sessionStorage.setItem('globabox_last_success_order', JSON.stringify(confirmedSuccessData));
+    setOrderSuccessData(confirmedSuccessData);
     setIsSuccessModalOpen(true);
     setIsCartOpen(false);
     console.log("[ORDER UI] success modal opened");
 
     // Trigger purchase events (lead and completed purchase tracking)
     triggerPurchase(
-      newOrder.reference, 
-      successData.items.map((it: any) => ({
-        id: it.product.id,
-        name: it.product.name[language] || it.product.name['fr'],
-        price: it.product.price,
+      confirmedOrder.reference, 
+      confirmedOrder.items.map((it: any) => ({
+        id: it.productId,
+        name: it.productName,
+        price: it.price,
         quantity: it.quantity
       })), 
-      successData.total
+      confirmedOrder.total
     );
 
-    // Sync to Google Sheets in the background after local success
-    // Asynchronous background job (IIFE)
-    (async () => {
-      console.log("[ORDER SHEETS] sync started");
-      try {
-        const syncResult = await saveOrderToBackend(newOrder);
-        if (syncResult && syncResult.success) {
-          console.log("[ORDER SHEETS] sync success");
-          const finalOrder = { ...newOrder, syncStatus: 'synced' as const };
-          setOrders((prevOrders) => {
-            const updated = prevOrders.map(o => o.id === newOrder.id ? finalOrder : o);
-            localStorage.setItem('globabox_orders', JSON.stringify(updated));
-            return updated;
-          });
-        } else {
-          console.warn("[ORDER SHEETS] sync failed", syncResult?.error);
-          const failedOrder = { ...newOrder, syncStatus: 'failed' as const };
-          setOrders((prevOrders) => {
-            const updated = prevOrders.map(o => o.id === newOrder.id ? failedOrder : o);
-            localStorage.setItem('globabox_orders', JSON.stringify(updated));
-            return updated;
-          });
-        }
-      } catch (err) {
-        console.error("[ORDER SHEETS] sync failed", err);
-        const failedOrder = { ...newOrder, syncStatus: 'failed' as const };
-        setOrders((prevOrders) => {
-          const updated = prevOrders.map(o => o.id === newOrder.id ? failedOrder : o);
-          localStorage.setItem('globabox_orders', JSON.stringify(updated));
-          return updated;
-        });
-      }
-    })();
+
   };
 
   // Step-by-step filter operations

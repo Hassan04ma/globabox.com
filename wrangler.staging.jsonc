@@ -1,0 +1,54 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "globabox-staging",
+  "main": "cloudflare/worker.ts",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*"
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "globabox-staging-db",
+      "database_id": "af11126a-6bc1-4711-a8a1-9dd1396f03a7",
+      "migrations_dir": "cloudflare/migrations"
+    }
+  ],
+  "previews": {
+    "vars": {
+      "ADMIN_USERNAME": "admin"
+    },
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "globabox-staging-db",
+        "database_id": "af11126a-6bc1-4711-a8a1-9dd1396f03a7"
+      }
+    ]
+  },
+  "build": {
+    "command": "npm run build:cloudflare"
+  },
+  "ratelimits": [
+    {
+      "name": "ADMIN_RATE_LIMITER",
+      "namespace_id": "71121",
+      "simple": {
+        "limit": 5,
+        "period": 60
+      }
+    },
+    {
+      "name": "CHECKOUT_RATE_LIMITER",
+      "namespace_id": "71122",
+      "simple": {
+        "limit": 10,
+        "period": 60
+      }
+    }
+  ]
+}

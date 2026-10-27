@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Package, ClipboardList, Settings, Plus, Trash2, Edit2, CheckCircle2, RefreshCw, X, Search, ChevronRight, Ban, Truck, ShieldCheck, CornerDownRight, BarChart3, MapPin, Phone, ShoppingCart, BadgeCheck, Compass } from 'lucide-react';
 import { Product, Category, Order, Language } from '../types';
 import { MOROCCAN_CITIES } from '../data';
@@ -30,41 +30,42 @@ export default function AdminPanel({
 }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'products' | 'categories' | 'marketing'>('dashboard');
 
-  const metaEnv = (import.meta as any).env || {};
-  const isUsingDefaultPassword = (metaEnv.VITE_ADMIN_PASSWORD || 'CHANGE_THIS_PASSWORD').trim() === 'CHANGE_THIS_PASSWORD';
-
-  // --- Secure Authentication State ---
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return sessionStorage.getItem('globabox_admin_auth') === 'true';
-  });
+  const isUsingDefaultPassword = false;
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
-  const handleLogin = (e: React.FormEvent) => {
+  useEffect(() => {
+    fetch('/api/admin/session').then(r => r.ok ? r.json() : { authenticated: false })
+      .then((d: unknown) => setIsAuthenticated(!!(d && typeof d === 'object' && 'authenticated' in d && d.authenticated === true)))
+      .catch(() => setIsAuthenticated(false)).finally(() => setAuthLoading(false));
+  }, []);
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const normalizedUsername = usernameInput.trim().toLowerCase();
-    const enteredPassword = passwordInput.trim();
-    
-    const metaEnv = (import.meta as any).env || {};
-    const expectedUsername = (metaEnv.VITE_ADMIN_USERNAME || 'admin').trim().toLowerCase();
-    const expectedPassword = (metaEnv.VITE_ADMIN_PASSWORD || 'CHANGE_THIS_PASSWORD').trim();
-
-    if (normalizedUsername === expectedUsername && enteredPassword === expectedPassword) {
-      sessionStorage.setItem('globabox_admin_auth', 'true');
-      setIsAuthenticated(true);
-      setErrorMessage('');
-    } else {
-      setErrorMessage('Identifiants incorrects');
-    }
+    const res = await fetch('/api/admin/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: usernameInput, password: passwordInput })
+    }).catch(() => null);
+    if (res?.ok) { setIsAuthenticated(true); setPasswordInput(''); setErrorMessage(''); }
+    else if (res?.status === 503) setErrorMessage('Serveur non configuré : vérifiez ADMIN_PASSWORD (12+ caractères) et ADMIN_SESSION_SECRET (32+ caractères) dans Runtime Secrets.');
+    else if (res?.status === 401) setErrorMessage('Nom d’utilisateur ou mot de passe incorrect.');
+    else if (res?.status === 403) setErrorMessage('Origine du site refusée. Ouvrez directement le lien workers.dev.');
+    else setErrorMessage('Connexion impossible : erreur HTTP ' + (res?.status || 'réseau'));
+  };
+  const handleLogout = async () => {
+    await fetch('/api/admin/logout', { method: 'POST' }).catch(() => {});
+    setIsAuthenticated(false); setOrders([]); setPasswordInput(''); setUsernameInput('');
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('globabox_admin_auth');
-    setIsAuthenticated(false);
-    setUsernameInput('');
-    setPasswordInput('');
-  };
+  // Orders are private: load them only after server-side admin authentication.
+  useEffect(() => {
+    if (!isAuthenticated) { setOrders([]); return; }
+    fetch('/api/orders', {credentials:'same-origin'})
+      .then(async r => { if(!r.ok) throw new Error('Orders HTTP ' + r.status); return r.json(); })
+      .then(data => { if(Array.isArray(data)) setOrders(data); })
+      .catch(err => { console.error('[ADMIN] Cannot load orders',err); setRefreshError('Impossible de charger les commandes'); });
+  }, [isAuthenticated]);
 
   // --- Segmented Moroccan E-commerce Dashboard KPI Calculations ---
   const statTotalOrders = orders.length;
@@ -102,7 +103,7 @@ export default function AdminPanel({
         sortedOrders.sort((a, b) => b.id.localeCompare(a.id));
 
         setOrders(sortedOrders);
-        localStorage.setItem('globabox_orders', JSON.stringify(sortedOrders));
+
         setRefreshSuccess('Commandes actualisées avec succès depuis le serveur');
         setTimeout(() => setRefreshSuccess(null), 5000);
       } else {
@@ -124,6 +125,16 @@ export default function AdminPanel({
 
   // Searching Products
   const [productQuery, setProductQuery] = useState('');
+  const [adminProducts, setAdminProducts] = useState<Product[]>([]);
+  const [catalogLoadError, setCatalogLoadError] = useState('');
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    fetch('/api/admin/products', { credentials: 'same-origin' })
+      .then(async r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(items => { if (Array.isArray(items)) setAdminProducts(items); })
+      .catch(err => { console.error('Admin catalog load error',err); setCatalogLoadError('Catalogue administrateur indisponible'); });
+  }, [isAuthenticated]);
+
 
   // Editing Product states
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -194,35 +205,39 @@ export default function AdminPanel({
     image: '',
   });
 
-  // Handle Order status transition
-  const handleUpdateOrderStatus = (orderId: string, newStatus: Order['status']) => {
-    const updated = orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o);
-    setOrders(updated);
-    localStorage.setItem('globabox_orders', JSON.stringify(updated));
+  // Persist before updating the visible order; never report an unsaved state as successful.
+  const handleUpdateOrderStatus = async (orderId: string, newStatus: Order['status']) => {
+    try {
+      const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const updated = orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o);
+      setOrders(updated);
 
-    // Persist status change to Server DB
-    fetch(`/api/orders/${orderId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: newStatus })
-    }).catch(err => {
-      console.error('[GLOBABOX SERVER] Error syncing status change:', err);
-    });
+    } catch (err) {
+      console.error('[GLOBABOX] Order status could not be saved', err);
+      alert("La modification n'a pas été enregistrée. Veuillez actualiser les commandes.");
+      setRefreshError("Modification non enregistrée sur le serveur");
+    }
   };
 
-  // Delete Order
-  const handleDeleteOrder = (orderId: string) => {
-    if (window.confirm('Voulez-vous vraiment supprimer cette commande ?')) {
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!window.confirm('Voulez-vous vraiment supprimer cette commande ?')) return;
+    try {
+      const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, {
+        method: 'DELETE', credentials: 'same-origin'
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const updated = orders.filter(o => o.id !== orderId);
       setOrders(updated);
-      localStorage.setItem('globabox_orders', JSON.stringify(updated));
 
-      // Persist deletion to Server DB
-      fetch(`/api/orders/${orderId}`, {
-        method: 'DELETE'
-      }).catch(err => {
-        console.error('[GLOBABOX SERVER] Error syncing command deletion:', err);
-      });
+    } catch (err) {
+      console.error('[GLOBABOX] Order deletion failed', err);
+      alert("La commande n'a pas été supprimée sur le serveur.");
     }
   };
 
@@ -469,7 +484,7 @@ export default function AdminPanel({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    fileReader.onload = (event) => {
+    fileReader.onload = async (event) => {
       try {
         const text = event.target?.result as string;
         const lines: string[] = [];
@@ -590,15 +605,32 @@ export default function AdminPanel({
           return;
         }
 
-        if (window.confirm(`Voulez-vous importer ${parsedProducts.length} produits du fichier CSV ?`)) {
-          const mergedMap = new Map<string, Product>();
-          products.forEach(p => mergedMap.set(p.id, p));
-          parsedProducts.forEach(p => mergedMap.set(p.id, p));
-
-          const list = Array.from(mergedMap.values());
-          setProducts(list);
-          localStorage.setItem('globabox_products_v1', JSON.stringify(list));
-          alert("Produits CSV importés avec succès !");
+        if (window.confirm(`Importer ${parsedProducts.length} produits comme BROUILLONS dans la base D1 ?`)) {
+          // Import into the server database, never localStorage-only, and never publish automatically.
+          let created = 0, failed = 0;
+          for (const product of parsedProducts) {
+            if (!Number.isFinite(product.price) || product.price <= 0 ||
+                !/^https:\/\//.test(product.image) || !/^[a-zA-Z0-9_-]{1,100}$/.test(product.id)) {
+              failed++;
+              continue;
+            }
+            try {
+              const response = await fetch('/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ ...product, isActive: false })
+              });
+              if (!response.ok) { failed++; continue; }
+              created++;
+            } catch { failed++; }
+          }
+          const refreshed = await fetch('/api/admin/products', { credentials: 'same-origin' });
+          if (refreshed.ok) {
+            const all = await refreshed.json();
+            if (Array.isArray(all)) setAdminProducts(all);
+          }
+          alert(`Import D1 terminé : ${created} brouillons créés, ${failed} rejetés. Aucun produit publié.`);
         }
       } catch (err) {
         console.error(err);
@@ -630,7 +662,7 @@ export default function AdminPanel({
       bestSeller: false,
       newArrival: true,
       featured: false,
-      isActive: true,
+      isActive: false,
       fallbackImage: '',
       fallbackImages: [],
       featuresFr: ['Haute qualité', 'Robuste & Durable'],
@@ -661,7 +693,7 @@ export default function AdminPanel({
       bestSeller: !!prod.bestSeller,
       newArrival: !!prod.newArrival,
       featured: !!prod.featured,
-      isActive: prod.isActive !== false,
+      isActive: prod.isActive === true,
       fallbackImage: prod.fallbackImage || '',
       fallbackImages: prod.fallbackImages || [],
       featuresFr: prod.features?.fr || [],
@@ -729,7 +761,8 @@ export default function AdminPanel({
       bestSeller: productForm.bestSeller,
       newArrival: productForm.newArrival,
       featured: productForm.featured,
-      isActive: productForm.isActive,
+      isActive: editingProduct ? productForm.isActive : false,
+      visibilityChanged: editingProduct ? productForm.isActive !== (editingProduct.isActive === true) : true,
       createdAt: editingProduct ? editingProduct.createdAt : new Date().toISOString(),
     };
 
@@ -744,9 +777,12 @@ export default function AdminPanel({
         if (!res.ok) throw new Error("Erreur de mise à jour");
         return res.json();
       })
-      .then(data => {
-        const updatedList = products.map(p => p.id === editingProduct.id ? data.product : p);
+      .then((data: unknown) => {
+        if (!data || typeof data !== 'object' || !('product' in data) || !data.product || typeof data.product !== 'object') throw new Error('Réponse de produit invalide');
+        const updatedProduct = data.product as Product;
+        const updatedList = products.map(p => p.id === editingProduct.id ? updatedProduct : p);
         setProducts(updatedList);
+        setAdminProducts(current => current.map(p => p.id === editingProduct.id ? updatedProduct : p));
         localStorage.setItem('globabox_products_v1', JSON.stringify(updatedList));
         setEditingProduct(null);
         setIsAddingProduct(false);
@@ -772,9 +808,12 @@ export default function AdminPanel({
         if (!res.ok) throw new Error("Erreur de création");
         return res.json();
       })
-      .then(data => {
-        const updatedList = [data.product, ...products];
+      .then((data: unknown) => {
+        if (!data || typeof data !== 'object' || !('product' in data) || !data.product || typeof data.product !== 'object') throw new Error('Réponse de produit invalide');
+        const updatedProduct = data.product as Product;
+        const updatedList = [updatedProduct, ...products];
         setProducts(updatedList);
+        setAdminProducts(current => [updatedProduct, ...current]);
         localStorage.setItem('globabox_products_v1', JSON.stringify(updatedList));
         setEditingProduct(null);
         setIsAddingProduct(false);
@@ -795,6 +834,7 @@ export default function AdminPanel({
       .then(res => {
         if (!res.ok) throw new Error("Erreur de suppression");
         const updated = products.filter(p => p.id !== productId);
+        setAdminProducts(current => current.filter(p => p.id !== productId));
         setProducts(updated);
         localStorage.setItem('globabox_products_v1', JSON.stringify(updated));
       })
@@ -859,12 +899,13 @@ export default function AdminPanel({
     return matchesQuery && matchesStatus && matchesCity;
   });
 
-  const filteredProductsList = products.filter(p => 
+  const filteredProductsList = (adminProducts.length ? adminProducts : products).filter(p => 
     p.name.fr.toLowerCase().includes(productQuery.toLowerCase()) ||
     (p.name.ar && p.name.ar.includes(productQuery)) ||
     p.category.toLowerCase().includes(productQuery.toLowerCase())
   );
 
+  if (authLoading) return <div className='fixed inset-0 z-50 bg-slate-950 text-white flex items-center justify-center'>Vérification…</div>;
   if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 z-50 bg-[#070d1a] backdrop-blur-md flex items-center justify-center font-sans p-4">
