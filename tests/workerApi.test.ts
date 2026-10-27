@@ -35,6 +35,14 @@ const env = {
 const request = (path: string, init?: RequestInit) =>
   worker.fetch(new Request('https://preview.example.test' + path, init), env);
 
+const publishedCatalogWhenUnconfigured = await worker.fetch(
+  new Request('https://preview.example.test/api/products'),
+  {...env, STORE_DEMO_CATALOG: undefined}
+);
+assert.equal(publishedCatalogWhenUnconfigured.status,200);
+assert.deepEqual(await publishedCatalogWhenUnconfigured.json(), [],
+  'Unverified bundled samples must never appear in the real store');
+
 const forbiddenOrders = await request('/api/orders');
 assert.equal(forbiddenOrders.status, 401, 'Unidentified customers cannot list orders');
 assert.equal((await request('/api/admin/products')).status, 401, 'Admin catalog is private');
