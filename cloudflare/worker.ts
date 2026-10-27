@@ -70,10 +70,14 @@ export default {
         console.error('[GLOBABOX] Launch readiness database check failed', err);
       }
       return json({
-        status: adminConfigured && databaseReady ? 'ready_for_manual_checkout_test' : 'not_ready',
+        status: adminConfigured && databaseReady
+          ? (env.STORE_ACCEPTING_ORDERS === 'true' ? 'checkout_enabled_unverified' : 'backend_ready_checkout_closed')
+          : 'not_ready',
         databaseReady, adminConfigured,
+        checkoutEnabled: env.STORE_ACCEPTING_ORDERS === 'true',
+        demoCatalogEnabled: env.STORE_DEMO_CATALOG === 'true',
         checkoutVerified: false,
-        note: 'This endpoint does not verify a remote test order or authorize a production cutover.'
+        note: 'A working D1 connection is not proof that a real checkout order was persisted. Do not cut over until verified.'
       }, databaseReady && adminConfigured ? 200 : 503);
     }
     const authResponse = await handleAdminAuth(request, env);
