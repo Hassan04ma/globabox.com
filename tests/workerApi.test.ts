@@ -27,7 +27,7 @@ const env = {
 } as any;
 
 const request = (path: string, init?: RequestInit) =>
-  worker.fetch(new Request('https://preview.example.test' + path, init), env, {} as any);
+  worker.fetch(new Request('https://preview.example.test' + path, init), env);
 
 const forbiddenOrders = await request('/api/orders');
 assert.equal(forbiddenOrders.status, 401, 'Unidentified customers cannot list orders');
