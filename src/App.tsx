@@ -815,6 +815,12 @@ Merci de confirmer la disponibilité et la livraison.`;
 
     console.log("[ORDER CREATE] order object created");
 
+    // Do not show a success screen or clear the cart until the database confirms the write.
+    const persisted = await saveOrderToBackend(newOrder);
+    if (!persisted.success) {
+      throw new Error(persisted.error || 'Commande non enregistrée. Veuillez réessayer.');
+    }
+
     // Save locally first to ensure a reliable contingency backup is immediately captured
     const initialOrdersList = [newOrder, ...orders];
     setOrders(initialOrdersList);
@@ -824,7 +830,7 @@ Merci de confirmer la disponibilité et la livraison.`;
     // Clear the cart only after building/local saving of order object is completed
     setCart([]);
 
-    // Open Success Modal Immediately & Store globally in session storage
+    // The server confirmed persistence; now show success and store a local cache
     sessionStorage.setItem('globabox_last_success_order', JSON.stringify(successData));
     setOrderSuccessData(successData);
     setIsSuccessModalOpen(true);
@@ -843,39 +849,7 @@ Merci de confirmer la disponibilité et la livraison.`;
       successData.total
     );
 
-    // Sync to Google Sheets in the background after local success
-    // Asynchronous background job (IIFE)
-    (async () => {
-      console.log("[ORDER SHEETS] sync started");
-      try {
-        const syncResult = await saveOrderToBackend(newOrder);
-        if (syncResult && syncResult.success) {
-          console.log("[ORDER SHEETS] sync success");
-          const finalOrder = { ...newOrder, syncStatus: 'synced' as const };
-          setOrders((prevOrders) => {
-            const updated = prevOrders.map(o => o.id === newOrder.id ? finalOrder : o);
-            localStorage.setItem('globabox_orders', JSON.stringify(updated));
-            return updated;
-          });
-        } else {
-          console.warn("[ORDER SHEETS] sync failed", syncResult?.error);
-          const failedOrder = { ...newOrder, syncStatus: 'failed' as const };
-          setOrders((prevOrders) => {
-            const updated = prevOrders.map(o => o.id === newOrder.id ? failedOrder : o);
-            localStorage.setItem('globabox_orders', JSON.stringify(updated));
-            return updated;
-          });
-        }
-      } catch (err) {
-        console.error("[ORDER SHEETS] sync failed", err);
-        const failedOrder = { ...newOrder, syncStatus: 'failed' as const };
-        setOrders((prevOrders) => {
-          const updated = prevOrders.map(o => o.id === newOrder.id ? failedOrder : o);
-          localStorage.setItem('globabox_orders', JSON.stringify(updated));
-          return updated;
-        });
-      }
-    })();
+
   };
 
   // Step-by-step filter operations
