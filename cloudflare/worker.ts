@@ -2,7 +2,7 @@ import { PRODUCTS } from '../src/data';
 import { isAdmin, handleAdminAuth } from './auth';
 import { quoteOrder } from './orderQuote';
 
-interface Env { DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string }
+interface Env { ADMIN_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; CHECKOUT_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string }
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const MAX_JSON_BYTES = 64 * 1024;
 const readBody = async (request: Request) => {
@@ -45,6 +45,14 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url), path = url.pathname, method = request.method;
     if (!path.startsWith('/api/')) return env.ASSETS.fetch(request);
+    if (method === 'POST' && (path === '/api/admin/login' || path === '/api/orders')) {
+      const limiter = path === '/api/admin/login' ? env.ADMIN_RATE_LIMITER : env.CHECKOUT_RATE_LIMITER;
+      // Fail closed for production request endpoints when the anti-abuse binding is missing.
+      if (!limiter) return json({error:'Service temporarily unavailable'},503);
+      const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+      const result = await limiter.limit({key: ip});
+      if (!result.success) return json({error:'Too many requests. Try again later.'},429);
+    }
     if (['POST','PUT','PATCH'].includes(method) &&
         Number(request.headers.get('content-length') || 0) > MAX_JSON_BYTES)
       return json({error:'Request body too large'},413);
