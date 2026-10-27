@@ -16,4 +16,5 @@ jobs:
       - run: npx tsx tests/orderQuote.test.ts
       - run: npx tsx tests/workerApi.test.ts
       - run: npm run build:cloudflare
+      - run: bash scripts/test-local-d1.sh
       - run: npx wrangler deploy --dry-run
