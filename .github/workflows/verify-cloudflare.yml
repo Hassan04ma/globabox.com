@@ -12,5 +12,7 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-audit --no-fund
+      - run: npm run lint
+      - run: npx tsx tests/orderQuote.test.ts
       - run: npm run build:cloudflare
       - run: npx wrangler deploy --dry-run
