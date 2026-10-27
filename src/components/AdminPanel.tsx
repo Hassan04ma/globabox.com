@@ -38,7 +38,7 @@ export default function AdminPanel({
     setCheckoutDiagnosticBusy(true);
     try{
       const res=await fetch('/api/admin/checkout-diagnostic',{method:'POST',credentials:'same-origin'});
-      const data=await res.json();
+      const data:any=await res.json();
       setCheckoutDiagnostic(res.ok?data:{error:data.error||'HTTP '+res.status});
     }catch{setCheckoutDiagnostic({error:'Erreur réseau'});}
     finally{setCheckoutDiagnosticBusy(false);}
@@ -48,7 +48,7 @@ export default function AdminPanel({
     setD1ProbeStatus('running');
     try {
       const response = await fetch('/api/admin/verify-d1-write', {method:'POST', credentials:'same-origin'});
-      const data = await response.json();
+      const data:any = await response.json();
       setD1ProbeStatus(response.ok && data?.databaseWriteVerified === true ? 'success' : 'error');
     } catch {setD1ProbeStatus('error');}
   };
@@ -708,7 +708,7 @@ export default function AdminPanel({
         const response=await fetch('/api/admin/media',{method:'POST',credentials:'same-origin',
           headers:{'Content-Type':file.type},body:file});
         if(!response.ok)throw new Error('Upload refusé : HTTP '+response.status);
-        const data=await response.json();
+        const data:any=await response.json();
         if(typeof data?.url!=='string')throw new Error('Réponse image invalide');
         urls.push(data.url);
       }
