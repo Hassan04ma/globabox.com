@@ -37,6 +37,27 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url), path = url.pathname, method = request.method;
     if (!path.startsWith('/api/')) return env.ASSETS.fetch(request);
+    if (path === '/api/launch-readiness' && method === 'GET') {
+      // Safe public preflight: no tokens, credentials, order data or table contents.
+      const adminConfigured = !!(env.ADMIN_PASSWORD && env.ADMIN_PASSWORD.length >= 12 &&
+        env.ADMIN_SESSION_SECRET && env.ADMIN_SESSION_SECRET.length >= 32);
+      let databaseReady = false;
+      try {
+        if (env.DB) {
+          await env.DB.prepare('SELECT id FROM orders LIMIT 0').all();
+          await env.DB.prepare('SELECT id FROM products LIMIT 0').all();
+          databaseReady = true;
+        }
+      } catch (err) {
+        console.error('[GLOBABOX] Launch readiness database check failed', err);
+      }
+      return json({
+        status: adminConfigured && databaseReady ? 'ready_for_manual_checkout_test' : 'not_ready',
+        databaseReady, adminConfigured,
+        checkoutVerified: false,
+        note: 'This endpoint does not verify a remote test order or authorize a production cutover.'
+      }, databaseReady && adminConfigured ? 200 : 503);
+    }
     const authResponse = await handleAdminAuth(request, env);
     if (authResponse) return authResponse;
     if (!env.DB) return json({ error: 'Database binding missing' }, 503);
