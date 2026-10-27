@@ -2,7 +2,7 @@ import { PRODUCTS } from '../src/data';
 import { isAdmin, handleAdminAuth } from './auth';
 import { quoteOrder } from './orderQuote';
 
-interface Env { DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string }
+interface Env { DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string }
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const readBody = async (request: Request) => { try { return await request.json() as any; } catch { return null; } };
 const publicProduct = (p: any) => p && p.isActive !== false;
@@ -73,6 +73,10 @@ export default {
         return json(rows.results.map(row => JSON.parse(row.data_json)));
       }
       if (path === '/api/orders' && method === 'POST') {
+        // Fail closed until the operator verifies real products, fulfillment
+        // and the administrative account. A successful build is not a launch.
+        if (env.STORE_ACCEPTING_ORDERS !== 'true')
+          return json({error:'La boutique n’accepte pas encore de commandes. Veuillez revenir bientôt.'},503);
         const requestBody = await readBody(request);
         const catalog = await listProducts(env.DB, false);
         const quote = quoteOrder(requestBody, catalog);
