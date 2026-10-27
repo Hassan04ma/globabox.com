@@ -52,7 +52,11 @@ export default {
       const result = await limiter.limit({key: ip});
       if (!result.success) return json({error:'Too many requests. Try again later.'},429);
     }
-    if (['POST','PUT','PATCH'].includes(method) &&
+    // Image uploads use a separate 750 KB limit and never go through JSON parsing.
+    if (path === '/api/admin/media' && method === 'POST' &&
+        Number(request.headers.get('content-length') || 0) > 750_000)
+      return json({error:'Image too large (max 750 KB)'},413);
+    if (['POST','PUT','PATCH'].includes(method) && path !== '/api/admin/media' &&
         Number(request.headers.get('content-length') || 0) > MAX_JSON_BYTES)
       return json({error:'Request body too large'},413);
     if (path === '/api/launch-readiness' && method === 'GET') {
@@ -84,6 +88,40 @@ export default {
     if (authResponse) return authResponse;
     if (!env.DB) return json({ error: 'Database binding missing' }, 503);
     try {
+      // Serve uploaded product imagery from a small D1-backed media store.
+      // Large-scale catalogs should migrate media to Cloudflare R2.
+      const mediaMatch = path.match(/^\/api\/product-media\/([a-f0-9-]{36})$/);
+      if (mediaMatch && method === 'GET') {
+        const row = await env.DB.prepare('SELECT content_type,body FROM product_media WHERE id=?')
+          .bind(mediaMatch[1]).first<{content_type:string;body:number[]}>();
+        if (!row || !Array.isArray(row.body)) return json({error:'Image not found'},404);
+        return new Response(Uint8Array.from(row.body), {
+          headers: {'Content-Type':row.content_type,'X-Content-Type-Options':'nosniff',
+            'Cache-Control':'public, max-age=86400'}
+        });
+      }
+      if (path === '/api/admin/media' && method === 'POST') {
+        if (!await auth(request,env)) return json({error:'Unauthorized'},401);
+        const mime = request.headers.get('content-type') || '';
+        if (!['image/webp','image/jpeg','image/png'].includes(mime))
+          return json({error:'JPG, PNG or WebP required'},415);
+        const bytes = new Uint8Array(await request.arrayBuffer());
+        if (!bytes.length || bytes.length > 750_000) return json({error:'Image too large (max 750 KB)'},413);
+        const jpeg = mime==='image/jpeg' && bytes[0]===255 && bytes[1]===216 && bytes[2]===255;
+        const png = mime==='image/png' && bytes[0]===137 && bytes[1]===80 && bytes[2]===78 && bytes[3]===71;
+        const webp = mime==='image/webp' && String.fromCharCode(...bytes.slice(0,4))==='RIFF' &&
+          String.fromCharCode(...bytes.slice(8,12))==='WEBP';
+        if (!(jpeg||png||webp)) return json({error:'Invalid image signature'},400);
+        await env.DB.prepare(
+          'CREATE TABLE IF NOT EXISTS product_media (id TEXT PRIMARY KEY, content_type TEXT NOT NULL, body BLOB NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)'
+        ).run();
+        const id = crypto.randomUUID();
+        const written = await env.DB.prepare(
+          'INSERT INTO product_media (id,content_type,body) VALUES (?,?,?)'
+        ).bind(id,mime,bytes).run();
+        if (!written.success) return json({error:'Media was not saved'},503);
+        return json({url:new URL('/api/product-media/'+id,request.url).href,id},201);
+      }
       if (path === '/api/admin/verify-d1-write' && method === 'POST') {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
         // A disposable synthetic record tests the real remote orders table,
