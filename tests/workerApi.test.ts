@@ -24,6 +24,8 @@ const db = {
   }
 } as any;
 const env = {
+  ADMIN_RATE_LIMITER: {limit: async () => ({success:true})},
+  CHECKOUT_RATE_LIMITER: {limit: async () => ({success:true})},
   DB: db,
   STORE_ACCEPTING_ORDERS: 'true',
   ASSETS: { fetch: async () => new Response('assets') },
