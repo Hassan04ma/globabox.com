@@ -56,4 +56,31 @@ assert.equal(free.status,201,'Second order stored locally');
 const freeData = await free.json() as any;
 assert.equal(freeData.order.total,800);
 assert.equal(freeData.order.freeShipping,true);
-console.log('Local D1 HTTP integration passed: auth, product catalog, invalid totals, 2 persisted COD orders');
+// Authenticate using disposable credentials injected into the local Worker only.
+const origin = base;
+const login = await fetchPath('/api/admin/login', {
+  method:'POST', headers:{'Content-Type':'application/json','Origin':origin},
+  body:JSON.stringify({username:'ci_test_admin',password:'CI_Only_Not_A_Real_Password_2026'})
+});
+assert.equal(login.status,200,'Local admin login succeeds');
+const cookie = login.headers.get('set-cookie')?.split(';')[0];
+assert.ok(cookie?.startsWith('gb_admin='),'Admin cookie issued');
+const adminHeaders = {'Cookie':cookie!, 'Origin':origin};
+const adminList = await fetchPath('/api/orders', {headers:adminHeaders});
+assert.equal(adminList.status,200,'Authenticated admin reads saved orders');
+const saved = await adminList.json() as any[];
+assert.equal(saved.length,2,'D1 persisted both test orders');
+const update = await fetchPath('/api/orders/' + encodeURIComponent(response.order.id), {
+  method:'PUT',headers:{...adminHeaders,'Content-Type':'application/json'},
+  body:JSON.stringify({status:'confirmed'})
+});
+assert.equal(update.status,200,'Admin can confirm order');
+assert.equal((await update.json() as any).order.status,'confirmed');
+const drafts = await fetchPath('/api/admin/products', {headers:adminHeaders});
+assert.equal(drafts.status,200,'Admin can list draft products');
+const logout = await fetchPath('/api/admin/logout',{method:'POST',headers:adminHeaders});
+assert.equal(logout.status,200,'Admin logout succeeds');
+const logoutCookie = logout.headers.get('set-cookie');
+assert.ok(logoutCookie?.includes('Max-Age=0'),'Admin logout invalidates cookie');
+
+console.log('Local D1 HTTP integration passed: auth, persisted checkout, admin login, order update and logout');
