@@ -364,11 +364,11 @@ export default function AdminPanel({
 
   // Export products as JSON backup
   const exportProductsToJSON = () => {
-    if (products.length === 0) {
+    if (adminProducts.length === 0) {
       alert("Aucun produit à exporter.");
       return;
     }
-    const dataStr = JSON.stringify(products, null, 2);
+    const dataStr = JSON.stringify(adminProducts, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -379,46 +379,56 @@ export default function AdminPanel({
     document.body.removeChild(link);
   };
 
-  // Import products from JSON file
+  // Import JSON into Cloudflare D1 as DRAFTS. Never show success for a
+  // browser-only write or silently overwrite live products.
   const importProductsFromJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const fileReader = new FileReader();
     const file = e.target.files?.[0];
     if (!file) return;
-
-    fileReader.onload = (event) => {
+    e.target.value = '';
+    const reader = new FileReader();
+    reader.onload = async event => {
       try {
-        const parsed = JSON.parse(event.target?.result as string);
-        if (Array.isArray(parsed)) {
-          const isValid = parsed.every(p => p && p.id && p.name && (p.name.fr || p.name.ar || p.name.en));
-          if (!isValid) {
-            alert("Erreur de format : Certains produits n'ont pas d'ID ou de nom.");
-            return;
-          }
-          
-          if (window.confirm(`Voulez-vous importer ${parsed.length} produits ? Les ID en doublon seront écrasés.`)) {
-            const mergedMap = new Map<string, Product>();
-            products.forEach(p => mergedMap.set(p.id, p));
-            parsed.forEach((p: Product) => mergedMap.set(p.id, p));
-            
-            const list = Array.from(mergedMap.values());
-            setProducts(list);
-            localStorage.setItem('globabox_products_v1', JSON.stringify(list));
-            alert("Produits importés avec succès !");
-          }
-        } else {
-          alert("Erreur de format : Les données JSON doivent être un tableau de produits.");
+        const parsed: unknown = JSON.parse(String(event.target?.result || ''));
+        if (!Array.isArray(parsed) || parsed.length === 0 || parsed.length > 200) {
+          alert('Le fichier JSON doit contenir 1 à 200 produits.'); return;
         }
-      } catch (err) {
-        alert("Erreur lors de la lecture du fichier JSON.");
+        const valid = parsed.every((p: any) =>
+          p && typeof p.id === 'string' && /^[a-zA-Z0-9_-]{1,100}$/.test(p.id) &&
+          typeof p.name?.fr === 'string' && !!p.name.fr.trim() &&
+          typeof p.price === 'number' && Number.isFinite(p.price) && p.price > 0 &&
+          typeof p.category === 'string' && !!p.category.trim() &&
+          typeof p.image === 'string' && /^https:\/\//.test(p.image));
+        if (!valid) {
+          alert('Produits invalides : ID, nom français, prix, catégorie et URL image HTTPS obligatoires.');
+          return;
+        }
+        if (!window.confirm('Importer ' + parsed.length + ' produit(s) en BROUILLON sur Cloudflare D1 ? Les doublons seront ignorés.')) return;
+        let saved = 0, failed = 0;
+        for (const p of parsed) {
+          try {
+            const response = await fetch('/api/products', {
+              method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({...p,isActive:false,visibilityChanged:false})
+            });
+            if (response.ok) saved++; else failed++;
+          } catch { failed++; }
+        }
+        const reload = await fetch('/api/admin/products', {credentials:'same-origin'});
+        if (reload.ok) {
+          const newProducts: unknown = await reload.json();
+          if (Array.isArray(newProducts)) setAdminProducts(newProducts as Product[]);
+        }
+        alert('Import D1 terminé : ' + saved + ' brouillon(s) enregistré(s), ' + failed + ' ignoré(s)/rejeté(s).');
+      } catch {
+        alert('Erreur de lecture du fichier JSON ou d’accès à la base D1.');
       }
     };
-    fileReader.readAsText(file);
-    e.target.value = ''; // Reset input
+    reader.readAsText(file);
   };
 
   // Export products as CSV backup
   const exportProductsToCSV = () => {
-    if (products.length === 0) {
+    if (adminProducts.length === 0) {
       alert("Aucun produit à exporter.");
       return;
     }
@@ -442,7 +452,7 @@ export default function AdminPanel({
       "Description EN"
     ];
 
-    const rows = products.map(p => {
+    const rows = adminProducts.map(p => {
       const cleanFieldName = (txt: string) => `"${(txt || '').replace(/"/g, '""').trim()}"`;
       
       const id = cleanFieldName(p.id);
@@ -664,16 +674,16 @@ export default function AdminPanel({
       nameFr: '',
       nameAr: '',
       nameEn: '',
-      price: 150,
-      originalPrice: 250,
+      price: 0,
+      originalPrice: 0,
       descFr: '',
       descAr: '',
       descEn: '',
       category: categories[0]?.id || 'camping',
-      image: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&q=80&w=400',
+      image: '',
       additionalImages: [],
-      inStock: true,
-      stockStatus: 'in_stock',
+      inStock: false,
+      stockStatus: 'out_of_stock',
       bestSeller: false,
       newArrival: true,
       featured: false,
@@ -769,8 +779,8 @@ export default function AdminPanel({
       fallbackImage: productForm.fallbackImage || '',
       fallbackImages: productForm.fallbackImages || [],
       additionalImages: productForm.additionalImages || [],
-      rating: editingProduct ? editingProduct.rating : 4.5,
-      reviewsCount: editingProduct ? editingProduct.reviewsCount : 12,
+      rating: editingProduct ? editingProduct.rating : 0,
+      reviewsCount: editingProduct ? editingProduct.reviewsCount : 0,
       inStock: productForm.stockStatus !== 'out_of_stock',
       stockStatus: productForm.stockStatus,
       bestSeller: productForm.bestSeller,
@@ -795,10 +805,11 @@ export default function AdminPanel({
       .then((data: unknown) => {
         if (!data || typeof data !== 'object' || !('product' in data) || !data.product || typeof data.product !== 'object') throw new Error('Réponse de produit invalide');
         const updatedProduct = data.product as Product;
-        const updatedList = products.map(p => p.id === editingProduct.id ? updatedProduct : p);
-        setProducts(updatedList);
+        setProducts(current => {
+          const without = current.filter(p => p.id !== editingProduct.id);
+          return updatedProduct.isActive !== false ? [updatedProduct, ...without] : without;
+        });
         setAdminProducts(current => current.map(p => p.id === editingProduct.id ? updatedProduct : p));
-        localStorage.setItem('globabox_products_v1', JSON.stringify(updatedList));
         setEditingProduct(null);
         setIsAddingProduct(false);
       })
@@ -826,10 +837,9 @@ export default function AdminPanel({
       .then((data: unknown) => {
         if (!data || typeof data !== 'object' || !('product' in data) || !data.product || typeof data.product !== 'object') throw new Error('Réponse de produit invalide');
         const updatedProduct = data.product as Product;
-        const updatedList = [updatedProduct, ...products];
-        setProducts(updatedList);
+        // Newly created products are Draft in D1: never expose them on storefront state.
+        if (updatedProduct.isActive === true) setProducts(current => [updatedProduct, ...current]);
         setAdminProducts(current => [updatedProduct, ...current]);
-        localStorage.setItem('globabox_products_v1', JSON.stringify(updatedList));
         setEditingProduct(null);
         setIsAddingProduct(false);
       })
@@ -851,7 +861,7 @@ export default function AdminPanel({
         const updated = products.filter(p => p.id !== productId);
         setAdminProducts(current => current.filter(p => p.id !== productId));
         setProducts(updated);
-        localStorage.setItem('globabox_products_v1', JSON.stringify(updated));
+        // D1 is authoritative; no browser-only product cache.
       })
       .catch(err => {
         console.error(err);
@@ -1875,9 +1885,9 @@ export default function AdminPanel({
               <div className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-amber-500/10 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400 mt-0.5 text-xs font-bold leading-none">!</div>
                 <div>
-                  <h4 className="text-xs font-black font-sans uppercase text-amber-400">⚠️ Sauvegarde de Développement Locale</h4>
+                  <h4 className="text-xs font-black font-sans uppercase text-amber-400">Produits enregistrés dans Cloudflare D1</h4>
                   <p className="text-xs font-semibold leading-relaxed font-sans mt-0.5 text-slate-350">
-                    Les produits créés ou édités ici sont stockés localement dans votre navigateur (<code className="bg-amber-950/50 text-orange-400 px-1 py-0.5 rounded text-[10px] font-mono">localStorage</code>). Pour une persistance de production à long terme, veuillez configurer une source de données externe via la variable d'environnement <code className="bg-amber-950/50 text-orange-400 px-1 py-0.5 rounded text-[10px] font-mono">VITE_PRODUCTS_API_URL</code>.
+                    Les ajouts, modifications, suppressions et imports de produits sont enregistrés côté serveur dans D1. Les nouveaux produits restent en brouillon jusqu’à publication explicite. Les catégories sont encore sauvegardées dans ce navigateur uniquement et ne sont pas synchronisées entre appareils.
                   </p>
                 </div>
               </div>
