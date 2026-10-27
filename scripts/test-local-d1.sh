@@ -3,7 +3,7 @@ set -euo pipefail
 mkdir -p .tmp/globabox-test-d1
 PORT=8798
 PERSIST=".tmp/globabox-test-d1"
-npx wrangler d1 migrations apply DB --config wrangler.staging.jsonc --local --persist-to "$PERSIST" --yes
+npx wrangler d1 migrations apply DB --config wrangler.staging.jsonc --local --persist-to "$PERSIST"
 npx wrangler dev --config wrangler.staging.jsonc --local --ip 127.0.0.1 --port "$PORT" --persist-to "$PERSIST" > .tmp/globabox-worker-test.log 2>&1 &
 PID=$!
 trap 'kill "$PID" 2>/dev/null || true' EXIT
