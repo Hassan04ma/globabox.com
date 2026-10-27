@@ -40,6 +40,31 @@ async function listProducts(db: D1Database, includeDrafts: boolean, allowDemoCat
   return [...databaseProducts.filter(p => includeDrafts || publicProduct(p)),
     ...PRODUCTS.filter(p => (includeDrafts || publicProduct(p)) && !storedIds.has(p.id))];
 }
+// Used by both public COD checkout and the admin's isolated diagnostic.
+// Never acknowledge a customer order until D1 confirms the write and readback.
+async function persistValidatedOrder(db: D1Database, priced: Extract<ReturnType<typeof quoteOrder>,{ok:true}>, diagnostic = false) {
+  const id = crypto.randomUUID();
+  const now = new Date().toISOString();
+  const record = {
+    ...priced.order,
+    id, reference: 'GB-' + id.slice(0,8).toUpperCase(),
+    date:now, createdAt:now, status:'pending',
+    paymentMethod:'Cash on delivery', source:diagnostic ? 'admin-checkout-diagnostic' : 'website',
+    syncStatus:'synced', ...(diagnostic ? {diagnostic:true} : {})
+  };
+  const written = await db.prepare('INSERT INTO orders (id,status,total_mad,data_json) VALUES (?,?,?,?)')
+    .bind(id,'pending',record.total,JSON.stringify(record)).run();
+  if (!written.success || written.meta?.changes !== 1)
+    throw new Error('D1 did not confirm checkout write');
+  const row = await db.prepare('SELECT data_json FROM orders WHERE id=?')
+    .bind(id).first<{data_json:string}>();
+  if (!row) throw new Error('D1 checkout readback missing');
+  const saved = JSON.parse(row.data_json);
+  if (saved.id !== id || saved.total !== record.total || saved.items?.length !== record.items.length)
+    throw new Error('D1 checkout readback mismatch');
+  return record;
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url), path = url.pathname, method = request.method;
@@ -122,6 +147,59 @@ export default {
         if (!written.success) return json({error:'Media was not saved'},503);
         return json({url:new URL('/api/product-media/'+id,request.url).href,id},201);
       }
+      if (path === '/api/admin/checkout-diagnostic' && method === 'POST') {
+        if (!await auth(request,env)) return json({error:'Unauthorized'},401);
+        // Read real production product and shipping rules, without ever making
+        // the Draft product public or enabling customer orders.
+        const result = await env.DB.prepare('SELECT data_json FROM products WHERE id=?')
+          .bind('camel-electron-40').first<{data_json:string}>();
+        if (!result) return json({error:'CAMEL ELECTRON 40 missing from D1'},409);
+        const product = JSON.parse(result.data_json);
+        if (!product?.name?.fr || !Number.isFinite(product.price) || product.price <= 0 ||
+            product.inStock !== true || product.stockStatus === 'out_of_stock')
+          return json({error:'Product price or stock not yet ready'},409);
+        const subtotal = product.price;
+        const shippingCost = subtotal >= 500 ? 0 : 35;
+        const data = {
+          fullName:'GLOBABOX DIAGNOSTIC NE PAS LIVRER',
+          phoneNumber:'0600000000',city:'Diagnostic',
+          deliveryAddress:'Commande technique fictive, ne jamais expedier',
+          items:[{productId:'camel-electron-40',quantity:1}],
+          subtotal,shippingCost,total:subtotal+shippingCost
+        };
+        const quote = quoteOrder(data,[{...product,isActive:true}]);
+        if ('error' in quote) return json({error:'COD quote failed',reason:quote.error},409);
+        // Verify an altered customer total would be rejected.
+        const tampered = quoteOrder({...data,total:1},[{...product,isActive:true}]);
+        if (!('error' in tampered) || tampered.status !== 409)
+          return json({error:'Tampered checkout was not rejected'},503);
+        let orderId:string|undefined;
+        let cleaned=false;
+        try {
+          const record = await persistValidatedOrder(env.DB,quote,true);
+          orderId=record.id;
+          const removed=await env.DB.prepare('DELETE FROM orders WHERE id=?').bind(orderId).run();
+          const leftovers=await env.DB.prepare('SELECT id FROM orders WHERE id=?')
+            .bind(orderId).first();
+          cleaned=removed.success && !leftovers;
+          if (!cleaned) return json({error:'Diagnostic cleanup not confirmed; check orders immediately'},503);
+          return json({
+            success:true,quoteVerified:true,priceTamperingRejected:true,
+            orderWrittenAndReadBack:true,cleanupVerified:true,
+            productId:'camel-electron-40',unitPrice:record.subtotal,
+            shippingCost:record.shippingCost,total:record.total,
+            publicCheckoutEnabled:env.STORE_ACCEPTING_ORDERS === 'true',
+            note:'Admin-only synthetic checkout checked actual product pricing and D1. Does not test the public browser flow.'
+          });
+        } finally {
+          // Best-effort cleanup even if readback or another step failed.
+          // If this fails, diagnostic rows are visibly tagged.
+          if (orderId && !cleaned)
+            await env.DB.prepare('DELETE FROM orders WHERE id=?').bind(orderId).run().catch(
+              err=>console.error('Diagnostic cleanup failed',err)
+            );
+        }
+      }
       if (path === '/api/admin/verify-d1-write' && method === 'POST') {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
         // A disposable synthetic record tests the real remote orders table,
@@ -170,16 +248,7 @@ export default {
         const catalog = await listProducts(env.DB, false, env.STORE_DEMO_CATALOG === 'true');
         const quote = quoteOrder(requestBody, catalog);
         if ('error' in quote) return json({ error: quote.error }, quote.status);
-        const id = crypto.randomUUID();
-        const now = new Date().toISOString();
-        const record = {
-          ...quote.order,
-          id, reference: 'GB-' + id.slice(0, 8).toUpperCase(),
-          date: now, createdAt: now, status: 'pending',
-          paymentMethod: 'Cash on delivery', source: 'website', syncStatus: 'synced'
-        };
-        await env.DB.prepare('INSERT INTO orders (id,status,total_mad,data_json) VALUES (?,?,?,?)')
-          .bind(id, 'pending', record.total, JSON.stringify(record)).run();
+        const record = await persistValidatedOrder(env.DB,quote);
         return json({ success: true, order: record }, 201);
       }
       const orderMatch = path.match(/^\/api\/orders\/([^/]+)$/);

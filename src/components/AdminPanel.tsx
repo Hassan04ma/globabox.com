@@ -32,11 +32,23 @@ export default function AdminPanel({
 
   const [launchStatus, setLaunchStatus] = useState<{databaseReady:boolean;adminConfigured:boolean;checkoutEnabled:boolean;checkoutVerified:boolean}|null>(null);
   const [d1ProbeStatus, setD1ProbeStatus] = useState<'idle'|'running'|'success'|'error'>('idle');
+  const [checkoutDiagnostic,setCheckoutDiagnostic] = useState<{success?:boolean;total?:number;shippingCost?:number;cleanupVerified?:boolean;error?:string}|null>(null);
+  const [checkoutDiagnosticBusy,setCheckoutDiagnosticBusy]=useState(false);
+  const runCheckoutDiagnostic=async ()=>{
+    setCheckoutDiagnosticBusy(true);
+    try{
+      const res=await fetch('/api/admin/checkout-diagnostic',{method:'POST',credentials:'same-origin'});
+      const data:any=await res.json();
+      setCheckoutDiagnostic(res.ok?data:{error:data.error||'HTTP '+res.status});
+    }catch{setCheckoutDiagnostic({error:'Erreur réseau'});}
+    finally{setCheckoutDiagnosticBusy(false);}
+  };
+
   const runD1Probe = async () => {
     setD1ProbeStatus('running');
     try {
       const response = await fetch('/api/admin/verify-d1-write', {method:'POST', credentials:'same-origin'});
-      const data = await response.json();
+      const data:any = await response.json();
       setD1ProbeStatus(response.ok && data?.databaseWriteVerified === true ? 'success' : 'error');
     } catch {setD1ProbeStatus('error');}
   };
@@ -696,7 +708,7 @@ export default function AdminPanel({
         const response=await fetch('/api/admin/media',{method:'POST',credentials:'same-origin',
           headers:{'Content-Type':file.type},body:file});
         if(!response.ok)throw new Error('Upload refusé : HTTP '+response.status);
-        const data=await response.json();
+        const data:any=await response.json();
         if(typeof data?.url!=='string')throw new Error('Réponse image invalide');
         urls.push(data.url);
       }
@@ -1212,6 +1224,18 @@ export default function AdminPanel({
               <button type="button" onClick={runD1Probe} disabled={d1ProbeStatus === 'running'}
                 className="bg-orange-600 hover:bg-orange-500 disabled:opacity-60 px-4 py-2.5 rounded-xl text-xs text-white font-bold cursor-pointer">
                 {d1ProbeStatus === 'running' ? 'Vérification…' : 'Tester écriture D1'}
+              </button>
+            </div>
+            <div className="bg-[#0b1528] border border-[#1c2e4a] rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-xs font-bold text-white">Diagnostic Checkout — CAMEL ELECTRON 40</h3>
+                <p className="text-[11px] text-slate-400">Vérifie les prix COD, l’écriture et la lecture d’une commande fictive D1, puis supprime la commande. Les achats publics restent fermés.</p>
+                {checkoutDiagnostic?.success && <p className="text-xs text-emerald-400 mt-2">Validé : {checkoutDiagnostic.total} DH (livraison {checkoutDiagnostic.shippingCost} DH), commande fictive nettoyée.</p>}
+                {checkoutDiagnostic?.error && <p className="text-xs text-red-400 mt-2">Échec : {checkoutDiagnostic.error}. Ne pas ouvrir la boutique.</p>}
+              </div>
+              <button type="button" disabled={checkoutDiagnosticBusy} onClick={runCheckoutDiagnostic}
+                className="bg-orange-600 hover:bg-orange-500 disabled:opacity-60 px-4 py-2.5 rounded-xl text-xs text-white font-bold">
+                {checkoutDiagnosticBusy?'Test…':'Tester Checkout D1'}
               </button>
             </div>
             {/* Final Launch Checklist Card */}

@@ -5,13 +5,24 @@ const savedOrders: any[] = [];
 const db = {
   prepare(sql: string) {
     const execute = (...params: unknown[]) => ({
-      async first() { return null; },
+      async first() {
+        if (sql.includes('FROM orders WHERE id=?')) {
+          const matched=savedOrders.find(o=>o.id===params[0]);
+          return matched ? {data_json:JSON.stringify(matched)} : null;
+        }
+        return null;
+      },
       async all() {
         if (sql.includes('FROM products')) return { results: [] };
         if (sql.includes('FROM orders')) return { results: savedOrders.map(order => ({data_json: JSON.stringify(order)})) };
         throw new Error('Unexpected all(): ' + sql);
       },
       async run() {
+        if (sql.startsWith('DELETE FROM orders')) {
+          const i=savedOrders.findIndex(o=>o.id===params[0]);
+          if(i>=0)savedOrders.splice(i,1);
+          return {success:true,meta:{changes:i>=0?1:0}};
+        }
         if (sql.startsWith('INSERT INTO products')) return {success:true,meta:{changes:1}};
         if (sql.startsWith('INSERT INTO orders')) {
           savedOrders.push(JSON.parse(params[3] as string));
@@ -85,6 +96,22 @@ assert.equal(savedOrders.length, 0);
 const badProduct = await checkout(makePayload({items: [{ productId:'does-not-exist',quantity:1 }]}));
 assert.equal(badProduct.status, 409);
 assert.equal(savedOrders.length, 0);
+
+// Fake writes must not be accepted if D1 fails to confirm success.
+const failedWritesDb={
+  prepare:(sql:string)=>({
+    bind:(...params:unknown[])=>({
+      run:async()=>({success:false,meta:{changes:0}}),
+      all:async()=>({results:[]}),
+      first:async()=>null
+    }),
+    all:async()=>({results:[]}),first:async()=>null
+  })
+};
+const unverified=await worker.fetch(new Request('https://preview.example.test/api/orders',{
+  method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(makePayload())
+}),{...env,DB:failedWritesDb});
+assert.notEqual(unverified.status,201,'Do not claim checkout success for failed D1 writes');
 
 const response = await checkout(makePayload());
 assert.equal(response.status, 201, 'Valid COD order is accepted');
