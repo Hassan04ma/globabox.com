@@ -666,6 +666,46 @@ export default function AdminPanel({
     e.target.value = ''; // Reset input
   };
 
+  const [mediaUploading,setMediaUploading]=useState(false);
+  const fillCamelDraft=()=>{
+    setEditingProduct(null);
+    setProductForm({
+      id:'camel-electron-40',nameFr:'CAMEL ELECTRON 40 – Sac à dos Trekking 40L',
+      nameAr:'حقيبة ظهر CAMEL ELECTRON 40 للرحلات – 40 لتر',
+      nameEn:'CAMEL ELECTRON 40 – 40L Trekking Backpack',
+      price:329,originalPrice:399,category:'sacs_trekking',
+      descFr:'Sac à dos polyvalent de 40 L pour la randonnée, le voyage et le quotidien. Plusieurs compartiments, bretelles rembourrées réglables et dos ventilé. Bleu et orange. Accessoires illustratifs non inclus.',
+      descAr:'حقيبة ظهر بسعة 40 لتر للتخييم والسفر والرحلات. جيوب متعددة وأحزمة كتف مبطنة وقابلة للتعديل وظهر شبكي للتهوية. اللون أزرق وبرتقالي. الإكسسوارات الظاهرة في الصور للتوضيح فقط.',
+      descEn:'Versatile 40 L trekking backpack with multiple compartments, padded adjustable straps and breathable mesh back. Blue and orange. Photo props not included.',
+      featuresFr:['Capacité annoncée 40 L','Poches multiples','Bretelles réglables et rembourrées','Dos en maille respirante'],
+      featuresAr:['السعة المعلنة 40 لتر','جيوب متعددة','أحزمة مبطنة قابلة للتعديل','ظهر شبكي للتهوية'],
+      featuresEn:['Advertised capacity 40 L','Multiple pockets','Adjustable padded straps','Breathable mesh back'],
+      image:'',additionalImages:[],fallbackImage:'',fallbackImages:[],inStock:false,stockStatus:'out_of_stock',
+      bestSeller:false,newArrival:false,featured:false,isActive:false
+    });
+    setIsAddingProduct(true);
+  };
+  const uploadProductPhotos=async (files:FileList|null)=>{
+    if(!files?.length)return;
+    setMediaUploading(true);
+    const urls:string[]=[];
+    try{
+      for(const file of Array.from(files).slice(0,8)){
+        if(!['image/webp','image/jpeg','image/png'].includes(file.type)||file.size>750000)
+          throw new Error('Choisissez JPG, PNG ou WebP sous 750 Ko.');
+        const response=await fetch('/api/admin/media',{method:'POST',credentials:'same-origin',
+          headers:{'Content-Type':file.type},body:file});
+        if(!response.ok)throw new Error('Upload refusé : HTTP '+response.status);
+        const data=await response.json();
+        if(typeof data?.url!=='string')throw new Error('Réponse image invalide');
+        urls.push(data.url);
+      }
+      setProductForm(current=>({...current,image:current.image||urls[0],
+        additionalImages:[...current.additionalImages,...urls.slice(current.image?0:1)]}));
+      alert(urls.length+' photo(s) téléchargée(s) sur D1.');
+    }catch(err){alert(err instanceof Error?err.message:'Erreur téléchargement');}
+    finally{setMediaUploading(false);}
+  };
   // Initiate Product Create
   const handleStartAddProduct = () => {
     setEditingProduct(null);
@@ -1110,6 +1150,9 @@ export default function AdminPanel({
         </div>
 
         <div className="flex gap-2">
+          {activeTab === 'products' && !isAddingProduct && !editingProduct && (
+            <button onClick={fillCamelDraft} className="bg-sky-800 hover:bg-sky-700 text-white text-xs font-bold px-3 py-2 rounded-xl">Préparer CAMEL 40</button>
+          )}
           {activeTab === 'products' && !isAddingProduct && !editingProduct && (
             <button
               onClick={handleStartAddProduct}
@@ -1959,6 +2002,13 @@ export default function AdminPanel({
                   </button>
                 </div>
 
+                <div className="bg-[#101d34] border border-[#273b5f] rounded-xl p-3">
+                  <label className="block text-xs font-bold text-white mb-2">Photos du produit (JPG / PNG / WebP, 750 Ko maximum)</label>
+                  <input type="file" multiple accept="image/webp,image/jpeg,image/png"
+                    disabled={mediaUploading} onChange={e=>{void uploadProductPhotos(e.target.files);e.target.value='';}}
+                    className="text-xs text-slate-300 w-full" />
+                  {mediaUploading && <p className="text-xs text-orange-400 mt-2">Téléchargement…</p>}
+                </div>
                 <form onSubmit={handleSaveProduct} className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
                   
                   {/* Product ID / slug */}
