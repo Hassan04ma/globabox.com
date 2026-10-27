@@ -30,7 +30,7 @@ export default function AdminPanel({
 }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'products' | 'categories' | 'marketing'>('dashboard');
 
-  const isUsingDefaultPassword = false;
+  const [launchStatus, setLaunchStatus] = useState<{databaseReady:boolean;adminConfigured:boolean;checkoutEnabled:boolean;checkoutVerified:boolean}|null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
   const [usernameInput, setUsernameInput] = useState('');
@@ -57,6 +57,12 @@ export default function AdminPanel({
     await fetch('/api/admin/logout', { method: 'POST' }).catch(() => {});
     setIsAuthenticated(false); setOrders([]); setPasswordInput(''); setUsernameInput('');
   };
+
+  useEffect(() => {
+    if (!isAuthenticated) {setLaunchStatus(null);return;}
+    fetch('/api/launch-readiness', {cache:'no-store'})
+      .then(r => r.json()).then(data => setLaunchStatus(data)).catch(() => setLaunchStatus(null));
+  }, [isAuthenticated]);
 
   // Orders are private: load them only after server-side admin authentication.
   useEffect(() => {
@@ -1108,7 +1114,7 @@ export default function AdminPanel({
         {/* VIEW 0: DASHBOARD */}
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
-            {isUsingDefaultPassword && (
+            {false && (
               <div className="bg-red-950/45 border border-red-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-red-200">
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shrink-0" />
@@ -1146,36 +1152,32 @@ export default function AdminPanel({
                 {
                   id: 'order_api',
                   label: 'Orders API connected',
-                  desc: isOrdersApiConfigured 
-                    ? 'Google Sheets Orders API connected' 
-                    : 'Orders API not configured. Orders are saved locally only.',
-                  ok: isOrdersApiConfigured,
+                  desc: launchStatus?.databaseReady ? 'Base D1 disponible; enregistrement réel de commande non encore vérifié.' : 'Vérification D1 indisponible.',
+                  ok: launchStatus?.databaseReady === true,
                   severity: 'critical' as const,
-                  configInfo: 'VITE_ORDERS_API_URL'
+                  configInfo: 'Cloudflare D1 /api/launch-readiness'
                 },
                 {
                   id: 'password',
                   label: 'Admin password changed from CHANGE_THIS_PASSWORD',
-                  desc: !isUsingDefaultPassword 
-                    ? 'Admin password changed from CHANGE_THIS_PASSWORD' 
-                    : 'Le mot de passe par défaut est actif ! Risque de sécurité critique.',
-                  ok: !isUsingDefaultPassword,
+                  desc: launchStatus?.adminConfigured ? 'Authentification administrateur configurée côté serveur.' : 'Configuration administrateur non vérifiée.',
+                  ok: launchStatus?.adminConfigured === true,
                   severity: 'critical' as const,
-                  configInfo: 'VITE_ADMIN_PASSWORD'
+                  configInfo: 'Runtime Secrets ADMIN_PASSWORD / ADMIN_SESSION_SECRET'
                 },
                 {
                   id: 'whatsapp',
-                  label: 'WhatsApp number configured correctly: 0649264408',
-                  desc: 'WhatsApp number configured correctly: 0649264408',
-                  ok: true,
+                  label: 'Numéro WhatsApp confirmé par le propriétaire',
+                  desc: 'Numéro affiché dans le site; propriété et service clientèle à confirmer.',
+                  ok: false,
                   severity: 'warning' as const,
                   configInfo: 'WhatsApp Link'
                 },
                 {
                   id: 'domain',
-                  label: 'Website domain configured correctly: https://www.globabox.com',
-                  desc: 'Website domain configured correctly: https://www.globabox.com',
-                  ok: true,
+                  label: 'Domaine globabox.com connecté au nouveau Worker',
+                  desc: 'Bascule DNS non vérifiée. Ne pas considérer le domaine comme prêt.',
+                  ok: false,
                   severity: 'warning' as const,
                   configInfo: 'www.globabox.com'
                 },
@@ -1202,28 +1204,26 @@ export default function AdminPanel({
                 {
                   id: 'delivery',
                   label: 'Delivery policy completed',
-                  desc: 'Conditions de livraison gratuite sous 24/48h activées sur toute la boutique.',
-                  ok: true,
+                  desc: 'Délais, transporteur et politique de livraison réelle à valider.',
+                  ok: false,
                   severity: 'warning' as const,
                   configInfo: 'Logistique'
                 },
                 {
                   id: 'returns',
                   label: 'Return policy completed',
-                  desc: 'Garanties d\'échange et modalités de remboursement transparentes.',
-                  ok: true,
+                  desc: 'Conditions de retour et mentions légales à vérifier avant mise en ligne.',
+                  ok: false,
                   severity: 'warning' as const,
                   configInfo: 'Politiques'
                 },
                 {
                   id: 'sheets_sync',
-                  label: 'Google Sheets sync active',
-                  desc: isOrdersApiConfigured 
-                    ? 'Synchronisation bidirectionnelle automatique active sur chaque validation.' 
-                    : 'La passerelle Google Sheets est déconnectée. Synchronisation suspendue.',
-                  ok: isOrdersApiConfigured,
+                  label: 'Commande D1 réelle testée',
+                  desc: 'Aucune commande distante de test vérifiée; vente maintenue fermée.',
+                  ok: launchStatus?.checkoutVerified === true && launchStatus?.checkoutEnabled === true,
                   severity: 'warning' as const,
-                  configInfo: 'Sheets Sync'
+                  configInfo: 'Remote D1 order verification'
                 }
               ];
 
@@ -1556,16 +1556,16 @@ export default function AdminPanel({
               </div>
             )}
             
-            {!isOrdersApiConfigured && (
+            {launchStatus?.databaseReady !== true && (
               <div className="bg-amber-950/40 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-amber-200">
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
                   <p className="text-xs font-black leading-normal font-sans">
-                    Orders API is not configured. Orders are currently saved locally only.
+                    Connexion à la base D1 non confirmée. Vérifiez /api/launch-readiness.
                   </p>
                 </div>
                 <div className="text-[9px] bg-amber-950 px-2 py-0.5 rounded border border-amber-500/30 font-black tracking-wider uppercase font-mono self-start sm:self-center">
-                  Local Mode
+                  D1 non vérifiée
                 </div>
               </div>
             )}
