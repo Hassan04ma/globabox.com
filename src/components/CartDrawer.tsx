@@ -414,6 +414,11 @@ export default function CartDrawer({
 
                 {/* Form fields */}
                 <form onSubmit={handleSubmitOrder} className="space-y-4">
+                  {formErrors.submit && (
+                    <p role="alert" className="rounded-lg border border-rose-500/60 bg-rose-950/50 p-3 text-sm text-rose-200">
+                      {formErrors.submit}
+                    </p>
+                  )}
                   
                   {/* Full Name field */}
                   <div className="space-y-1.5">
