@@ -28,4 +28,23 @@ assert.equal(quoteOrder({...order,items:[{...order.items[0],productId:'missing'}
 assert.equal(quoteOrder({...order,phoneNumber:'1234'},[product]).ok,false);
 assert.equal(quoteOrder(order,[{...product,isActive:false}]).ok,false);
 assert.equal(quoteOrder(order,[{...product,inStock:false}]).ok,false);
-console.log('COD quote validation: 9 cases passed');
+// Boundary of free delivery: exactly 500 MAD must have zero shipping.
+const thresholdProduct = {...product, id:'p500', price:500};
+const exactThreshold = quoteOrder({
+  ...order,
+  items:[{productId:'p500', quantity:1}],
+  subtotal:500, shippingCost:0, total:500
+}, [thresholdProduct]);
+assert.equal(exactThreshold.ok, true);
+if (exactThreshold.ok) assert.equal(exactThreshold.order.shippingCost, 0);
+
+// A browser cannot force a 35 MAD delivery fee when delivery should be free.
+assert.equal(quoteOrder({
+  ...order,
+  items:[{productId:'p500', quantity:1}],
+  subtotal:500, shippingCost:35, total:535
+}, [thresholdProduct]).ok, false);
+
+// Server must not accept a product marked out of stock, even if active.
+assert.equal(quoteOrder(order,[{...product,stockStatus:'out_of_stock'}]).ok,false);
+console.log('COD quote validation: 11 cases passed');
