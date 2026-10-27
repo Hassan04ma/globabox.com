@@ -36,6 +36,19 @@ assert.equal((await request('/api/admin/products')).status, 401, 'Admin catalog 
 assert.equal((await request('/api/products/demo', {method:'DELETE'})).status, 401,
   'Public visitors cannot remove products');
 
+// Any unconfigured public launch must fail closed, even if the request is otherwise valid.
+const gatePayload = {
+  fullName:'Client Exemple',phoneNumber:'0612345678',city:'Agadir',
+  deliveryAddress:'Rue Test 10 Agadir',
+  items:[{productId:'tente-dome-camping-2-3-personnes',quantity:1}],
+  subtotal:400,shippingCost:35,total:435
+};
+const launchClosed = await worker.fetch(new Request('https://preview.example.test/api/orders', {
+  method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(gatePayload)
+}), {...env, STORE_ACCEPTING_ORDERS:undefined});
+assert.equal(launchClosed.status,503,'Checkout is off until explicitly enabled');
+assert.equal(savedOrders.length,0,'Closed checkout never saves an order');
+
 const item = { productId: 'tente-dome-camping-2-3-personnes', quantity: 1, price: 1, productName: 'FAKE' };
 const makePayload = (extra: Record<string, unknown> = {}) => ({
   fullName: 'Client Exemple',
