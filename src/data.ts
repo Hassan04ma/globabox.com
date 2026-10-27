@@ -54,6 +54,8 @@ export interface Category {
 }
 
 export const CATEGORIES: Category[] = [
+  { id: 'sacs_trekking', name: {fr:'Sacs à dos Trekking',ar:'حقائب الظهر للرحلات',en:'Trekking Backpacks'},
+    image:'', description:{fr:'Sacs à dos de randonnée et voyage.',ar:'حقائب ظهر للتخييم والرحلات والسفر.',en:'Backpacks for travel and hiking.'} },
   {
     id: "camping",
     name: { fr: "Camping", ar: "التخييم", en: "Camping" },
