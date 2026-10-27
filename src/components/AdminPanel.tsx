@@ -55,8 +55,17 @@ export default function AdminPanel({
   };
   const handleLogout = async () => {
     await fetch('/api/admin/logout', { method: 'POST' }).catch(() => {});
-    setIsAuthenticated(false); setPasswordInput(''); setUsernameInput('');
+    setIsAuthenticated(false); setOrders([]); setPasswordInput(''); setUsernameInput('');
   };
+
+  // Orders are private: load them only after server-side admin authentication.
+  useEffect(() => {
+    if (!isAuthenticated) { setOrders([]); return; }
+    fetch('/api/orders', {credentials:'same-origin'})
+      .then(async r => { if(!r.ok) throw new Error('Orders HTTP ' + r.status); return r.json(); })
+      .then(data => { if(Array.isArray(data)) setOrders(data); })
+      .catch(err => { console.error('[ADMIN] Cannot load orders',err); setRefreshError('Impossible de charger les commandes'); });
+  }, [isAuthenticated]);
 
   // --- Segmented Moroccan E-commerce Dashboard KPI Calculations ---
   const statTotalOrders = orders.length;
@@ -94,7 +103,7 @@ export default function AdminPanel({
         sortedOrders.sort((a, b) => b.id.localeCompare(a.id));
 
         setOrders(sortedOrders);
-        localStorage.setItem('globabox_orders', JSON.stringify(sortedOrders));
+
         setRefreshSuccess('Commandes actualisées avec succès depuis le serveur');
         setTimeout(() => setRefreshSuccess(null), 5000);
       } else {
@@ -208,7 +217,7 @@ export default function AdminPanel({
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const updated = orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o);
       setOrders(updated);
-      localStorage.setItem('globabox_orders', JSON.stringify(updated));
+
     } catch (err) {
       console.error('[GLOBABOX] Order status could not be saved', err);
       alert("La modification n'a pas été enregistrée. Veuillez actualiser les commandes.");
@@ -225,7 +234,7 @@ export default function AdminPanel({
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const updated = orders.filter(o => o.id !== orderId);
       setOrders(updated);
-      localStorage.setItem('globabox_orders', JSON.stringify(updated));
+
     } catch (err) {
       console.error('[GLOBABOX] Order deletion failed', err);
       alert("La commande n'a pas été supprimée sur le serveur.");
