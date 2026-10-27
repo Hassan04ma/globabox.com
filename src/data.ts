@@ -31,6 +31,7 @@ export interface Product {
   newArrival?: boolean;
   featured?: boolean;
   isActive?: boolean;
+  visibilityChanged?: boolean;
   sortOrder?: number;
   createdAt?: string;
   sizes?: string[];
