@@ -43,6 +43,7 @@ export default function CartDrawer({
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [acceptedTerms,setAcceptedTerms] = useState(false);
 
   // Sync to localStorage on change
   const handleFullNameChange = (val: string) => {
@@ -123,6 +124,10 @@ export default function CartDrawer({
       return;
     }
 
+    if (!acceptedTerms) {
+      setFormErrors({submit:language === 'ar' ? 'يرجى الاطلاع والموافقة على شروط البيع وسياسة الإرجاع قبل الطلب.' : 'Veuillez accepter les conditions de vente et la politique de retour avant de commander.'});
+      return;
+    }
     setFormErrors({});
 
     // Generate random order reference code
@@ -543,6 +548,10 @@ export default function CartDrawer({
                     </div>
                   )}
 
+                  <label className="flex gap-2 items-start text-xs text-slate-200 bg-[#101e35] p-3 rounded-xl border border-[#273b5f]">
+                    <input type="checkbox" checked={acceptedTerms} onChange={e=>setAcceptedTerms(e.target.checked)} className="mt-1 accent-orange-500" />
+                    <span>{language==='ar' ? 'اطلعت وأوافق على شروط البيع وسياسة التوصيل والإرجاع المعروضة أسفل الموقع.' : language==='en' ? 'I have read and accept the sales, delivery and returns policies linked in the site footer.' : 'J’ai lu et j’accepte les conditions de vente, de livraison et de retour accessibles en bas du site.'}</span>
+                  </label>
                   {/* Action Buttons: Submit Form CTA */}
                   <div className="space-y-3 pt-2 select-none">
                     {/* CONFIRM COMMANDE BUTTON */}
