@@ -191,6 +191,50 @@ export default {
           return json({success:false,error:'AMEEX sandbox connectivity failed'},502);
         }
       }
+      if (path === '/api/admin/ameex-sandbox-parcel' && method === 'POST') {
+        if (!await auth(request,env)) return json({error:'Unauthorized'},401);
+        if (!env.AMEEX_API_ID || !env.AMEEX_API_KEY_TEST?.startsWith('test_'))
+          return json({error:'Test credentials missing'},503);
+        // Never consume customer orders or create a production shipment.
+        // Explicit single-use diagnostic; D1 prevents accidental duplicate submissions.
+        await env.DB.prepare('CREATE TABLE IF NOT EXISTS integration_diagnostics (id TEXT PRIMARY KEY, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run();
+        const diagnosticId='ameex-sandbox-parcel-v1';
+        const existing=await env.DB.prepare('SELECT id FROM integration_diagnostics WHERE id=?').bind(diagnosticId).first();
+        if(existing) return json({error:'Sandbox parcel diagnostic already attempted. No second attempt allowed.'},409);
+        const guard=await env.DB.prepare('INSERT OR IGNORE INTO integration_diagnostics (id) VALUES (?)').bind(diagnosticId).run();
+        if(guard.meta?.changes!==1) return json({error:'Duplicate attempt prevented'},409);
+        const headers={'C-Api-Id':env.AMEEX_API_ID,'C-Api-Key':env.AMEEX_API_KEY_TEST,'Accept':'application/json'};
+        try {
+          const c=await fetch('https://api.ameex.app/customer/Delivery/Cities',{headers,signal:AbortSignal.timeout(10000)});
+          if(!c.ok) return json({error:'Cities unavailable; no parcel created',upstreamStatus:c.status},502);
+          const raw:any=await c.json();
+          const candidates=[raw,raw?.data,raw?.Data,raw?.cities,raw?.Cities,raw?.result,raw?.results];
+          const cities=candidates.find(Array.isArray) as any[]|undefined;
+          if(!cities?.length) return json({error:'City list not validated; no parcel created'},409);
+          const city=cities.find(v=>v && typeof v==='object' && Number.isInteger(Number(v.id??v.Id??v.city_id)) && Number(v.id??v.Id??v.city_id)>0);
+          if(!city) return json({error:'No numeric city ID; no parcel created'},409);
+          const cityId=Number(city.id??city.Id??city.city_id);
+          const form=new URLSearchParams({
+            type:'SIMPLE',receiver:'TEST GLOBABOX SANDBOX NE PAS LIVRER',
+            phone:'0600000000',city:String(cityId),cod:'1',
+            address:'ADRESSE FICTIVE TEST SANDBOX - NE PAS EXPEDIER',
+            product:'TEST TECHNIQUE SANDBOX - AUCUN PRODUIT',
+            comment:'SANDBOX UNIQUEMENT - NE PAS LIVRER',order_num:'GB-SBX-DIAGNOSTIC-01'
+          });
+          const resp=await fetch('https://api.ameex.app/customer/Delivery/Parcels/Action/Type/Add',{
+            method:'POST',headers:{...headers,'Content-Type':'application/x-www-form-urlencoded'},
+            body:form,signal:AbortSignal.timeout(15000)
+          });
+          const result:any=await resp.json().catch(()=>null);
+          // Avoid leaking third-party response, identifiers, or unexpected PII.
+          return json({sandbox:true,attempted:true,httpStatus:resp.status,
+            accepted:resp.ok && (result?.success===true || result?.Success===true || result?.status===true),
+            note:'Synthetic sandbox submission only. No customer order processed. Further attempts disabled.'},resp.ok?200:502);
+        }catch(err){
+          console.error('AMEEX sandbox parcel probe failed',err);
+          return json({error:'Sandbox probe failed or timed out; it may have been submitted. No automatic retry.',attempted:true},502);
+        }
+      }
       if (path === '/api/admin/checkout-diagnostic' && method === 'POST') {
         if (!await auth(request,env)) return json({error:'Unauthorized'},401);
         // Read real production product and shipping rules, without ever making
