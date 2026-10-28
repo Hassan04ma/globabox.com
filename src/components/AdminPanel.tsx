@@ -71,7 +71,7 @@ export default function AdminPanel({
       const cities:any=await citiesResponse.json();
       setAmeexStatus(citiesResponse.ok && cities.success
         ? 'Sandbox connecté ! Lecture villes validée (nombre : '+(cities.citiesCount ?? 'non fourni')+'). Aucun colis créé.'
-        : 'Clés détectées, mais lecture villes échouée (HTTP '+citiesResponse.status+', AMEEX '+(cities.upstreamStatus??'indisponible')+').');
+        : (cities.reachable ? 'AMEEX accessible, mais format de la liste des villes à vérifier.' : 'Clés détectées, mais lecture villes échouée (HTTP '+citiesResponse.status+', AMEEX '+(cities.upstreamStatus??'indisponible')+').'));
     } catch(e) {setAmeexStatus('Erreur de connexion : '+(e instanceof Error?e.message:'inconnue'));}
     finally{setAmeexBusy(false);}
   };
