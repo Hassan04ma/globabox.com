@@ -132,7 +132,7 @@ export default function ProductFilters({
             placeholder={t.searchLabel}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full bg-slate-50 text-slate-800 placeholder-slate-455 text-sm py-2.5 rounded-2xl outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 border border-slate-200 transition-all font-medium font-sans ${
+            className={`w-full bg-slate-50 text-slate-800 placeholder-slate-455 text-sm py-2.5 rounded-2xl outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-500 border border-slate-200 transition-all font-medium font-sans ${
               isRtl ? 'pr-11 pl-4 text-right' : 'pl-11 pr-4 text-left'
             }`}
           />
@@ -153,7 +153,7 @@ export default function ProductFilters({
             <select
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value as any)}
-              className={`w-full appearance-none bg-slate-50 text-slate-800 text-sm py-2.5 rounded-2xl outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 border border-slate-200 transition-all font-semibold ${
+              className={`w-full appearance-none bg-slate-50 text-slate-800 text-sm py-2.5 rounded-2xl outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-500 border border-slate-200 transition-all font-semibold ${
                 isRtl ? 'pr-10 pl-8 text-right' : 'pl-10 pr-8 text-left'
               }`}
             >
@@ -174,7 +174,7 @@ export default function ProductFilters({
             onClick={() => setShowAdvanced(!showAdvanced)}
             className={`flex-1 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all border cursor-pointer ${
               showAdvanced || minPrice !== '' || maxPrice !== ''
-                ? 'bg-orange-50 border-orange-200 text-orange-700'
+                ? 'bg-slate-100 border-slate-300 text-slate-900'
                 : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-350'
             }`}
           >
