@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Package, ClipboardList, Settings, Plus, Trash2, Edit2, CheckCircle2, RefreshCw, X, Search, ChevronRight, Ban, Truck, ShieldCheck, CornerDownRight, BarChart3, MapPin, Phone, ShoppingCart, BadgeCheck, Compass } from 'lucide-react';
 import { Product, Category, Order, Language } from '../types';
-import { MOROCCAN_CITIES } from '../data';
+import { MOROCCAN_CITIES, ORDER_SUPPORT_NUMBER, WHATSAPP_NUMBER } from '../data';
 import { getTrackingConfig, saveTrackingConfig, TrackingConfig, isTrackerValid } from '../utils/analytics';
 import ProductImage from './ProductImage';
 
@@ -1243,6 +1243,9 @@ export default function AdminPanel({
               const productsWithImagesCount = adminProducts.filter(p => typeof p.image === 'string' && /^https:\/\//.test(p.image)).length;
               const allProductsHaveImages = adminProducts.length > 0 && productsWithImagesCount === adminProducts.length;
               const domainConnected = window.location.hostname === 'globabox.com' && window.location.protocol === 'https:';
+              // Owner verified the phone and WhatsApp support line on 2026-10-28.
+              // Mark it validated only while both published numbers remain unchanged.
+              const supportNumberConfirmed = ORDER_SUPPORT_NUMBER === '0649264408' && WHATSAPP_NUMBER === '212649264408';
               const trackingConfigured = isTrackerValid(trackingForm.metaPixelId) && 
                                          isTrackerValid(trackingForm.tikTokPixelId) && 
                                          isTrackerValid(trackingForm.googleAnalyticsId);
@@ -1267,8 +1270,8 @@ export default function AdminPanel({
                 {
                   id: 'whatsapp',
                   label: 'Téléphone et WhatsApp du service client validés',
-                  desc: 'Le numéro affiché sur le site est à confirmer comme ligne active de support client.',
-                  ok: false,
+                  desc: supportNumberConfirmed ? 'Ligne confirmée par le propriétaire : 0649264408 (appel et WhatsApp).' : 'Les coordonnées affichées ont changé depuis la dernière confirmation du propriétaire.',
+                  ok: supportNumberConfirmed,
                   severity: 'warning' as const,
                   configInfo: 'WhatsApp Link'
                 },
