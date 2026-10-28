@@ -2,7 +2,7 @@ import { PRODUCTS } from '../src/data';
 import { isAdmin, handleAdminAuth } from './auth';
 import { quoteOrder } from './orderQuote';
 
-interface Env { ADMIN_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; CHECKOUT_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string; STORE_DEMO_CATALOG?: string }
+interface Env { ADMIN_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; CHECKOUT_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string; STORE_DEMO_CATALOG?: string; AMEEX_API_ID?: string; AMEEX_API_KEY_TEST?: string }
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const MAX_JSON_BYTES = 64 * 1024;
 const readBody = async (request: Request) => {
@@ -146,6 +146,39 @@ export default {
         ).bind(id,mime,bytes).run();
         if (!written.success) return json({error:'Media was not saved'},503);
         return json({url:new URL('/api/product-media/'+id,request.url).href,id},201);
+      }
+      if (path === '/api/admin/ameex-sandbox-status' && method === 'GET') {
+        if (!await auth(request, env)) return json({error:'Unauthorized'},401);
+        // Read-only integration probe. Never create parcels or contact production APIs.
+        const configured = !!(env.AMEEX_API_ID && env.AMEEX_API_KEY_TEST?.startsWith('test_'));
+        return json({
+          configured,
+          environment:'sandbox',
+          apiBase:'https://api.ameex.app/customer',
+          mode:'read-only',
+          outboundParcelsEnabled:false,
+          note: configured ? 'Test credentials configured. Use the read-only cities probe.' : 'Add AMEEX_API_ID and the sandbox AMEEX_API_KEY_TEST as Cloudflare Production secrets.',
+        });
+      }
+      if (path === '/api/admin/ameex-sandbox-cities' && method === 'GET') {
+        if (!await auth(request, env)) return json({error:'Unauthorized'},401);
+        if (!env.AMEEX_API_ID || !env.AMEEX_API_KEY_TEST?.startsWith('test_'))
+          return json({error:'AMEEX sandbox test credentials not configured'},503);
+        try {
+          const upstream = await fetch('https://api.ameex.app/customer/Delivery/Cities',{
+            method:'GET',
+            headers:{'C-Api-Id':env.AMEEX_API_ID,'C-Api-Key':env.AMEEX_API_KEY_TEST,'Accept':'application/json'},
+            signal:AbortSignal.timeout(10000)
+          });
+          if (!upstream.ok) return json({success:false,upstreamStatus:upstream.status,error:'AMEEX cities request failed'},502);
+          const data:unknown = await upstream.json();
+          const count = Array.isArray(data) ? data.length : (data && typeof data === 'object' && 'data' in data && Array.isArray(data.data)) ? data.data.length : null;
+          return json({success:true,environment:'sandbox',citiesCount:count,
+            note:'Read-only connectivity succeeded. No parcel was created.'});
+        } catch (err) {
+          console.error('AMEEX sandbox cities read failed',err);
+          return json({success:false,error:'AMEEX sandbox connectivity failed'},502);
+        }
       }
       if (path === '/api/admin/checkout-diagnostic' && method === 'POST') {
         if (!await auth(request,env)) return json({error:'Unauthorized'},401);
