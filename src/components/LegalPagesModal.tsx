@@ -148,7 +148,7 @@ export default function LegalPagesModal({ isOpen, onClose, initialTab = 'about',
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
               <h2 className="text-base font-black tracking-widest uppercase">Espace Restreint & Confiance</h2>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">Boutique Officielle Globabox Maroc • www.globabox.com</p>
+            <p className="text-[11px] text-slate-400 font-medium">Boutique Officielle Globabox Maroc • globabox.com</p>
           </div>
           <button 
             onClick={onClose}
@@ -440,9 +440,9 @@ export default function LegalPagesModal({ isOpen, onClose, initialTab = 'about',
                   {/* Summary Footer Warning */}
                   <div className="text-[11px] text-slate-500 bg-slate-100/60 p-3 rounded-xl leading-normal border border-slate-200">
                     {language === 'ar' ? (
-                      <span>تفاصيل الاتصال الرسمي بـ Globabox: الهاتف: <strong>{DISPLAY_PHONE}</strong> | موقع الويب: <strong>https://www.globabox.com</strong></span>
+                      <span>تفاصيل الاتصال الرسمي بـ Globabox: الهاتف: <strong>{DISPLAY_PHONE}</strong> | موقع الويب: <strong>https://globabox.com</strong></span>
                     ) : (
-                      <span>Contact officiel Globabox : Tél : <strong>{DISPLAY_PHONE}</strong> | WhatsApp: <strong>{WHATSAPP_LINK}</strong> | Web : <strong>https://www.globabox.com</strong></span>
+                      <span>Contact officiel Globabox : Tél : <strong>{DISPLAY_PHONE}</strong> | WhatsApp: <strong>{WHATSAPP_LINK}</strong> | Web : <strong>https://globabox.com</strong></span>
                     )}
                   </div>
 
@@ -489,7 +489,14 @@ export default function LegalPagesModal({ isOpen, onClose, initialTab = 'about',
                     </div>
                   </div>
 
-                  {/* Specific Bullet Rules */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-xs leading-relaxed text-slate-800 space-y-2">
+<h5 className="font-bold">{language === 'ar' ? 'حق التراجع القانوني عن الشراء عن بُعد' : 'Droit légal de rétractation pour la vente à distance'}</h5>
+<p>{language === 'ar'
+? 'وفقاً للقانون المغربي 31-08، يحق للمستهلك من حيث المبدأ التراجع عن شراء عن بعد خلال 7 أيام من استلام السلعة دون الحاجة إلى تبرير، مع مراعاة الاستثناءات القانونية. قد تمتد المدة إلى 30 يوماً عند غياب التأكيد الكتابي المطلوب. تواصل معنا لممارسة حقك.'
+: 'Conformément à la loi marocaine 31-08, le consommateur bénéficie en principe de 7 jours à compter de la réception pour se rétracter d’un achat à distance, sans justification, sous réserve des exceptions prévues par la loi. Le délai peut être de 30 jours lorsque la confirmation écrite exigée fait défaut. Contactez-nous pour exercer ce droit.'}</p>
+<p>{language === 'ar' ? 'حق التراجع القانوني لا يخضع لموافقة المتجر المسبقة، وهو مختلف عن إرجاع السلع المعيبة.' : 'Le droit légal de rétractation n’est pas subordonné à l’approbation préalable de la boutique et reste distinct des réclamations pour défaut.'}</p>
+</div>
+{/* Specific Bullet Rules */}
                   <div className="p-4 rounded-xl bg-orange-50/45 border border-orange-200/40 text-xs text-orange-950 space-y-2">
                     <h5 className="font-bold">{language === 'ar' ? 'خطوات هامة لإرجاع أو استبدال منتجك :' : 'Pour faciliter votre demande d\'échange ou retour :'}</h5>
                     <ul className="list-disc list-inside space-y-1.5 pl-1">
@@ -541,8 +548,8 @@ export default function LegalPagesModal({ isOpen, onClose, initialTab = 'about',
                         <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-1">
                           {language === 'ar' ? 'موقعنا الرسمي' : 'Site Web'}
                         </span>
-                        <a href="https://www.globabox.com" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-400 hover:text-blue-300 font-mono">
-                          www.globabox.com
+                        <a href="https://globabox.com" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-400 hover:text-blue-300 font-mono">
+                          globabox.com
                         </a>
                       </div>
                     </div>
@@ -567,7 +574,7 @@ export default function LegalPagesModal({ isOpen, onClose, initialTab = 'about',
                 <div className="space-y-4 text-xs text-slate-650 leading-relaxed">
                   {language === 'ar' ? (
                     <div className="space-y-3.5 text-slate-700">
-                      <p>مرحباً بكم في موقع <strong>www.globabox.com</strong>. يخضع استخدامكم للموقع وشراء السلع للشروط والتفاهمات التالية بمجرد تأكيد الطلب لتوفير تجربة ممتازة:</p>
+                      <p>مرحباً بكم في موقع <strong>globabox.com</strong>. يخضع استخدامكم للموقع وشراء السلع للشروط والتفاهمات التالية بمجرد تأكيد الطلب لتوفير تجربة ممتازة:</p>
                       
                       <h4 className="font-bold text-slate-900 text-xs">1. شفافية ودقة الأسعار</h4>
                       <p>جميع أسعار السلع معروضة بشكل نهائي بالدرهم المغربي (DH). لا نقوم بفرض أي رسوم أو مصاريف مغلفة أو مخفية دون علمكم المسبق والمباشر عند الطلب.</p>
@@ -581,7 +588,7 @@ export default function LegalPagesModal({ isOpen, onClose, initialTab = 'about',
                   ) : (
                     <div className="space-y-3 text-slate-705">
                       <p>
-                        Les présentes conditions régissent de manière transparente les ventes d'équipements outdoor par la boutique en ligne <strong className="text-slate-905 font-bold">Globabox</strong> sur le site internet <strong className="text-orange-600 font-mono">www.globabox.com</strong>.
+                        Les présentes conditions régissent de manière transparente les ventes d'équipements outdoor par la boutique en ligne <strong className="text-slate-905 font-bold">Globabox</strong> sur le site internet <strong className="text-orange-600 font-mono">globabox.com</strong>.
                       </p>
 
                       <h4 className="text-xs font-bold text-slate-900 uppercase tracking-slate">1. Tarifs et Prix des Articles</h4>
@@ -706,9 +713,7 @@ export default function LegalPagesModal({ isOpen, onClose, initialTab = 'about',
                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                             {language === 'ar' ? 'البريد الإلكتروني' : 'Courriel Électronique'}
                           </p>
-                          <a href="mailto:support@globabox.com" className="text-xs font-black text-slate-900 hover:text-blue-500 transition-colors">
-                            support@globabox.com
-                          </a>
+                          <span className="text-xs text-slate-700">{language === 'ar' ? 'الدعم عبر الهاتف أو واتساب' : 'Assistance par téléphone ou WhatsApp'}</span>
                         </div>
                       </div>
 
@@ -721,7 +726,7 @@ export default function LegalPagesModal({ isOpen, onClose, initialTab = 'about',
                             {language === 'ar' ? 'الموقع الجغرافي والدولة' : 'Siège Social & Pays'}
                           </p>
                           <p className="text-xs text-slate-800 font-semibold leading-relaxed">
-                            {language === 'ar' ? 'الدار البيضاء، المغرب (Morocco)' : 'Casablanca, Maroc (Morocco).'}
+                            {language === 'ar' ? 'المغرب' : 'Maroc'}
                           </p>
                         </div>
                       </div>
