@@ -158,14 +158,14 @@ Merci de confirmer la disponibilité et la livraison.`;
   // UI translation helpers for the new items
   const localTxt = {
     deliveryTitleByLang: {
-      fr: "Livraison Rapide Gratuite",
-      ar: "شحن سريع ومجاني",
-      en: "Free Fast Shipping"
+      fr: "Livraison : 35 DH sous 500 DH, gratuite dès 500 DH",
+      ar: "التوصيل: 35 درهم لأقل من 500، ومجاني ابتداءً من 500 درهم",
+      en: "Delivery: 35 DH below 500 DH, free from 500 DH"
     },
     deliveryDescByLang: {
-      fr: "• Livraison 24h/48h selon la ville (Casablanca, Rabat, Marrakech, Agadir, Tanger, Fès, Meknès, Oujda, Laâyoune, etc.)\n• Paiement 100% à la livraison (En espèces après réception)\n• Confirmation de commande rapide par appel téléphonique ou WhatsApp.",
-      ar: "• التوصيل خلال 24/48 ساعة حسب المدينة (الدار البيضاء، الرباط، مراكش، أكادير، طنجة، فاس، مكناس، وجدة، العيون، إلخ.)\n• الدفع عند الاستلام 100٪ (نقداً بعد فحص السلعة)\n• تأكيد سريع للطلب عبر اتصال هاتفي أو واتساب.",
-      en: "• Delivery in 24h/48h depending on city (Casablanca, Rabat, Marrakech, Agadir, Tanger, Fès, Meknès, Oujda, Laâyoune, etc.)\n• 100% Cash on Delivery (Pay cash on receipt)\n• Fast order verification via phone call or WhatsApp."
+      fr: "• 35 DH de livraison sous 500 DH d'achat ; gratuite dès 500 DH.\n• Délais et disponibilité à confirmer avant l'expédition.\n• Paiement à la livraison après confirmation.",
+      ar: "• التوصيل 35 درهم للطلبات أقل من 500 درهم، ومجاني ابتداءً من 500 درهم.\n• يتم تأكيد الآجال والتوفر قبل الإرسال.\n• الدفع عند الاستلام بعد تأكيد الطلب.",
+      en: "• Delivery costs 35 DH below 500 DH, and is free from 500 DH.\n• Timing and availability confirmed before dispatch.\n• Cash on delivery after order confirmation."
     },
     codBadgeByLang: {
       fr: "Paiement à la Livraison Actif",
@@ -532,8 +532,8 @@ Merci de confirmer la disponibilité et la livraison.`;
                 </div>
               )}
 
-              {/* Social Proof Alerts */}
-              {!isOutOfStock && (
+              {/* Only show authentic, verified activity metrics. */}
+              {!isOutOfStock && !!getProductSocialProof(product, language) && (
                 <div style={{ direction: isRtl ? 'rtl' : 'ltr' }} className="space-y-1.5 bg-rose-50/40 border border-rose-100/60 rounded-2xl p-3">
                   <div className="text-xs text-rose-900 font-extrabold flex items-start gap-2">
                     <Flame className="w-4 h-4 text-rose-600 animate-pulse shrink-0 mt-0.5" />

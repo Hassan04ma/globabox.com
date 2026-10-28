@@ -52,10 +52,10 @@ export default function Hero({ language, onExploreClick, onWhatsAppOrder }: Hero
   };
 
   const badgeOffer = {
-    fr: "Livraison 24/48h + Paiement à la livraison",
-    ar: "توصيل خلال 24/48 ساعة + الدفع عند الاستلام",
-    en: "24/48h Delivery + Cash on Delivery"
-  }[language] || "Livraison 24/48h + Paiement à la livraison";
+    fr: "Livraison au Maroc + Paiement à la livraison",
+    ar: "توصيل داخل المغرب + الدفع عند الاستلام",
+    en: "Morocco delivery + Cash on Delivery"
+  }[language] || "Livraison au Maroc + Paiement à la livraison";
 
   const textBestSellers = {
     fr: "Voir les meilleures ventes",
