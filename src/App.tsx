@@ -446,12 +446,12 @@ export default function App() {
     };
 
     let titleText = language === "ar" 
-      ? "جلوبابوكس | متجر مستلزمات التخييم، الكشتات والأنشطة الخارجية بالمغرب" 
-      : "Globabox | Boutique Matériel Camping, Bivouac & Outdoor Maroc";
+      ? "جلوبابوكس | متجر إلكتروني لمنتجات متنوعة بالمغرب" 
+      : "Globabox | Boutique en ligne au Maroc";
     
     let metaDesc = language === "ar"
-      ? "جلوبابوكس هي الماركة المفضلة لمعدات المغامرات والتخييم، الصيد والرحلات بالمغرب. توصيل مجاني ودفع كاش آمن عند الاستلام."
-      : "Globabox est la marque d'équipement d'extérieur préférée au Maroc pour le camping, la randonnée, la pêche et la chasse. Livraison gratuite et paiement de confiance à la livraison.";
+      ? "تسوق منتجات متنوعة للمنزل والحياة اليومية والرياضة والترفيه عبر جلوبابوكس، مع الدفع عند الاستلام."
+      : "Découvrez des produits pour le quotidien, la maison et les loisirs sur Globabox Maroc, avec paiement à la livraison.";
 
     if (selectedProduct) {
       if (selectedProduct.id === "tente-dome-camping-2-3-personnes") {

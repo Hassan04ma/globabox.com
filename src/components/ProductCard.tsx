@@ -58,7 +58,7 @@ export default function ProductCard({
     }
     return (
       <span className="inline-flex items-center gap-1 bg-emerald-50 border border-emerald-100 rounded-lg px-2 py-0.5 text-emerald-700 text-[9px] font-black uppercase font-sans shrink-0">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-555"></span>
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
         <span>{t('stock_in_stock')}</span>
       </span>
     );
@@ -68,13 +68,13 @@ export default function ProductCard({
     <div
       id={`product-card-${product.id}`}
       style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      className="group bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(30,41,59,0.1)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col relative"
+      className="group bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(30,41,59,0.1)]  transition-all duration-300 flex flex-col relative"
     >
       {/* Promotional Labels & Tags */}
       <div className="absolute top-4 left-4 right-4 z-10 flex flex-wrap justify-between items-start gap-1.5 pointer-events-none">
         <div className="flex flex-wrap gap-1">
           {product.bestSeller && (
-            <span className="bg-orange-600 text-white text-[10px] uppercase font-extrabold px-2.5 py-1.5 rounded-lg shadow-md flex items-center gap-1">
+            <span className="bg-slate-900 text-white text-[10px] uppercase font-extrabold px-2.5 py-1.5 rounded-lg shadow-md flex items-center gap-1">
               <Flame className="w-3.5 h-3.5 fill-white" />
               {t('filterBestSellers')}
             </span>
@@ -84,14 +84,14 @@ export default function ProductCard({
               ? (Date.now() - new Date(product.createdAt).getTime()) / (1000 * 60 * 60 * 24) <= 7 
               : !!product.newArrival;
             return isNew && (
-              <span className="bg-blue-900 text-white text-[10px] uppercase font-bold px-2.5 py-1.5 rounded-lg shadow-md">
+              <span className="bg-slate-800 text-white text-[10px] uppercase font-bold px-2.5 py-1.5 rounded-lg shadow-md">
                 {t('filterNewArrivals')}
               </span>
             );
           })()}
         </div>
         {discountPercent > 0 && (
-          <span className="bg-red-650 text-white text-[10px] font-black px-2.5 py-1.5 rounded-lg shadow-md self-start shrink-0 flex items-center gap-1">
+          <span className="bg-red-600 text-white text-[10px] font-black px-2.5 py-1.5 rounded-lg shadow-md self-start shrink-0 flex items-center gap-1">
             <Percent className="w-3.5 h-3.5 text-white shrink-0" />
             <span>{t('badge_promo')} -{discountPercent}%</span>
           </span>
@@ -101,7 +101,7 @@ export default function ProductCard({
       {/* Product Image Stage */}
       <div 
         onClick={() => onViewDetails(product)}
-        className="aspect-[4/3] w-full overflow-hidden bg-[#0b1528] relative cursor-pointer"
+        className="aspect-[4/3] w-full overflow-hidden bg-slate-50 relative cursor-pointer"
       >
         <ProductImage
           src={product.image}
@@ -125,7 +125,7 @@ export default function ProductCard({
           {/* Rating */}
           <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
             <div className="flex items-center gap-1">
-              <div className="flex items-center text-amber-450">
+              <div className="flex items-center text-amber-500">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
@@ -145,7 +145,7 @@ export default function ProductCard({
           {/* Title */}
           <h3 
             onClick={() => onViewDetails(product)}
-            className="text-sm font-extrabold text-slate-900 group-hover:text-orange-600 transition-colors cursor-pointer line-clamp-2 min-h-[40px] leading-snug font-sans"
+            className="text-sm font-extrabold text-slate-900 group-hover:text-slate-700 transition-colors cursor-pointer line-clamp-2 min-h-[40px] leading-snug font-sans"
           >
             {product.name[language]}
           </h3>
@@ -175,7 +175,7 @@ export default function ProductCard({
               {product.price} {t('moroccoCurrency')}
             </span>
             {product.originalPrice && (
-              <span className="text-xs text-slate-405 line-through font-mono font-medium">
+              <span className="text-xs text-slate-400 line-through font-mono font-medium">
                 {product.originalPrice} {t('moroccoCurrency')}
               </span>
             )}
@@ -203,7 +203,7 @@ export default function ProductCard({
                   {/* Quick checkout direct drawer order button (Vibrant Orange CTA) */}
                   <button
                     onClick={() => onInstantOrder(product)}
-                    className="bg-orange-600 hover:bg-orange-500 text-white text-[11px] font-black py-3 sm:py-2.5 px-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center shadow-lg hover:shadow-orange-500/20 shadow-orange-500/10 hover:scale-[1.02] active:scale-[0.98] min-h-[44px]"
+                    className="bg-slate-900 hover:bg-orange-500 text-white text-[11px] font-black py-3 sm:py-2.5 px-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center shadow-lg hover:shadow-orange-500/20 shadow-orange-500/10 hover:scale-[1.02] active:scale-[0.98] min-h-[44px]"
                     title={t('btnOrderNow')}
                   >
                     <ShoppingCart size={14} className="text-white shrink-0" />
@@ -213,7 +213,7 @@ export default function ProductCard({
                   {/* Classic add to cart (Vibrant Blue CTA) */}
                   <button
                     onClick={() => onAddToCart(product)}
-                    className="bg-blue-900 hover:bg-blue-950 text-white text-[11px] font-bold py-3 sm:py-2.5 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-900/5 hover:bg-[#0c1a30] min-h-[44px]"
+                    className="bg-slate-800 hover:bg-blue-950 text-white text-[11px] font-bold py-3 sm:py-2.5 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-900/5 hover:bg-[#0c1a30] min-h-[44px]"
                   >
                     <ShoppingCart className="w-3.5 h-3.5 text-orange-400" />
                     <span>{t('btnAddToCart')}</span>

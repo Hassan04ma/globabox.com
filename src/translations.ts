@@ -7,19 +7,19 @@ export const TRANSLATIONS: TranslationDict = {
     en: "Globabox"
   },
   tagline: {
-    fr: "Premium Store Maroc",
-    ar: "متجر جلوبابوكس المميز بالمغرب",
-    en: "Morocco Premium Store"
+    fr: "Votre boutique en ligne",
+    ar: "متجرك الإلكتروني",
+    en: "Your online store"
   },
   heroTitle: {
-    fr: "Équipez vos aventures avec les meilleurs produits outdoor",
-    ar: "جهّز مغامراتك بأفضل المنتجات البرية والخارجية",
-    en: "Equip Your Adventures With The Best Outdoor Products"
+    fr: "Des produits pour chaque besoin",
+    ar: "منتجات متنوعة لكل احتياجاتك",
+    en: "Products for every need"
   },
   heroSubtitle: {
-    fr: "Camping, randonnée, pêche, chasse, voyage et accessoires — qualité premium, prix adaptés et livraison express partout au Maroc.",
-    ar: "التخييم، المشي لمسافات طويلة، الصيد، السفر والإكسسوارات — جودة ممتازة، أسعار مناسبة وتوصيل سريع لكافة أنحاء المغرب.",
-    en: "Camping, hiking, fishing, hunting, travel & accessories — premium quality, tailored prices, and express shipping across Morocco."
+    fr: "Découvrez des produits pour le quotidien, la maison, les loisirs et bien plus, avec livraison au Maroc.",
+    ar: "اكتشف منتجات للحياة اليومية والمنزل والترفيه والمزيد، مع التوصيل داخل المغرب.",
+    en: "Explore products for everyday life, home, leisure and more, with delivery across Morocco."
   },
   btnDiscover: {
     fr: "Découvrir la boutique",

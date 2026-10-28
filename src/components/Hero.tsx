@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, MessageSquare, ChevronLeft, ChevronRight, Flame, Sparkles } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Truck, ShoppingBag } from 'lucide-react';
 import { Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 import { triggerWhatsAppClick } from '../utils/analytics';
@@ -12,189 +11,77 @@ interface HeroProps {
   onWhatsAppOrder?: (params?: any) => void;
 }
 
-const HERO_IMAGES = [
-  "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&q=75&w=1200",
-  "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&q=75&w=1200",
-  "https://images.unsplash.com/photo-1533873984035-25970ab07461?auto=format&fit=crop&q=75&w=1200"
-];
+const copy = {
+  fr: {
+    kicker: 'Votre boutique en ligne au Maroc',
+    heading: 'Le bon choix, pour chaque besoin.',
+    description: 'Découvrez une sélection de produits pour le quotidien, la maison, les loisirs et bien plus. Une expérience d’achat simple, claire et pratique.',
+    primary: 'Explorer les produits',
+    secondary: 'Commander sur WhatsApp',
+    delivery: 'Livraison au Maroc',
+    payment: 'Paiement à la livraison',
+    selection: 'Des catégories à découvrir',
+    aside: 'Découvrez notre sélection',
+    asideText: 'Explorez les différentes catégories et trouvez facilement ce dont vous avez besoin.'
+  },
+  ar: {
+    kicker: 'متجرك الإلكتروني في المغرب',
+    heading: 'اختيارات مناسبة لكل احتياجاتك.',
+    description: 'اكتشف مجموعة متنوعة من المنتجات للحياة اليومية والمنزل والترفيه والمزيد، مع تجربة تسوق واضحة وسهلة.',
+    primary: 'تصفح المنتجات',
+    secondary: 'اطلب عبر واتساب',
+    delivery: 'التوصيل داخل المغرب',
+    payment: 'الدفع عند الاستلام',
+    selection: 'تشكيلة متنوعة من المنتجات',
+    aside: 'اكتشف مجموعتنا',
+    asideText: 'تصفح مختلف الفئات واعثر بسهولة على المنتجات التي تناسب احتياجاتك.'
+  },
+  en: {
+    kicker: 'Your online store in Morocco',
+    heading: 'Great choices for every need.',
+    description: 'Explore a range of products for everyday living, home, leisure and more, with a simple and convenient shopping experience.',
+    primary: 'Explore products',
+    secondary: 'Order on WhatsApp',
+    delivery: 'Delivery across Morocco',
+    payment: 'Cash on delivery',
+    selection: 'Categories worth exploring',
+    aside: 'Discover our collection',
+    asideText: 'Browse different categories and find what fits your needs with ease.'
+  }
+};
 
 export default function Hero({ language, onExploreClick, onWhatsAppOrder }: HeroProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const isRtl = language === "ar";
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const t = (key: string) => {
-    return TRANSLATIONS[key]?.[language] || key;
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + HERO_IMAGES.length) % HERO_IMAGES.length);
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-  };
-
-  const handleBestSellersClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const el = document.getElementById("best-sellers-section");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      onExploreClick();
-    }
-  };
-
-  const badgeOffer = {
-    fr: "Livraison au Maroc + Paiement à la livraison",
-    ar: "توصيل داخل المغرب + الدفع عند الاستلام",
-    en: "Morocco delivery + Cash on Delivery"
-  }[language] || "Livraison au Maroc + Paiement à la livraison";
-
-  const textBestSellers = {
-    fr: "Voir les meilleures ventes",
-    ar: "عرض الأكثر مبيعاً",
-    en: "View Best Sellers"
-  }[language] || "Voir les meilleures ventes";
-
+  const c = copy[language] ?? copy.fr;
+  const isRtl = language === 'ar';
   return (
-    <section 
-      style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      className="relative h-[85vh] min-h-[500px] max-h-[800px] overflow-hidden bg-neutral-950 flex flex-col justify-end"
-    >
-      {/* Background Slides */}
-      {HERO_IMAGES.map((img, index) => {
-        const altTexts = language === 'ar' ? [
-          "جلوبابوكس المغرب - معدات التخييم والكشتات الاحترافية",
-          "جلوبابوكس المغرب - خيام مقاومة للماء، أكياس نوم ومعدات المشي الجبلي",
-          "جلوبابوكس المغرب - لوازم الصيد البري والبحري والأنشطة الخارجية"
-        ] : [
-          "Globabox Maroc - Matériel de bivouac et équipement camping professionnel",
-          "Globabox Maroc - Tentes imperméables, sacs de couchage et matériel de randonnée",
-          "Globabox Maroc - Matériel de chasse, pêche et équipement plein air"
-        ];
-        return (
-          <div
-            key={img}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-out ${
-              index === currentIndex ? 'opacity-100 scale-[1.02] z-0' : 'opacity-0 scale-100 -z-10'
-            }`}
-            style={{ transitionProperty: 'opacity, transform' }}
-          >
-            {/* Dark read-optimized overlays */}
-            <div className="absolute inset-0 bg-black/55 z-10" />
-            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-[#070d1a]/85 to-transparent z-10" />
-            <img
-              src={img}
-              alt={altTexts[index]}
-              referrerPolicy="no-referrer"
-              loading={index === 0 ? "eager" : "lazy"}
-              className="w-full h-full object-cover"
-            />
+    <section dir={isRtl ? 'rtl' : 'ltr'} className="relative overflow-hidden bg-white border-b border-slate-100">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 sm:py-20 lg:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_.85fr] gap-12 lg:gap-16 items-center">
+          <div>
+            <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-600">{c.kicker}</span>
+            <h1 className="mt-6 max-w-3xl text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-[1.12] font-bold text-slate-950">{c.heading}</h1>
+            <p className="mt-6 max-w-xl text-base sm:text-lg leading-8 text-slate-600">{c.description}</p>
+            <div className="mt-9 flex flex-col sm:flex-row gap-3">
+              <button id="hero-explore-shop-btn" onClick={onExploreClick} className="inline-flex justify-center items-center gap-2 rounded-xl bg-slate-950 px-7 py-4 text-white text-sm font-semibold hover:bg-slate-800 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-950">
+                {c.primary}<ArrowRight size={18} className={isRtl ? 'rotate-180' : ''} />
+              </button>
+              <button id="hero-whatsapp-btn" onClick={() => { triggerWhatsAppClick('Hero Layout Button'); if (onWhatsAppOrder) onWhatsAppOrder({source:'hero'}); else window.open(WHATSAPP_LINK, '_blank', 'noopener,noreferrer'); }} className="inline-flex justify-center items-center gap-2 rounded-xl border border-slate-200 bg-white px-7 py-4 text-sm font-semibold text-slate-800 hover:bg-slate-50 transition-colors">
+                <WhatsAppIcon className="w-5 h-5" />{c.secondary}
+              </button>
+            </div>
+            <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-600">
+              <span className="inline-flex items-center gap-2"><Truck size={17} className="text-slate-700" />{c.delivery}</span>
+              <span className="inline-flex items-center gap-2"><ShieldCheck size={17} className="text-slate-700" />{c.payment}</span>
+            </div>
           </div>
-        );
-      })}
-
-      {/* Content Layer */}
-      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 md:pb-20 w-full animate-fade-in">
-        {/* Badges Container */}
-        <div className="flex flex-wrap items-center gap-2 mb-4">
-          {/* Urgent Promo Strip */}
-          <div className="inline-flex items-center gap-1.5 bg-orange-600 text-white text-[11px] md:text-xs font-black px-4 py-1.5 rounded-full shadow-lg uppercase leading-normal tracking-wide animate-pulse">
-            <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-300 shrink-0" />
-            <span>{t('bannerPromoFr')}</span>
-          </div>
-
-          {/* Delivery & CoD Offer Badge */}
-          <div className="inline-flex items-center gap-1.5 bg-[#070d1a]/80 border border-orange-500/35 text-orange-400 text-[11px] md:text-sm font-black px-4 py-1.5 rounded-full shadow-lg">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-ping"></span>
-            <span>{badgeOffer}</span>
+          <div className="relative rounded-[2rem] bg-slate-50 border border-slate-100 p-7 sm:p-10 lg:p-12 min-h-[320px] flex flex-col justify-center">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-white border border-slate-200 text-slate-900 shadow-sm"><ShoppingBag size={26} strokeWidth={1.7} /></div>
+            <p className="mt-9 text-xs font-semibold uppercase tracking-[.16em] text-slate-500">{c.selection}</p>
+            <h2 className="mt-3 text-3xl sm:text-4xl font-bold tracking-tight text-slate-950">{c.aside}</h2>
+            <p className="mt-4 text-base leading-7 text-slate-600">{c.asideText}</p>
+            <button onClick={onExploreClick} className="mt-8 self-start inline-flex items-center gap-2 text-sm font-semibold text-slate-950 hover:underline">{c.primary}<ArrowRight size={16} className={isRtl ? 'rotate-180' : ''} /></button>
           </div>
         </div>
-
-        <div className="max-w-3xl">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight font-sans tracking-tight">
-            {t('heroTitle')}
-          </h1>
-          <p className="mt-4 text-sm sm:text-base md:text-lg text-neutral-100 font-sans leading-relaxed">
-            {t('heroSubtitle')}
-          </p>
-
-          <div className="mt-8 flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full">
-            {/* CTA 1: Voir les meilleures ventes */}
-            <button
-              onClick={handleBestSellersClick}
-              className="px-7 py-4 bg-orange-600 hover:bg-orange-500 text-white font-extrabold rounded-2xl shadow-lg shadow-orange-500/20 text-sm transition-all flex items-center justify-center gap-2 cursor-pointer group shrink-0"
-              id="hero-bestsellers-btn"
-            >
-              <Flame className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 fill-amber-300 text-amber-300 animate-pulse" />
-              <span>{textBestSellers}</span>
-            </button>
-
-            {/* CTA 2: Order instantly on Whatsapp */}
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                triggerWhatsAppClick('Hero Layout Button');
-                if (onWhatsAppOrder) {
-                  onWhatsAppOrder({ source: 'hero' });
-                } else {
-                  window.open(WHATSAPP_LINK, "_blank", "noreferrer");
-                }
-              }}
-              className="px-7 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-500/20 text-sm transition-all flex items-center justify-center gap-2.5 shrink-0 cursor-pointer"
-              id="hero-whatsapp-btn"
-            >
-              <WhatsAppIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5 md:w-[22px] md:h-[22px] text-white shrink-0" />
-              <span>{t('btnOrderWhatsApp')}</span>
-            </button>
-
-            {/* CTA 3: Scroll to catalog */}
-            <button
-              onClick={onExploreClick}
-              className="px-7 py-4 bg-neutral-900/90 hover:bg-neutral-800 border border-neutral-700 text-slate-100 font-bold rounded-2xl text-sm transition-all flex items-center justify-center gap-2 cursor-pointer group"
-              id="hero-explore-shop-btn"
-            >
-              <span>{t('btnDiscover')}</span>
-              <ArrowRight className={`w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 transition-transform group-hover:translate-x-1 ${isRtl ? 'rotate-180 group-hover:-translate-x-1' : ''}`} />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Slide Navigation Manual Arrows */}
-      <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 z-20 flex justify-between pointer-events-none">
-        <button
-          onClick={handlePrev}
-          className="w-10 h-10 rounded-full bg-neutral-900/50 hover:bg-neutral-800 text-white flex items-center justify-center border border-neutral-800/40 pointer-events-auto cursor-pointer focus:outline-none"
-        >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-        <button
-          onClick={handleNext}
-          className="w-10 h-10 rounded-full bg-neutral-900/50 hover:bg-neutral-800 text-white flex items-center justify-center border border-neutral-800/40 pointer-events-auto cursor-pointer focus:outline-none"
-        >
-          <ChevronRight className="w-6 h-6" />
-        </button>
-      </div>
-
-      {/* Dots Indicator */}
-      <div className="absolute bottom-4 right-8 z-20 flex gap-2">
-        {HERO_IMAGES.map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => setCurrentIndex(idx)}
-            className={`w-2.5 h-2.5 rounded-full transition-all ${
-              idx === currentIndex ? 'bg-orange-600 w-6' : 'bg-neutral-700'
-            }`}
-          />
-        ))}
       </div>
     </section>
   );
