@@ -106,13 +106,13 @@ export default function Header({
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#1d2d52]/95 backdrop-blur-lg shadow-lg border-b border-[#314a80]'
-          : 'bg-[#132140]/92 backdrop-blur-md border-b border-[#233d70]'
+          ? 'bg-white/95 backdrop-blur-lg shadow-sm border-b border-slate-200'
+          : 'bg-white/95 backdrop-blur-md border-b border-slate-200'
       }`}
       style={{ direction: isRtl ? 'rtl' : 'ltr' }}
     >
       {/* Top Bar (Moroccan Flag, Delivery Notification, Working Hours) */}
-      <div className={`bg-[#122245] border-b border-[#223b70] text-[11px] md:text-xs text-slate-200 px-4 flex justify-between items-center tracking-normal font-sans transition-all duration-300 ${
+      <div className={`bg-slate-50 border-b border-slate-100 text-[11px] md:text-xs text-slate-600 px-4 flex justify-between items-center tracking-normal font-sans transition-all duration-300 ${
         isScrolled ? 'py-1' : 'py-1.5'
       }`}>
         <div className="flex items-center gap-2">
@@ -121,17 +121,17 @@ export default function Header({
           </span>
           <span className="flex items-center gap-1">
             <span>{t('expressDeliveryBadge')} - {t('paymentOnDeliveryBadge')}</span>
-            <Truck size={12} className="text-orange-500 shrink-0" />
+            <Truck size={12} className="text-slate-700 shrink-0" />
           </span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="hidden md:inline-block font-mono text-slate-300">{t('footerSchedule')}</span>
+          <span className="hidden md:inline-block font-mono text-slate-600">{t('footerSchedule')}</span>
           <a
             href={`tel:${ORDER_SUPPORT_NUMBER}`}
-            className="hover:underline font-mono text-slate-200 flex items-center gap-1 font-semibold"
+            className="hover:underline font-mono text-slate-700 flex items-center gap-1 font-semibold"
           >
             <span className="flex items-center gap-1">
-              <Phone size={11} className="text-orange-500 shrink-0" />
+              <Phone size={11} className="text-slate-700 shrink-0" />
               <span>{ORDER_SUPPORT_NUMBER}</span>
             </span>
           </a>
@@ -146,7 +146,7 @@ export default function Header({
           <div className="flex items-center gap-2 md:gap-3 shrink-0">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-1.5 rounded-lg text-neutral-300 hover:bg-neutral-800 focus:outline-none"
+              className="lg:hidden p-1.5 rounded-lg text-slate-700 hover:bg-slate-100 focus:outline-none"
               id="mobile-menu-toggle-btn"
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -158,25 +158,25 @@ export default function Header({
               className="flex items-center gap-2 group"
             >
               {/* Custom Globabox Logomark */}
-              <div className={`rounded-xl bg-gradient-to-br from-orange-600 to-amber-700 border border-orange-400/30 flex items-center justify-center text-white shadow-lg shadow-orange-950/40 group-hover:scale-105 transition-all duration-300 relative overflow-hidden shrink-0 ${
+              <div className={`rounded-xl bg-gradient-to-br from-slate-900 to-slate-700 border border-slate-200 flex items-center justify-center text-white shadow-lg shadow-orange-950/40 group-hover:scale-105 transition-all duration-300 relative overflow-hidden shrink-0 ${
                 isScrolled ? 'w-8 h-8 md:w-9 md:h-9' : 'w-9.5 h-9.5 md:w-11 md:h-11'
               }`}>
                 <span className={`font-black font-sans tracking-tighter text-white z-10 flex items-center transition-all duration-300 ${
                   isScrolled ? 'text-sm' : 'text-base md:text-lg'
                 }`}>
-                  G<span className="text-amber-300 font-serif font-black">B</span>
+                  G<span className="text-white font-serif font-black">B</span>
                 </span>
                 {/* Decorative mountain icon/lines background and glowing light effect */}
                 <span className="absolute bottom-0 text-[10px] opacity-75 font-mono text-white/40 select-none z-0">▲</span>
                 <span className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/20"></span>
               </div>
               <div className="flex flex-col">
-                <span className={`font-bold tracking-tight text-white leading-none transition-all duration-300 ${
+                <span className={`font-bold tracking-tight text-slate-950 leading-none transition-all duration-300 ${
                   isScrolled ? 'text-sm md:text-base' : 'text-base md:text-lg'
                 }`}>
                   {t('brandName')}
                 </span>
-                <span className={`tracking-wide text-orange-400 font-medium uppercase font-sans transition-all duration-300 leading-none ${
+                <span className={`tracking-wide text-slate-600 font-medium uppercase font-sans transition-all duration-300 leading-none ${
                    isScrolled ? 'text-[8px] mt-0.5' : 'text-[9px] mt-1'
                 }`}>
                   {t('tagline')}
@@ -193,7 +193,7 @@ export default function Header({
                 placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className={`w-full bg-[#1b2f59] text-white placeholder-slate-400 text-sm py-1.5 md:py-2 rounded-xl outline-none focus:ring-2 focus:ring-orange-500 border border-[#2d4d87] focus:border-orange-500 transition-all font-sans ${
+                className={`w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-sm py-1.5 md:py-2 rounded-xl outline-none focus:ring-2 focus:ring-slate-300 border border-slate-200 focus:border-slate-500 transition-all font-sans ${
                   isRtl ? 'pr-10 pl-4 text-right' : 'pl-10 pr-4 text-left'
                 }`}
               />
@@ -263,7 +263,7 @@ export default function Header({
               className="relative p-2 rounded-xl bg-[#1b2f59] hover:bg-orange-600/25 border border-[#2d4d87] hover:border-orange-500 text-white hover:scale-[1.02] transition-all cursor-pointer flex items-center gap-1.5 md:gap-2"
               id="app-cart-trigger-btn"
             >
-              <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
+              <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-slate-700" />
               <span className="absolute -top-1.5 -right-1.5 bg-orange-600 text-white text-[10px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold shadow-md">
                 {totalCartItems}
               </span>
@@ -329,7 +329,7 @@ export default function Header({
                         : 'bg-[#182847] text-white border border-[#2f4a7c] hover:bg-orange-600/20 hover:text-white'
                     }`}
                   >
-                    <Compass className="w-4 h-4 text-orange-400 shrink-0" />
+                    <Compass className="w-4 h-4 text-slate-600 shrink-0" />
                     <span>{t('allCategoriesLabel')}</span>
                   </button>
                   
@@ -344,7 +344,7 @@ export default function Header({
                       } ${isRtl ? 'flex-row-reverse text-right' : 'flex-row text-left'}`}
                       dir={isRtl ? 'rtl' : 'ltr'}
                     >
-                      <CategoryIcon categoryId={cat.id} className="w-4 h-4 text-orange-400 shrink-0" />
+                      <CategoryIcon categoryId={cat.id} className="w-4 h-4 text-slate-600 shrink-0" />
                       <span className="truncate flex-1">{cat.name[language]}</span>
                     </button>
                   ))}
@@ -440,7 +440,7 @@ export default function Header({
             </div>
             
             <div className="py-4 space-y-4 overflow-y-auto flex-1 font-sans">
-              <p className="text-xs text-orange-400 font-semibold uppercase">{t('categoryTitle')}</p>
+              <p className="text-xs text-slate-600 font-semibold uppercase">{t('categoryTitle')}</p>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => { setSelectedCategory(''); setIsMobileMenuOpen(false); }}
@@ -468,10 +468,10 @@ export default function Header({
               {onOpenTracking && (
                 <button
                   onClick={() => { onOpenTracking(); setIsMobileMenuOpen(false); }}
-                  className="w-full flex items-center justify-between p-3.5 rounded-xl bg-orange-600/10 hover:bg-orange-600/20 text-orange-400 border border-orange-500/20 transition-all text-xs font-black"
+                  className="w-full flex items-center justify-between p-3.5 rounded-xl bg-orange-600/10 hover:bg-orange-600/20 text-slate-600 border border-orange-500/20 transition-all text-xs font-black"
                 >
                   <span className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-orange-500 shrink-0" />
+                    <MapPin className="w-4 h-4 text-slate-700 shrink-0" />
                     <span>{language === 'ar' ? 'تتبع طلبيتك الآن' : 'Suivre ma commande'}</span>
                   </span>
                   <span>➜</span>
@@ -480,7 +480,7 @@ export default function Header({
 
               <div className="border-t border-[#1c2e4a] pt-4 space-y-3">
                 <p className="text-xs text-slate-400">{t('footerContactTitle')}</p>
-                <p className="text-xs text-slate-200 font-mono flex items-center gap-1.5"><Phone size={13} className="text-orange-500 shrink-0" /> {ORDER_SUPPORT_NUMBER}</p>
+                <p className="text-xs text-slate-200 font-mono flex items-center gap-1.5"><Phone size={13} className="text-slate-700 shrink-0" /> {ORDER_SUPPORT_NUMBER}</p>
                 <p className="text-[11px] text-slate-500 font-mono">{t('footerSchedule')}</p>
                 <a
                   href={WA_LINK}
