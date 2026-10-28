@@ -78,7 +78,7 @@ export default function AdminPanel({
           ' | cities: '+String(shape.citiesType ?? '?')+
           ' | Nombre entrées: '+String(shape.citiesCount ?? '?')
         : ' (aucun diagnostic de format disponible)';
-      setAmeexStatus(citiesResponse.ok && cities.success
+      setAmeexStatus(cities.authenticationUnverified ? 'AMEEX renvoie login/api au lieu des villes : authentification ou accès API à vérifier dans le compte GLOBABOX (clé TEST et API ID de la même entreprise). Aucun colis créé.' : citiesResponse.ok && cities.success
         ? 'Sandbox connecté ! Lecture villes validée (nombre : '+(cities.citiesCount ?? 'non fourni')+'). Aucun colis créé.'
         : (cities.reachable ? 'AMEEX accessible, format des villes non reconnu. '+summary : 'Clés détectées, mais lecture villes échouée (HTTP '+citiesResponse.status+', AMEEX '+(cities.upstreamStatus??'indisponible')+').'));
     } catch(e) {setAmeexStatus('Erreur de connexion : '+(e instanceof Error?e.message:'inconnue'));}
