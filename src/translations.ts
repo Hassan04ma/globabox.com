@@ -67,9 +67,9 @@ export const TRANSLATIONS: TranslationDict = {
     en: "Order with absolute peace of mind. Pay only when you receive your order."
   },
   expressDeliveryBadge: {
-    fr: "Livraison 24h/48h",
-    ar: "توصيل سريع 24/48 ساعة",
-    en: "Express Delivery 24h/48h"
+    fr: "Livraison partout au Maroc",
+    ar: "التوصيل في أنحاء المغرب",
+    en: "Morocco-wide Delivery"
   },
   expressDeliveryDesc: {
     fr: "Livraison rapide dans toutes les villes du Maroc directement chez vous.",
@@ -337,9 +337,9 @@ export const TRANSLATIONS: TranslationDict = {
     en: "Back to top"
   },
   bannerPromoFr: {
-    fr: "OFFRES PACK BIVOUAC : Économisez jusqu'à 450 DH sur l'équipement complet ! Livraison Gratuite.",
-    ar: "عرض الباقة المتكاملة: وفر حتى 450 درهم على كافة أغراض التخييم! التوصيل بالمجان.",
-    en: "PACK ADVANTAGE: Save up to 450 DH on complete outdoor bundles! Free Shipping."
+    fr: "Livraison offerte dès 500 DH d'achat · Paiement à la livraison",
+    ar: "التوصيل مجاني ابتداءً من 500 درهم · الدفع عند الاستلام",
+    en: "Free delivery from 500 DH · Cash on delivery"
   },
   trust_cod_title: {
     fr: "Paiement à la livraison",
@@ -437,13 +437,13 @@ export const TRANSLATIONS: TranslationDict = {
     en: "100% Secure COD"
   },
   trust_ordered_today: {
-    fr: "Commandé aujourd'hui, expédié demain ! Reçu en 24h-48h Maroc.",
-    ar: "اطلب اليوم واستلم غداً! توصيل سريع خلال 24-48 ساعة في المغرب.",
-    en: "Ordered today, shipped tomorrow! Delivered in 24h-48h Morocco."
+    fr: "Livraison et disponibilité à confirmer à la commande.",
+    ar: "يتم تأكيد التوصيل والتوفر عند الطلب.",
+    en: "Delivery and availability confirmed when ordering."
   },
   social_proof_count: {
-    fr: "14 personnes ont commandé cet article aujourd'hui",
-    ar: "قام 14 عميلاً بطلب هذا المنتج اليوم",
-    en: "14 people ordered this item today"
+    fr: "Découvrez nos produits disponibles",
+    ar: "اكتشف المنتجات المتوفرة لدينا",
+    en: "Explore our available products"
   }
 };
