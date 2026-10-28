@@ -14,6 +14,28 @@ const readBody = async (request: Request) => {
   } catch { return null; }
 };
 const publicProduct = (p: any) => p && p.isActive !== false;
+// AMEEX /Delivery/Cities returns {type:"success",cities:{"63":{id:63,name:"Agadir"},...}}.
+// Verify every entry before using its ID. No raw response or credentials are exposed.
+function ameexCities(raw: unknown): Array<{id:number;name:string}> | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const response=raw as Record<string,unknown>;
+  if (response.type !== 'success') return null;
+  const cities=response.cities;
+  if (!cities || typeof cities !== 'object' || Array.isArray(cities)) return null;
+  const entries=Object.entries(cities as Record<string,unknown>);
+  if (!entries.length) return null;
+  const normalized:Array<{id:number;name:string}>=[];
+  for (const [key,val] of entries) {
+    if (!val || typeof val !== 'object' || Array.isArray(val)) return null;
+    const item=val as Record<string,unknown>;
+    const id=Number(item.id);
+    if (!/^[1-9][0-9]*$/.test(key) || !Number.isSafeInteger(id) || id<=0 ||
+        id!==Number(key) || typeof item.name!=='string' || !item.name.trim()) return null;
+    normalized.push({id,name:item.name.trim()});
+  }
+  return normalized;
+}
+
 const auth = isAdmin;
 async function importAuthorized(request: Request, env: Env): Promise<boolean> {
   if (await auth(request, env)) return true;
@@ -172,20 +194,11 @@ export default {
           });
           if (!upstream.ok) return json({success:false,upstreamStatus:upstream.status,error:'AMEEX cities request failed'},502);
           const data:unknown = await upstream.json();
-          // AMEEX response may wrap the list. Never claim a complete API check
-          // solely on HTTP 200 when the response structure was not recognized.
-          const obj = data && typeof data === 'object' && !Array.isArray(data) ? data as Record<string,unknown> : null;
-          const candidates = [
-            data, obj?.data, obj?.Data, obj?.cities, obj?.Cities,
-            obj?.result, obj?.Result, obj?.results,
-            ...(obj && typeof obj.data === 'object' && obj.data && !Array.isArray(obj.data)
-              ? [((obj.data) as Record<string,unknown>).cities,((obj.data) as Record<string,unknown>).items] : [])
-          ];
-          const list = candidates.find(Array.isArray) as unknown[] | undefined;
-          const count = list?.length ?? null;
+          const list=ameexCities(data);
+          const count=list?.length ?? null;
           return json({success:count!==null,reachable:true,environment:'sandbox',citiesCount:count,
-            error: count===null ? 'Cities response format not recognized; read-only connectivity only.' : undefined,
-            note:count===null ? 'AMEEX responded, but cities were not validated. No parcel created.' : 'AMEEX cities read succeeded. No parcel was created.'},count===null?502:200);
+            error:count===null?'AMEEX cities response not recognized. No parcel created.':undefined,
+            note:count===null?'AMEEX returned a response but city IDs are not validated.':'Validated AMEEX city IDs; no parcel created.'},count===null?502:200);
         } catch (err) {
           console.error('AMEEX sandbox cities read failed',err);
           return json({success:false,error:'AMEEX sandbox connectivity failed'},502);
@@ -201,13 +214,12 @@ export default {
         try {
           const c=await fetch('https://api.ameex.app/customer/Delivery/Cities',{headers,signal:AbortSignal.timeout(10000)});
           if(!c.ok) return json({error:'Cities unavailable; no parcel created',upstreamStatus:c.status},502);
-          const raw:any=await c.json();
-          const candidates=[raw,raw?.data,raw?.Data,raw?.cities,raw?.Cities,raw?.result,raw?.results];
-          const cities=candidates.find(Array.isArray) as any[]|undefined;
+          const raw:unknown=await c.json();
+          const cities=ameexCities(raw);
           if(!cities?.length) return json({error:'City list not validated; no parcel created'},409);
-          const city=cities.find(v=>v && typeof v==='object' && Number.isInteger(Number(v.id??v.Id??v.city_id)) && Number(v.id??v.Id??v.city_id)>0);
-          if(!city) return json({error:'No numeric city ID; no parcel created'},409);
-          const cityId=Number(city.id??city.Id??city.city_id);
+          const agadir=cities.find(c=>c.name.toLowerCase()==='agadir');
+          if(!agadir) return json({error:'Agadir not found in AMEEX city list; no parcel created'},409);
+          const cityId=agadir.id;
           // Reserve the one permitted outbound attempt ONLY once local validation
           // succeeded. A read-only discovery error must not consume the allowance.
           await env.DB.prepare('CREATE TABLE IF NOT EXISTS integration_diagnostics (id TEXT PRIMARY KEY, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run();
