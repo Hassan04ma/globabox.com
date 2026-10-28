@@ -75,6 +75,20 @@ export default function AdminPanel({
     } catch(e) {setAmeexStatus('Erreur de connexion : '+(e instanceof Error?e.message:'inconnue'));}
     finally{setAmeexBusy(false);}
   };
+  const runAmeexSandboxParcel = async () => {
+    if (!window.confirm('Créer UN colis fictif AMEEX SANDBOX ? Aucun client ni commande réelle ne sera utilisé. Ce test ne pourra pas être répété.')) return;
+    setAmeexBusy(true);
+    setAmeexStatus('Création du colis fictif dans le sandbox…');
+    try {
+      const res=await fetch('/api/admin/ameex-sandbox-parcel',{method:'POST',credentials:'same-origin'});
+      const data:any=await res.json();
+      setAmeexStatus(res.ok
+        ? 'Test AMEEX Sandbox exécuté : HTTP '+data.httpStatus+'. '+(data.accepted?'Confirmation API explicite reçue.':'Statut de création non confirmé : vérifier dans Colis sandbox.')
+        : 'Test non validé : '+(data.error||'HTTP '+res.status)+'. Ne pas réessayer automatiquement.');
+    }catch{
+      setAmeexStatus('Connexion interrompue : résultat indéterminé. Ne pas réessayer automatiquement.');
+    }finally{setAmeexBusy(false);}
+  };
   const runD1Probe = async () => {
     setD1ProbeStatus('running');
     try {
@@ -1290,6 +1304,10 @@ export default function AdminPanel({
               <button type="button" disabled={ameexBusy} onClick={checkAmeexSandbox}
                 className="bg-orange-600 hover:bg-orange-500 disabled:opacity-60 px-4 py-2.5 rounded-xl text-xs text-white font-bold">
                 {ameexBusy ? 'Test en cours…' : 'Tester AMEEX Sandbox'}
+              </button>
+              <button type="button" disabled={ameexBusy} onClick={runAmeexSandboxParcel}
+                className="bg-slate-800 hover:bg-slate-700 disabled:opacity-60 px-4 py-2.5 rounded-xl text-xs text-white font-bold border border-slate-600">
+                Créer 1 colis fictif (Sandbox)
               </button>
             </div>
             {/* Final Launch Checklist Card */}
