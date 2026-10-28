@@ -49,7 +49,7 @@ export default function AdminPanel({
     setAmeexStatus('Vérification de session…');
     try {
       const sessionResponse=await fetch('/api/admin/session',{credentials:'same-origin',cache:'no-store'});
-      const sessionInfo=await sessionResponse.json();
+      const sessionInfo:any=await sessionResponse.json();
       if (!sessionInfo?.authenticated) {
         setIsAuthenticated(false);
         setAmeexStatus('Session expirée : reconnectez-vous à GLOBABOX.');
@@ -61,14 +61,14 @@ export default function AdminPanel({
         setAmeexStatus('Session expirée : reconnectez-vous.');
         return;
       }
-      const status=await statusResponse.json();
+      const status:any=await statusResponse.json();
       if(!statusResponse.ok) throw new Error('Statut API HTTP '+statusResponse.status);
       if(!status.configured) {
         setAmeexStatus('Clés test non reconnues sur le Worker déployé. Vérifiez les secrets AMEEX_API_ID et AMEEX_API_KEY_TEST.');
         return;
       }
       const citiesResponse=await fetch('/api/admin/ameex-sandbox-cities',{credentials:'same-origin',cache:'no-store'});
-      const cities=await citiesResponse.json();
+      const cities:any=await citiesResponse.json();
       setAmeexStatus(citiesResponse.ok && cities.success
         ? 'Sandbox connecté ! Lecture villes validée (nombre : '+(cities.citiesCount ?? 'non fourni')+'). Aucun colis créé.'
         : 'Clés détectées, mais lecture villes échouée (HTTP '+citiesResponse.status+', AMEEX '+(cities.upstreamStatus??'indisponible')+').');
@@ -104,7 +104,7 @@ export default function AdminPanel({
     if (res?.ok) {
       // A successful login response is not enough: verify the session cookie was
       // actually persisted before displaying protected admin actions.
-      const verified = await fetch('/api/admin/session', {credentials:'same-origin',cache:'no-store'})
+      const verified:any = await fetch('/api/admin/session', {credentials:'same-origin',cache:'no-store'})
         .then(r=>r.ok?r.json():null).catch(()=>null);
       if (verified?.authenticated === true) {
         setIsAuthenticated(true); setPasswordInput(''); setErrorMessage('');
