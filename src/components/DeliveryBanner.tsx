@@ -15,12 +15,12 @@ export default function DeliveryBanner({ language }: DeliveryBannerProps) {
     fr: {
       tag: "SERVICE DE LIVRAISON OFFICIEL MAROC",
       title: "Expédition Sécurisée & Rapide à Domicile",
-      desc: "Nous expédions vos colis avec le plus grand soin de notre dépôt de Casablanca pour garantir une livraison sans soucis.",
+      desc: "Nous expédions vos colis avec le plus grand soin depuis notre point d'expédition pour garantir une livraison sans soucis.",
       items: [
         {
           icon: <Clock className="w-5 h-5 text-orange-500 shrink-0" />,
-          title: "Livraison 24h/48h selon la ville",
-          desc: "Expédition ultra-rapide de vos colis. Chez vous en 24h à Casablanca/Rabat, et 48h max partout ailleurs."
+          title: "Livraison selon la destination",
+          desc: "Les délais de livraison sont confirmés lors de la validation de votre commande."
         },
         {
           icon: <Truck className="w-5 h-5 text-orange-500 shrink-0" />,
@@ -73,12 +73,12 @@ export default function DeliveryBanner({ language }: DeliveryBannerProps) {
     en: {
       tag: "OFFICIAL MOROCCO SHIPPING SERVICE",
       title: "Secure & Swift Courier Delivery Directly to Your Door",
-      desc: "Your packages are inspected and shipped with utmost care from our central warehouse in Casablanca.",
+      desc: "Your packages are inspected and shipped with utmost care from our dispatch location.",
       items: [
         {
           icon: <Clock className="w-5 h-5 text-orange-500 shrink-0" />,
-          title: "24h/48h Delivery depending on city",
-          desc: "Ultra-fast shipping of your goods. Reaches you within 24h in Casablanca/Rabat, and 48h elsewhere."
+          title: "Delivery timing by destination",
+          desc: "We confirm delivery timings before dispatch."
         },
         {
           icon: <Truck className="w-5 h-5 text-orange-500 shrink-0" />,

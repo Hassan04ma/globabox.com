@@ -103,7 +103,7 @@ export default function AdminPanel({
   const statDeliveredOrders = orders.filter(o => o.status === 'delivered').length;
   const statCancelledOrders = orders.filter(o => o.status === 'cancelled').length;
   const statTotalRevenue = orders
-    .filter(o => o.status !== 'cancelled')
+    .filter(o => o.status === 'delivered')
     .reduce((acc, o) => acc + o.total, 0);
   
   // Marketing Config state
@@ -1251,7 +1251,7 @@ export default function AdminPanel({
                 {
                   id: 'order_api',
                   label: 'Orders API connected',
-                  desc: launchStatus?.databaseReady ? 'Base D1 disponible; enregistrement réel de commande non encore vérifié.' : 'Vérification D1 indisponible.',
+                  desc: launchStatus?.databaseReady ? 'Base D1 disponible et accessible; les commandes se consultent dans Commandes Client.' : 'Vérification D1 indisponible.',
                   ok: launchStatus?.databaseReady === true,
                   severity: 'critical' as const,
                   configInfo: 'Cloudflare D1 /api/launch-readiness'
@@ -1266,8 +1266,8 @@ export default function AdminPanel({
                 },
                 {
                   id: 'whatsapp',
-                  label: 'Numéro WhatsApp confirmé par le propriétaire',
-                  desc: 'Numéro affiché dans le site; propriété et service clientèle à confirmer.',
+                  label: 'Téléphone et WhatsApp du service client validés',
+                  desc: 'Le numéro affiché sur le site est à confirmer comme ligne active de support client.',
                   ok: false,
                   severity: 'warning' as const,
                   configInfo: 'WhatsApp Link'
@@ -1302,25 +1302,25 @@ export default function AdminPanel({
                 },
                 {
                   id: 'delivery',
-                  label: 'Delivery policy completed',
-                  desc: 'Délais, transporteur et politique de livraison réelle à valider.',
+                  label: 'Livraison : transporteur et délais à valider',
+                  desc: 'Tarifs affichés : 35 DH sous 500 DH, gratuit dès 500 DH. Transporteur et délais exacts à confirmer.',
                   ok: false,
                   severity: 'warning' as const,
                   configInfo: 'Logistique'
                 },
                 {
                   id: 'returns',
-                  label: 'Return policy completed',
-                  desc: 'Conditions de retour et mentions légales à vérifier avant mise en ligne.',
+                  label: 'Droit de rétractation et mentions légales à valider',
+                  desc: 'Information de rétractation ajoutée. Identité juridique et procédure pratique à compléter.',
                   ok: false,
                   severity: 'warning' as const,
                   configInfo: 'Politiques'
                 },
                 {
                   id: 'sheets_sync',
-                  label: 'Diagnostic Checkout D1 (test interne)',
-                  desc: checkoutDiagnostic?.success && checkoutDiagnostic.cleanupVerified ? 'Test interne : calcul COD, écriture, lecture et suppression D1 confirmés. Parcours client public non testé.' : 'Tester le diagnostic interne (ne vérifie pas le parcours client public).',
-                  ok: checkoutDiagnostic?.success === true && checkoutDiagnostic.cleanupVerified === true,
+                  label: 'Checkout réel : commandes reçues en D1',
+                  desc: orders.some(o => o.source === 'website') ? 'Commande passée depuis la boutique et visible dans D1. Les tests annulés ne constituent pas des ventes encaissées.' : 'Aucune commande issue du site visible dans les commandes chargées.',
+                  ok: orders.some(o => o.source === 'website'),
                   severity: 'warning' as const,
                   configInfo: 'Remote D1 order verification'
                 }
