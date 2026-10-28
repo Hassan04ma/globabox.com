@@ -198,6 +198,7 @@ export default {
           const count=list?.length ?? null;
           return json({success:count!==null,reachable:true,environment:'sandbox',citiesCount:count,
             error:count===null?'AMEEX cities response not recognized. No parcel created.':undefined,
+            responseShape:count===null?{rootType:Array.isArray(data)?'array':typeof data,rootKeys:data&&typeof data==='object'&&!Array.isArray(data)?Object.keys(data as Record<string,unknown>).slice(0,12):[],citiesType:data&&typeof data==='object'&&!Array.isArray(data)?(Array.isArray((data as Record<string,unknown>).cities)?'array':typeof (data as Record<string,unknown>).cities):'absent',citiesCount:data&&typeof data==='object'&&!Array.isArray(data)&&(data as Record<string,unknown>).cities&&typeof (data as Record<string,unknown>).cities==='object'?Object.keys((data as Record<string,unknown>).cities as Record<string,unknown>).length:null}:undefined,
             note:count===null?'AMEEX returned a response but city IDs are not validated.':'Validated AMEEX city IDs; no parcel created.'},count===null?502:200);
         } catch (err) {
           console.error('AMEEX sandbox cities read failed',err);
