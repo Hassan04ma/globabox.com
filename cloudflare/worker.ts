@@ -194,6 +194,13 @@ export default {
           });
           if (!upstream.ok) return json({success:false,upstreamStatus:upstream.status,error:'AMEEX cities request failed'},502);
           const data:unknown = await upstream.json();
+          if (data && typeof data==='object' && !Array.isArray(data) &&
+             ('login' in data || 'api' in data) && !('cities' in data)) {
+            // AMEEX may return an HTTP 200 response containing an auth/error envelope.
+            // Do not expose values: they could contain sensitive implementation data.
+            return json({success:false,reachable:true,authenticationUnverified:true,
+              error:'AMEEX returned login/api envelope instead of cities. Verify sandbox API credentials and business selection; no parcel created.'},502);
+          }
           const list=ameexCities(data);
           const count=list?.length ?? null;
           return json({success:count!==null,reachable:true,environment:'sandbox',citiesCount:count,
@@ -216,6 +223,9 @@ export default {
           const c=await fetch('https://api.ameex.app/customer/Delivery/Cities',{headers,signal:AbortSignal.timeout(10000)});
           if(!c.ok) return json({error:'Cities unavailable; no parcel created',upstreamStatus:c.status},502);
           const raw:unknown=await c.json();
+          if(raw && typeof raw==='object' && !Array.isArray(raw) &&
+             ('login' in raw || 'api' in raw) && !('cities' in raw))
+            return json({error:'AMEEX did not return authorized cities; no parcel created'},409);
           const cities=ameexCities(raw);
           if(!cities?.length) return json({error:'City list not validated; no parcel created'},409);
           const agadir=cities.find(c=>c.name.toLowerCase()==='agadir');
