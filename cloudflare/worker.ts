@@ -172,9 +172,20 @@ export default {
           });
           if (!upstream.ok) return json({success:false,upstreamStatus:upstream.status,error:'AMEEX cities request failed'},502);
           const data:unknown = await upstream.json();
-          const count = Array.isArray(data) ? data.length : (data && typeof data === 'object' && 'data' in data && Array.isArray(data.data)) ? data.data.length : null;
-          return json({success:true,environment:'sandbox',citiesCount:count,
-            note:'Read-only connectivity succeeded. No parcel was created.'});
+          // AMEEX response may wrap the list. Never claim a complete API check
+          // solely on HTTP 200 when the response structure was not recognized.
+          const obj = data && typeof data === 'object' && !Array.isArray(data) ? data as Record<string,unknown> : null;
+          const candidates = [
+            data, obj?.data, obj?.Data, obj?.cities, obj?.Cities,
+            obj?.result, obj?.Result, obj?.results,
+            ...(obj && typeof obj.data === 'object' && obj.data && !Array.isArray(obj.data)
+              ? [((obj.data) as Record<string,unknown>).cities,((obj.data) as Record<string,unknown>).items] : [])
+          ];
+          const list = candidates.find(Array.isArray) as unknown[] | undefined;
+          const count = list?.length ?? null;
+          return json({success:count!==null,reachable:true,environment:'sandbox',citiesCount:count,
+            error: count===null ? 'Cities response format not recognized; read-only connectivity only.' : undefined,
+            note:count===null ? 'AMEEX responded, but cities were not validated. No parcel created.' : 'AMEEX cities read succeeded. No parcel was created.'},count===null?502:200);
         } catch (err) {
           console.error('AMEEX sandbox cities read failed',err);
           return json({success:false,error:'AMEEX sandbox connectivity failed'},502);
