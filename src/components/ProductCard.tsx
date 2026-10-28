@@ -159,7 +159,7 @@ export default function ProductCard({
           <div className="flex flex-wrap gap-1 mt-3">
             <span className="inline-flex items-center gap-1.5 bg-blue-50/70 border border-blue-100/80 px-2 py-1 rounded-lg text-blue-900 text-[9px] font-extrabold font-sans select-none shadow-sm">
               <Truck size={12} className="text-blue-600 shrink-0" />
-              <span>{t('badge_free_delivery')}</span>
+              <span>{language === 'ar' ? (product.price >= 500 ? 'توصيل مجاني' : 'التوصيل 35 درهم') : language === 'en' ? (product.price >= 500 ? 'Free delivery' : 'Delivery: 35 DH') : (product.price >= 500 ? 'Livraison gratuite' : 'Livraison : 35 DH')}</span>
             </span>
             <span className="inline-flex items-center gap-1 bg-slate-100/80 border border-slate-200 px-2 py-1 rounded-lg text-slate-700 text-[9px] font-extrabold font-sans select-none shadow-sm">
               <ShieldCheck size={12} className="text-slate-500 shrink-0" />
