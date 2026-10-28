@@ -14,8 +14,8 @@ export default function FreeDeliverySection({ language }: FreeDeliverySectionPro
     fr: {
       badge: "LIVRAISON GRATUITE & CONFORT MAXIMUM",
       title: "Profitez de la Livraison Gratuite Partout au Maroc !",
-      desc: "À partir de 500 DH d'achat (ou pour tout achat de nos Packs Économiques), Globabox prend en charge l'intégralité des frais de transport directement chez vous. Aucune surprise à la livraison !",
-      citiesTitle: "Villes principales desservies en 24h/48h :",
+      desc: "À partir de 500 DH d'achat , Globabox prend en charge l'intégralité des frais de transport directement chez vous. Aucune surprise à la livraison !",
+      citiesTitle: "Principales villes desservies :",
       cities: ["Casablanca", "Rabat", "Marrakech", "Agadir", "Tanger", "Fès", "Meknès", "Oujda", "Laâyoune", "Et partout au Maroc"],
       stats: [
         {
@@ -30,7 +30,7 @@ export default function FreeDeliverySection({ language }: FreeDeliverySectionPro
         },
         {
           icon: <CheckCircle className="w-5 h-5 text-emerald-500" />,
-          label: "Expédition sous 24h",
+          label: "Expédition après confirmation",
           sub: "Traitement ultra-rapide"
         }
       ],
@@ -43,8 +43,8 @@ export default function FreeDeliverySection({ language }: FreeDeliverySectionPro
         },
         {
           step: "02",
-          heading: "Expédition sécurisée (24h/48h)",
-          text: "Votre colis est soigneusement emballé au dépôt de Casablanca, remis à notre transporteur de confiance pour une livraison express chez vous en 24h/48h selon votre ville."
+          heading: "Expédition après confirmation",
+          text: "Après confirmation, votre colis est préparé et confié au transporteur. Le délai estimé vous sera communiqué avant l’expédition."
         },
         {
           step: "03",
@@ -56,7 +56,7 @@ export default function FreeDeliverySection({ language }: FreeDeliverySectionPro
     ar: {
       badge: "الشحن المجاني والراحة والضمان",
       title: "استمتعوا بالتوصيل المجاني إلى جميع مدن المغرب بالكامل !",
-      desc: "عند الشراء بقيمة 500 درهم أو أكثر (أو عند طلب أي من باقاتنا الاقتصادية)، تتكفل جلوبابوكس بدفع كامل مصاريف التوصيل حتى باب بيتكم. خالية من أي رسوم مفاجئة !",
+      desc: "عند الشراء بقيمة 500 درهم أو أكثر، تتكفل جلوبابوكس بدفع كامل مصاريف التوصيل حتى باب بيتكم. خالية من أي رسوم مفاجئة !",
       citiesTitle: "المدن المغطاة بالتوصيل السريع (24-48 ساعة):",
       cities: ["الدار البيضاء", "الرباط", "مراكش", "أكادير", "طنجة", "فاس", "مكناس", "وجدة", "العيون", "وجميع المدن الأخرى المغربية"],
       stats: [
@@ -86,7 +86,7 @@ export default function FreeDeliverySection({ language }: FreeDeliverySectionPro
         {
           step: "02",
           heading: "شحن سريع وآمن خلال 24/48 ساعة",
-          text: "يتم تعبئة وتجهيز طلبيتك بعناية كبيرة بمركز التوزيع بالدار البيضاء، ثم تُسلم إلى شريكنا المعتمد لتصلك في 24 إلى 48 ساعة حسب مدينتك."
+          text: "بعد تأكيد الطلب، يتم تجهيزه وتسليمه لشركة التوصيل، مع إخباركم بالمدة المتوقعة قبل الإرسال."
         },
         {
           step: "03",
@@ -98,8 +98,8 @@ export default function FreeDeliverySection({ language }: FreeDeliverySectionPro
     en: {
       badge: "FREE SHIPPING & MAXIMUM TRUST ASSURANCE",
       title: "Enjoy 100% Free Shipping Anywhere in Morocco!",
-      desc: "For purchases above 500 DH (or when ordering any of our economic bundles), Globabox bears all transport fees to your address. No hidden delivery costs, ever!",
-      citiesTitle: "Major Cities Served within 24h/48h:",
+      desc: "For purchases above 500 DH , Globabox bears all transport fees to your address. No hidden delivery costs, ever!",
+      citiesTitle: "Major cities served:",
       cities: ["Casablanca", "Rabat", "Marrakech", "Agadir", "Tanger", "Fes", "Meknes", "Oujda", "Laayoune", "And anywhere in Morocco"],
       stats: [
         {
@@ -114,7 +114,7 @@ export default function FreeDeliverySection({ language }: FreeDeliverySectionPro
         },
         {
           icon: <CheckCircle className="w-5 h-5 text-emerald-500" />,
-          label: "Dispatched within 24h",
+          label: "Dispatched after confirmation",
           sub: "Ultra express handling"
         }
       ],
@@ -127,8 +127,8 @@ export default function FreeDeliverySection({ language }: FreeDeliverySectionPro
         },
         {
           step: "02",
-          heading: "Express Morocco delivery (24h/48h)",
-          text: "Your order is prepared at our Casablanca depot and handed over to our delivery networks to reach your address in 24h/48h depending on the city."
+          heading: "Delivery after confirmation",
+          text: "After confirmation, the order is prepared and handed over to the carrier. An estimated delivery time is communicated before dispatch."
         },
         {
           step: "03",
