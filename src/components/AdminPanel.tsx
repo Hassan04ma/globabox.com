@@ -44,6 +44,37 @@ export default function AdminPanel({
     finally{setCheckoutDiagnosticBusy(false);}
   };
 
+  const checkAmeexSandbox = async () => {
+    setAmeexBusy(true);
+    setAmeexStatus('Vérification de session…');
+    try {
+      const sessionResponse=await fetch('/api/admin/session',{credentials:'same-origin',cache:'no-store'});
+      const sessionInfo=await sessionResponse.json();
+      if (!sessionInfo?.authenticated) {
+        setIsAuthenticated(false);
+        setAmeexStatus('Session expirée : reconnectez-vous à GLOBABOX.');
+        return;
+      }
+      const statusResponse=await fetch('/api/admin/ameex-sandbox-status',{credentials:'same-origin',cache:'no-store'});
+      if(statusResponse.status===401) {
+        setIsAuthenticated(false);
+        setAmeexStatus('Session expirée : reconnectez-vous.');
+        return;
+      }
+      const status=await statusResponse.json();
+      if(!statusResponse.ok) throw new Error('Statut API HTTP '+statusResponse.status);
+      if(!status.configured) {
+        setAmeexStatus('Clés test non reconnues sur le Worker déployé. Vérifiez les secrets AMEEX_API_ID et AMEEX_API_KEY_TEST.');
+        return;
+      }
+      const citiesResponse=await fetch('/api/admin/ameex-sandbox-cities',{credentials:'same-origin',cache:'no-store'});
+      const cities=await citiesResponse.json();
+      setAmeexStatus(citiesResponse.ok && cities.success
+        ? 'Sandbox connecté ! Lecture villes validée (nombre : '+(cities.citiesCount ?? 'non fourni')+'). Aucun colis créé.'
+        : 'Clés détectées, mais lecture villes échouée (HTTP '+citiesResponse.status+', AMEEX '+(cities.upstreamStatus??'indisponible')+').');
+    } catch(e) {setAmeexStatus('Erreur de connexion : '+(e instanceof Error?e.message:'inconnue'));}
+    finally{setAmeexBusy(false);}
+  };
   const runD1Probe = async () => {
     setD1ProbeStatus('running');
     try {
@@ -54,11 +85,13 @@ export default function AdminPanel({
   };
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [ameexStatus, setAmeexStatus] = useState<string>('Non vérifié');
+  const [ameexBusy, setAmeexBusy] = useState(false);
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   useEffect(() => {
-    fetch('/api/admin/session').then(r => r.ok ? r.json() : { authenticated: false })
+    fetch('/api/admin/session', {credentials:'same-origin',cache:'no-store'}).then(r => r.ok ? r.json() : { authenticated: false })
       .then((d: unknown) => setIsAuthenticated(!!(d && typeof d === 'object' && 'authenticated' in d && d.authenticated === true)))
       .catch(() => setIsAuthenticated(false)).finally(() => setAuthLoading(false));
   }, []);
@@ -68,7 +101,17 @@ export default function AdminPanel({
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: usernameInput, password: passwordInput })
     }).catch(() => null);
-    if (res?.ok) { setIsAuthenticated(true); setPasswordInput(''); setErrorMessage(''); }
+    if (res?.ok) {
+      // A successful login response is not enough: verify the session cookie was
+      // actually persisted before displaying protected admin actions.
+      const verified = await fetch('/api/admin/session', {credentials:'same-origin',cache:'no-store'})
+        .then(r=>r.ok?r.json():null).catch(()=>null);
+      if (verified?.authenticated === true) {
+        setIsAuthenticated(true); setPasswordInput(''); setErrorMessage('');
+      } else {
+        setErrorMessage('Connexion acceptée, mais session non conservée. Autorisez les cookies de globabox.com, puis réessayez.');
+      }
+    }
     else if (res?.status === 503) setErrorMessage('Serveur non configuré : vérifiez ADMIN_PASSWORD (12+ caractères) et ADMIN_SESSION_SECRET (32+ caractères) dans Runtime Secrets.');
     else if (res?.status === 401) setErrorMessage('Nom d’utilisateur ou mot de passe incorrect.');
     else if (res?.status === 403) setErrorMessage('Origine du site refusée. Ouvrez directement le lien workers.dev.');
@@ -1236,6 +1279,17 @@ export default function AdminPanel({
               <button type="button" disabled={checkoutDiagnosticBusy} onClick={runCheckoutDiagnostic}
                 className="bg-orange-600 hover:bg-orange-500 disabled:opacity-60 px-4 py-2.5 rounded-xl text-xs text-white font-bold">
                 {checkoutDiagnosticBusy?'Test…':'Tester Checkout D1'}
+              </button>
+            </div>
+            <div className="bg-[#0b1528] border border-[#1c2e4a] rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-xs font-bold text-white">AMEEX Sandbox • Test connexion sécurisé</h3>
+                <p className="text-[11px] text-slate-400">Vérifie la session admin, les clés de test et la liste des villes. Ne crée aucun colis.</p>
+                <p className="text-xs text-orange-300 mt-2">{ameexStatus}</p>
+              </div>
+              <button type="button" disabled={ameexBusy} onClick={checkAmeexSandbox}
+                className="bg-orange-600 hover:bg-orange-500 disabled:opacity-60 px-4 py-2.5 rounded-xl text-xs text-white font-bold">
+                {ameexBusy ? 'Test en cours…' : 'Tester AMEEX Sandbox'}
               </button>
             </div>
             {/* Final Launch Checklist Card */}
