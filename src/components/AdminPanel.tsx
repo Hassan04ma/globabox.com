@@ -69,9 +69,18 @@ export default function AdminPanel({
       }
       const citiesResponse=await fetch('/api/admin/ameex-sandbox-cities',{credentials:'same-origin',cache:'no-store'});
       const cities:any=await citiesResponse.json();
+      // Display only server-sanitized response metadata within the admin UI.
+      // Direct browser navigation to /api/admin/* may not share the working session.
+      const shape=cities?.responseShape;
+      const summary=shape && typeof shape === 'object'
+        ? ' Type: '+String(shape.rootType ?? '?')+
+          ' | Champs: '+(Array.isArray(shape.rootKeys) ? shape.rootKeys.map(String).join(', ') : '?')+
+          ' | cities: '+String(shape.citiesType ?? '?')+
+          ' | Nombre entrées: '+String(shape.citiesCount ?? '?')
+        : ' (aucun diagnostic de format disponible)';
       setAmeexStatus(citiesResponse.ok && cities.success
         ? 'Sandbox connecté ! Lecture villes validée (nombre : '+(cities.citiesCount ?? 'non fourni')+'). Aucun colis créé.'
-        : (cities.reachable ? 'AMEEX accessible, mais format de la liste des villes à vérifier.' : 'Clés détectées, mais lecture villes échouée (HTTP '+citiesResponse.status+', AMEEX '+(cities.upstreamStatus??'indisponible')+').'));
+        : (cities.reachable ? 'AMEEX accessible, format des villes non reconnu. '+summary : 'Clés détectées, mais lecture villes échouée (HTTP '+citiesResponse.status+', AMEEX '+(cities.upstreamStatus??'indisponible')+').'));
     } catch(e) {setAmeexStatus('Erreur de connexion : '+(e instanceof Error?e.message:'inconnue'));}
     finally{setAmeexBusy(false);}
   };
