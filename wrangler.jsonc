@@ -3,6 +3,9 @@
   "name": "globabox-com",
   "main": "cloudflare/worker.ts",
   "compatibility_date": "2026-10-01",
+  "vars": {
+    "STORE_ACCEPTING_ORDERS": "true"
+  },
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
