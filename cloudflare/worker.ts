@@ -196,13 +196,7 @@ export default {
         if (!env.AMEEX_API_ID || !env.AMEEX_API_KEY_TEST?.startsWith('test_'))
           return json({error:'Test credentials missing'},503);
         // Never consume customer orders or create a production shipment.
-        // Explicit single-use diagnostic; D1 prevents accidental duplicate submissions.
-        await env.DB.prepare('CREATE TABLE IF NOT EXISTS integration_diagnostics (id TEXT PRIMARY KEY, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run();
-        const diagnosticId='ameex-sandbox-parcel-v1';
-        const existing=await env.DB.prepare('SELECT id FROM integration_diagnostics WHERE id=?').bind(diagnosticId).first();
-        if(existing) return json({error:'Sandbox parcel diagnostic already attempted. No second attempt allowed.'},409);
-        const guard=await env.DB.prepare('INSERT OR IGNORE INTO integration_diagnostics (id) VALUES (?)').bind(diagnosticId).run();
-        if(guard.meta?.changes!==1) return json({error:'Duplicate attempt prevented'},409);
+        // A test_ key is essential; the caller cannot supply arbitrary credentials.
         const headers={'C-Api-Id':env.AMEEX_API_ID,'C-Api-Key':env.AMEEX_API_KEY_TEST,'Accept':'application/json'};
         try {
           const c=await fetch('https://api.ameex.app/customer/Delivery/Cities',{headers,signal:AbortSignal.timeout(10000)});
@@ -214,6 +208,12 @@ export default {
           const city=cities.find(v=>v && typeof v==='object' && Number.isInteger(Number(v.id??v.Id??v.city_id)) && Number(v.id??v.Id??v.city_id)>0);
           if(!city) return json({error:'No numeric city ID; no parcel created'},409);
           const cityId=Number(city.id??city.Id??city.city_id);
+          // Reserve the one permitted outbound attempt ONLY once local validation
+          // succeeded. A read-only discovery error must not consume the allowance.
+          await env.DB.prepare('CREATE TABLE IF NOT EXISTS integration_diagnostics (id TEXT PRIMARY KEY, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run();
+          const diagnosticId='ameex-sandbox-parcel-v1';
+          const guard=await env.DB.prepare('INSERT OR IGNORE INTO integration_diagnostics (id) VALUES (?)').bind(diagnosticId).run();
+          if(guard.meta?.changes!==1) return json({error:'Sandbox parcel was already attempted; no duplicate submission allowed.'},409);
           const form=new URLSearchParams({
             type:'SIMPLE',receiver:'TEST GLOBABOX SANDBOX NE PAS LIVRER',
             phone:'0600000000',city:String(cityId),cod:'1',
