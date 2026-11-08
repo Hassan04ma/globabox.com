@@ -2,6 +2,9 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "globabox-com",
   "main": "cloudflare/worker.ts",
+  "vars": {
+    "STORE_ACCEPTING_ORDERS": "true"
+  },
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./dist",
