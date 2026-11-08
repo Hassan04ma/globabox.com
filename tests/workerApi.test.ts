@@ -13,11 +13,13 @@ const db = {
         return null;
       },
       async all() {
+        if (sql.includes('FROM category_overrides')) return { results: [] };
         if (sql.includes('FROM products')) return { results: [] };
         if (sql.includes('FROM orders')) return { results: savedOrders.map(order => ({data_json: JSON.stringify(order)})) };
         throw new Error('Unexpected all(): ' + sql);
       },
       async run() {
+        if (sql.startsWith('CREATE TABLE IF NOT EXISTS category_overrides')) return {success:true,meta:{changes:0}};
         if (sql.startsWith('DELETE FROM orders')) {
           const i=savedOrders.findIndex(o=>o.id===params[0]);
           if(i>=0)savedOrders.splice(i,1);
@@ -57,6 +59,15 @@ assert.deepEqual(await publishedCatalogWhenUnconfigured.json(), [],
 const forbiddenOrders = await request('/api/orders');
 assert.equal(forbiddenOrders.status, 401, 'Unidentified customers cannot list orders');
 assert.equal((await request('/api/admin/products')).status, 401, 'Admin catalog is private');
+assert.equal((await request('/api/admin/categories')).status, 401, 'Category editing is private');
+assert.equal((await request('/api/admin/categories', {
+  method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({id:'unsafe-change',name:{fr:'Unauthorized'},image:'https://example.test/image.jpg'})
+})).status, 401, 'Public visitors cannot create a category');
+const publicCategories=await request('/api/categories');
+assert.equal(publicCategories.status,200,'Public category list is readable');
+const publicCategoryItems=await publicCategories.json() as any[];
+assert.equal(publicCategoryItems.length>=16,true,'Default categories remain available if no D1 overrides exist');
 assert.equal((await request('/api/products/demo', {method:'DELETE'})).status, 401,
   'Public visitors cannot remove products');
 
