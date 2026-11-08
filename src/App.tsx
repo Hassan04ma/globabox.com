@@ -213,42 +213,18 @@ export default function App() {
     return saved ? JSON.parse(saved) : PRODUCTS;
   });
 
-  const [categories, setCategories] = useState<any[]>(() => {
-    // Refresh the curated default category photography while preserving edits
-    // made by the merchant (names, new categories, and custom uploaded images).
-    // Older browsers stored only the original default category images.
-    try {
-      const stored = localStorage.getItem('globabox_categories_v1');
-      if (!stored) return CATEGORIES;
-      const parsed = JSON.parse(stored);
-      if (!Array.isArray(parsed)) return CATEGORIES;
-      const oldDefaultImages = new Map([
-        ['sacs_trekking', ''],
-        ['camping', 'photo-1504280390367-361c6d9f38f4'],
-        ['tentes', 'photo-1510312305653-8ed496efae75'],
-        ['sacs_de_couchage', 'photo-1515621061946-eff1c2a352bd'],
-        ['casquettes', 'photo-1588850561407-ed78c282e89b'],
-        ['chaussures', 'photo-1520639888713-7851133b1ed0'],
-        ['rechauds', 'photo-1598048604770-5bfa37b1cc11'],
-        ['tables_chaises', 'photo-1617103996702-96ff29b1c467'],
-        ['chasse', 'photo-1550745165-9bc0b252726f'],
-        ['peche', 'photo-1544551763-46a013bb70d5'],
-        ['accessoires', 'photo-1618336753974-aae8e04506aa'],
-        ['outdoor-tools', 'photo-1540324155974-72413d906757'],
-        ['maison', 'photo-1583847268964-b28dc8f51f92'],
-        ['sport_loisirs', 'photo-1551632811-561732d1e306'],
-        ['moins_99', 'photo-1607082348824-0a96f2a4b9da'],
-        ['offres_packs', 'photo-1555529669-e69e7aa0ba9a']
-      ]);
-      return parsed.map((cat: any) => {
-        const current = CATEGORIES.find(entry => entry.id === cat?.id);
-        const legacy = oldDefaultImages.get(cat?.id);
-        const image = typeof cat?.image === 'string' ? cat.image : '';
-        const isOldDefault = legacy !== undefined && (image === legacy || (legacy !== '' && image.includes(legacy)));
-        return current && isOldDefault ? {...cat, image: current.image} : cat;
-      });
-    } catch { return CATEGORIES; }
-  });
+  // Live category metadata is served by D1; keep bundled defaults only as a network fallback.
+  const [categories, setCategories] = useState<any[]>(CATEGORIES);
+
+  useEffect(() => {
+    fetch('/api/categories', {cache:'no-store'})
+      .then(async response => {
+        if (!response.ok) throw new Error('Categories HTTP ' + response.status);
+        return response.json();
+      })
+      .then(data => { if (Array.isArray(data)) setCategories(data); })
+      .catch(error => console.warn('[GLOBABOX CATEGORIES] Using bundled fallback:',error));
+  }, []);
 
   // Admin-only order state: never hydrate customers' private orders from browser storage.
   const [orders, setOrders] = useState<Order[]>([]);

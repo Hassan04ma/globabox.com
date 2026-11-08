@@ -1,4 +1,4 @@
-import { PRODUCTS } from '../src/data';
+import { PRODUCTS, CATEGORIES } from '../src/data';
 import { isAdmin, handleAdminAuth } from './auth';
 import { quoteOrder } from './orderQuote';
 
@@ -34,6 +34,60 @@ function ameexCities(raw: unknown): Array<{id:number;name:string}> | null {
     normalized.push({id,name:item.name.trim()});
   }
   return normalized;
+}
+
+
+type CategoryRecord = {
+  id: string;
+  name: {fr:string;ar:string;en:string};
+  image: string;
+  description: {fr:string;ar:string;en:string};
+  isActive: boolean;
+};
+const CATEGORY_ID_RE = /^[a-z0-9][a-z0-9_-]{1,63}$/;
+const MAX_CATEGORY_TEXT = 200;
+const categoryText = (value: unknown, max = MAX_CATEGORY_TEXT) =>
+  typeof value === 'string' ? value.trim().slice(0,max) : '';
+const safeCategoryImage = (value: unknown) => {
+  if (typeof value !== 'string' || value.length > 1500) return false;
+  if (/^\/api\/product-media\/[a-f0-9-]{36}$/.test(value)) return true;
+  try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password; }
+  catch { return false; }
+};
+function parseCategoryPayload(payload:any, fallback?:CategoryRecord):CategoryRecord|null {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return null;
+  const id = categoryText(payload.id,64);
+  const fr=categoryText(payload.name?.fr);
+  const ar=categoryText(payload.name?.ar);
+  const en=categoryText(payload.name?.en);
+  const image=typeof payload.image==='string'?payload.image.trim():'';
+  if (!CATEGORY_ID_RE.test(id) || !fr || !image || !safeCategoryImage(image)) return null;
+  const description = {
+    fr:categoryText(payload.description?.fr,500),
+    ar:categoryText(payload.description?.ar,500),
+    en:categoryText(payload.description?.en,500)
+  };
+  return {id,name:{fr,ar:ar||fr,en:en||fr},image,description,
+    isActive:typeof payload.isActive==='boolean'?payload.isActive:(fallback?.isActive??true)};
+}
+async function categoryList(db:D1Database, includeInactive=false):Promise<CategoryRecord[]> {
+  // Overrides allow editing builtin categories without deleting their defaults.
+  await db.prepare('CREATE TABLE IF NOT EXISTS category_overrides (id TEXT PRIMARY KEY, data_json TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run();
+  const rows=await db.prepare('SELECT id,data_json,active FROM category_overrides').all<{id:string;data_json:string;active:number}>();
+  const overrides=new Map<string,CategoryRecord>();
+  for(const row of rows.results) {
+    try { const parsed=JSON.parse(row.data_json) as CategoryRecord;
+      overrides.set(row.id,{...parsed,isActive:row.active===1}); }
+    catch { console.error('Invalid category override',row.id); }
+  }
+  const fromDefault=CATEGORIES.map(cat=>({
+    id:cat.id,name:cat.name,image:cat.image,
+    description:cat.description||{fr:'',ar:'',en:''},isActive:true
+  }));
+  const all=fromDefault.map(cat=>overrides.get(cat.id)||cat);
+  const ids=new Set(fromDefault.map(cat=>cat.id));
+  for(const [id,cat] of overrides) if(!ids.has(id)) all.push(cat);
+  return includeInactive?all:all.filter(cat=>cat.isActive);
 }
 
 const auth = isAdmin;
@@ -339,6 +393,47 @@ export default {
           checkoutVerified:false,
           note:'Remote D1 insert/read/delete check only. This is not an end-to-end customer checkout test.'
         },writeVerified && cleanupVerified ? 200 : 503);
+      }
+
+      if (path === '/api/categories' && method === 'GET') {
+        const categories=await categoryList(env.DB);
+        return json(categories);
+      }
+      if (path === '/api/admin/categories' && method === 'GET') {
+        if (!await auth(request,env)) return json({error:'Unauthorized'},401);
+        return json(await categoryList(env.DB,true));
+      }
+      if (path === '/api/admin/categories' && method === 'POST') {
+        if (!await auth(request,env)) return json({error:'Unauthorized'},401);
+        const payload=await readBody(request);
+        const category=parseCategoryPayload(payload);
+        if(!category) return json({error:'Catégorie invalide: nom, ID et image HTTPS requis'},400);
+        const all=await categoryList(env.DB,true);
+        if(all.some(cat=>cat.id===category.id)) return json({error:'Identifiant de catégorie déjà utilisé'},409);
+        const saved=await env.DB.prepare('INSERT INTO category_overrides (id,data_json,active) VALUES (?,?,?)')
+          .bind(category.id,JSON.stringify(category),category.isActive?1:0).run();
+        return saved.success ? json({success:true,category},201) : json({error:'Enregistrement non confirmé'},503);
+      }
+      const categoryMatch=path.match(/^\/api\/admin\/categories\/([a-z0-9_-]+)$/);
+      if (categoryMatch && method === 'PUT') {
+        if (!await auth(request,env)) return json({error:'Unauthorized'},401);
+        const id=categoryMatch[1];
+        const all=await categoryList(env.DB,true);
+        const existing=all.find(cat=>cat.id===id);
+        if(!existing) return json({error:'Catégorie introuvable'},404);
+        const payload=await readBody(request);
+        if (payload?.id!==id) return json({error:'Identifiant de catégorie immuable'},400);
+        const category=parseCategoryPayload(payload,existing);
+        if(!category) return json({error:'Données de catégorie invalides'},400);
+        // Do not hide an existing category with published products.
+        if(!category.isActive && existing.isActive) {
+          const activeProducts=await listProducts(env.DB,false,env.STORE_DEMO_CATALOG==='true');
+          if(activeProducts.some((p:any)=>p.category===id))
+            return json({error:'Cette catégorie contient des produits publiés. Déplacez-les avant de la désactiver.'},409);
+        }
+        const saved=await env.DB.prepare('INSERT INTO category_overrides (id,data_json,active) VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET data_json=excluded.data_json,active=excluded.active,updated_at=CURRENT_TIMESTAMP')
+          .bind(id,JSON.stringify(category),category.isActive?1:0).run();
+        return saved.success ? json({success:true,category}) : json({error:'Mise à jour non confirmée'},503);
       }
       if (path === '/api/products' && method === 'GET') return json(await listProducts(env.DB, false, env.STORE_DEMO_CATALOG === 'true'));
       if (path === '/api/admin/products' && method === 'GET') {

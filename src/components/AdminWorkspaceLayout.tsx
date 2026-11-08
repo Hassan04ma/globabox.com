@@ -61,11 +61,11 @@ export default function AdminWorkspaceLayout({
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-[#081221] font-sans text-white">
-      <header className="flex h-[76px] shrink-0 items-center justify-between gap-4 border-b border-[#253955] bg-[#0c1a30] px-4 sm:px-6">
+      <header className={`flex h-[76px] shrink-0 items-center justify-between gap-4 border-b px-4 sm:px-6 ${activeTab === 'categories' ? 'border-slate-200 bg-white' : 'border-[#253955] bg-[#0c1a30]'}`}>
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 text-sm font-black shadow-lg shadow-orange-950/20" aria-hidden="true">GB</div>
           <div className="min-w-0">
-            <h1 className="truncate text-base font-extrabold text-white sm:text-lg">GLOBABOX <span className="font-medium text-slate-400">/ Espace marchand</span></h1>
+            <h1 className={`truncate text-base font-extrabold sm:text-lg ${activeTab === 'categories' ? 'text-[#101d37]' : 'text-white'}`}>GLOBABOX <span className="font-medium text-slate-400">/ Espace marchand</span></h1>
             <p className="hidden text-xs text-slate-400 sm:block">Commandes, produits, stock et performances</p>
           </div>
         </div>
@@ -112,7 +112,7 @@ export default function AdminWorkspaceLayout({
           <nav aria-label="Navigation administration mobile" className="flex shrink-0 gap-2 overflow-x-auto border-b border-[#253955] bg-[#0c1a30] px-3 py-2 lg:hidden">
             {sections.map(section => navButton(section, true))}
           </nav>
-          <div className="flex shrink-0 flex-col gap-3 border-b border-[#20314d] bg-[#0b172b] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+          <div className={`flex shrink-0 flex-col gap-3 border-b px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7 ${activeTab === 'categories' ? 'hidden' : 'border-[#20314d] bg-[#0b172b]'}`}>
             <div className="min-w-0">
               <p className="text-[11px] font-medium text-orange-400">GLOBABOX / ADMINISTRATION</p>
               <h2 className="mt-1 text-xl font-bold tracking-tight text-white">{selectedSection.label}</h2>
@@ -138,7 +138,7 @@ export default function AdminWorkspaceLayout({
               )}
             </div>
           </div>
-          <main className="min-h-0 flex-1 overflow-y-auto bg-[#081221]">
+          <main className={`min-h-0 flex-1 overflow-y-auto ${activeTab === 'categories' ? 'bg-[#f5f7fc]' : 'bg-[#081221]'}`}>
             {children}
           </main>
         </div>
