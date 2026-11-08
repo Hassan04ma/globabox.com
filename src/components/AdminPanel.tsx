@@ -5,6 +5,7 @@ import { MOROCCAN_CITIES, ORDER_SUPPORT_NUMBER, WHATSAPP_NUMBER } from '../data'
 import { getTrackingConfig, saveTrackingConfig, TrackingConfig, isTrackerValid } from '../utils/analytics';
 import ProductImage from './ProductImage';
 import AdminWorkspaceLayout from './AdminWorkspaceLayout';
+import AdminCategoriesWorkspace from './AdminCategoriesWorkspace';
 
 interface AdminPanelProps {
   language: Language;
@@ -281,22 +282,6 @@ export default function AdminPanel({
     featuresFr: [],
     featuresAr: [],
     featuresEn: [],
-  });
-
-  // Editing Category states
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [categoryForm, setCategoryForm] = useState<{
-    id: string;
-    nameFr: string;
-    nameAr: string;
-    nameEn: string;
-    image: string;
-  }>({
-    id: '',
-    nameFr: '',
-    nameAr: '',
-    nameEn: '',
-    image: '',
   });
 
   // Persist before updating the visible order; never report an unsaved state as successful.
@@ -987,42 +972,6 @@ export default function AdminPanel({
         alert("Erreur de suppression du produit.");
       });
     }
-  };
-
-  // Initiate Category Edit
-  const handleStartEditCategory = (cat: Category) => {
-    setEditingCategory(cat);
-    setCategoryForm({
-      id: cat.id,
-      nameFr: cat.name.fr,
-      nameAr: cat.name.ar,
-      nameEn: cat.name.en,
-      image: cat.image,
-    });
-  };
-
-  // Save category details
-  const handleSaveCategory = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!categoryForm.nameFr.trim()) {
-      alert('Nom de catégorie requis.');
-      return;
-    }
-
-    const updatedCat: Category = {
-      id: categoryForm.id,
-      name: {
-        fr: categoryForm.nameFr,
-        ar: categoryForm.nameAr || categoryForm.nameFr,
-        en: categoryForm.nameEn || categoryForm.nameFr,
-      },
-      image: categoryForm.image || 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&q=80&w=400',
-    };
-
-    const updatedList = categories.map(c => c.id === categoryForm.id ? updatedCat : c);
-    setCategories(updatedList);
-    localStorage.setItem('globabox_categories_v1', JSON.stringify(updatedList));
-    setEditingCategory(null);
   };
 
   // Filters calculation
@@ -2503,101 +2452,13 @@ export default function AdminPanel({
           </div>
         )}
 
-        {/* VIEW 3: CATEGORIES LIST */}
+        {/* Category CRUD, search, image and D1 persistence. */}
         {activeTab === 'categories' && (
-          <div className="space-y-6">
-            
-            {/* Editing Category details overlay form */}
-            {editingCategory && (
-              <div className="bg-[#0b1528] rounded-2xl border border-[#22395e] p-5 space-y-4 max-w-xl">
-                <h3 className="text-xs font-black uppercase tracking-wider text-orange-400">
-                  Modifier la catégorie : {editingCategory.name.fr}
-                </h3>
-                
-                <form onSubmit={handleSaveCategory} className="space-y-3.5 text-xs">
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 uppercase font-black">Nom Français</label>
-                    <input
-                      type="text"
-                      className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white"
-                      value={categoryForm.nameFr}
-                      onChange={(e) => setCategoryForm({...categoryForm, nameFr: e.target.value})}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 uppercase font-black">Nom Arabe</label>
-                    <input
-                      type="text"
-                      className="w-full bg-[#122037] border border-[#213757] text-right rounded-xl py-2 px-3 text-white"
-                      value={categoryForm.nameAr}
-                      onChange={(e) => setCategoryForm({...categoryForm, nameAr: e.target.value})}
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 uppercase font-black">URL de l'image de la Catégorie</label>
-                    <input
-                      type="text"
-                      className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white font-mono"
-                      value={categoryForm.image}
-                      onChange={(e) => setCategoryForm({...categoryForm, image: e.target.value})}
-                    />
-                  </div>
-
-                  <div className="flex gap-2 pt-2">
-                    <button
-                      type="submit"
-                      className="bg-orange-600 hover:bg-orange-500 text-white font-extrabold px-5 py-2.5 rounded-xl cursor-pointer"
-                    >
-                      Enregistrer
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setEditingCategory(null)}
-                      className="bg-[#1c2d49] text-white font-bold px-4 py-2.5 rounded-xl cursor-pointer"
-                    >
-                      Annuler
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
-
-            {/* Categories Table list */}
-            <div className="bg-[#0b1528] rounded-2xl border border-[#1c2e4a] overflow-hidden text-xs">
-              <div className="bg-[#0f1d35] px-4 py-3 border-b border-[#1c2e4a] grid grid-cols-12 gap-2 text-slate-400 uppercase tracking-widest text-[9px] font-black">
-                <div className="col-span-1">Image</div>
-                <div className="col-span-2">ID Technique</div>
-                <div className="col-span-4">Nom Français</div>
-                <div className="col-span-4 text-right">Nom Arabe</div>
-                <div className="col-span-1 text-center">Action</div>
-              </div>
-
-              <div className="divide-y divide-[#1c2e4a]/50">
-                {categories.map((cat) => (
-                  <div key={cat.id} className="px-4 py-3 grid grid-cols-12 gap-2 items-center hover:bg-[#13223c]/40 transition-colors">
-                    <div className="col-span-1">
-                      <img src={cat.image} className="w-8 h-8 object-cover rounded border border-[#213757]" />
-                    </div>
-                    <div className="col-span-2 font-mono font-bold text-slate-400 text-[11px]">{cat.id}</div>
-                    <div className="col-span-4 font-bold text-white text-[12px]">{cat.name.fr}</div>
-                    <div className="col-span-4 text-slate-300 font-sans text-right">{cat.name.ar}</div>
-                    <div className="col-span-1 text-center">
-                      <button
-                        onClick={() => handleStartEditCategory(cat)}
-                        className="px-2.5 py-1 bg-[#1c2d49] hover:bg-[#25395a] text-orange-400 border border-orange-900/35 rounded-lg font-bold"
-                      >
-                        Changer
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </div>
+          <AdminCategoriesWorkspace
+            categories={categories}
+            products={adminProducts}
+            onCategoriesChange={setCategories}
+          />
         )}
 
         {/* TAB 4: Marketing tracking pixels */}
