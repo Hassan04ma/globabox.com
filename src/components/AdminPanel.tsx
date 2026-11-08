@@ -4,6 +4,7 @@ import { Product, Category, Order, Language } from '../types';
 import { MOROCCAN_CITIES, ORDER_SUPPORT_NUMBER, WHATSAPP_NUMBER } from '../data';
 import { getTrackingConfig, saveTrackingConfig, TrackingConfig, isTrackerValid } from '../utils/analytics';
 import ProductImage from './ProductImage';
+import AdminWorkspaceLayout from './AdminWorkspaceLayout';
 
 interface AdminPanelProps {
   language: Language;
@@ -1119,135 +1120,27 @@ export default function AdminPanel({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#070d1a]/95 backdrop-blur-md flex flex-col font-sans text-white overflow-hidden">
-      
-      {/* Super Top Header Control Board */}
-      <div className="bg-[#0b1528] border-b border-[#1c2e4a] py-4 px-6 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-600 to-amber-700 flex items-center justify-center text-white border border-orange-400/30 shadow-lg relative overflow-hidden select-none">
-            <span className="text-sm font-black font-sans text-white z-10">GB</span>
-            <div className="absolute right-0.5 bottom-0.5 opacity-60 text-slate-200">
-              <Settings size={10} className="animate-spin-slow text-amber-300" />
-            </div>
-            <span className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/10"></span>
-          </div>
-          <div>
-            <h1 className="text-base font-black uppercase tracking-wider text-white">
-              Globabox • Administration
-            </h1>
-            <p className="text-[10px] text-slate-400 font-medium">
-              Système de commande & Catalogue interactif Maroc • 0649264408
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleLogout}
-            className="px-3.5 py-1.5 bg-red-950/40 hover:bg-red-900/30 text-red-400 border border-red-900/40 rounded-xl text-[11px] font-black tracking-wide uppercase transition-all flex items-center gap-1.5 cursor-pointer"
-          >
-            <span>🔒 Logout</span>
-          </button>
-          
-          <button
-            onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white hover:bg-[#13223c] rounded-xl transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Primary tab switcher */}
-      <div className="bg-[#0c1a33] border-b border-[#1d2f4d] px-6 py-2.5 flex items-center justify-between gap-4 shrink-0 overflow-x-auto">
-        <div className="flex items-center gap-2">
-          {/* TAB 0: Dashboard */}
-          <button
-            onClick={() => { setActiveTab('dashboard'); setEditingProduct(null); setIsAddingProduct(false); }}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-              activeTab === 'dashboard'
-                ? 'bg-orange-600 text-white shadow-md'
-                : 'text-slate-300 hover:text-white hover:bg-[#13223c]'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4" />
-            <span>Tableau de Bord</span>
-          </button>
-
-          {/* TAB 1: Orders */}
-          <button
-            onClick={() => { setActiveTab('orders'); setEditingProduct(null); setIsAddingProduct(false); }}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-              activeTab === 'orders'
-                ? 'bg-orange-600 text-white shadow-md'
-                : 'text-slate-300 hover:text-white hover:bg-[#13223c]'
-            }`}
-          >
-            <ClipboardList className="w-4 h-4" />
-            <span>Commandes Client ({orders.length})</span>
-          </button>
-
-          {/* TAB 2: Products */}
-          <button
-            onClick={() => { setActiveTab('products'); }}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-              activeTab === 'products'
-                ? 'bg-orange-600 text-white shadow-md'
-                : 'text-slate-300 hover:text-white hover:bg-[#13223c]'
-            }`}
-          >
-            <Package className="w-4 h-4" />
-            <span>Catalogue Produits ({adminProducts.length})</span>
-          </button>
-
-          {/* TAB 3: Categories */}
-          <button
-            onClick={() => { setActiveTab('categories'); setEditingProduct(null); setIsAddingProduct(false); }}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-              activeTab === 'categories'
-                ? 'bg-orange-600 text-white shadow-md'
-                : 'text-slate-300 hover:text-white hover:bg-[#13223c]'
-            }`}
-          >
-            <ClipboardList className="w-4 h-4" />
-            <span>Catégories ({categories.length})</span>
-          </button>
-
-          {/* TAB 4: Pixels & Tracking */}
-          <button
-            onClick={() => { setActiveTab('marketing'); setEditingProduct(null); setIsAddingProduct(false); }}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-              activeTab === 'marketing'
-                ? 'bg-orange-600 text-white shadow-md'
-                : 'text-slate-300 hover:text-white hover:bg-[#13223c]'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4" />
-            <span>Pixels & Marketing</span>
-          </button>
-        </div>
-
-        <div className="flex gap-2">
-          {activeTab === 'products' && !isAddingProduct && !editingProduct && (
-            <button onClick={fillCamelDraft} className="bg-sky-800 hover:bg-sky-700 text-white text-xs font-bold px-3 py-2 rounded-xl">Préparer CAMEL 40</button>
-          )}
-          {activeTab === 'products' && !isAddingProduct && !editingProduct && (
-            <button
-              onClick={handleStartAddProduct}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Nouveau produit</span>
-            </button>
-          )}
-
-          <div className="hidden sm:flex items-center gap-1.5 bg-[#0b1528] px-3 py-1.5 rounded-lg border border-[#1b2b45] text-[10px] text-slate-400">
-            <span className="text-emerald-500">🟢</span>
-            <span>Système connecté</span>
-          </div>
-        </div>
-      </div>
-
+    <AdminWorkspaceLayout
+      activeTab={activeTab}
+      onTabChange={(tab) => {
+        setActiveTab(tab);
+        if (tab !== 'products') { setEditingProduct(null); setIsAddingProduct(false); }
+      }}
+      onClose={onClose}
+      onLogout={handleLogout}
+      ordersCount={orders.length}
+      pendingOrders={statNewOrders}
+      productsCount={adminProducts.length}
+      categoriesCount={categories.length}
+      databaseReady={launchStatus?.databaseReady}
+      showProductAction={!isAddingProduct && !editingProduct}
+      onNewProduct={handleStartAddProduct}
+      onPrepareProduct={fillCamelDraft}
+      onPendingOrders={() => { setOrderStatusFilter('pending'); setActiveTab('orders'); }}
+      onRefreshOrders={handleRefreshOrders}
+      isRefreshing={isRefreshing}
+    >
+      {/* Keep current business screens and permissions, redesign navigation only. */}
       {/* Main panel body */}
       <div className="flex-1 overflow-y-auto p-6 bg-[#070d1a]">
         
@@ -2898,6 +2791,6 @@ export default function AdminPanel({
         )}
 
       </div>
-    </div>
+    </AdminWorkspaceLayout>
   );
 }
