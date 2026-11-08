@@ -1091,7 +1091,7 @@ export default function AdminPanel({
     >
       {/* Keep current business screens and permissions, redesign navigation only. */}
       {/* Main panel body */}
-      <div className="flex-1 overflow-y-auto p-6 bg-[#070d1a]">
+      <div className={activeTab === 'categories' ? 'min-h-full bg-[#f5f7fc]' : 'flex-1 overflow-y-auto p-6 bg-[#070d1a]'}>
         
         {/* VIEW 0: DASHBOARD */}
         {activeTab === 'dashboard' && (
