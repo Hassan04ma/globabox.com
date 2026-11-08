@@ -69,7 +69,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "tentes",
     name: { fr: "Tentes", ar: "الخيام", en: "Tents" },
-    image: "https://images.unsplash.com/photo-1603738397297-a374b78e9626?auto=format&fit=crop&w=900&h=900&q=85",
+    image: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Tentes imperméables, robustes et faciles à installer de 2 à 8 personnes.",
       ar: "خيام مقاومة للماء، متينة وسهلة التركيب لـ 2 إلى 8 أشخاص.",
@@ -139,7 +139,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "peche",
     name: { fr: "Pêche", ar: "صيد السمك", en: "Fishing" },
-    image: "https://images.unsplash.com/photo-1756450175407-76ab4bf455de?auto=format&fit=crop&w=900&h=900&q=85",
+    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Cannes à pêche, moulinets, leurres et accessoires de pêche de qualité.",
       ar: "قصبات صيد، بكرات، طعوم وإكسسوارات صيد ذات جودة عالية للبحار والوديان.",
