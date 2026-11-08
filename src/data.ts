@@ -55,11 +55,11 @@ export interface Category {
 
 export const CATEGORIES: Category[] = [
   { id: 'sacs_trekking', name: {fr:'Sacs à dos Trekking',ar:'حقائب الظهر للرحلات',en:'Trekking Backpacks'},
-    image:'', description:{fr:'Sacs à dos de randonnée et voyage.',ar:'حقائب ظهر للتخييم والرحلات والسفر.',en:'Backpacks for travel and hiking.'} },
+    image:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&h=900&q=85', description:{fr:'Sacs à dos de randonnée et voyage.',ar:'حقائب ظهر للتخييم والرحلات والسفر.',en:'Backpacks for travel and hiking.'} },
   {
     id: "camping",
     name: { fr: "Camping", ar: "التخييم", en: "Camping" },
-    image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Matériel de camping professionnel pour le bivouac et l'outdoor au Maroc.",
       ar: "معدات تخييم برية احترافية للمبيت الخارجي في المغرب.",
@@ -69,7 +69,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "tentes",
     name: { fr: "Tentes", ar: "الخيام", en: "Tents" },
-    image: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Tentes imperméables, robustes et faciles à installer de 2 à 8 personnes.",
       ar: "خيام مقاومة للماء، متينة وسهلة التركيب لـ 2 إلى 8 أشخاص.",
@@ -79,7 +79,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "sacs_de_couchage",
     name: { fr: "Sacs de couchage", ar: "أكياس النوم", en: "Sleeping Bags" },
-    image: "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Sacs de couchage chauds, compacts et confortables pour vos nuits à la belle étoile.",
       ar: "أكياس نوم دافئة، مدمجة ومريحة لياليك تحت النجوم.",
@@ -88,8 +88,8 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: "casquettes",
-    name: { fr: "Casquettes", ar: "قبعats", en: "Caps" },
-    image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=400",
+    name: { fr: "Casquettes", ar: "قبعات", en: "Caps" },
+    image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Casquettes de protection solaire légères et ventilées pour vos randonnées.",
       ar: "قبعات خفيفة ومقواة للحماية من الشمس ومناسبة للمشي الطويل.",
@@ -99,7 +99,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "chaussures",
     name: { fr: "Chaussures", ar: "أحذية", en: "Shoes" },
-    image: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Chaussures de randonnée robustes et confortables pour tous types de terrains marocains.",
       ar: "أحذية مشي متينة ومريحة لجميع أنواع التضاريس المغربية.",
@@ -109,7 +109,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "rechauds",
     name: { fr: "Réchauds & Cuisine", ar: "مواقد ومطابخ", en: "Stoves & Kitchen" },
-    image: "https://images.unsplash.com/photo-1598048604770-5bfa37b1cc11?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1598048604770-5bfa37b1cc11?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Réchauds à gaz, ustensiles de cuisine légers et accessoires en aluminium.",
       ar: "مواقد غاز وأواني طبخ خفيفة وإكسسوارات من الألمنيوم للتخييم.",
@@ -119,7 +119,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "tables_chaises",
     name: { fr: "Tables & Chaises", ar: "طاولات وكراسي", en: "Tables & Chairs" },
-    image: "https://images.unsplash.com/photo-1617103996702-96ff29b1c467?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1617103996702-96ff29b1c467?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Tables pliantes légères, chaises de camping ultra compactes et pliables.",
       ar: "طاولات قابلة للطي وكراسي تخييم مدمجة وخفيفة الوزن.",
@@ -129,7 +129,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "chasse",
     name: { fr: "Chasse & Nature", ar: "الصيد والطبيعة", en: "Hunting & Nature" },
-    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Équipement de chasse, vêtements de camouflage, jumelles et accessoires nature.",
       ar: "معدات صيد بري، ملابس تمويه، مناظير وإكسسوارات طبيعية.",
@@ -139,7 +139,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "peche",
     name: { fr: "Pêche", ar: "صيد السمك", en: "Fishing" },
-    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Cannes à pêche, moulinets, leurres et accessoires de pêche de qualité.",
       ar: "قصبات صيد، بكرات، طعوم وإكسسوارات صيد ذات جودة عالية للبحار والوديان.",
@@ -149,7 +149,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "accessoires",
     name: { fr: "Accessoires", ar: "أكسسوارات", en: "Accessories" },
-    image: "https://images.unsplash.com/photo-1618336753974-aae8e04506aa?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1618336753974-aae8e04506aa?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Accessoires indispensables d'outdoor, lampes frontales, gourdes et boussoles.",
       ar: "ملحقات برية لا غنى عنها، مصابيح رأس، مطارات مياه وبوصلات.",
@@ -159,7 +159,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "outdoor-tools",
     name: { fr: "Outdoor Tools", ar: "أدوات ومعدات برية", en: "Outdoor Tools" },
-    image: "https://images.unsplash.com/photo-1540324155974-72413d906757?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1540324155974-72413d906757?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Outils et équipements indispensables d'outdoor, lampes frontales, couteaux et boussoles.",
       ar: "أدوات ومعدات ضرورية للتخييم والرحلات ومصابيح رأس.",
@@ -169,7 +169,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "maison",
     name: { fr: "Maison", ar: "للمنزل", en: "Home Outdoor" },
-    image: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Solutions pratiques d'outdoor pour le jardin, balcon et la maison.",
       ar: "حلول برية وخارجية عملية للحديقة والشرفة والمنزل.",
@@ -179,7 +179,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "sport_loisirs",
     name: { fr: "Sport & Loisirs", ar: "الرياضة والترفيه", en: "Sport & Leisure" },
-    image: "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Équipements sportifs et sacs à dos résistants pour vos activités de loisirs.",
       ar: "حقائب ظهر ومعدات رياضية متينة لأنشطتك الترفيهية والرياضية.",
@@ -189,7 +189,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "moins_99",
     name: { fr: "Moins 99 DH", ar: "أقل من 99 درهم", en: "Under 99 DH" },
-    image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Une sélection de gadgets et accessoires d'outdoor indispensables à moins de 99 DH.",
       ar: "تشكيلة من الملحقات البرية والأدوات الأساسية بأقل من 99 درهم.",
@@ -199,7 +199,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "offres_packs",
     name: { fr: "Offres Packs", ar: "عروض الحزم", en: "Pack Offers" },
-    image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&q=80&w=400",
+    image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=900&h=900&q=85",
     description: {
       fr: "Packs économiques et combos d'équipements pour économiser au maximum.",
       ar: "حزم ومجموعات اقتصادية لتوفير المال والحصول على التجهيز الكامل.",
