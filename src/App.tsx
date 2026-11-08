@@ -15,6 +15,7 @@ import OrderSuccessModal from './components/OrderSuccessModal';
 import DeliveryBanner from './components/DeliveryBanner';
 import PremiumSupportWidget from './components/PremiumSupportWidget';
 import WhatsAppIcon from './components/WhatsAppIcon';
+import StoreFooter from './components/StoreFooter';
 
 // Lazy loaded modal components for performance optimization
 const ProductDetailModal = lazy(() => import('./components/ProductDetailModal'));
@@ -1142,188 +1143,15 @@ Merci de confirmer la disponibilité et la livraison.`;
       {/* 5.3 Closing Highly Polished WhatsApp & Direct-Call CTA */}
       <FinalWhatsAppCTA language={language} onWhatsAppOrder={handleWhatsAppOrderSubmit} />
 
-      {/* 6. Professional High-Converting Footer */}
-      <footer 
-        className="bg-[#0b1528] border-t border-[#1c2e4a] text-slate-300 text-xs py-12 px-6"
-        style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      >
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-600 to-amber-700 flex items-center justify-center text-white shadow-md border border-orange-500/20 relative overflow-hidden">
-                <span className="text-xs font-black font-sans tracking-tight text-white z-10 flex items-center">G<span className="text-amber-300 font-serif font-black">B</span></span>
-                <span className="absolute bottom-0 text-[8px] opacity-40 font-mono text-white/50 select-none z-0">▲</span>
-              </div>
-              <span className="text-base font-black text-white tracking-widest">{t('brandName')}</span>
-            </div>
-            <p className="leading-relaxed text-xs text-slate-400 mb-4">
-              {t('footerAbout')}
-            </p>
-            <div className="pt-1">
-              <a 
-                href="https://www.globabox.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-orange-500 hover:text-orange-400 font-mono font-bold text-xs tracking-wider transition-colors inline-flex items-center gap-1.5"
-              >
-                🌐 www.globabox.com
-              </a>
-            </div>
-          </div>
-
-          <div>
-            <span className="text-white font-bold text-xs uppercase tracking-widest block mb-4">{t('footerQuickLinks')}</span>
-            <ul className="space-y-2.5 text-xs">
-              <li>
-                <button 
-                  onClick={() => { setSelectedCategory(''); setSearchTerm(''); }} 
-                  className="hover:text-amber-400 hover:underline transition-colors block text-left flex items-center gap-1.5"
-                >
-                  <Home size={14} className="text-orange-550 shrink-0" />
-                  <span>{language === "ar" ? "الرئيسية" : "Accueil"}</span>
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={handleScrollToCatalog} 
-                  className="hover:text-amber-400 hover:underline transition-colors block text-left flex items-center gap-1.5"
-                >
-                  <ShoppingBag size={14} className="text-orange-550 shrink-0" />
-                  <span>{language === "ar" ? "متجر المستلزمات" : "Découvrir la boutique"}</span>
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => { setLegalActiveTab('about'); setIsLegalModalOpen(true); }} 
-                  className="hover:text-amber-400 hover:underline transition-colors block text-left flex items-center gap-1.5"
-                >
-                  <Star size={14} className="text-orange-550 shrink-0" />
-                  <span>{language === "ar" ? "نبذة عن جلوبابوكس" : "À propos de nous"}</span>
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => { setLegalActiveTab('delivery'); setIsLegalModalOpen(true); }} 
-                  className="hover:text-amber-400 hover:underline transition-colors block text-left flex items-center gap-1.5"
-                >
-                  <Truck size={14} className="text-orange-550 shrink-0" />
-                  <span>{language === "ar" ? "معلومات التوصيل" : "Info Livraison & Suivi"}</span>
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => setIsTrackingOpen(true)} 
-                  className="hover:text-amber-400 hover:underline transition-colors block text-left text-orange-400 font-bold flex items-center gap-1.5"
-                >
-                  <MapPin size={14} className="text-orange-550 shrink-0 animate-bounce" />
-                  <span>{language === "ar" ? "تتبع طلبيتك الآن" : "Suivre ma commande"}</span>
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => setIsCartOpen(true)} 
-                  className="hover:text-amber-400 hover:underline transition-colors block text-left flex items-center gap-1.5"
-                >
-                  <ShoppingCart size={14} className="text-orange-550 shrink-0" />
-                  <span>{language === "ar" ? "السلة المباشرة" : "Panier client"}</span>
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => setIsAdminOpen(true)} 
-                  className="hover:text-[#f97316] text-[#94a3b8] hover:underline transition-colors block text-left font-bold flex items-center gap-1.5"
-                >
-                  <Lock size={14} className="text-orange-550 shrink-0" />
-                  <span>{language === "ar" ? "لوحة الإدارة جلوبابوكس" : "Administration Globabox"}</span>
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <span className="text-white font-bold text-xs uppercase tracking-widest block mb-4">Garantie & Securité</span>
-            <div className="space-y-2 leading-relaxed font-sans text-slate-400 text-xs">
-              <p className="flex items-center gap-2"><MapPin size={13} className="text-orange-500 shrink-0" /> <span>{t('footerLocation')}</span></p>
-              <p className="flex items-start gap-2"><ShieldCheck size={13} className="text-orange-500 shrink-0 mt-0.5" /> <span>{t('paymentOnDeliveryBadge')} - {language === "ar" ? "افحص سلعك قبل الدفع" : "Inspectez vos produits à la réception."}</span></p>
-              <p className="flex items-center gap-2"><Truck size={13} className="text-orange-500 shrink-0" /> <span>{t('expressDeliveryBadge')} (24h - 48h)</span></p>
-            </div>
-          </div>
-
-          <div>
-            <span className="text-white font-bold text-xs uppercase tracking-widest block mb-4">
-              {t('footerContactTitle')}
-            </span>
-            <div className="space-y-3 font-sans">
-              <a
-                href={`tel:${ORDER_SUPPORT_NUMBER}`}
-                className="flex items-center gap-2 text-white font-mono font-bold text-sm bg-blue-950/80 border border-blue-900/60 p-2.5 rounded-xl hover:text-orange-400 transition-colors"
-               >
-                <Phone className="w-4 h-4 text-orange-400" />
-                <span>{ORDER_SUPPORT_NUMBER}</span>
-              </a>
-              <p className="text-[11px] leading-relaxed text-slate-400 flex items-center gap-1.5">
-                <MessageSquare size={13} className="text-orange-500 shrink-0" /> <span>{t('footerSchedule')}</span>
-              </p>
-              <div className="flex gap-2 items-center">
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span className="font-semibold text-emerald-400">{language === "ar" ? "وكلاء واتساب متصلون الآن" : "Conseillers WhatsApp en ligne"}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer legalities */}
-        <div className="max-w-7xl mx-auto pt-8 border-t border-slate-900 flex flex-col md:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} {t('brandName')} - Premium Store Maroc. Tous droits réservés.</p>
-          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
-            <button 
-              onClick={() => { setLegalActiveTab('about'); setIsLegalModalOpen(true); }}
-              className="hover:text-amber-500 hover:underline transition-colors bg-transparent border-none cursor-pointer flex items-center text-[11px]"
-            >
-              <Compass size={11} className="shrink-0 mr-1 text-orange-500" />
-              <span>À propos</span>
-            </button>
-            <button 
-              onClick={() => { setLegalActiveTab('delivery'); setIsLegalModalOpen(true); }}
-              className="hover:text-amber-500 hover:underline transition-colors bg-transparent border-none cursor-pointer flex items-center text-[11px]"
-            >
-              <Truck size={11} className="shrink-0 mr-1 text-orange-500" />
-              <span>Livraison</span>
-            </button>
-            <button 
-              onClick={() => { setLegalActiveTab('returns'); setIsLegalModalOpen(true); }}
-              className="hover:text-amber-500 hover:underline transition-colors bg-transparent border-none cursor-pointer flex items-center text-[11px]"
-            >
-              <RefreshCw size={11} className="shrink-0 mr-1 text-orange-500" />
-              <span>Retours</span>
-            </button>
-            <button 
-              onClick={() => { setLegalActiveTab('cgv'); setIsLegalModalOpen(true); }}
-              className="hover:text-amber-500 hover:underline transition-colors bg-transparent border-none cursor-pointer flex items-center text-[11px]"
-            >
-              <FileText size={11} className="shrink-0 mr-1 text-orange-500" />
-              <span>Conditions (CGV)</span>
-            </button>
-            <button 
-              onClick={() => { setLegalActiveTab('privacy'); setIsLegalModalOpen(true); }}
-              className="hover:text-amber-500 hover:underline transition-colors bg-transparent border-none cursor-pointer flex items-center text-[11px]"
-            >
-              <ShieldCheck size={11} className="shrink-0 mr-1 text-orange-500" />
-              <span>Confidentialité</span>
-            </button>
-            <button 
-              onClick={() => { setLegalActiveTab('contact'); setIsLegalModalOpen(true); }}
-              className="hover:text-amber-500 hover:underline transition-colors bg-transparent border-none cursor-pointer flex items-center text-[11px]"
-            >
-              <Phone size={11} className="shrink-0 mr-1 text-orange-500" />
-              <span>Contact</span>
-            </button>
-          </div>
-        </div>
-      </footer>
+      {/* 6. Professional public storefront footer */}
+      <StoreFooter
+        language={language}
+        onHome={() => { setSelectedCategory(''); setSearchTerm(''); setFilterType('all'); window.scrollTo({top: 0, behavior: 'smooth'}); }}
+        onBrowse={handleScrollToCatalog}
+        onTrack={() => setIsTrackingOpen(true)}
+        onCart={() => setIsCartOpen(true)}
+        onLegal={(tab) => { setLegalActiveTab(tab); setIsLegalModalOpen(true); }}
+      />
 
       {/* 7. Premium Floating Support Widget */}
       <PremiumSupportWidget
