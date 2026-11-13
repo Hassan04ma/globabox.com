@@ -208,10 +208,7 @@ export default function App() {
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
 
   // Persistent data states
-  const [products, setProducts] = useState<any[]>(() => {
-    const saved = localStorage.getItem('globabox_products_v1');
-    return saved ? JSON.parse(saved) : PRODUCTS;
-  });
+  const [products, setProducts] = useState<any[]>(PRODUCTS);
 
   // Live category metadata is served by D1; keep bundled defaults only as a network fallback.
   const [categories, setCategories] = useState<any[]>(CATEGORIES);
@@ -460,7 +457,7 @@ export default function App() {
     
     let metaDesc = language === "ar"
       ? "تسوق منتجات متنوعة للمنزل والتكنولوجيا والحياة اليومية من جلوبابوكس، مع الدفع عند الاستلام بالمغرب."
-      : "Globabox est la marque d'équipement d'extérieur préférée au Maroc pour le camping, la randonnée, la pêche et la chasse. Livraison gratuite et paiement de confiance à la livraison.";
+      : "Découvrez des produits pour la maison, les accessoires, la technologie et le quotidien au Maroc, avec paiement à la livraison.";
 
     if (selectedProduct) {
       if (selectedProduct.id === "tente-dome-camping-2-3-personnes") {
@@ -1013,7 +1010,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                   }
                 </p>
                 <p className="text-[11px] font-mono text-slate-400 mt-1.5">
-                  ID: {selectedCategory} • {filteredProducts.length} {filteredProducts.length > 1 ? 'produits' : 'produit'}
+                  {filteredProducts.length} {filteredProducts.length > 1 ? 'produits' : 'produit'}
                 </p>
               </div>
             ) : (
