@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ArrowRight, Banknote, ChevronLeft, ChevronRight, PackageCheck, ShoppingBag, Truck } from 'lucide-react';
+import { ArrowDown, Banknote, ChevronLeft, ChevronRight, PackageCheck, Pause, Play, ShoppingBag, Truck } from 'lucide-react';
 import type { Language } from '../types';
 import { STORE_DEPARTMENTS } from '../storefrontDepartments';
 
@@ -46,23 +46,21 @@ export default function HomeBannerSlider({language,onShopAll,onSelectDepartment}
  const [active,setActive]=useState(0),[paused,setPaused]=useState(false);
  useEffect(()=>{
    if(paused||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-   const timer=window.setInterval(()=>setActive(i=>(i+1)%slides.length),7200);
+   const timer=window.setInterval(()=>setActive(i=>(i+1)%slides.length),5500);
    return ()=>window.clearInterval(timer);
  },[paused]);
  const slide=slides[active],c=slide.copy[language],palette=appearance[slide.theme];
  const rtl=language==='ar';
  const go=(id:string|null)=>id?onSelectDepartment(id):onShopAll();
  return <section className="w-full max-w-none px-4 pb-4 pt-6 sm:px-6 lg:px-8 2xl:px-10" dir={rtl?'rtl':'ltr'} aria-label={rtl?'عروض المتجر':'Découvrir GLOBABOX'}>
-  <div className={'relative isolate overflow-hidden rounded-[26px] border shadow-[0_10px_35px_rgba(16,50,43,.08)] '+palette.bg}
-    onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)}
-    onFocusCapture={()=>setPaused(true)} onBlurCapture={event=>{if(!event.currentTarget.contains(event.relatedTarget))setPaused(false);}}>
+  <div className={'relative isolate overflow-hidden rounded-[26px] border shadow-[0_10px_35px_rgba(16,50,43,.08)] '+palette.bg}>
    <div className="relative grid min-h-[530px] items-center gap-8 px-6 pb-[88px] pt-10 sm:px-10 lg:min-h-[500px] lg:grid-cols-2 lg:gap-10 lg:px-12 lg:pt-8 2xl:gap-16 2xl:px-16">
     <div className="max-w-[700px]">
      <p className={'mb-5 inline-flex max-w-full rounded-full border px-4 py-2 text-[10px] font-extrabold leading-5 tracking-[.08em] sm:text-xs '+palette.tag}>{c.tag}</p>
      <h1 className={'max-w-[700px] text-3xl font-black leading-[1.15] tracking-tight sm:text-5xl 2xl:text-[56px] '+palette.text}>{c.title}</h1>
      <p className={'mt-5 max-w-[590px] text-sm leading-7 sm:text-base sm:leading-8 '+palette.sub}>{c.description}</p>
      <div className="mt-8 flex flex-wrap gap-3">
-       <button type="button" onClick={()=>go(slide.destination)} className={'inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-5 text-sm font-extrabold shadow-sm transition '+palette.primary}><ShoppingBag size={18}/>{c.button}{rtl?<ArrowLeft size={16}/>:<ArrowRight size={16}/>}</button>
+       <button type="button" onClick={()=>go(slide.destination)} className={'inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-5 text-sm font-extrabold shadow-sm transition '+palette.primary}><ShoppingBag size={18}/>{c.button}<ArrowDown size={17}/></button>
        <button type="button" onClick={()=>go(slide.categories[0])} className={'inline-flex min-h-12 items-center justify-center rounded-xl border px-5 text-sm font-bold transition '+palette.secondary}>{c.all}</button>
      </div>
     </div>
@@ -85,6 +83,7 @@ export default function HomeBannerSlider({language,onShopAll,onSelectDepartment}
         {slides.map((s,i)=><button key={s.id} type="button" onClick={()=>setActive(i)} aria-current={active===i?'true':undefined} aria-label={(rtl?'السلايد ':'Slide ')+(i+1)} className={'h-2 rounded-full transition-all '+(active===i?'w-10 bg-[#f4c75a]':'w-5 bg-slate-400/60 hover:bg-[#f4c75a]/80')}/>)}
       </div>
       <div className="flex gap-2">
+       <button type="button" onClick={()=>setPaused(value=>!value)} aria-label={paused?(rtl?'تشغيل السلايدات تلقائياً':language==='en'?'Resume automatic slides':'Reprendre les diapositives automatiques'):(rtl?'إيقاف السلايدات مؤقتاً':language==='en'?'Pause automatic slides':'Mettre les diapositives en pause')} aria-pressed={paused} className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-[#104d43] shadow-sm transition hover:bg-[#f4c75a]">{paused?<Play size={19}/>:<Pause size={19}/>}</button>
        <button type="button" onClick={()=>setActive(i=>(i+slides.length-1)%slides.length)} aria-label={rtl?'السلايد السابق':'Previous slide'} className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-[#104d43] shadow-sm transition hover:bg-[#f4c75a]"><ChevronLeft size={21}/></button>
        <button type="button" onClick={()=>setActive(i=>(i+1)%slides.length)} aria-label={rtl?'السلايد التالي':'Next slide'} className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-[#104d43] shadow-sm transition hover:bg-[#f4c75a]"><ChevronRight size={21}/></button>
       </div>
