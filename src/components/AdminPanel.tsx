@@ -221,6 +221,7 @@ export default function AdminPanel({
 
   // Searching Products
   const [productQuery, setProductQuery] = useState('');
+  const [productStatusFilter,setProductStatusFilter]=useState<'all'|'published'|'draft'|'outofstock'>('all');
   const [adminProducts, setAdminProducts] = useState<Product[]>([]);
   const [catalogLoadError, setCatalogLoadError] = useState('');
   useEffect(() => {
@@ -993,77 +994,43 @@ export default function AdminPanel({
     return matchesQuery && matchesStatus && matchesCity;
   });
 
-  const filteredProductsList = adminProducts.filter(p => 
-    p.name.fr.toLowerCase().includes(productQuery.toLowerCase()) ||
-    (p.name.ar && p.name.ar.includes(productQuery)) ||
-    p.category.toLowerCase().includes(productQuery.toLowerCase())
-  );
+  const filteredProductsList = adminProducts.filter(p => {
+    const q=productQuery.trim().toLowerCase();
+    const matches=!q || [p.id,p.name?.fr,p.name?.ar,p.name?.en,p.category].some(x=>String(x||'').toLowerCase().includes(q));
+    const statusMatches=productStatusFilter==='all' ||
+      (productStatusFilter==='published' && p.isActive===true) ||
+      (productStatusFilter==='draft' && p.isActive!==true) ||
+      (productStatusFilter==='outofstock' && (!p.inStock || p.stockStatus==='out_of_stock'));
+    return matches && statusMatches;
+  });
 
-  if (authLoading) return <div className='fixed inset-0 z-50 bg-slate-950 text-white flex items-center justify-center'>Vérification…</div>;
+  if (authLoading) return <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#f4f8f5] text-sm font-bold text-[#104d43]">Vérification de la session administrateur…</div>;
   if (!isAuthenticated) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#070d1a] backdrop-blur-md flex items-center justify-center font-sans p-4">
-        <div className="w-full max-w-sm bg-[#0b1528] border border-[#1d2f4d] rounded-3xl p-6 md:p-8 shadow-2xl relative">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-[#13223c] rounded-xl transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-          
-          <div className="text-center space-y-4 mb-6">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-orange-600 to-amber-700 flex items-center justify-center text-white border border-orange-400/30 shadow-lg relative overflow-hidden select-none">
-              <span className="text-xl font-black font-sans text-white z-10">GB</span>
-              <span className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/10"></span>
+      <div className="fixed inset-0 z-[80] flex min-h-[100dvh] items-center justify-center bg-[#eef5f0] p-4">
+        <div className="relative w-full max-w-[440px] rounded-[25px] border border-[#d2e5d9] bg-white p-6 shadow-[0_20px_65px_rgba(15,58,41,.12)] sm:p-9">
+          <button type="button" onClick={onClose} title="Fermer" aria-label="Fermer" className="absolute end-4 top-4 flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 hover:bg-[#f1f7f3]"><X size={19}/></button>
+          <div className="mb-8 text-center">
+            <img src="/brand/globabox-mark.svg" alt="" className="mx-auto h-16 w-16 rounded-2xl shadow-sm"/>
+            <p className="mt-4 text-[11px] font-extrabold uppercase tracking-[.18em] text-[#38866e]">GLOBABOX · ESPACE SÉCURISÉ</p>
+            <h2 className="mt-2 text-2xl font-black text-[#173e34]">Administration</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Connectez-vous pour gérer vos produits, commandes et expéditions.</p>
+          </div>
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label htmlFor="gb-admin-username" className="mb-2 block text-xs font-extrabold text-[#274c3e]">Identifiant</label>
+              <input id="gb-admin-username" type="text" autoComplete="username" required value={usernameInput} onChange={e=>setUsernameInput(e.target.value)}
+                placeholder="Nom d’utilisateur" className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-[#173e34] outline-none focus:border-[#104d43] focus:ring-2 focus:ring-[#104d43]/15"/>
             </div>
             <div>
-              <h2 className="text-base font-black uppercase tracking-wider text-white">Administration Globabox</h2>
-              <p className="text-xs text-slate-400 mt-1">Saisissez vos identifiants pour continuer</p>
+              <label htmlFor="gb-admin-password" className="mb-2 block text-xs font-extrabold text-[#274c3e]">Mot de passe</label>
+              <input id="gb-admin-password" type="password" autoComplete="current-password" required value={passwordInput} onChange={e=>setPasswordInput(e.target.value)}
+                placeholder="Votre mot de passe" className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-[#173e34] outline-none focus:border-[#104d43] focus:ring-2 focus:ring-[#104d43]/15"/>
             </div>
-          </div>
-
-          <form onSubmit={handleLogin} className="space-y-4 text-xs">
-            <div className="space-y-1">
-              <label className="text-[10px] text-slate-400 uppercase font-black">Nom d'utilisateur ou e-mail</label>
-              <input
-                type="text"
-                placeholder="Ex : admin"
-                value={usernameInput}
-                onChange={(e) => setUsernameInput(e.target.value)}
-                className="w-full bg-[#122037] border border-[#213757] rounded-xl py-3 px-4 text-white placeholder-slate-500 outline-none focus:ring-1 focus:ring-orange-500"
-                required
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] text-slate-400 uppercase font-black">Mot de passe</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                className="w-full bg-[#122037] border border-[#213757] rounded-xl py-3 px-4 text-white placeholder-slate-500 outline-none focus:ring-1 focus:ring-orange-500"
-                required
-              />
-            </div>
-
-            {errorMessage && (
-              <p className="text-[11px] text-red-500 text-center font-bold font-sans bg-red-950/40 border border-red-500/20 p-2.5 rounded-xl">
-                ⚠️ {errorMessage}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              className="w-full py-3.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-extrabold rounded-xl shadow-lg shadow-orange-500/10 active:scale-95 transition-all text-xs cursor-pointer uppercase tracking-wider"
-            >
-              Se connecter
-            </button>
+            {errorMessage&&<p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs leading-6 font-semibold text-red-700">{errorMessage}</p>}
+            <button type="submit" className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#104d43] px-5 text-sm font-extrabold text-white transition hover:bg-[#0b3931]"><ShieldCheck size={18}/>Se connecter</button>
           </form>
-
-          <p className="text-[10px] text-slate-500 text-center mt-6">
-            Paiement à la livraison Maroc • Globabox
-          </p>
+          <p className="mt-6 text-center text-xs leading-6 text-slate-500">Accès réservé aux administrateurs autorisés de GLOBABOX.</p>
         </div>
       </div>
     );
@@ -1092,7 +1059,7 @@ export default function AdminPanel({
     >
       {/* Keep current business screens and permissions, redesign navigation only. */}
       {/* Main panel body */}
-      <div className={activeTab === 'categories' ? 'min-h-full bg-[#f5f7fc]' : 'flex-1 overflow-y-auto p-6 bg-[#070d1a]'}>
+      <div className={activeTab === 'categories' ? 'min-h-full bg-[#f5f8f6]' : 'min-h-full bg-[#f5f8f6] p-4 text-[#193e38] sm:p-6 xl:p-8'}>
         
         {/* VIEW 0: Dashboard, optimized for daily order and catalog management. */}
         {activeTab === 'dashboard' && (
@@ -1533,20 +1500,20 @@ export default function AdminPanel({
           <div className="space-y-6">
 
             {/* Environment warning */}
-            <div className="bg-amber-950/25 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-amber-200">
+            <div className="rounded-2xl border border-[#e5d4ac] bg-[#fffcf2] p-4 text-amber-800">
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-amber-500/10 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400 mt-0.5 text-xs font-bold leading-none">!</div>
+                <div className="w-5 h-5 rounded-full bg-amber-500/10 border border-amber-500/40 flex items-center justify-center shrink-0 text-[#8a641d] mt-0.5 text-xs font-bold leading-none">!</div>
                 <div>
-                  <h4 className="text-xs font-black font-sans uppercase text-amber-400">Produits enregistrés dans Cloudflare D1</h4>
-                  <p className="text-xs font-semibold leading-relaxed font-sans mt-0.5 text-slate-350">
-                    Les ajouts, modifications, suppressions et imports de produits sont enregistrés côté serveur dans D1. Les nouveaux produits restent en brouillon jusqu’à publication explicite. Les catégories sont encore sauvegardées dans ce navigateur uniquement et ne sont pas synchronisées entre appareils.
+                  <h4 className="text-xs font-black font-sans uppercase text-amber-800">Produits enregistrés dans Cloudflare D1</h4>
+                  <p className="text-xs font-semibold leading-relaxed font-sans mt-0.5 text-slate-600">
+                    Les ajouts, modifications, suppressions et imports de produits sont enregistrés côté serveur dans D1. Les nouveaux produits restent en brouillon jusqu’à publication explicite. Les catégories sont gérées dans Cloudflare D1 depuis l'onglet Catégories.
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Catalogue Control & Backup Center */}
-            <div className="bg-[#0b1528] rounded-2xl border border-[#1c2e4a] p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex flex-col gap-0.5">
                 <span className="text-xs font-black uppercase tracking-wider text-slate-200">📦 Gestion de Transit du Catalogue</span>
                 <span className="text-[10px] text-slate-400 font-semibold font-sans">Sauvegardez, clonez et restaurez vos fiches produits via des backups CSV ou JSON standard</span>
@@ -1557,7 +1524,7 @@ export default function AdminPanel({
                 <button
                   type="button"
                   onClick={exportProductsToJSON}
-                  className="bg-[#122037] hover:bg-[#1a2d4c] text-white text-[10px] font-extrabold uppercase px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all border border-[#213757] cursor-pointer"
+                  className="bg-[#f8fbf9] hover:bg-[#1a2d4c] text-[#193e38] text-[10px] font-extrabold uppercase px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all border border-slate-200 cursor-pointer"
                 >
                   📥 Export JSON
                 </button>
@@ -1566,13 +1533,13 @@ export default function AdminPanel({
                 <button
                   type="button"
                   onClick={exportProductsToCSV}
-                  className="bg-[#122037] hover:bg-[#1a2d4c] text-white text-[10px] font-extrabold uppercase px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all border border-[#213757] cursor-pointer"
+                  className="bg-[#f8fbf9] hover:bg-[#1a2d4c] text-[#193e38] text-[10px] font-extrabold uppercase px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all border border-slate-200 cursor-pointer"
                 >
                   📥 Export CSV
                 </button>
 
                 {/* Import JSON hidden input & trigger */}
-                <label className="bg-orange-600/10 hover:bg-orange-600/20 text-orange-400 text-[10px] font-extrabold uppercase px-3 py-2 rounded-xl flex items-center gap-1.5 border border-orange-500/30 transition-all cursor-pointer">
+                <label className="bg-[#104d43]/10 hover:bg-[#104d43]/20 text-[#147657] text-[10px] font-extrabold uppercase px-3 py-2 rounded-xl flex items-center gap-1.5 border border-orange-500/30 transition-all cursor-pointer">
                   📤 Import JSON
                   <input
                     type="file"
@@ -1583,7 +1550,7 @@ export default function AdminPanel({
                 </label>
 
                 {/* Import CSV hidden input & trigger */}
-                <label className="bg-orange-600/10 hover:bg-orange-600/20 text-orange-400 text-[10px] font-extrabold uppercase px-3 py-2 rounded-xl flex items-center gap-1.5 border border-orange-500/30 transition-all cursor-pointer">
+                <label className="bg-[#104d43]/10 hover:bg-[#104d43]/20 text-[#147657] text-[10px] font-extrabold uppercase px-3 py-2 rounded-xl flex items-center gap-1.5 border border-orange-500/30 transition-all cursor-pointer">
                   📤 Import CSV
                   <input
                     type="file"
@@ -1597,26 +1564,26 @@ export default function AdminPanel({
             
             {/* Adding / Editing Form overlay */}
             {(isAddingProduct || editingProduct) && (
-              <div className="bg-[#0b1528] rounded-2xl border border-[#22395e] p-6 space-y-4">
-                <div className="flex items-center justify-between border-b border-[#1c2e4a]/85 pb-3">
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-7 space-y-5">
+                <div className="flex items-center justify-between border-b border-slate-200/85 pb-3">
                   <h3 className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
-                    <Edit2 className="w-4 h-4 text-orange-500" />
+                    <Edit2 className="w-4 h-4 text-[#147657]" />
                     <span>{editingProduct ? `Modifier: ${editingProduct.name.fr}` : 'Ajouter un nouveau produit'}</span>
                   </h3>
                   <button
                     onClick={() => { setEditingProduct(null); setIsAddingProduct(false); }}
-                    className="p-1 px-3 bg-[#13223c] hover:bg-[#1e3254] text-slate-350 text-xs font-bold rounded-lg"
+                    className="p-1 px-3 bg-[#edf5ef] hover:bg-[#1e3254] text-slate-600 text-xs font-bold rounded-lg"
                   >
                     Fermer le formulaire
                   </button>
                 </div>
 
-                <div className="bg-[#101d34] border border-[#273b5f] rounded-xl p-3">
-                  <label className="block text-xs font-bold text-white mb-2">Photos du produit (JPG / PNG / WebP, 750 Ko maximum)</label>
+                <div className="bg-[#f2f7f4] border border-slate-200 rounded-xl p-3">
+                  <label className="block text-xs font-bold text-[#193e38] mb-2">Photos du produit (JPG / PNG / WebP, 750 Ko maximum)</label>
                   <input type="file" multiple accept="image/webp,image/jpeg,image/png"
                     disabled={mediaUploading} onChange={e=>{void uploadProductPhotos(e.target.files);e.target.value='';}}
-                    className="text-xs text-slate-300 w-full" />
-                  {mediaUploading && <p className="text-xs text-orange-400 mt-2">Téléchargement…</p>}
+                    className="text-xs text-slate-600 w-full" />
+                  {mediaUploading && <p className="text-xs text-[#147657] mt-2">Téléchargement…</p>}
                 </div>
                 <form onSubmit={handleSaveProduct} className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
                   
@@ -1625,10 +1592,10 @@ export default function AdminPanel({
                     <label className="text-[10px] text-slate-400 uppercase font-black">ID / Slug du Produit *</label>
                     <input
                       type="text"
-                      placeholder="Ex: table-camping-pliante"
+                      placeholder="Ex: organisateur-cuisine"
                       value={productForm.id}
                       onChange={(e) => setProductForm({...productForm, id: e.target.value.toLowerCase().trim().replace(/[^a-z0-9-_]/g, '-')})}
-                      className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500 font-mono"
+                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono"
                       required
                     />
                   </div>
@@ -1641,7 +1608,7 @@ export default function AdminPanel({
                       placeholder="Ex: Tente de Camping Dôme Automatique"
                       value={productForm.nameFr}
                       onChange={(e) => setProductForm({...productForm, nameFr: e.target.value})}
-                      className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500"
+                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43]"
                       required
                     />
                   </div>
@@ -1654,7 +1621,7 @@ export default function AdminPanel({
                       placeholder="Ex: خيمة التخييم التلقائية الدائرية"
                       value={productForm.nameAr}
                       onChange={(e) => setProductForm({...productForm, nameAr: e.target.value})}
-                      className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500 text-right"
+                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] text-right"
                     />
                   </div>
 
@@ -1666,7 +1633,7 @@ export default function AdminPanel({
                       placeholder="Ex: Automatic Pop Up Camping Dome Tent"
                       value={productForm.nameEn}
                       onChange={(e) => setProductForm({...productForm, nameEn: e.target.value})}
-                      className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500"
+                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43]"
                     />
                   </div>
 
@@ -1677,7 +1644,7 @@ export default function AdminPanel({
                       type="number"
                       value={productForm.price}
                       onChange={(e) => setProductForm({...productForm, price: Number(e.target.value)})}
-                      className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500 font-mono font-bold"
+                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono font-bold"
                       required
                     />
                   </div>
@@ -1689,7 +1656,7 @@ export default function AdminPanel({
                       type="number"
                       value={productForm.originalPrice}
                       onChange={(e) => setProductForm({...productForm, originalPrice: Number(e.target.value)})}
-                      className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500 font-mono"
+                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono"
                     />
                   </div>
 
@@ -1699,11 +1666,16 @@ export default function AdminPanel({
                     <select
                       value={productForm.category}
                       onChange={(e) => setProductForm({...productForm, category: e.target.value})}
-                      className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none"
+                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none"
                     >
-                      {categories.map(c => (
-                        <option key={c.id} value={c.id} className="text-slate-800 bg-white">{c.name.fr} ({c.id})</option>
-                      ))}
+                      <optgroup label="Rayons de GLOBABOX">
+                        {STORE_DEPARTMENTS.map(c=><option key={c.id} value={c.id}>{c.name.fr}</option>)}
+                      </optgroup>
+                      <optgroup label="Autres catégories existantes">
+                        {categories.filter(c=>!STORE_DEPARTMENTS.some(store=>store.id===c.id)).map(c=>(
+                          <option key={c.id} value={c.id}>{c.name.fr||c.id} ({c.id})</option>
+                        ))}
+                      </optgroup>
                     </select>
                   </div>
 
@@ -1714,7 +1686,7 @@ export default function AdminPanel({
                       type="text"
                       value={productForm.image}
                       onChange={(e) => setProductForm({...productForm, image: e.target.value})}
-                      className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2.5 px-3 text-white outline-none focus:border-orange-500 font-mono text-xs"
+                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2.5 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono text-xs"
                       placeholder="Insérer l'URL Unsplash ou image valide"
                     />
                   </div>
@@ -1731,7 +1703,7 @@ export default function AdminPanel({
                         const urls = e.target.value.split(/,|\n/).map(u => u.trim()).filter(Boolean);
                         setProductForm({...productForm, additionalImages: urls});
                       }}
-                      className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500 font-mono text-xs"
+                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono text-xs"
                       placeholder="URL Galerie 1, URL Galerie 2, URL Galerie 3..."
                     />
                   </div>
@@ -1744,7 +1716,7 @@ export default function AdminPanel({
                         type="text"
                         value={productForm.fallbackImage}
                         onChange={(e) => setProductForm({...productForm, fallbackImage: e.target.value})}
-                        className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2.5 px-3 text-white outline-none focus:border-orange-500 font-mono text-xs"
+                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2.5 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono text-xs"
                         placeholder="Insérer l'URL d'image de secours"
                       />
                     </div>
@@ -1757,7 +1729,7 @@ export default function AdminPanel({
                           const urls = e.target.value.split(',').map(u => u.trim()).filter(Boolean);
                           setProductForm({...productForm, fallbackImages: urls});
                         }}
-                        className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2.5 px-3 text-white outline-none focus:border-orange-500 font-mono text-xs"
+                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2.5 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono text-xs"
                         placeholder="Fallback URL 1, Fallback URL 2..."
                       />
                     </div>
@@ -1774,7 +1746,7 @@ export default function AdminPanel({
                           const list = e.target.value.split('\n').map(l => l.trim()).filter(Boolean);
                           setProductForm({...productForm, featuresFr: list});
                         }}
-                        className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500 font-sans text-xs"
+                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-sans text-xs"
                         placeholder="Caractéristique 1&#10;Caractéristique 2"
                       />
                     </div>
@@ -1787,7 +1759,7 @@ export default function AdminPanel({
                           const list = e.target.value.split('\n').map(l => l.trim()).filter(Boolean);
                           setProductForm({...productForm, featuresAr: list});
                         }}
-                        className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500 font-sans text-xs text-right"
+                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-sans text-xs text-right"
                         placeholder="ميزة 1&#10;ميزة 2"
                       />
                     </div>
@@ -1800,7 +1772,7 @@ export default function AdminPanel({
                           const list = e.target.value.split('\n').map(l => l.trim()).filter(Boolean);
                           setProductForm({...productForm, featuresEn: list});
                         }}
-                        className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500 font-sans text-xs"
+                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-sans text-xs"
                         placeholder="Feature 1&#10;Feature 2"
                       />
                     </div>
@@ -1817,7 +1789,7 @@ export default function AdminPanel({
                         <span className="text-[9px] text-[#22c55e] font-extrabold uppercase">
                           Principale
                         </span>
-                        <div className="w-16 h-16 rounded-xl overflow-hidden border border-[#213757] relative">
+                        <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 relative">
                           <ProductImage
                             src={productForm.image}
                             alt="Aperçu principal"
@@ -1831,10 +1803,10 @@ export default function AdminPanel({
                       {/* Gallery Previews */}
                       {productForm.additionalImages.map((url, i) => (
                         <div key={i} className="flex flex-col items-center gap-1">
-                          <span className="text-[9px] text-orange-500 font-extrabold uppercase">
+                          <span className="text-[9px] text-[#147657] font-extrabold uppercase">
                             Galerie {i + 1}
                           </span>
-                          <div className="w-16 h-16 rounded-xl overflow-hidden border border-[#213757] relative">
+                          <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 relative">
                             <ProductImage
                               src={url}
                               alt={`Aperçu galerie ${i + 1}`}
@@ -1849,7 +1821,7 @@ export default function AdminPanel({
                                 copy.splice(i, 1);
                                 setProductForm({...productForm, additionalImages: copy});
                               }}
-                              className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-650 rounded-full flex items-center justify-center text-white text-[8px] hover:bg-red-650/80 z-10"
+                              className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-650 rounded-full flex items-center justify-center text-[#193e38] text-[8px] hover:bg-red-650/80 z-10"
                               title="Retirer"
                             >
                               ✕
@@ -1868,7 +1840,7 @@ export default function AdminPanel({
                         rows={3}
                         value={productForm.descFr}
                         onChange={(e) => setProductForm({...productForm, descFr: e.target.value})}
-                        className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500"
+                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43]"
                         placeholder="Description commerciale du produit..."
                       />
                     </div>
@@ -1878,7 +1850,7 @@ export default function AdminPanel({
                         rows={3}
                         value={productForm.descAr}
                         onChange={(e) => setProductForm({...productForm, descAr: e.target.value})}
-                        className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500 text-right"
+                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] text-right"
                         placeholder="الوصف التجاري للمنتج..."
                       />
                     </div>
@@ -1888,7 +1860,7 @@ export default function AdminPanel({
                         rows={3}
                         value={productForm.descEn}
                         onChange={(e) => setProductForm({...productForm, descEn: e.target.value})}
-                        className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500"
+                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43]"
                         placeholder="Commercial description in English..."
                       />
                     </div>
@@ -1903,11 +1875,11 @@ export default function AdminPanel({
                       <select
                         value={productForm.stockStatus}
                         onChange={(e) => setProductForm({...productForm, stockStatus: e.target.value as any})}
-                        className="w-full bg-[#122037] border border-[#213757] rounded-xl py-2 px-3 text-white outline-none focus:border-orange-500 font-semibold"
+                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-semibold"
                       >
-                        <option value="in_stock" className="bg-[#122037] text-white">🟢 En stock</option>
-                        <option value="limited" className="bg-[#122037] text-white">🟡 Stock limité</option>
-                        <option value="out_of_stock" className="bg-[#122037] text-white">🔴 Rupture de stock</option>
+                        <option value="in_stock" className="bg-[#f8fbf9] text-[#193e38]">🟢 En stock</option>
+                        <option value="limited" className="bg-[#f8fbf9] text-[#193e38]">🟡 Stock limité</option>
+                        <option value="out_of_stock" className="bg-[#f8fbf9] text-[#193e38]">🔴 Rupture de stock</option>
                       </select>
                     </div>
 
@@ -1918,7 +1890,7 @@ export default function AdminPanel({
                             type="checkbox"
                             checked={productForm.bestSeller}
                             onChange={(e) => setProductForm({...productForm, bestSeller: e.target.checked})}
-                            className="w-4 h-4 rounded border-[#1c2e4a] accent-orange-500"
+                            className="w-4 h-4 rounded border-slate-200 accent-orange-500"
                           />
                           <span>Meilleure Vente 🔥</span>
                         </label>
@@ -1928,7 +1900,7 @@ export default function AdminPanel({
                             type="checkbox"
                             checked={productForm.newArrival}
                             onChange={(e) => setProductForm({...productForm, newArrival: e.target.checked})}
-                            className="w-4 h-4 rounded border-[#1c2e4a] accent-orange-500"
+                            className="w-4 h-4 rounded border-slate-200 accent-orange-500"
                           />
                           <span>Nouveauté Coquette ⛺</span>
                         </label>
@@ -1938,7 +1910,7 @@ export default function AdminPanel({
                             type="checkbox"
                             checked={productForm.featured}
                             onChange={(e) => setProductForm({...productForm, featured: e.target.checked})}
-                            className="w-4 h-4 rounded border-[#1c2e4a] accent-orange-500"
+                            className="w-4 h-4 rounded border-slate-200 accent-orange-500"
                           />
                           <span>À la Une (Accueil) ⭐</span>
                         </label>
@@ -1948,7 +1920,7 @@ export default function AdminPanel({
                             type="checkbox"
                             checked={productForm.isActive}
                             onChange={(e) => setProductForm({...productForm, isActive: e.target.checked})}
-                            className="w-4 h-4 rounded border-[#1c2e4a] accent-green-500"
+                            className="w-4 h-4 rounded border-slate-200 accent-green-500"
                           />
                           <span>Actif (Affiché sur le site) ✅</span>
                         </label>
@@ -1961,14 +1933,14 @@ export default function AdminPanel({
                   <div className="md:col-span-2 pt-4 flex gap-3">
                     <button
                       type="submit"
-                      className="bg-orange-600 hover:bg-orange-500 text-white font-extrabold px-6 py-3 rounded-xl transition-all shadow-md cursor-pointer"
+                      className="bg-[#104d43] hover:bg-[#0a3d33] text-white font-extrabold px-6 py-3 rounded-xl transition-all shadow-md cursor-pointer"
                     >
                       Sauvegarder les modifications du produit
                     </button>
                     <button
                       type="button"
                       onClick={() => { setEditingProduct(null); setIsAddingProduct(false); }}
-                      className="bg-[#1c2d49] hover:bg-[#25395a] text-slate-300 font-bold px-4 py-3 rounded-xl transition-all cursor-pointer"
+                      className="bg-[#edf5ef] hover:bg-[#dcefe3] text-slate-600 font-bold px-4 py-3 rounded-xl transition-all cursor-pointer"
                     >
                       Annuler
                     </button>
@@ -1980,21 +1952,33 @@ export default function AdminPanel({
 
             {/* Products grid / Search list view */}
             <div className="space-y-4">
-              <div className="relative max-w-md bg-[#0b1528] rounded-2xl border border-[#1c2e4a]">
+              <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+                <span className="text-xs font-bold text-[#193e38]">Statut du catalogue</span>
+                <select value={productStatusFilter} onChange={e=>setProductStatusFilter(e.target.value as typeof productStatusFilter)}
+                  aria-label="Filtrer le statut des produits"
+                  className="min-h-10 rounded-xl border border-[#d4e3d8] bg-white px-3 text-xs font-bold text-[#104d43] outline-none focus:border-[#104d43]">
+                  <option value="all">Tous les produits</option>
+                  <option value="published">Publiés</option>
+                  <option value="draft">Brouillons</option>
+                  <option value="outofstock">Rupture de stock</option>
+                </select>
+                <span className="ms-auto text-xs font-semibold text-slate-500">{filteredProductsList.length} résultat(s) · {adminProducts.length} au total</span>
+              </div>
+              <div className="relative max-w-md bg-white rounded-2xl border border-slate-200">
                 <input
                   type="text"
                   placeholder="Filtrer les produits par nom..."
                   value={productQuery}
                   onChange={(e) => setProductQuery(e.target.value)}
-                  className="w-full bg-transparent border-none text-xs rounded-xl py-2.5 pl-9 pr-4 text-white placeholder-slate-400 outline-none"
+                  className="w-full bg-transparent border-none text-xs rounded-xl py-2.5 pl-9 pr-4 text-[#193e38] placeholder-slate-400 outline-none"
                 />
                 <Search className="absolute left-3 top-2.5 text-slate-400 w-4 h-4" />
               </div>
 
-              <div className="bg-[#0b1528] rounded-2xl border border-[#1c2e4a] overflow-hidden text-xs">
+              <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto text-xs">
                 
                 {/* Table Header */}
-                <div className="bg-[#0f1d35] px-4 py-3 border-b border-[#1c2e4a] grid grid-cols-12 gap-2 text-slate-400 uppercase tracking-widest text-[9px] font-black">
+                <div className="bg-[#f1f7f3] px-4 py-3 border-b border-slate-200 grid grid-cols-12 gap-2 text-slate-400 uppercase tracking-widest text-[9px] font-black">
                   <div className="col-span-1">Image</div>
                   <div className="col-span-5">Détails du Produit Nom</div>
                   <div className="col-span-2">Catégorie</div>
@@ -2008,29 +1992,29 @@ export default function AdminPanel({
                   {filteredProductsList.map((prod) => (
                     <div
                       key={prod.id}
-                      className="px-4 py-3.5 grid grid-cols-12 gap-2 items-center hover:bg-[#13223c]/40 transition-colors"
+                      className="min-w-[930px] px-4 py-3.5 grid grid-cols-12 gap-2 items-center hover:bg-[#edf5ef]/40 transition-colors"
                     >
                       {/* Thumbnail photo */}
                       <div className="col-span-1">
                         <img
                           src={prod.image}
                           alt={prod.name.fr}
-                          className="w-9 h-9 object-cover rounded-lg border border-[#213757]"
+                          className="w-9 h-9 object-cover rounded-lg border border-slate-200"
                         />
                       </div>
 
                       {/* Name Details and sub-badges */}
                       <div className="col-span-5 space-y-1">
-                        <p className="font-extrabold text-white text-[12px]">{prod.name.fr}</p>
+                        <p className="font-extrabold text-[#193e38] text-[12px]">{prod.name.fr}</p>
                         <p className="text-right text-[10px] text-slate-400 font-sans mt-0.5">{prod.name.ar}</p>
                         <div className="flex gap-1.5 flex-wrap pt-1 font-sans">
                           {prod.isActive === true ? (
                             <span className="bg-emerald-950/40 text-emerald-400 text-[9px] font-bold px-2 py-0.5 rounded border border-emerald-800/50">PUBLIÉ</span>
                           ) : (
-                            <span className="bg-amber-950/40 text-amber-400 text-[9px] font-bold px-2 py-0.5 rounded border border-amber-800/50">BROUILLON — NON VISIBLE</span>
+                            <span className="bg-amber-50 text-amber-400 text-[9px] font-bold px-2 py-0.5 rounded border border-amber-800/50">BROUILLON — NON VISIBLE</span>
                           )}
                           {prod.bestSeller && (
-                            <span className="bg-orange-950/40 text-orange-400 text-[8px] font-bold px-1.5 py-0.5 rounded border border-orange-900/30">BEST</span>
+                            <span className="bg-orange-950/40 text-[#147657] text-[8px] font-bold px-1.5 py-0.5 rounded border border-orange-900/30">BEST</span>
                           )}
                           {(() => {
                             const isNew = prod.createdAt 
@@ -2047,14 +2031,14 @@ export default function AdminPanel({
 
                       {/* Category ID tag */}
                       <div className="col-span-2">
-                        <span className="bg-[#122037] text-slate-300 font-semibold px-2 py-0.5 rounded-md border border-[#213757] uppercase text-[10px]">
+                        <span className="bg-[#f8fbf9] text-slate-600 font-semibold px-2 py-0.5 rounded-md border border-slate-200 uppercase text-[10px]">
                           {prod.category}
                         </span>
                       </div>
 
                       {/* Prices */}
                       <div className="col-span-2 font-mono font-bold">
-                        <span className="text-orange-400 text-xs">{prod.price} DH</span>
+                        <span className="text-[#147657] text-xs">{prod.price} DH</span>
                         {prod.originalPrice && (
                           <span className="text-slate-500 line-through text-[10px] block font-light">
                             {prod.originalPrice} DH
