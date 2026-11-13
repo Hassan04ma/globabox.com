@@ -106,13 +106,13 @@ export default function Header({
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#1d2d52]/95 backdrop-blur-lg shadow-lg border-b border-[#314a80]'
-          : 'bg-[#132140]/92 backdrop-blur-md border-b border-[#233d70]'
+          ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-slate-200'
+          : 'bg-white/95 backdrop-blur-md border-b border-slate-200'
       }`}
       style={{ direction: isRtl ? 'rtl' : 'ltr' }}
     >
       {/* Top Bar (Moroccan Flag, Delivery Notification, Working Hours) */}
-      <div className={`bg-[#122245] border-b border-[#223b70] text-[11px] md:text-xs text-slate-200 px-4 flex justify-between items-center tracking-normal font-sans transition-all duration-300 ${
+      <div className={`bg-slate-50 border-b border-slate-100 text-[11px] md:text-xs text-slate-700 px-4 flex justify-between items-center tracking-normal font-sans transition-all duration-300 ${
         isScrolled ? 'py-1' : 'py-1.5'
       }`}>
         <div className="flex items-center gap-2">
@@ -121,17 +121,17 @@ export default function Header({
           </span>
           <span className="flex items-center gap-1">
             <span>{t('expressDeliveryBadge')} - {t('paymentOnDeliveryBadge')}</span>
-            <Truck size={12} className="text-orange-500 shrink-0" />
+            <Truck size={12} className="text-teal-700 shrink-0" />
           </span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="hidden md:inline-block font-mono text-slate-300">{t('footerSchedule')}</span>
+          <span className="hidden md:inline-block font-mono text-slate-600">{t('footerSchedule')}</span>
           <a
             href={`tel:${ORDER_SUPPORT_NUMBER}`}
-            className="hover:underline font-mono text-slate-200 flex items-center gap-1 font-semibold"
+            className="hover:underline font-mono text-slate-700 flex items-center gap-1 font-semibold"
           >
             <span className="flex items-center gap-1">
-              <Phone size={11} className="text-orange-500 shrink-0" />
+              <Phone size={11} className="text-teal-700 shrink-0" />
               <span>{ORDER_SUPPORT_NUMBER}</span>
             </span>
           </a>
@@ -171,12 +171,12 @@ export default function Header({
                 <span className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/20"></span>
               </div>
               <div className="flex flex-col">
-                <span className={`font-bold tracking-tight text-white leading-none transition-all duration-300 ${
+                <span className={`font-bold tracking-tight text-slate-950 leading-none transition-all duration-300 ${
                   isScrolled ? 'text-sm md:text-base' : 'text-base md:text-lg'
                 }`}>
                   {t('brandName')}
                 </span>
-                <span className={`tracking-wide text-orange-400 font-medium uppercase font-sans transition-all duration-300 leading-none ${
+                <span className={`tracking-wide text-teal-700 font-medium uppercase font-sans transition-all duration-300 leading-none ${
                    isScrolled ? 'text-[8px] mt-0.5' : 'text-[9px] mt-1'
                 }`}>
                   {t('tagline')}
@@ -193,7 +193,7 @@ export default function Header({
                 placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className={`w-full bg-[#1b2f59] text-white placeholder-slate-400 text-sm py-1.5 md:py-2 rounded-xl outline-none focus:ring-2 focus:ring-orange-500 border border-[#2d4d87] focus:border-orange-500 transition-all font-sans ${
+                className={`w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-sm py-1.5 md:py-2 rounded-xl outline-none focus:ring-2 focus:ring-orange-500 border border-slate-200 focus:border-orange-500 transition-all font-sans ${
                   isRtl ? 'pr-10 pl-4 text-right' : 'pl-10 pr-4 text-left'
                 }`}
               />
@@ -201,7 +201,7 @@ export default function Header({
               {searchTerm && (
                 <button
                   onClick={() => onSearchChange('')}
-                  className={`absolute ${isRtl ? 'left-3' : 'right-3'} top-1/2 -translate-y-1/2 text-slate-300 hover:text-white p-1 hover:bg-[#253e6c] rounded-full transition-colors flex items-center justify-center`}
+                  className={`absolute ${isRtl ? 'left-3' : 'right-3'} top-1/2 -translate-y-1/2 text-slate-600 hover:text-white p-1 hover:bg-[#253e6c] rounded-full transition-colors flex items-center justify-center`}
                   aria-label="Clear search"
                 >
                   <X size={14} />
@@ -213,13 +213,13 @@ export default function Header({
           {/* Language Selector & Cart */}
           <div className="flex items-center gap-2 md:gap-3 shrink-0">
             {/* Language Switch Dropdown */}
-            <div className="relative flex bg-[#1b2f59] rounded-lg p-0.5 border border-[#2d4d87]">
+            <div className="relative flex bg-slate-50 rounded-lg p-0.5 border border-slate-200">
               <button
                 onClick={() => setLanguage('fr')}
                 className={`px-2 py-0.5 text-[10px] md:text-xs font-semibold rounded transition-all ${
                   language === 'fr'
-                    ? 'bg-orange-600 text-white shadow'
-                    : 'text-slate-300 hover:text-white'
+                    ? 'bg-teal-800 text-white shadow'
+                    : 'text-slate-600 hover:text-white'
                 }`}
               >
                 FR
@@ -228,8 +228,8 @@ export default function Header({
                 onClick={() => setLanguage('ar')}
                 className={`px-2 py-0.5 text-[10px] md:text-xs font-semibold rounded transition-all ${
                   language === 'ar'
-                    ? 'bg-orange-600 text-white shadow'
-                    : 'text-slate-300 hover:text-white'
+                    ? 'bg-teal-800 text-white shadow'
+                    : 'text-slate-600 hover:text-white'
                 }`}
               >
                 عربي
@@ -238,8 +238,8 @@ export default function Header({
                 onClick={() => setLanguage('en')}
                 className={`px-2 py-0.5 text-[10px] md:text-xs font-semibold rounded transition-all ${
                   language === 'en'
-                    ? 'bg-orange-600 text-white shadow'
-                    : 'text-slate-300 hover:text-white'
+                    ? 'bg-teal-800 text-white shadow'
+                    : 'text-slate-600 hover:text-white'
                 }`}
               >
                 EN
@@ -260,14 +260,14 @@ export default function Header({
 
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 rounded-xl bg-[#1b2f59] hover:bg-orange-600/25 border border-[#2d4d87] hover:border-orange-500 text-white hover:scale-[1.02] transition-all cursor-pointer flex items-center gap-1.5 md:gap-2"
+              className="relative p-2 rounded-xl bg-slate-50 hover:bg-orange-600/25 border border-slate-200 hover:border-orange-500 text-slate-900 hover:scale-[1.02] transition-all cursor-pointer flex items-center gap-1.5 md:gap-2"
               id="app-cart-trigger-btn"
             >
-              <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
+              <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-teal-700" />
               <span className="absolute -top-1.5 -right-1.5 bg-orange-600 text-white text-[10px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold shadow-md">
                 {totalCartItems}
               </span>
-              <span className="hidden lg:inline text-xs font-semibold text-slate-200">
+              <span className="hidden lg:inline text-xs font-semibold text-slate-700">
                 {t('viewCartButton')}
               </span>
             </button>
@@ -282,7 +282,7 @@ export default function Header({
               placeholder={t('searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className={`w-full bg-[#1b2f59] text-white placeholder-slate-400 text-xs py-1.5 rounded-xl outline-none focus:ring-2 focus:ring-orange-500 border border-[#2d4d87] transition-all pr-9 pl-9 ${
+              className={`w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs py-1.5 rounded-xl outline-none focus:ring-2 focus:ring-orange-500 border border-slate-200 transition-all pr-9 pl-9 ${
                 isRtl ? 'text-right' : 'text-left'
               }`}
             />
@@ -306,11 +306,11 @@ export default function Header({
           <div className="relative shrink-0">
             <button
               onClick={() => setIsAllCategoriesOpen(!isAllCategoriesOpen)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-extrabold rounded-full bg-[#1b2f59] text-white border border-[#2d4d87] hover:bg-orange-600 hover:text-white hover:border-orange-500 transition-all duration-300 cursor-pointer whitespace-nowrap group font-sans"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-extrabold rounded-full bg-slate-50 text-white border border-slate-200 hover:bg-orange-600 hover:text-white hover:border-orange-500 transition-all duration-300 cursor-pointer whitespace-nowrap group font-sans"
             >
               <Grid size={12} className="text-white group-hover:text-white transition-colors" />
               <span>{language === 'ar' ? 'جميع الفئات' : (language === 'en' ? 'All categories' : 'Toutes les catégories')}</span>
-              <ChevronDown size={11} className={`transition-transform duration-250 text-slate-200 group-hover:text-white ${isAllCategoriesOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown size={11} className={`transition-transform duration-250 text-slate-700 group-hover:text-white ${isAllCategoriesOpen ? 'rotate-180' : ''}`} />
             </button>
             
             {isAllCategoriesOpen && (
@@ -325,7 +325,7 @@ export default function Header({
                     onClick={() => { setSelectedCategory(''); setIsAllCategoriesOpen(false); }}
                     className={`col-span-1 min-h-[44px] px-3 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                       selectedCategory === ''
-                        ? 'bg-orange-600 text-white shadow shadow-orange-600/30'
+                        ? 'bg-teal-800 text-white shadow shadow-orange-600/30'
                         : 'bg-[#182847] text-white border border-[#2f4a7c] hover:bg-orange-600/20 hover:text-white'
                     }`}
                   >
@@ -339,7 +339,7 @@ export default function Header({
                       onClick={() => { setSelectedCategory(cat.id); setIsAllCategoriesOpen(false); }}
                       className={`col-span-1 min-h-[44px] px-3 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
                         selectedCategory === cat.id
-                          ? 'bg-orange-600 text-white shadow shadow-orange-600/30'
+                          ? 'bg-teal-800 text-white shadow shadow-orange-600/30'
                           : 'bg-[#182847] text-white border border-[#2f4a7c] hover:bg-orange-600/20 hover:text-white'
                       } ${isRtl ? 'flex-row-reverse text-right' : 'flex-row text-left'}`}
                       dir={isRtl ? 'rtl' : 'ltr'}
@@ -445,7 +445,7 @@ export default function Header({
                 <button
                   onClick={() => { setSelectedCategory(''); setIsMobileMenuOpen(false); }}
                   className={`p-2.5 rounded-lg text-xs flex items-center gap-1.5 ${
-                    selectedCategory === '' ? 'bg-orange-600 text-white font-bold' : 'bg-[#13223c] text-slate-200'
+                    selectedCategory === '' ? 'bg-orange-600 text-white font-bold' : 'bg-[#13223c] text-slate-700'
                   } ${isRtl ? 'flex-row-reverse text-right' : 'flex-row text-left'}`}
                 >
                   <Compass className="w-3.5 h-3.5 shrink-0" />
@@ -456,7 +456,7 @@ export default function Header({
                     key={cat.id}
                     onClick={() => { setSelectedCategory(cat.id); setIsMobileMenuOpen(false); }}
                     className={`p-2.5 rounded-lg text-xs flex items-center gap-1.5 ${
-                      selectedCategory === cat.id ? 'bg-orange-600 text-white font-bold' : 'bg-[#13223c] text-slate-200'
+                      selectedCategory === cat.id ? 'bg-orange-600 text-white font-bold' : 'bg-[#13223c] text-slate-700'
                     } ${isRtl ? 'flex-row-reverse text-right' : 'flex-row text-left'}`}
                   >
                     <CategoryIcon categoryId={cat.id} className="w-3.5 h-3.5 shrink-0" />
@@ -471,7 +471,7 @@ export default function Header({
                   className="w-full flex items-center justify-between p-3.5 rounded-xl bg-orange-600/10 hover:bg-orange-600/20 text-orange-400 border border-orange-500/20 transition-all text-xs font-black"
                 >
                   <span className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-orange-500 shrink-0" />
+                    <MapPin className="w-4 h-4 text-teal-700 shrink-0" />
                     <span>{language === 'ar' ? 'تتبع طلبيتك الآن' : 'Suivre ma commande'}</span>
                   </span>
                   <span>➜</span>
@@ -480,7 +480,7 @@ export default function Header({
 
               <div className="border-t border-[#1c2e4a] pt-4 space-y-3">
                 <p className="text-xs text-slate-400">{t('footerContactTitle')}</p>
-                <p className="text-xs text-slate-200 font-mono flex items-center gap-1.5"><Phone size={13} className="text-orange-500 shrink-0" /> {ORDER_SUPPORT_NUMBER}</p>
+                <p className="text-xs text-slate-700 font-mono flex items-center gap-1.5"><Phone size={13} className="text-teal-700 shrink-0" /> {ORDER_SUPPORT_NUMBER}</p>
                 <p className="text-[11px] text-slate-500 font-mono">{t('footerSchedule')}</p>
                 <a
                   href={WA_LINK}
