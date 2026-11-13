@@ -32,12 +32,12 @@ export default function Header({language,setLanguage,searchTerm,onSearchChange,s
  const all=()=>{setSelectedCategory('');onSearchChange('');window.requestAnimationFrame(()=>document.getElementById('product-catalog')?.scrollIntoView({behavior:'smooth',block:'start'}));};
  return <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-md" dir={rtl?'rtl':'ltr'}>
     <div className="bg-[#104d43] text-white">
-      <div className="mx-auto flex min-h-8 max-w-7xl items-center justify-between gap-3 px-4 text-[10px] font-semibold sm:px-6 sm:text-xs lg:px-8">
+      <div className="flex min-h-8 w-full max-w-none items-center justify-between gap-3 px-4 text-[10px] font-semibold sm:px-6 sm:text-xs lg:px-8">
         <span className="flex items-center gap-2"><Truck size={14}/>{c.delivery}</span>
         <a href={'tel:'+ORDER_SUPPORT_NUMBER} className="hidden items-center gap-1.5 sm:flex"><Phone size={12}/><span dir="ltr">{ORDER_SUPPORT_NUMBER}</span></a>
       </div>
     </div>
-    <div className="mx-auto flex h-[70px] max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
+    <div className="flex h-[70px] w-full max-w-none items-center gap-4 px-4 sm:px-6 lg:px-8">
       <a href="/" onClick={e=>{e.preventDefault();setSelectedCategory('');onSearchChange('');window.scrollTo({top:0,behavior:'smooth'});}} aria-label="GLOBABOX — home" className="shrink-0">
         <img src="/brand/globabox-logo.svg" alt="GLOBABOX" className="h-10 w-[151px] object-contain sm:w-[185px] lg:h-[52px] lg:w-[207px]"/>
       </a>
@@ -55,6 +55,6 @@ export default function Header({language,setLanguage,searchTerm,onSearchChange,s
         </button>
       </div>
     </div>
-    <div className="mx-auto max-w-7xl border-t border-slate-100 px-4 pb-3 pt-2 md:hidden">{searchInput()}</div>
+    <div className="w-full max-w-none border-t border-slate-100 px-4 pb-3 pt-2 md:hidden">{searchInput()}</div>
   </header>;
 }
