@@ -54,6 +54,43 @@ export interface Category {
 }
 
 export const CATEGORIES: Category[] = [
+  {
+    id: "technologie",
+    name: { fr: "Électronique & Tech", ar: "الإلكترونيات والتكنولوجيا", en: "Electronics & Tech" },
+    image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&h=700&q=80",
+    description: { fr: "Accessoires électroniques et objets utiles au quotidien.", ar: "إكسسوارات إلكترونية ومنتجات تقنية للحياة اليومية.", en: "Electronics accessories and useful tech products." }
+  },
+  {
+    id: "cuisine",
+    name: { fr: "Cuisine & Repas", ar: "المطبخ والأواني", en: "Kitchen & Dining" },
+    image: "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=900&h=700&q=80",
+    description: { fr: "Ustensiles pratiques et accessoires pour la cuisine.", ar: "أواني وأدوات عملية للمطبخ.", en: "Practical kitchen tools and accessories." }
+  },
+  {
+    id: "beaute",
+    name: { fr: "Beauté & Bien-être", ar: "الجمال والعناية", en: "Beauty & Care" },
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=900&h=700&q=80",
+    description: { fr: "Accessoires beauté et soins du quotidien.", ar: "إكسسوارات الجمال والعناية اليومية.", en: "Beauty and daily care accessories." }
+  },
+  {
+    id: "automobile",
+    name: { fr: "Auto & Accessoires", ar: "السيارات والإكسسوارات", en: "Car Accessories" },
+    image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=900&h=700&q=80",
+    description: { fr: "Accessoires utiles pour votre véhicule.", ar: "إكسسوارات عملية للسيارات.", en: "Useful accessories for your vehicle." }
+  },
+  {
+    id: "mode",
+    name: { fr: "Mode & Accessoires", ar: "الموضة والإكسسوارات", en: "Fashion & Accessories" },
+    image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&h=700&q=80",
+    description: { fr: "Accessoires, sacs et essentiels de mode.", ar: "إكسسوارات وحقائب وأغراض الموضة.", en: "Fashion accessories, bags and everyday essentials." }
+  },
+  {
+    id: "rangement",
+    name: { fr: "Maison & Rangement", ar: "المنزل والتنظيم", en: "Home & Storage" },
+    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=900&h=700&q=80",
+    description: { fr: "Objets pratiques pour aménager et organiser la maison.", ar: "منتجات عملية لتنظيم وتجهيز المنزل.", en: "Practical products to organize and improve your home." }
+  },
+
   { id: 'sacs_trekking', name: {fr:'Sacs à dos Trekking',ar:'حقائب الظهر للرحلات',en:'Trekking Backpacks'},
     image:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&h=900&q=85', description:{fr:'Sacs à dos de randonnée et voyage.',ar:'حقائب ظهر للتخييم والرحلات والسفر.',en:'Backpacks for travel and hiking.'} },
   {
