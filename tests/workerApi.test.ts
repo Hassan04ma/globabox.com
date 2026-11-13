@@ -6,6 +6,10 @@ const db = {
   prepare(sql: string) {
     const execute = (...params: unknown[]) => ({
       async first() {
+        if (sql.includes("UPPER(json_extract(data_json, '$.reference'))")) {
+          const matched=savedOrders.find(o=>o.reference?.toUpperCase()===params[0]);
+          return matched ? {data_json:JSON.stringify(matched)} : null;
+        }
         if (sql.includes('FROM orders WHERE id=?')) {
           const matched=savedOrders.find(o=>o.id===params[0]);
           return matched ? {data_json:JSON.stringify(matched)} : null;
@@ -144,6 +148,30 @@ assert.equal(freeResponse.status, 201);
 assert.equal((await freeResponse.json() as any).order.freeShipping,true);
 assert.equal(savedOrders.length,2);
 
+// Public tracking must require a reference and matching telephone, without exposing customer PII.
+const track=async (body:unknown, customEnv=env) =>
+  worker.fetch(new Request('https://preview.example.test/api/track-order',{
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+  }),customEnv);
+const savedRef=data.order.reference;
+const validTracking=await track({reference:savedRef.toLowerCase(),phone:'+212612345678'});
+assert.equal(validTracking.status,200,'Valid order reference + same telephone can track');
+const tracked=await validTracking.json() as any;
+assert.equal(tracked.tracking.status,'pending');
+assert.equal(tracked.tracking.total,435);
+assert.equal(tracked.tracking.itemCount,1);
+assert.equal(tracked.tracking.reference,savedRef);
+assert.equal(JSON.stringify(tracked).includes('Client Exemple'),false,'No customer name in tracking response');
+assert.equal(JSON.stringify(tracked).includes('Rue Test'),false,'No address in tracking response');
+assert.equal(JSON.stringify(tracked).includes('0612345678'),false,'No telephone in tracking response');
+assert.equal((await track({reference:savedRef,phone:'0699999999'})).status,404,'Mismatched phone cannot track');
+assert.equal((await track({reference:'GB-UNKNOWN1',phone:'0612345678'})).status,404,'Unknown reference cannot track');
+assert.equal((await track({reference:'GB-123',phone:'0612345678'})).status,400,'Invalid reference rejected');
+assert.equal((await track({reference:savedRef,phone:'not-phone'})).status,400,'Invalid telephone rejected');
+assert.equal((await track({reference:savedRef,phone:'0612345678'}, {...env,CHECKOUT_RATE_LIMITER:undefined})).status,503,
+  'Without rate limiting binding, public tracking fails closed');
+assert.equal((await request('/api/track-order')).status,404,'GET tracking endpoint is not exposed');
+
 // A trusted admin creating a product cannot make it public in a single POST.
 const adminEnv = {...env, ADMIN_API_KEY:'ci_dummy_admin_api_key_very_long_not_a_secret_00001'};
 const draft = await worker.fetch(new Request('https://preview.example.test/api/products', {
@@ -154,4 +182,4 @@ const draft = await worker.fetch(new Request('https://preview.example.test/api/p
 assert.equal(draft.status,200);
 const draftPayload = await draft.json() as any;
 assert.equal(draftPayload.product.isActive,false,'New admin products cannot auto-publish');
-console.log('Worker API smoke tests passed: admin protection, tampering, persisted checkout, free delivery and draft creation');
+console.log('Worker API smoke tests passed: admin protection, tampering, persisted checkout, free delivery and draft creation, privacy-safe customer tracking');
