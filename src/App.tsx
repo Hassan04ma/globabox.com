@@ -455,11 +455,11 @@ export default function App() {
     };
 
     let titleText = language === "ar" 
-      ? "جلوبابوكس | متجر مستلزمات التخييم، الكشتات والأنشطة الخارجية بالمغرب" 
-      : "Globabox | Boutique Matériel Camping, Bivouac & Outdoor Maroc";
+      ? "جلوبابوكس | متجر إلكتروني عام بالمغرب" 
+      : "Globabox | Boutique en ligne multi-catégories au Maroc";
     
     let metaDesc = language === "ar"
-      ? "جلوبابوكس هي الماركة المفضلة لمعدات المغامرات والتخييم، الصيد والرحلات بالمغرب. توصيل مجاني ودفع كاش آمن عند الاستلام."
+      ? "تسوق منتجات متنوعة للمنزل والتكنولوجيا والحياة اليومية من جلوبابوكس، مع الدفع عند الاستلام بالمغرب."
       : "Globabox est la marque d'équipement d'extérieur préférée au Maroc pour le camping, la randonnée, la pêche et la chasse. Livraison gratuite et paiement de confiance à la livraison.";
 
     if (selectedProduct) {
@@ -876,7 +876,7 @@ Merci de confirmer la disponibilité et la livraison.`;
 
   return (
     <div 
-      className="min-h-screen bg-slate-50 text-slate-900 selection:bg-orange-500 selection:text-white transition-colors duration-300 pb-20 md:pb-0"
+      className="min-h-screen bg-white text-slate-900 selection:bg-teal-700 selection:text-white transition-colors duration-300 pb-20 md:pb-0"
       style={{ direction: isRtl ? 'rtl' : 'ltr' }}
     >
       {/* 1. Header */}
@@ -917,7 +917,7 @@ Merci de confirmer la disponibilité et la livraison.`;
       />
 
       {/* 3.05 Delivery Info & Reassurance Banner */}
-      <DeliveryBanner language={language} />
+
 
       {/* 3.08 Active Flash Discounts/Hot Deals ("Offres du moment") */}
       {!selectedCategory && !searchTerm && (
@@ -989,10 +989,10 @@ Merci de confirmer la disponibilité et la livraison.`;
       )}
 
       {/* 3.28 Detailed Free Shipping policy layout ("Livraison gratuite") */}
-      <FreeDeliverySection language={language} />
+
 
       {/* 3.3 Why Choose Globabox Trust & Reassurance Block */}
-      <WhyChooseGlobabox language={language} />
+
 
       {/* 4. Main Catalog Section & Filtering */}
       <main 
@@ -1005,7 +1005,7 @@ Merci de confirmer la disponibilité et la livraison.`;
             {selectedCategory ? (
               <div>
                 <h2 className="text-xl md:text-2xl font-black text-slate-900 flex items-center gap-2">
-                  ⛺{" "}
+                  
                   {language === 'ar' 
                     ? `منتجات فئة: ${categoryName}`
                     : language === 'en'
@@ -1028,7 +1028,7 @@ Merci de confirmer la disponibilité et la livraison.`;
             ) : (
               <div>
                 <h2 className="text-xl md:text-2xl font-black text-slate-900 flex items-center gap-2">
-                  ⛺ {t('allProductsTitle')}
+                  {t('allProductsTitle')}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
                   {filteredProducts.length} {t('cartItemsCount')} {t('allCategoriesLabel').toLowerCase()}
@@ -1123,7 +1123,7 @@ Merci de confirmer la disponibilité et la livraison.`;
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
