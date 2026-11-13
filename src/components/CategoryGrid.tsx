@@ -1,4 +1,4 @@
-import { Compass, ArrowUpRight, ImageOff } from 'lucide-react';
+import { Grid2X2, ArrowUpRight, ImageOff } from 'lucide-react';
 import { Category, Language } from '../types';
 import { CATEGORIES } from '../data';
 import { TRANSLATIONS } from '../translations';
@@ -27,7 +27,7 @@ export default function CategoryGrid({
       className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10"
     >
       <div className="flex items-center gap-2 mb-6">
-        <Compass className="w-5 h-5 text-orange-500 animate-pulse" />
+        <Grid2X2 className="w-5 h-5 text-teal-700" />
         <h2 className="text-xl font-black tracking-tight text-slate-900 font-sans">
           {t('categoryTitle')}
         </h2>
