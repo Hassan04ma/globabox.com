@@ -1,7 +1,6 @@
-import { Grid2X2, ArrowUpRight, ImageOff } from 'lucide-react';
-import { Category, Language } from '../types';
+import { ArrowUpRight, Grid2X2, ImageOff } from 'lucide-react';
+import type { Category, Language } from '../types';
 import { CATEGORIES } from '../data';
-import { TRANSLATIONS } from '../translations';
 
 interface CategoryGridProps {
   language: Language;
@@ -10,76 +9,45 @@ interface CategoryGridProps {
   categories?: Category[];
 }
 
+const label = {
+  fr: { title: 'Nos univers', subtitle: 'Explorez les catégories de notre boutique', explore: 'Découvrir' },
+  ar: { title: 'تسوق حسب القسم', subtitle: 'اكتشف أقسام متجر جلوبابوكس', explore: 'تصفح القسم' },
+  en: { title: 'Shop by category', subtitle: 'Find the products you need', explore: 'Explore' }
+} as const;
+
 export default function CategoryGrid({
-  language,
-  selectedCategory,
-  setSelectedCategory,
-  categories = CATEGORIES,
+  language, selectedCategory, setSelectedCategory, categories = CATEGORIES
 }: CategoryGridProps) {
-  const isRtl = language === "ar";
-  const t = (key: string) => {
-    return TRANSLATIONS[key]?.[language] || key;
-  };
-
+  const c = label[language];
   return (
-    <section 
-      style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
-    >
-      <div className="flex items-center gap-2 mb-6">
-        <Grid2X2 className="w-5 h-5 text-teal-700" />
-        <h2 className="text-xl font-black tracking-tight text-slate-900 font-sans">
-          {t('categoryTitle')}
-        </h2>
+    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8" dir={language === 'ar' ? 'rtl' : 'ltr'} aria-label={c.title}>
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <div className="mb-2 flex items-center gap-2 text-[#104d43]"><Grid2X2 size={18}/><span className="text-xs font-extrabold uppercase tracking-[.15em]">GLOBABOX</span></div>
+          <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">{c.title}</h2>
+          <p className="mt-2 text-sm text-slate-500">{c.subtitle}</p>
+        </div>
       </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         {categories.map((cat) => {
-          const isSelected = selectedCategory === cat.id;
+          const selected = selectedCategory === cat.id;
           return (
             <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`group overflow-hidden rounded-2xl border text-center transition-all duration-300 cursor-pointer flex flex-col relative aspect-[4/5] sm:aspect-square hover:-translate-y-1 shadow-sm hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 ${
-                isSelected
-                  ? 'border-teal-700 ring-2 ring-teal-700/25 shadow-sm'
-                  : 'border-slate-200 bg-slate-900 hover:border-orange-500/40'
-              }`}
+              type="button" key={cat.id}
+              onClick={() => {setSelectedCategory(cat.id); window.requestAnimationFrame(() => document.getElementById('product-catalog')?.scrollIntoView({behavior:'smooth',block:'start'}));}}
+              className={'group overflow-hidden rounded-2xl border bg-white text-start shadow-[0_3px_18px_rgba(0,0,0,.035)] transition hover:-translate-y-1 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#104d43] ' + (selected ? 'border-[#104d43] ring-2 ring-[#104d43]/15' : 'border-slate-200 hover:border-[#a1c1b6]')}
+              aria-pressed={selected}
             >
-              {/* Permanent elegant gradient overlay for text readability - around 45% to 80% opacity overlay */}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/15 to-slate-950/5 group-hover:from-slate-950/95 group-hover:via-slate-950/25 group-hover:to-slate-950/10 transition-colors duration-300 z-10" />
-              
-              {cat.image ? (
-                <img
-                  src={cat.image}
-                  alt={cat.name[language] || cat.name.fr}
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                  decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-500"
-                />
-              ) : (
-                <span className="absolute inset-0 flex items-center justify-center bg-slate-800 text-slate-500" aria-hidden="true">
-                  <ImageOff size={30} />
-                </span>
-              )}
-
-              {/* Title and details clearly visible from start */}
-              <div className="relative z-20 flex flex-col items-center justify-end h-full p-3 pb-5 select-none">
-                <span 
-                  className={`text-xs md:text-sm font-black text-white group-hover:text-orange-400 transition-colors uppercase tracking-tight text-center ${
-                    isSelected ? 'text-orange-400' : ''
-                  }`}
-                  style={{ textShadow: '0 2px 4px rgba(0,0,0,0.9), 0 1px 2px rgba(0,0,0,0.7)' }}
-                >
-                  {cat.name[language]}
-                </span>
-                
-                <span className="mt-2 flex items-center gap-1 rounded-full border border-white/20 bg-black/35 px-2 py-1 text-[10px] font-semibold text-white/90 backdrop-blur-sm">
-                  <ArrowUpRight size={12} aria-hidden="true" />
-                  {language === 'ar' ? 'تصفح القسم' : language === 'en' ? 'Explore category' : 'Découvrir'}
-                </span>
-
+              <div className="relative aspect-[1.35/1] overflow-hidden bg-[#eef2ee]">
+                {cat.image ? (
+                  <img src={cat.image} alt={cat.name[language] || cat.name.fr} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" referrerPolicy="no-referrer" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-slate-400"><ImageOff size={29} /></div>
+                )}
+              </div>
+              <div className="flex min-h-[76px] flex-col justify-center px-3 py-3 sm:px-4">
+                <span className="line-clamp-2 text-sm font-bold text-[#193e38]">{cat.name[language] || cat.name.fr}</span>
+                <span className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-[#25776b]">{c.explore}<ArrowUpRight size={13}/></span>
               </div>
             </button>
           );
