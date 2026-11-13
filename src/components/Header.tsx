@@ -112,6 +112,7 @@ export default function Header({
   );
 
   return (
+    <>
     <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-md" dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="bg-[#104d43] text-white">
         <div className="mx-auto flex min-h-[31px] max-w-7xl items-center justify-between gap-3 px-4 text-[10px] font-semibold sm:px-6 sm:text-xs lg:px-8">
@@ -189,6 +190,7 @@ export default function Header({
         </div>
       </nav>
 
+    </header>
       {menuOpen && (
         <div className="fixed inset-0 z-[100] bg-[#0a1d18]/60 lg:hidden" role="presentation" onClick={() => setMenuOpen(false)}>
           <div className={'absolute inset-y-0 w-[min(90vw,380px)] overflow-y-auto bg-white p-5 shadow-2xl ' + (isRtl ? 'right-0' : 'left-0')}
@@ -217,6 +219,6 @@ export default function Header({
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 }
