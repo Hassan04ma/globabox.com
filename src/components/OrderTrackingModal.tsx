@@ -1,739 +1,181 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  X, 
-  Search, 
-  MapPin, 
-  Calendar, 
-  ArrowRight, 
-  Phone, 
-  Clock, 
-  CheckCircle, 
-  Package, 
-  Truck, 
-  BadgeCheck, 
-  XCircle, 
-  HelpCircle,
-  Coins,
-  AlertCircle
-} from 'lucide-react';
-import { Language, Order } from '../types';
-import { WA_LINK, ORDER_SUPPORT_NUMBER, WHATSAPP_NUMBER, DISPLAY_PHONE, WHATSAPP_LINK } from '../data';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, ClipboardList, Clock3, Headphones, MapPin, Package, PackageCheck, PhoneCall, Search, ShieldCheck, Truck, X, XCircle } from 'lucide-react';
+import type { Language } from '../types';
+import { ORDER_SUPPORT_NUMBER, WHATSAPP_NUMBER } from '../data';
 import WhatsAppIcon from './WhatsAppIcon';
 
-interface OrderTrackingModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  language: Language;
-}
+interface Props {isOpen:boolean;onClose:()=>void;language:Language;}
+type Stage='pending'|'confirmed'|'processing'|'shipped'|'delivered'|'cancelled';
+interface TrackingResult {reference:string;status:Stage;date:string|null;total:number|null;itemCount:number;source:'store';courierTrackingAvailable:false;}
 
-export default function OrderTrackingModal({ isOpen, onClose, language }: OrderTrackingModalProps) {
-  const [orderRefInput, setOrderRefInput] = useState('');
-  const [phoneInput, setPhoneInput] = useState('');
-  
-  const [matchedOrders, setMatchedOrders] = useState<Order[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [validationError, setValidationError] = useState<string | null>(null);
+const stages:Exclude<Stage,'cancelled'>[]=['pending','confirmed','processing','shipped','delivered'];
+const labels={
+ fr:{
+  title:'Suivi de commande',intro:'Retrouvez les informations de votre commande GLOBABOX.',
+  secure:'Recherche sécurisée',ref:'Référence de commande',phone:'Téléphone utilisé pour la commande',
+  refHint:'Exemple : GB-FEEF2AA6',phoneHint:'Exemple : 0612345678',
+  explain:'Saisissez la référence et le numéro de téléphone utilisés lors de votre achat.',
+  action:'Consulter ma commande',busy:'Recherche en cours…',
+  invalid:'Saisissez une référence GB-… et un numéro marocain valide.',
+  notFound:'Commande introuvable. Vérifiez la référence et le téléphone, puis réessayez.',
+  unavailable:'Le suivi est temporairement indisponible. Réessayez ou contactez le support.',
+  ready:'Votre commande',current:'Statut actuel',placed:'Date de commande',items:'Articles',total:'Total enregistré',
+  noCourier:'Ce statut est mis à jour par GLOBABOX. Le suivi GPS du transporteur n’est pas disponible ici.',
+  contact:'Besoin d’aide ?',whatsapp:'Nous écrire sur WhatsApp',call:'Appeler',again:'Nouvelle recherche',
+  privacy:'Vos coordonnées et votre adresse ne sont pas affichées.',
+  pending:'En attente',confirmed:'Confirmée',processing:'En préparation',shipped:'Expédiée',delivered:'Livrée',cancelled:'Annulée',
+  dateUnknown:'Date indisponible'
+ },
+ ar:{
+  title:'تتبع الطلبية',intro:'شوف آخر حالة ديال الطلبية المسجلة عند GLOBABOX.',
+  secure:'تتبع آمن',ref:'مرجع الطلبية',phone:'رقم الهاتف اللي طلبتي به',
+  refHint:'مثال: GB-FEEF2AA6',phoneHint:'مثال: 0612345678',
+  explain:'دخل مرجع الطلبية ورقم الهاتف المستعمل عند الشراء باش تشوف الحالة.',
+  action:'تتبع الطلبية',busy:'جاري البحث…',
+  invalid:'دخل مرجع GB-… ورقم هاتف مغربي صحيح.',
+  notFound:'ما لقيناش الطلبية بهاد المرجع ورقم الهاتف. تأكد من المعلومات وعاود.',
+  unavailable:'التتبع غير متوفر مؤقتاً. عاود المحاولة أو تواصل مع خدمة الزبناء.',
+  ready:'طلبيتك',current:'الحالة الحالية',placed:'تاريخ الطلبية',items:'عدد المنتجات',total:'المجموع المسجل',
+  noCourier:'هاد الحالة كيتحكم فيها فريق GLOBABOX، وماشي تتبع مباشر GPS ديال شركة التوصيل.',
+  contact:'محتاج مساعدة؟',whatsapp:'تواصل عبر واتساب',call:'اتصل بنا',again:'بحث جديد',
+  privacy:'ما كنظهروش العنوان والمعلومات الشخصية ديالك.',
+  pending:'في انتظار التأكيد',confirmed:'تم التأكيد',processing:'قيد التجهيز',shipped:'تم الشحن',delivered:'تم التسليم',cancelled:'ملغاة',
+  dateUnknown:'التاريخ غير متوفر'
+ },
+ en:{
+  title:'Track your order',intro:'Check the latest GLOBABOX order status.',
+  secure:'Secure lookup',ref:'Order reference',phone:'Phone used at checkout',
+  refHint:'Example: GB-FEEF2AA6',phoneHint:'Example: 0612345678',
+  explain:'Enter both the order reference and phone number used at checkout.',
+  action:'Track my order',busy:'Searching…',
+  invalid:'Enter your GB-… reference and a valid Moroccan phone number.',
+  notFound:'Order not found. Please double-check the reference and phone number.',
+  unavailable:'Tracking is temporarily unavailable. Please retry or contact support.',
+  ready:'Your order',current:'Current status',placed:'Order date',items:'Items',total:'Recorded total',
+  noCourier:'This status is updated by GLOBABOX. Live courier GPS tracking is not available here.',
+  contact:'Need help?',whatsapp:'Message us on WhatsApp',call:'Call support',again:'New search',
+  privacy:'Your address and private contact details are not shown.',
+  pending:'Pending',confirmed:'Confirmed',processing:'Preparing',shipped:'Shipped',delivered:'Delivered',cancelled:'Cancelled',
+  dateUnknown:'Date unavailable'
+ }
+} as const;
+const icons={pending:Clock3,confirmed:CheckCircle2,processing:Package,shipped:Truck,delivered:PackageCheck};
+const validPhone=(value:string)=>/^(?:(?:\+|00)212|0)[5-7][0-9]{8}$/.test(value.replace(/[.\s-]/g,''));
 
-  const isRtl = language === 'ar';
+export default function OrderTrackingModal({isOpen,onClose,language}:Props){
+ const [reference,setReference]=useState('');
+ const [phone,setPhone]=useState('');
+ const [result,setResult]=useState<TrackingResult|null>(null);
+ const [error,setError]=useState('');
+ const [loading,setLoading]=useState(false);
+ const abort=useRef<AbortController|null>(null);
+ const firstInput=useRef<HTMLInputElement|null>(null);
+ const t=labels[language],rtl=language==='ar';
+ useEffect(()=>{
+  if(!isOpen){abort.current?.abort();setReference('');setPhone('');setResult(null);setError('');setLoading(false);return;}
+  firstInput.current?.focus();
+  const esc=(e:KeyboardEvent)=>{if(e.key==='Escape')onClose();};
+  document.addEventListener('keydown',esc);
+  return()=>{document.removeEventListener('keydown',esc);abort.current?.abort();};
+ },[isOpen,onClose]);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setOrderRefInput('');
-      setPhoneInput('');
-      setMatchedOrders([]);
-      setSelectedOrder(null);
-      setHasSearched(false);
-      setIsLoading(false);
-      setValidationError(null);
-    }
-  }, [isOpen]);
-
-  const t = {
-    title: {
-      fr: "Suivi de Commande",
-      ar: "تتبع طلبك",
-      en: "Track Your Order"
-    },
-    subtitle: {
-      fr: "Suivez l'état de votre colis Globabox en temps réel partout au Maroc.",
-      ar: "تابع حالة شحنتك من جلوبابوكس مباشرة وفي أي مكان في المغرب.",
-      en: "Track your Globabox package status in real-time anywhere in Morocco."
-    },
-    orderRefLabel: {
-      fr: "Référence ou N° de commande",
-      ar: "رقم الطلب أو المرجع",
-      en: "Order Reference or ID"
-    },
-    orderRefPlaceholder: {
-      fr: "Ex: GB-123456 ou 171889",
-      ar: "مثال: GB-123456 أو 171889",
-      en: "e.g. GB-123456 or 171889"
-    },
-    phoneLabel: {
-      fr: "Numéro de téléphone",
-      ar: "رقم الهاتف",
-      en: "Phone Number"
-    },
-    phonePlaceholder: {
-      fr: "Ex: 0612345678",
-      ar: "مثال: 0612345678",
-      en: "e.g. 0612345678"
-    },
-    formHelp: {
-      fr: "Saisissez l'un ou l'autre de ces champs pour localiser votre commande.",
-      ar: "أدخل أحد هذه الحقول لتحديد موقع طلبك.",
-      en: "Enter either of these fields to locate your order."
-    },
-    validationRequired: {
-      fr: "Veuillez remplir au moins un champ (Référence ou N° de Téléphone) pour lancer la recherche.",
-      ar: "يرجى ملء حقل واحد على الأقل (رقم الطلب أو رقم الهاتف) لبدء البحث.",
-      en: "Please fill in at least one field (Order reference or Phone number) to start searching."
-    },
-    btnSearch: {
-      fr: "Rechercher mon colis",
-      ar: "بحث عن طلبي",
-      en: "Track My Package"
-    },
-    searching: {
-      fr: "Recherche en cours...",
-      ar: "جاري البحث...",
-      en: "Searching..."
-    },
-    noResults: {
-      fr: "Aucune commande trouvée. Vérifiez votre numéro de commande ou votre téléphone.",
-      ar: "لم يتم العثور على أي طلب. المرجو التأكد من رقم الطلب أو رقم الهاتف.",
-      en: "No order found. Please check your order reference or phone number."
-    },
-    multipleFound: {
-      fr: "Plusieurs commandes trouvées. Sélectionnez celle que vous souhaitez suivre :",
-      ar: "تم العثور على عدة طلبيات. اختر الطلب المراد تتبعه :",
-      en: "Multiple orders found. Select the one you want to track:"
-    },
-    orderRef: {
-      fr: "Commande",
-      ar: "الطلب رقم",
-      en: "Order"
-    },
-    orderDate: {
-      fr: "Date du commande",
-      ar: "تاريخ الطلب",
-      en: "Order Date"
-    },
-    paymentMethod: {
-      fr: "Mode de paiement",
-      ar: "طريقة الدفع",
-      en: "Payment Method"
-    },
-    codValue: {
-      fr: "Paiement à la livraison (Cash on Delivery)",
-      ar: "الدفع عند الاستلام",
-      en: "Cash on delivery"
-    },
-    backToSearch: {
-      fr: "Faire une nouvelle recherche",
-      ar: "البحث مجدداً",
-      en: "New Search"
-    },
-    needHelp: {
-      fr: "Une question ou besoin de modifier l'adresse de livraison de votre colis ?",
-      ar: "هل لديك سؤال أو ترغب في تعديل تفاصيل أو عنوان التوصيل لطلبكم ؟",
-      en: "Any question or need to update your package delivery details?"
-    },
-    contactSupport: {
-      fr: "Contacter le support WhatsApp",
-      ar: "التواصل مع الدعم عبر واتساب",
-      en: "Contact WhatsApp Support"
-    },
-    subtotalLabel: {
-      fr: "Sous-total",
-      ar: "المجموع الفرعي",
-      en: "Subtotal"
-    },
-    shippingLabel: {
-      fr: "Livraison",
-      ar: "الشحن",
-      en: "Shipping"
-    },
-    shippingFree: {
-      fr: "Gratuit",
-      ar: "مجاني",
-      en: "Free"
-    },
-    totalLabel: {
-      fr: "Total à régler",
-      ar: "المجموع الكلي",
-      en: "Grand Total"
-    },
-    clientLabel: {
-      fr: "Client",
-      ar: "الزبون",
-      en: "Customer"
-    },
-    cityLabel: {
-      fr: "Ville",
-      ar: "المدينة",
-      en: "City"
-    },
-    contentsLabel: {
-      fr: "Détails du colis",
-      ar: "محتوى الطرد",
-      en: "Package Details"
-    },
-    statusTitle: {
-      fr: "État actuel",
-      ar: "الحالة الحالية",
-      en: "Current Status"
-    }
-  };
-
-  const statusLabelMap = {
-    fr: {
-      pending: "En attente",
-      confirmed: "Confirmée",
-      processing: "En préparation",
-      shipped: "Expédiée",
-      delivered: "Livrée",
-      cancelled: "Annulée"
-    },
-    ar: {
-      pending: "في انتظار التأكيد",
-      confirmed: "تم التأكيد",
-      processing: "قيد التجهيز",
-      shipped: "تم الشحن",
-      delivered: "تم التسليم",
-      cancelled: "ملغاة"
-    },
-    en: {
-      pending: "Pending",
-      confirmed: "Confirmed",
-      processing: "Processing",
-      shipped: "Shipped",
-      delivered: "Delivered",
-      cancelled: "Cancelled"
-    }
-  };
-
-  const statusDescMap = {
-    fr: {
-      pending: "Votre commande est enregistrée et en attente de traitement.",
-      confirmed: "Notre service client a validé vos détails de livraison.",
-      processing: "Votre colis est soigneusement préparé et emballé au dépôt.",
-      shipped: "Votre colis est confié au transporteur. Livraison en cours.",
-      delivered: "Votre colis a été remis en mains propres et payé. Merci !",
-      cancelled: "Cette commande a été annulée ou suspendue."
-    },
-    ar: {
-      pending: "تم تسجيل طلبك بنجاح وفي انتظار المعالجة.",
-      confirmed: "قوم فريقنا بتأكيد معلوماتك وتأهيل شحنتك.",
-      processing: "يتم الآن معاينة واختبار منتجك وتغليفه بمستودعنا بالدار البيضاء.",
-      shipped: "تم تسليم شحنتك للموزع. التوصيل جارٍ الآن إلى عنوانك.",
-      delivered: "تم استلام الطلبية وتفقدها والتسديد بنجاح. شكراً لثقتكم !",
-      cancelled: "تم إلغاء هذا الطلب أو تعليقه."
-    },
-    en: {
-      pending: "Your order has been registered and awaits processing.",
-      confirmed: "Our customer service has validated your delivery details.",
-      processing: "Your package is being carefully prepared and packed at our warehouse.",
-      shipped: "Your package is with the prompt courier. Delivery underway.",
-      delivered: "Your package has been successfully delivered and paid for. Thank you!",
-      cancelled: "This order has been cancelled or suspended."
-    }
-  };
-
-  const getTxt = (key: keyof typeof t) => {
-    return t[key][language] || t[key]['fr'];
-  };
-
-  const cleanPhoneString = (phone: string) => {
-    let cleaned = phone.replace(/[+\-\s()]/g, '');
-    if (cleaned.startsWith('212')) {
-      cleaned = cleaned.substring(3);
-    }
-    if (cleaned.startsWith('0')) {
-      cleaned = cleaned.substring(1);
-    }
-    return cleaned;
-  };
-
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setValidationError(null);
-    setHasSearched(true);
-    setSelectedOrder(null);
-
-    const refQuery = orderRefInput.trim().toLowerCase();
-    const phoneQuery = phoneInput.trim();
-
-    if (!refQuery && !phoneQuery) {
-      setValidationError(getTxt('validationRequired'));
-      setMatchedOrders([]);
-      return;
-    }
-
-    // Customer tracking must not read all private orders or local cached PII.
-    // Keep self-service lookup disabled until a scoped, rate-limited API is available.
-    setMatchedOrders([]);
-    setValidationError(language === 'ar'
-      ? 'التتبع عبر الموقع غير متوفر مؤقتاً. تواصل معنا عبر واتساب مع رقم طلبك.'
-      : language === 'en'
-        ? 'Online tracking is temporarily unavailable. Contact us on WhatsApp with your order reference.'
-        : 'Suivi en ligne temporairement indisponible. Contactez-nous sur WhatsApp avec votre référence.');
-    setIsLoading(false);
-  };
-
-  const handleSupportClick = (orderId?: string) => {
-    const text = orderId 
-      ? `Bonjour, je souhaite suivre ma commande n° ${orderId}`
-      : `Bonjour, je souhaite suivre ma commande Globabox.`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noreferrer');
-  };
-
-  // Stepper elements layout
-  const renderTimeline = (order: Order) => {
-    const isCancelled = order.status === 'cancelled';
-
-    // Steps list
-    const stepsList: ('pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered')[] = [
-      'pending', 
-      'confirmed', 
-      'processing', 
-      'shipped', 
-      'delivered'
-    ];
-
-    const getStepIndex = (status: string) => {
-      switch (status) {
-        case 'pending': return 0;
-        case 'confirmed': return 1;
-        case 'processing': return 2;
-        case 'shipped': return 3;
-        case 'delivered': return 4;
-        default: return 0;
-      }
-    };
-
-    const activeIndex = getStepIndex(order.status);
-
-    const getIcon = (key: string, className: string) => {
-      switch (key) {
-        case 'pending': return <Clock className={className} />;
-        case 'confirmed': return <CheckCircle className={className} />;
-        case 'processing': return <Package className={className} />;
-        case 'shipped': return <Truck className={className} />;
-        case 'delivered': return <BadgeCheck className={className} />;
-        default: return <Clock className={className} />;
-      }
-    };
-
-    return (
-      <div className="space-y-6 relative mt-4">
-        {/* If the order is cancelled, we render a highly visible red notice at the top of the stepper */}
-        {isCancelled && (
-          <div className="p-4 bg-red-950/40 border border-red-500/35 rounded-2xl flex items-start gap-3.5 text-left mb-6 animate-pulse">
-            <XCircle className="w-6 h-6 text-red-500 shrink-0 mt-0.5" />
-            <div className="space-y-1 font-sans">
-              <h5 className="font-black text-red-400 text-xs uppercase tracking-wider">
-                {statusLabelMap[language].cancelled}
-              </h5>
-              <p className="text-[11px] text-red-200/90 leading-relaxed font-medium">
-                {statusDescMap[language].cancelled}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Stepper Connector Line */}
-        {!isCancelled && (
-          <div className={`absolute ${isRtl ? 'right-[21px]' : 'left-[21px]'} top-5 bottom-5 w-0.5 bg-slate-800 pointer-events-none`}>
-            <div 
-              className="absolute top-0 w-full bg-emerald-500 transition-all duration-750"
-              style={{ height: `${(activeIndex / (stepsList.length - 1)) * 100}%` }}
-            />
-          </div>
-        )}
-
-        {stepsList.map((stepKey, idx) => {
-          const isCompleted = !isCancelled && idx < activeIndex;
-          const isActive = !isCancelled && idx === activeIndex;
-          const isMuted = isCancelled || idx > activeIndex;
-
-          const stepTitle = statusLabelMap[language][stepKey];
-          const stepDesc = statusDescMap[language][stepKey];
-
-          let iconWrapperClass = "bg-slate-900 border-2 border-slate-700 text-slate-500";
-          
-          if (isCompleted) {
-            iconWrapperClass = "bg-emerald-500 border-2 border-emerald-400 text-slate-950 shadow-md shadow-emerald-500/10";
-          } else if (isActive) {
-            iconWrapperClass = "bg-orange-500 border-2 border-orange-400 text-white shadow-xl shadow-orange-500/20 scale-110 animate-pulse-slow";
-          }
-
-          return (
-            <div key={stepKey} className="flex gap-4 items-start relative z-10">
-              {/* Stepper Circle Icon */}
-              <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-all ${iconWrapperClass}`}>
-                {getIcon(stepKey, "w-5 h-5")}
-              </div>
-
-              {/* Status details text info */}
-              <div className="flex-1 min-w-0 pt-1 text-left">
-                <span className={`text-xs font-black tracking-tight block ${isActive ? 'text-orange-400 font-extrabold' : isCompleted ? 'text-slate-100' : 'text-slate-500'}`}>
-                  {stepTitle}
-                </span>
-                <p className={`text-[10px] leading-relaxed mt-0.5 ${isActive ? 'text-slate-200' : isCompleted ? 'text-slate-405 font-medium' : 'text-slate-600'}`}>
-                  {stepDesc}
-                </p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
-  const getComputedSubtotal = (order: Order) => {
-    if (order.subtotal && order.subtotal > 0) return order.subtotal;
-    return order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  };
-
-  const getComputedShipping = (order: Order, subtotal: number) => {
-    if (order.shippingCost !== undefined) return order.shippingCost;
-    if (order.freeShipping) return 0;
-    const diff = order.total - subtotal;
-    return diff > 0 ? diff : 0;
-  };
-
-  return (
-    <div 
-      style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-fade-in"
-    >
-      <div className="relative w-full max-w-lg bg-[#0b1528] text-white border border-[#22395e]/80 rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
-        
-        {/* Glow decorative graphics */}
-        <div className="absolute top-0 -left-20 w-48 h-48 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 -right-20 w-48 h-48 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Modal Top Header Bar */}
-        <div className="relative p-5 md:p-6 border-b border-[#1c2e4a] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-orange-600/10 border border-orange-500/30 flex items-center justify-center text-orange-400">
-              <MapPin className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-black tracking-tight text-white leading-tight font-sans">
-                {getTxt('title')}
-              </h3>
-              <p className="text-[10px] text-slate-400 mt-0.5 max-w-md font-sans leading-none">
-                {getTxt('subtitle')}
-              </p>
-            </div>
-          </div>
-          
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white bg-[#13223c]/40 hover:bg-slate-900 transition-colors cursor-pointer"
-            aria-label="Fermer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+ const search=async(event:FormEvent)=>{
+  event.preventDefault();
+  setResult(null);setError('');
+  const ref=reference.trim().toUpperCase(),number=phone.trim();
+  if(!/^GB-[A-Z0-9-]{6,36}$/.test(ref)||!validPhone(number)){setError(t.invalid);return;}
+  abort.current?.abort();
+  const controller=new AbortController();abort.current=controller;
+  setLoading(true);
+  try{
+   const response=await fetch('/api/track-order',{method:'POST',credentials:'same-origin',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({reference:ref,phone:number}),signal:controller.signal});
+   const payload=await response.json().catch(()=>null);
+   if(controller.signal.aborted)return;
+   if(response.ok&&payload?.success&&payload?.tracking){setResult(payload.tracking as TrackingResult);}
+   else setError(response.status===404?t.notFound:t.unavailable);
+  }catch(err){if(!controller.signal.aborted)setError(t.unavailable);}
+  finally{if(!controller.signal.aborted)setLoading(false);}
+ };
+ const whatsapp=()=>{
+  const msg=language==='ar'
+   ? 'سلام، بغيت نستفسر على الطلبية ديالي '+reference.trim().toUpperCase()
+   : 'Bonjour, je souhaite des informations sur ma commande '+reference.trim().toUpperCase();
+  window.open('https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer');
+ };
+ if(!isOpen)return null;
+ const stage=result?.status;
+ const index=stage&&stage!=='cancelled'?stages.indexOf(stage):-1;
+ return <div role="presentation" className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071b17]/75 p-3 backdrop-blur-sm sm:p-6" onMouseDown={event=>{if(event.target===event.currentTarget)onClose();}}>
+   <div role="dialog" aria-modal="true" aria-label={t.title} dir={rtl?'rtl':'ltr'}
+    className="flex max-h-[94dvh] w-full max-w-3xl flex-col overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-2xl">
+    <header className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-100 bg-[#f8faf8] px-5 py-5 sm:px-8">
+      <div className="flex items-start gap-3">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#e5f1e9] text-[#104d43]"><PackageCheck size={25}/></span>
+        <div><p className="mb-1 text-[11px] font-bold uppercase tracking-[.14em] text-[#25766b]">GLOBABOX · {t.secure}</p>
+         <h2 className="text-xl font-black text-[#193e38] sm:text-2xl">{t.title}</h2>
+         <p className="mt-1 text-xs leading-6 text-slate-500">{t.intro}</p>
         </div>
-
-        {/* Modal Main Scroll Area */}
-        <div className="p-5 md:p-6 overflow-y-auto no-scrollbar flex-1 space-y-5">
-          
-          {/* Validation errors alerts */}
-          {validationError && (
-            <div className="p-3 bg-red-950/40 border border-red-500/30 text-red-200 text-xs font-semibold rounded-xl text-left flex items-center gap-2">
-              <AlertCircle size={15} className="text-red-500 shrink-0" />
-              <span>{validationError}</span>
-            </div>
-          )}
-
-          {/* STEP 1: Search Inputs Interface */}
-          {!selectedOrder && (
-            <div className="space-y-4">
-              <form onSubmit={handleSearch} className="space-y-4">
-                <p className="text-[11px] text-slate-400">
-                  {getTxt('formHelp')}
-                </p>
-
-                {/* Double inputs layout */}
-                <div className="space-y-3">
-                  
-                  {/* Order reference block */}
-                  <div className="space-y-1.5 text-left">
-                    <label className="block text-[10px] font-black tracking-wider uppercase text-slate-300">
-                      {getTxt('orderRefLabel')}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder={getTxt('orderRefPlaceholder')}
-                        value={orderRefInput}
-                        onChange={(e) => setOrderRefInput(e.target.value)}
-                        className={`w-full bg-[#13223c] text-white placeholder-slate-500 text-xs py-2.5 px-4 rounded-xl outline-none focus:ring-1 focus:ring-orange-500 border border-[#22395e] transition-all font-sans ${isRtl ? 'text-right' : 'text-left'}`}
-                      />
-                    </div>
-                  </div>
-
-                  {/* OR divider label */}
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-[1px] bg-[#1c2e4a]"></div>
-                    <span className="text-[9px] font-bold text-slate-500 uppercase">{language === 'ar' ? 'أو' : 'OU'}</span>
-                    <div className="flex-1 h-[1px] bg-[#1c2e4a]"></div>
-                  </div>
-
-                  {/* Phone number block */}
-                  <div className="space-y-1.5 text-left">
-                    <label className="block text-[10px] font-black tracking-wider uppercase text-slate-300">
-                      {getTxt('phoneLabel')}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder={getTxt('phonePlaceholder')}
-                        value={phoneInput}
-                        onChange={(e) => setPhoneInput(e.target.value)}
-                        className={`w-full bg-[#13223c] text-white placeholder-slate-500 text-xs py-2.5 px-4 rounded-xl outline-none focus:ring-1 focus:ring-orange-500 border border-[#22395e] transition-all font-sans ${isRtl ? 'text-right' : 'text-left'}`}
-                      />
-                    </div>
-                  </div>
-
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-3 bg-orange-600 hover:bg-orange-500 disabled:bg-orange-810 disabled:cursor-not-allowed text-white font-black text-xs rounded-xl transition-all shadow-lg shadow-orange-950/40 cursor-pointer flex items-center justify-center gap-2 mt-4"
-                >
-                  <Search className="w-3.5 h-3.5 animate-pulse" />
-                  <span>{isLoading ? getTxt('searching') : getTxt('btnSearch')}</span>
-                </button>
-              </form>
-
-              {/* Multiple orders or search reports */}
-              {hasSearched && (
-                <div className="space-y-3 pt-2">
-                  {matchedOrders.length === 0 ? (
-                    <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 text-center space-y-3">
-                      <Clock className="w-7 h-7 text-slate-500 mx-auto" />
-                      <p className="text-xs text-slate-300 leading-relaxed font-sans text-center">
-                        {getTxt('noResults')}
-                      </p>
-                    </div>
-                  ) : matchedOrders.length > 1 ? (
-                    <div className="space-y-2 text-left">
-                      <p className="text-[11px] font-bold text-slate-300">
-                        {getTxt('multipleFound')}
-                      </p>
-                      <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto no-scrollbar">
-                        {matchedOrders.map((order) => (
-                          <button
-                            key={order.id}
-                            onClick={() => setSelectedOrder(order)}
-                            className="bg-[#13223c]/50 hover:bg-[#1e3254]/50 border border-[#22395e]/50 hover:border-orange-500/40 rounded-xl p-3 text-left w-full transition-all flex items-center justify-between text-xs outline-none group cursor-pointer"
-                          >
-                            <div className="space-y-1 font-sans">
-                              <span className="font-mono font-black text-white group-hover:text-orange-400 transition-colors">
-                                #{order.reference || order.id}
-                              </span>
-                              <div className="text-slate-400 text-[10px] flex items-center gap-1">
-                                <Calendar className="w-3 h-3 text-slate-500" />
-                                <span>{new Date(order.date || Date.now()).toLocaleDateString()}</span>
-                              </div>
-                            </div>
-                            <div className="text-right space-y-1">
-                              <span className="font-bold text-slate-200 block">
-                                {order.total} DH
-                              </span>
-                              <span className={`text-[10px] uppercase font-bold tracking-wide ${order.status === 'delivered' ? 'text-emerald-400' : order.status === 'cancelled' ? 'text-red-400' : 'text-orange-400'}`}>
-                                {statusLabelMap[language][order.status] || order.status}
-                              </span>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* STEP 2: Active tracking overview card */}
-          {selectedOrder && (
-            <div className="space-y-5 animate-fade-in text-left">
-              
-              {/* Reset to fresh search form capsule */}
-              <div className="flex items-center justify-between border-b border-[#1c2e4a] pb-3 shrink-0">
-                <button
-                  onClick={() => setSelectedOrder(null)}
-                  className="inline-flex items-center gap-1.5 text-xs text-orange-400 hover:text-orange-300 font-bold transition-all cursor-pointer"
-                >
-                  <ArrowRight className={`w-3.5 h-3.5 ${isRtl ? '' : 'rotate-180'}`} />
-                  <span>{getTxt('backToSearch')}</span>
-                </button>
-                <div className="bg-[#13223c] px-3 py-1 rounded-full border border-[#22395e] text-[10px] tracking-wide text-slate-300 font-mono font-bold">
-                  #{selectedOrder.reference || selectedOrder.id}
-                </div>
-              </div>
-
-              {/* Clean tracking core block card */}
-              <div className="bg-[#13223c]/40 rounded-2xl p-4 border border-[#22395e]/30 font-sans text-xs space-y-3.5">
-                
-                {/* Meta details checklist */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <span className="text-slate-450 block text-[9px] uppercase tracking-wider">
-                      {getTxt('clientLabel')}
-                    </span>
-                    <strong className="font-bold text-slate-100 block">
-                      {selectedOrder.fullName}
-                    </strong>
-                    <span className="text-[10px] text-slate-400 block font-mono">
-                      {selectedOrder.phoneNumber}
-                    </span>
-                  </div>
-
-                  <div className="space-y-1 text-right">
-                    <span className="text-slate-450 block text-[9px] uppercase tracking-wider">
-                      {getTxt('cityLabel')}
-                    </span>
-                    <strong className="font-bold text-slate-100 block">
-                      {selectedOrder.city}
-                    </strong>
-                    <span className="text-[10px] text-slate-400 block truncate">
-                      {selectedOrder.deliveryAddress}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="border-t border-[#1c2e4a] pt-3.5 grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <span className="text-slate-450 block text-[9px] uppercase tracking-wider">
-                      {getTxt('orderDate')}
-                    </span>
-                    <span className="text-slate-200 block font-medium">
-                      {new Date(selectedOrder.date).toLocaleDateString()}
-                    </span>
-                  </div>
-
-                  <div className="space-y-1 text-right">
-                    <span className="text-slate-450 block text-[9px] uppercase tracking-wider">
-                      {getTxt('paymentMethod')}
-                    </span>
-                    <span className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1 select-none">
-                      <Coins className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>{getTxt('codValue')}</span>
-                    </span>
-                  </div>
-                </div>
-
-                {/* Subproducts items checklist */}
-                <div className="border-t border-[#1c2e4a] pt-3.5 space-y-2">
-                  <span className="text-slate-450 block text-[9px] uppercase tracking-wider font-bold">
-                    {getTxt('contentsLabel')}
-                  </span>
-                  <div className="space-y-2 max-h-32 overflow-y-auto no-scrollbar">
-                    {selectedOrder.items && selectedOrder.items.map((it, idx) => (
-                      <div key={idx} className="flex justify-between items-center text-xs py-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className="bg-[#13223c] px-1.5 py-0.5 rounded text-slate-300 font-mono text-[9px] font-black">
-                            {it.quantity}x
-                          </span>
-                          <span className="text-slate-200 font-medium truncate max-w-[190px]">
-                            {it.productName}
-                          </span>
-                        </div>
-                        <span className="font-bold text-slate-350">
-                          {it.price * it.quantity} DH
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Subtotals & calculations section */}
-                {(() => {
-                  const subTotalVal = getComputedSubtotal(selectedOrder);
-                  const shippingVal = getComputedShipping(selectedOrder, subTotalVal);
-
-                  return (
-                    <div className="border-t border-[#1c2e4a] pt-3.5 space-y-1.5">
-                      <div className="flex justify-between items-center text-[11px] text-slate-400">
-                        <span>{getTxt('subtotalLabel')}</span>
-                        <span>{subTotalVal} DH</span>
-                      </div>
-                      <div className="flex justify-between items-center text-[11px] text-slate-400">
-                        <span>{getTxt('shippingLabel')}</span>
-                        <span className={shippingVal === 0 ? 'text-emerald-400 font-bold' : ''}>
-                          {shippingVal === 0 ? getTxt('shippingFree') : `${shippingVal} DH`}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center text-xs text-white font-black border-t border-[#1c2e4a] pt-2">
-                        <span className="text-slate-200">{getTxt('totalLabel')}</span>
-                        <span className="text-orange-400 text-sm font-mono">{selectedOrder.total} DH</span>
-                      </div>
-                    </div>
-                  );
-                })()}
-
-              </div>
-
-              {/* Status Stepper Container */}
-              <div className="bg-[#0e1b33] rounded-2xl p-4 border border-[#1b2d4c]/80 space-y-3">
-                <div className="flex items-center justify-between border-b border-[#1c2e4a] pb-2.5">
-                  <h4 className="text-xs font-black tracking-wider uppercase text-slate-300 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-orange-400" />
-                    <span>{getTxt('statusTitle')}</span>
-                  </h4>
-                  
-                  {/* Badge top indicator */}
-                  <span className={`text-[10px] font-serif font-black tracking-wide uppercase px-2.5 py-0.5 rounded-full ${
-                    selectedOrder.status === 'delivered' 
-                      ? 'bg-emerald-505/10 text-emerald-400 border border-emerald-500/25' 
-                      : selectedOrder.status === 'cancelled'
-                        ? 'bg-red-505/10 text-red-400 border border-red-500/25 animate-pulse'
-                        : 'bg-orange-505/10 text-orange-400 border border-orange-500/25'
-                  }`}>
-                    {statusLabelMap[language][selectedOrder.status] || selectedOrder.status}
-                  </span>
-                </div>
-                {renderTimeline(selectedOrder)}
-              </div>
-
-            </div>
-          )}
-
-          {/* Core Support Contacts and Reassurances Block */}
-          <div className="pt-4 border-t border-[#1c2e4a] text-center space-y-3 shrink-0">
-            <p className="text-[10px] text-slate-400 max-w-sm mx-auto leading-relaxed font-sans font-medium">
-              {getTxt('needHelp')}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <button
-                onClick={() => handleSupportClick(selectedOrder?.id)}
-                className="flex-1 py-3 bg-[#13223c] hover:bg-[#1e3254] border border-[#22395e] text-emerald-400 hover:text-emerald-300 font-extrabold text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <WhatsAppIcon className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{getTxt('contactSupport')}</span>
-              </button>
-              
-              <a
-                href={`tel:${ORDER_SUPPORT_NUMBER}`}
-                className="py-3 px-4 bg-slate-900 hover:bg-slate-950 text-slate-200 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 border border-slate-850 shrink-0"
-              >
-                <Phone className="w-3.5 h-3.5 text-orange-500" />
-                <span>{ORDER_SUPPORT_NUMBER}</span>
-              </a>
-            </div>
+      </div>
+      <button type="button" onClick={onClose} aria-label={rtl?'إغلاق':'Close'} className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-600 transition hover:bg-[#edf5f2]"><X size={19}/></button>
+    </header>
+    <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-8">
+      {!result ? <form onSubmit={search} className="mx-auto max-w-lg space-y-5">
+        <div className="flex items-start gap-3 rounded-xl border border-[#d7e9df] bg-[#f4faf6] p-4 text-xs leading-6 text-[#315448]"><ShieldCheck size={20} className="mt-1 shrink-0 text-[#104d43]"/>{t.explain}</div>
+        <div><label htmlFor="gb-track-ref" className="mb-2 block text-xs font-extrabold text-[#193e38]">{t.ref}</label>
+          <div className="relative"><ClipboardList size={18} className="absolute start-4 top-1/2 -translate-y-1/2 text-slate-400"/>
+            <input ref={firstInput} id="gb-track-ref" value={reference} onChange={e=>setReference(e.target.value)}
+              autoComplete="off" maxLength={39} placeholder={t.refHint}
+              className="h-12 w-full rounded-xl border border-slate-200 bg-white ps-11 pe-4 text-sm font-semibold text-[#193e38] outline-none focus:border-[#104d43] focus:ring-2 focus:ring-[#104d43]/10" dir="ltr"/>
           </div>
-
+        </div>
+        <div><label htmlFor="gb-track-phone" className="mb-2 block text-xs font-extrabold text-[#193e38]">{t.phone}</label>
+          <div className="relative"><PhoneCall size={18} className="absolute start-4 top-1/2 -translate-y-1/2 text-slate-400"/>
+            <input id="gb-track-phone" type="tel" inputMode="tel" autoComplete="tel" value={phone} maxLength={32}
+              onChange={e=>setPhone(e.target.value)} placeholder={t.phoneHint}
+              className="h-12 w-full rounded-xl border border-slate-200 bg-white ps-11 pe-4 text-sm text-[#193e38] outline-none focus:border-[#104d43] focus:ring-2 focus:ring-[#104d43]/10" dir="ltr"/>
+          </div>
+        </div>
+        {error&&<div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs leading-6 font-semibold text-red-700">{error}</div>}
+        <button type="submit" disabled={loading} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#104d43] px-5 text-sm font-extrabold text-white transition hover:bg-[#0c3931] disabled:cursor-wait disabled:opacity-70">
+          <Search size={19}/>{loading?t.busy:t.action}
+        </button>
+        <p className="flex items-center justify-center gap-2 text-center text-[11px] leading-5 text-slate-500"><ShieldCheck size={15}/>{t.privacy}</p>
+      </form> : <div className="space-y-6">
+        <div className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-[#b7dbca] bg-[#f0f8f3] p-5">
+          <div><p className="mb-1 text-xs font-semibold text-[#42675a]">{t.ready}</p>
+            <h3 className="text-xl font-black text-[#104d43]" dir="ltr">{result.reference}</h3>
+            <p className="mt-2 text-sm font-semibold text-[#214e42]">{t.current}: {t[result.status]}</p>
+          </div>
+          <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#104d43]">{t[result.status]}</span>
+        </div>
+        {stage==='cancelled'?<div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700"><XCircle size={21}/>{t.cancelled}</div>
+        :<ol className="grid gap-2 sm:grid-cols-5" aria-label={t.current}>
+          {stages.map((key,i)=>{
+            const Icon=icons[key],completed=i<=index;
+            return <li key={key} aria-current={i===index?'step':undefined} className={'flex items-center gap-2 rounded-xl border p-3 sm:flex-col sm:items-start '+(completed?'border-[#a6d0b9] bg-[#edf7f0] text-[#104d43]':'border-slate-200 bg-white text-slate-400')}>
+              <span className={'flex h-9 w-9 shrink-0 items-center justify-center rounded-full '+(completed?'bg-[#104d43] text-white':'bg-slate-100 text-slate-400')}>{i<index?<Check size={18}/>:<Icon size={18}/>}</span>
+              <span className="text-xs font-bold">{t[key]}</span>
+            </li>;
+          })}
+         </ol>}
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="rounded-xl border border-slate-200 p-4"><p className="text-[11px] text-slate-500">{t.placed}</p><p className="mt-2 text-sm font-bold text-[#193e38]">{result.date?new Date(result.date).toLocaleDateString(language==='ar'?'ar-MA':language==='en'?'en-GB':'fr-FR'):t.dateUnknown}</p></div>
+          <div className="rounded-xl border border-slate-200 p-4"><p className="text-[11px] text-slate-500">{t.items}</p><p className="mt-2 text-sm font-bold text-[#193e38]">{result.itemCount}</p></div>
+          <div className="rounded-xl border border-slate-200 p-4"><p className="text-[11px] text-slate-500">{t.total}</p><p className="mt-2 text-sm font-bold text-[#193e38]">{result.total!==null?result.total.toFixed(2)+' DH':'—'}</p></div>
+        </div>
+        <div className="flex items-start gap-3 rounded-xl bg-[#f5f8f5] px-4 py-3 text-xs leading-6 text-slate-600"><Truck size={18} className="mt-1 shrink-0 text-[#104d43]"/>{t.noCourier}</div>
+        <button type="button" onClick={()=>{setResult(null);setError('');}} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-xs font-bold text-[#104d43] hover:bg-slate-50">{rtl?<ArrowRight size={16}/>:<ArrowLeft size={16}/>} {t.again}</button>
+      </div>}
+      <div className="mt-7 border-t border-slate-100 pt-6">
+        <p className="mb-3 text-xs font-bold text-[#193e38]">{t.contact}</p>
+        <div className="grid gap-3 sm:grid-cols-2">
+         <button type="button" onClick={whatsapp} className="flex min-h-12 items-center justify-center gap-3 rounded-xl border border-[#b4e3c5] bg-[#eff9f0] px-4 text-xs font-bold text-[#14613f] transition hover:bg-[#e2f6e7]"><WhatsAppIcon className="h-5 w-5"/>{t.whatsapp}</button>
+         <a href={'tel:'+ORDER_SUPPORT_NUMBER} className="flex min-h-12 items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-[#104d43] transition hover:bg-slate-50"><PhoneCall size={18}/>{t.call}</a>
         </div>
       </div>
     </div>
-  );
+  </div>
+ </div>;
 }
