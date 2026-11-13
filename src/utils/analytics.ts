@@ -6,7 +6,6 @@ let config: TrackingConfig={...DEFAULT_TRACKING_CONFIG};
 let loaded=false;
 let loadingPromise:Promise<void>|null=null;
 let injected=false;
-let lastPage='';
 type AnalyticsWindow=Window & {dataLayer?:unknown[];gtag?:(...args:unknown[])=>void;fbq?:(...args:unknown[])=>void;_fbq?:unknown;ttq?:any;pintrk?:(...args:unknown[])=>void;snaptr?:(...args:unknown[])=>void};
 const win=()=>window as AnalyticsWindow;
 
@@ -26,7 +25,7 @@ export function saveTrackingConsent(choice:{analytics:boolean;marketing:boolean}
   const old=getTrackingConsent();
   window.localStorage.setItem(CONSENT_KEY,JSON.stringify({...choice,updatedAt:new Date().toISOString()}));
   // Revoking consent must stop any further events. A reload unloads existing vendor scripts.
-  if(old && ((old.analytics&&!choice.analytics)||(old.marketing&&!choice.marketing))) {
+  if(old && (old.analytics!==choice.analytics || old.marketing!==choice.marketing)) {
     window.location.reload();return;
   }
   void initAnalytics();
@@ -115,7 +114,7 @@ export async function initAnalytics():Promise<void>{
       try{
         const response=await fetch('/api/tracking-config',{cache:'no-store'});
         if(response.ok){
-          const data=await response.json();
+          const data=await response.json() as {config?:unknown}|null;
           config=getSafeTrackingConfig(data?.config);
         }
       }catch{config={...DEFAULT_TRACKING_CONFIG};}
@@ -146,7 +145,6 @@ const send=(name:string,values:Record<string,unknown>={})=>{
 };
 export function triggerPageView(path:string){
   if(path.startsWith('/admin'))return;
-  lastPage=path;
   send('PageView',{page_path:path,page_title:typeof document!=='undefined'?document.title:''});
 }
 export function triggerViewContent(product:{id:string;name:string;price:number;category?:string}){
