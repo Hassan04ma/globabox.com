@@ -936,6 +936,7 @@ Merci de confirmer la disponibilité et la livraison.`;
       {!selectedCategory && !searchTerm && (
         <HomeBannerSlider
           language={language}
+          categories={categories}
           onShopAll={handleScrollToCatalog}
           onSelectDepartment={(id) => {setSelectedCategory(id);setSelectedSubcategory(''); window.requestAnimationFrame(handleScrollToCatalog);}}
         />
@@ -945,6 +946,7 @@ Merci de confirmer la disponibilité et la livraison.`;
       <div className="flex w-full max-w-none flex-col gap-6 px-4 pb-10 sm:px-6 lg:flex-row lg:items-start lg:gap-8 lg:px-8 2xl:gap-10 2xl:px-10" dir="ltr">
         <StoreSidebar
           language={language}
+          categories={categories}
           selectedCategory={selectedCategory}
           selectedSubcategory={selectedSubcategory}
           onSelect={(id) => {setSelectedCategory(id);setSelectedSubcategory('');window.requestAnimationFrame(handleScrollToCatalog);}}
