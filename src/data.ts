@@ -19,6 +19,14 @@ export interface Product {
   };
   category: string;
   subcategory?: string;
+  /** Optional merchandising and search keywords (no secrets). */
+  tags?: string[];
+  /** Public product reference for warehouse/inventory bookkeeping. */
+  sku?: string;
+  barcode?: string;
+  /** Editable search appearance; crawling depends on the hosting/rendering setup. */
+  seoTitle?: string;
+  seoDescription?: string;
   image: string;
   images: string[];
   fallbackImage?: string;
