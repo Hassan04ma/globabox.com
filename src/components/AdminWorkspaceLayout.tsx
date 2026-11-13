@@ -1,108 +1,151 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
-  BarChart3, CheckCircle2, ClipboardList, ExternalLink, LayoutDashboard,
-  LogOut, Menu, Package, Plus, RefreshCw, ShieldCheck, Tags, X
+  ArrowUpRight, BarChart3, Check, ChevronDown, ChevronRight, CircleHelp, ClipboardList,
+  Command, ExternalLink, LayoutDashboard, LogOut, Menu, Package, Plus, Search, ShieldCheck,
+  Store, Tags, Truck, X
 } from 'lucide-react';
+import '../adminPlatform.css';
 
 type AdminTab='dashboard'|'orders'|'products'|'categories'|'marketing';
-
-interface AdminWorkspaceLayoutProps {
-  activeTab:AdminTab;
-  onTabChange:(tab:AdminTab)=>void;
-  onClose:()=>void;
-  onLogout:()=>void;
-  ordersCount:number;
-  pendingOrders:number;
-  productsCount:number;
-  categoriesCount:number;
-  databaseReady:boolean|undefined;
-  showProductAction:boolean;
-  onNewProduct:()=>void;
-  onPrepareProduct:()=>void;
-  onPendingOrders:()=>void;
-  onRefreshOrders:()=>void;
-  isRefreshing:boolean;
-  children:ReactNode;
+interface Props{
+ activeTab:AdminTab; onTabChange:(tab:AdminTab)=>void;
+ onClose:()=>void;onLogout:()=>void;
+ ordersCount:number;pendingOrders:number;productsCount:number;categoriesCount:number;
+ databaseReady:boolean|undefined; showProductAction:boolean;
+ onNewProduct:()=>void; onPrepareProduct:()=>void;
+ onPendingOrders:()=>void;onRefreshOrders:()=>void;isRefreshing:boolean;
+ children:ReactNode;
 }
-
-const sections=[
- {id:'dashboard' as const,label:'Tableau de bord',sub:'نظرة عامة',icon:LayoutDashboard},
- {id:'orders' as const,label:'Commandes',sub:'الطلبات والشحن',icon:ClipboardList},
- {id:'products' as const,label:'Produits',sub:'المنتجات والمخزون',icon:Package},
- {id:'categories' as const,label:'Catégories',sub:'الأقسام والصور',icon:Tags},
- {id:'marketing' as const,label:'Marketing',sub:'التسويق والتحليلات',icon:BarChart3}
+const tabs=[
+ {id:'dashboard' as const,label:'Vue d’ensemble',sub:'Dashboard',icon:LayoutDashboard,group:'GÉNÉRAL'},
+ {id:'orders' as const,label:'Commandes',sub:'Livraison & paiements',icon:ClipboardList,group:'COMMERCE'},
+ {id:'products' as const,label:'Produits',sub:'Catalogue & inventaire',icon:Package,group:'COMMERCE'},
+ {id:'categories' as const,label:'Collections',sub:'Rayons & catégories',icon:Tags,group:'COMMERCE'},
+ {id:'marketing' as const,label:'Marketing',sub:'Pixels & acquisition',icon:BarChart3,group:'DÉVELOPPEMENT'}
 ];
-
 export default function AdminWorkspaceLayout({
- activeTab,onTabChange,onClose,onLogout,ordersCount,pendingOrders,
- productsCount,categoriesCount,databaseReady,showProductAction,
- onNewProduct,onPendingOrders,onRefreshOrders,isRefreshing,children
-}:AdminWorkspaceLayoutProps){
- const [menuOpen,setMenuOpen]=useState(false);
- const selected=sections.find(s=>s.id===activeTab)??sections[0];
- const select=(id:AdminTab)=>{onTabChange(id);setMenuOpen(false);};
+ activeTab,onTabChange,onClose,onLogout,ordersCount,pendingOrders,productsCount,
+ categoriesCount,databaseReady,showProductAction,onNewProduct,onPendingOrders,children
+}:Props){
+ const [mobileOpen,setMobileOpen]=useState(false);
+ const [quickSearch,setQuickSearch]=useState('');
+ const [searchFocused,setSearchFocused]=useState(false);
+ const searchRef=useRef<HTMLInputElement>(null);
+ const isStaging=typeof window!=='undefined'&&
+  (window.location.hostname.startsWith('test.')||window.location.hostname.includes('staging'));
+ const current=tabs.find(t=>t.id===activeTab)||tabs[0];
  const count=(id:AdminTab)=>id==='orders'?ordersCount:id==='products'?productsCount:id==='categories'?categoriesCount:null;
- const navigation=(mobile:boolean)=><nav aria-label={mobile?'Menu mobile administration':'Navigation administration'} className="space-y-1">
-  {sections.map(section=>{
-   const Icon=section.icon,active=section.id===activeTab,n=count(section.id);
-   return <button type="button" key={section.id} onClick={()=>select(section.id)}
-    aria-current={active?'page':undefined}
-    className={'group flex min-h-[52px] w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-start transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2c764] '+(active?'bg-[#e5f3eb] font-extrabold text-[#104d43]':'text-[#526d62] hover:bg-[#f2f7f4] hover:text-[#104d43]')}>
-     <Icon size={19} className={active?'text-[#104d43]':'text-[#78978b]'} aria-hidden="true"/>
-     <span className="min-w-0 flex-1"><span className="block text-sm">{section.label}</span><span className="block text-[11px] font-normal text-slate-500">{section.sub}</span></span>
-     {n!==null&&<span className={'rounded-md px-2 py-1 text-[11px] font-extrabold '+(active?'bg-white text-[#104d43]':'bg-[#edf3ef] text-[#567366]')}>{n}</span>}
-  </button>;
-  })}
- </nav>;
- return <div className="fixed inset-0 z-[80] flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-[#f5f8f6] text-[#193e38]">
-  <header className="flex h-[72px] shrink-0 items-center justify-between gap-3 border-b border-[#dce8e0] bg-white px-4 sm:px-6">
-   <div className="flex min-w-0 items-center gap-3">
-    <button type="button" className="rounded-lg border border-slate-200 p-2 text-[#104d43] hover:bg-[#f2f7f4] lg:hidden" onClick={()=>setMenuOpen(true)} aria-label="Ouvrir le menu"><Menu size={21}/></button>
-    <img src="/brand/globabox-mark.svg" alt="" className="h-10 w-10 shrink-0 rounded-xl"/>
-    <div className="min-w-0"><h1 className="truncate text-base font-black tracking-tight sm:text-lg">GLOBA<span className="text-[#997526]">BOX</span> <span className="font-medium text-slate-400">/ Admin</span></h1>
-      <p className="hidden text-[11px] text-slate-500 sm:block">Espace marchand · Gestion sécurisée</p></div>
-   </div>
-   <div className="flex shrink-0 items-center gap-2">
-    <div className={'hidden items-center gap-2 rounded-lg border px-3 py-2 text-xs font-bold md:flex '+(databaseReady===true?'border-[#bddfc9] bg-[#eff9f2] text-[#196943]':databaseReady===false?'border-amber-200 bg-amber-50 text-amber-800':'border-slate-200 bg-slate-50 text-slate-500')}>
-     {databaseReady===true?<CheckCircle2 size={15}/>:<ShieldCheck size={15}/>}
-     {databaseReady===true?'D1 connectée':databaseReady===false?'D1 à vérifier':'D1 non vérifiée'}
+ const select=(id:AdminTab)=>{onTabChange(id);setMobileOpen(false);setSearchFocused(false);setQuickSearch('');};
+ const matches=tabs.filter(tab=>(tab.label+' '+tab.sub+' '+tab.group).toLowerCase().includes(quickSearch.toLowerCase()));
+ useEffect(()=>{
+  const listener=(e:KeyboardEvent)=>{
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();searchRef.current?.focus();setSearchFocused(true);}
+    if(e.key==='Escape'){setMobileOpen(false);setSearchFocused(false);}
+  };
+  window.addEventListener('keydown',listener);
+  return ()=>window.removeEventListener('keydown',listener);
+ },[]);
+ const nav=<div className="flex h-full min-h-0 flex-col">
+  <div className="flex h-[82px] shrink-0 items-center gap-3 border-b border-white/10 px-6">
+    <img src="/brand/globabox-mark.svg" alt="" className="h-11 w-11 shrink-0 rounded-[12px] bg-white p-1"/>
+    <div className="min-w-0">
+      <p className="text-[19px] font-black leading-tight tracking-tight text-white">GLOBA<span className="text-[#e5ba55]">BOX</span></p>
+      <p className="mt-0.5 text-[11px] font-medium tracking-wide text-[#95aeaa]">COMMERCE CONSOLE</p>
     </div>
-    <a href="/" target="_blank" rel="noopener noreferrer" aria-label="Voir la boutique" title="Voir la boutique" className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-[#104d43] hover:bg-[#f1f8f3]"><ExternalLink size={17}/><span className="hidden xl:inline">Voir la boutique</span></a>
-    <button type="button" onClick={onLogout} title="Déconnexion" aria-label="Déconnexion" className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 px-3 text-xs font-bold text-[#566b63] hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"><LogOut size={17}/><span className="hidden xl:inline">Déconnexion</span></button>
-    <button type="button" onClick={onClose} title="Fermer l'administration" aria-label="Fermer l'administration" className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-[#566b63] hover:bg-slate-100"><X size={19}/></button>
-   </div>
-  </header>
-  <div className="flex min-h-0 flex-1">
-   <aside className="hidden w-[264px] shrink-0 flex-col border-e border-[#dce8e0] bg-white px-4 py-6 lg:flex">
-    <p className="mb-4 px-3 text-[11px] font-extrabold uppercase tracking-[.14em] text-slate-400">ESPACE MARCHAND</p>
-    {navigation(false)}
-    <div className="mt-auto rounded-2xl border border-[#d2e8d9] bg-[#f2f8f4] p-4">
-      <span className="flex items-center gap-2 text-sm font-extrabold text-[#104d43]"><ShieldCheck size={18}/>Gestion des commandes</span>
-      <p className="mt-2 text-xs leading-6 text-[#577363]">{pendingOrders} commande(s) en attente. Expéditions gérées manuellement.</p>
-      <button type="button" onClick={()=>{onPendingOrders();setMenuOpen(false);}} className="mt-3 inline-flex min-h-9 items-center text-xs font-extrabold text-[#104d43] underline underline-offset-4 hover:text-[#0d352d]">Voir les commandes à traiter</button>
-    </div>
-   </aside>
-   {menuOpen&&<div className="fixed inset-0 z-[100] bg-[#081c15]/50 lg:hidden" onMouseDown={()=>setMenuOpen(false)}>
-      <aside className="flex h-full w-[min(84vw,320px)] flex-col bg-white p-5 shadow-2xl" onMouseDown={e=>e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Menu d'administration">
-        <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-4"><span className="text-base font-black text-[#104d43]">GLOBABOX · ADMIN</span><button type="button" onClick={()=>setMenuOpen(false)} aria-label="Fermer le menu" className="rounded-lg p-2 hover:bg-slate-100"><X size={20}/></button></div>
-        {navigation(true)}
-        <button type="button" onClick={()=>{onPendingOrders();setMenuOpen(false);}} className="mt-auto rounded-xl bg-[#e8f5ec] px-4 py-3 text-sm font-bold text-[#104d43]">{pendingOrders} commandes en attente</button>
-      </aside>
-    </div>}
-   <div className="flex min-w-0 flex-1 flex-col">
-    <div className="flex shrink-0 flex-col gap-3 border-b border-[#e0eae3] bg-[#fbfdfb] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
-     <div className="min-w-0">
-      <p className="text-[11px] font-bold uppercase tracking-widest text-[#3e8570]">GLOBABOX / ADMINISTRATION</p>
-      <h2 className="mt-1 text-xl font-black tracking-tight text-[#193e38]">{selected.label}</h2>
-      <p className="mt-0.5 text-xs text-slate-500">{selected.sub}</p>
-     </div>
-     <div className="flex flex-wrap items-center gap-2">
-      {(activeTab==='dashboard'||activeTab==='products') && showProductAction&&<button type="button" onClick={onNewProduct} className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#104d43] px-4 text-xs font-extrabold text-white transition hover:bg-[#0b3830]"><Plus size={17}/>Ajouter un produit</button>}
-      {(activeTab==='dashboard'||activeTab==='orders')&&<button type="button" onClick={onRefreshOrders} disabled={isRefreshing} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-[#355a4a] hover:border-[#b8d7c2] hover:bg-[#f1f8f3] disabled:opacity-50"><RefreshCw size={16} className={isRefreshing?'animate-spin':''}/>{isRefreshing?'Actualisation…':'Actualiser commandes'}</button>}
-     </div>
-    </div>
-    <main className="min-h-0 min-w-0 flex-1 overflow-y-auto bg-[#f5f8f6]">{children}</main>
-   </div>
+    <button type="button" className="ms-auto rounded-lg p-2 text-white/70 hover:bg-white/10 lg:hidden" onClick={()=>setMobileOpen(false)} aria-label="Fermer le menu"><X size={20}/></button>
   </div>
+  <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-5 gb-admin-side-scroll">
+    <div className="mx-2 mb-6 flex items-center gap-3 rounded-[13px] border border-white/15 bg-white/[.07] px-3 py-3">
+      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#294e49] text-[#8af0c1]"><Store size={20}/></span>
+      <span className="min-w-0 flex-1"><span className="block truncate text-[13px] font-bold text-white">Ma boutique</span><span className="block truncate text-[11px] text-[#a3b9b6]">GLOBABOX · Maroc</span></span>
+      <ChevronDown size={15} className="text-[#8ea7a3]"/>
+    </div>
+    <nav aria-label="Navigation de l’administration">
+      {(['GÉNÉRAL','COMMERCE','DÉVELOPPEMENT'] as const).map(group=><div key={group} className="mb-6">
+        <p className="mb-2 px-4 text-[10px] font-extrabold tracking-[.17em] text-[#829b9a]">{group}</p>
+        <div className="space-y-1">{tabs.filter(t=>t.group===group).map(tab=>{
+          const Icon=tab.icon,selected=activeTab===tab.id,n=count(tab.id);
+          return <button type="button" key={tab.id} onClick={()=>select(tab.id)}
+            aria-current={selected?'page':undefined}
+            className={'group flex min-h-[47px] w-full items-center gap-3 rounded-[11px] px-3.5 text-start transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e4b85a] '+
+              (selected?'bg-[#2e6559] text-white shadow-[inset_3px_0_0_#8ee9b6]':'text-[#b4c9c4] hover:bg-white/[.09] hover:text-white')}>
+            <Icon size={19} strokeWidth={selected?2.25:1.85} className={selected?'text-[#b0f5cf]':'text-[#96ada9]'}/>
+            <span className="flex-1 text-[13px] font-semibold">{tab.label}</span>
+            {n!==null&&<span className={'min-w-7 rounded-md px-2 py-1 text-center text-[11px] font-bold '+(selected?'bg-white/15 text-white':'bg-[#2a3e47] text-[#adbfbd]')}>{n}</span>}
+          </button>;
+        })}</div>
+      </div>)}
+    </nav>
+    <div className="mx-2 mt-9 rounded-[14px] border border-[#3b5955] bg-[#233b3b] p-4">
+      <div className="flex items-center gap-2 text-xs font-extrabold text-[#b4efd0]"><Truck size={17}/>Expédition manuelle</div>
+      <p className="mt-2 text-[12px] leading-5 text-[#b9cac5]">{pendingOrders===0?'Aucune commande en attente.':pendingOrders+' commande(s) à confirmer.'}</p>
+      <button type="button" onClick={onPendingOrders} className="mt-3 inline-flex min-h-9 items-center gap-1.5 text-[12px] font-bold text-white underline decoration-[#81c4a1] underline-offset-4">Gérer les commandes <ArrowUpRight size={14}/></button>
+    </div>
+  </div>
+  <div className="shrink-0 border-t border-white/10 px-4 py-4">
+    <div className="flex items-center gap-3 px-2">
+      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#375e54] text-sm font-extrabold text-[#e8fbec]">GB</span>
+      <div className="flex-1"><p className="text-xs font-bold text-white">Administrateur</p><p className="text-[11px] text-[#9bb2ac]">Accès sécurisé</p></div>
+      <button type="button" onClick={onLogout} title="Déconnexion" aria-label="Déconnexion" className="rounded-xl p-2 text-[#a8c1ba] hover:bg-white/10 hover:text-white"><LogOut size={18}/></button>
+    </div>
+  </div>
+ </div>;
+ return <div className="gb-admin-platform fixed inset-0 z-[80] flex h-[100dvh] min-h-0 overflow-hidden bg-[#f3f5f7] text-[#1f2937]">
+   <aside className="hidden h-full w-[252px] shrink-0 bg-[#142b32] lg:block xl:w-[266px]">{nav}</aside>
+   {mobileOpen&&<div className="fixed inset-0 z-[110] bg-[#101e23]/70 lg:hidden" onMouseDown={()=>setMobileOpen(false)}>
+     <aside role="dialog" aria-label="Menu principal" aria-modal="true" className="h-full w-[min(85vw,290px)] bg-[#142b32] shadow-2xl" onMouseDown={e=>e.stopPropagation()}>{nav}</aside>
+   </div>}
+   <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+     <header className="relative z-30 flex h-[68px] shrink-0 items-center justify-between gap-3 border-b border-[#e2e7e8] bg-white px-4 sm:px-6 xl:px-8">
+       <div className="flex min-w-0 items-center gap-3">
+         <button type="button" className="rounded-xl border border-slate-200 p-2 text-[#365549] hover:bg-[#edf6f0] lg:hidden" onClick={()=>setMobileOpen(true)} aria-label="Ouvrir le menu"><Menu size={21}/></button>
+         <div className="flex min-w-0 items-center gap-2 text-[13px]">
+           <span className="hidden font-medium text-[#7b898d] sm:inline">Espace marchand</span>
+           <ChevronRight size={15} className="hidden text-[#a5b1b2] sm:inline"/>
+           <span className="truncate font-bold text-[#203d34]">{current.label}</span>
+         </div>
+         {isStaging&&<span className="hidden rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-bold tracking-wide text-amber-800 md:inline">TEST</span>}
+       </div>
+       <div className="flex shrink-0 items-center gap-2.5">
+         <div className="relative hidden md:block">
+           <Search size={16} className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-[#8c9c9c]"/>
+           <input ref={searchRef} value={quickSearch} onFocus={()=>setSearchFocused(true)} onBlur={()=>window.setTimeout(()=>setSearchFocused(false),120)}
+             onChange={e=>setQuickSearch(e.target.value)} type="search" placeholder="Accès rapide aux sections…"
+             aria-label="Rechercher une section d’administration"
+             className="h-10 w-[220px] rounded-[10px] border border-[#e1e8e5] bg-[#f8faf9] ps-9 pe-3 text-xs text-[#1d3d35] outline-none focus:border-[#92c5a7] xl:w-[280px]"/>
+           {searchFocused&&<div className="absolute end-0 top-12 z-40 w-[320px] overflow-hidden rounded-xl border border-[#e0e8e2] bg-white py-2 shadow-xl">
+             <p className="px-4 py-2 text-[10px] font-extrabold tracking-widest text-slate-400">ACCÈS RAPIDE</p>
+             {matches.map(item=><button type="button" key={item.id} onMouseDown={e=>e.preventDefault()} onClick={()=>select(item.id)}
+               className="flex w-full items-center gap-3 px-4 py-2.5 text-start text-xs font-semibold text-[#2b5346] hover:bg-[#eff6f0]">
+               <item.icon size={16}/>{item.label}<ChevronRight size={14} className="ms-auto text-slate-400"/>
+             </button>)}
+             {matches.length===0&&<p className="px-4 py-3 text-xs text-slate-500">Aucune section trouvée.</p>}
+           </div>}
+         </div>
+         <span className={'hidden items-center gap-2 rounded-lg px-2.5 py-2 text-[11px] font-bold lg:inline-flex '+(databaseReady===true?'bg-[#e7f7eb] text-[#1b6946]':databaseReady===false?'bg-amber-50 text-amber-800':'bg-slate-100 text-slate-500')}>
+           <span className={'h-2 w-2 rounded-full '+(databaseReady===true?'bg-[#34a36d]':databaseReady===false?'bg-amber-500':'bg-slate-400')}/>
+           {databaseReady===true?'D1 connectée':databaseReady===false?'D1 à vérifier':'D1 non vérifiée'}
+         </span>
+         <a href="/" target="_blank" rel="noopener noreferrer" className="flex h-10 items-center gap-2 rounded-xl border border-[#e0e8e3] px-3 text-xs font-bold text-[#36564a] hover:bg-[#f2f8f4]"><ExternalLink size={17}/><span className="hidden xl:inline">Voir la boutique</span></a>
+         <button type="button" onClick={onClose} className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#e0e8e3] text-[#6a8276] hover:bg-slate-100" aria-label="Fermer l’administration"><X size={19}/></button>
+       </div>
+     </header>
+     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+       <section className="flex shrink-0 flex-col gap-3 border-b border-[#e1e7e5] bg-white px-5 pb-5 pt-6 sm:flex-row sm:items-center sm:justify-between sm:px-7 xl:px-9">
+         <div className="min-w-0">
+           <p className="text-[11px] font-bold uppercase tracking-[.12em] text-[#6e8d80]">GLOBABOX / COMMERCE</p>
+           <h1 className="mt-1 text-[27px] font-extrabold leading-tight tracking-tight text-[#1d2f30]">{current.label}</h1>
+           <p className="mt-1 text-xs text-[#728389]">{current.sub}</p>
+         </div>
+         <div className="flex flex-wrap items-center gap-2">
+           {showProductAction&&<button type="button" onClick={onNewProduct} className="inline-flex min-h-11 items-center gap-2 rounded-[10px] bg-[#174d40] px-5 text-xs font-extrabold text-white shadow-sm transition hover:bg-[#0f3b31]"><Plus size={18}/>Nouveau produit</button>}
+           {activeTab==='orders'&&<button type="button" onClick={onPendingOrders} className="inline-flex min-h-11 items-center gap-2 rounded-[10px] border border-[#d6e2db] bg-white px-4 text-xs font-bold text-[#315448] hover:bg-[#f1f8f4]"><ClipboardList size={16}/>À traiter {pendingOrders>0?'('+pendingOrders+')':''}</button>}
+         </div>
+       </section>
+       <main id="gb-admin-content" className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain bg-[#f3f5f7]">
+         <div className="mx-auto w-full max-w-[1580px]">{children}</div>
+       </main>
+     </div>
+   </div>
  </div>;
 }
