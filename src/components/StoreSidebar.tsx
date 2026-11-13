@@ -6,6 +6,7 @@ import { getStoreSubcategories, matchesSubcategory } from '../storefrontSubcateg
 
 interface Props {
  language:Language;
+ categories:Category[];
  selectedCategory:string;
  selectedSubcategory:string;
  onSelect:(id:string)=>void;
@@ -19,7 +20,7 @@ const copy={
  en:{title:'Shop departments',all:'All products',subtitle:'Explore departments',everything:'View all in category',items:'items'}
 } as const;
 
-export default function StoreSidebar({language,selectedCategory,selectedSubcategory,onSelect,onSelectSubcategory,products}:Props){
+export default function StoreSidebar({language,categories,selectedCategory,selectedSubcategory,onSelect,onSelectSubcategory,products}:Props){
  const t=copy[language];
  const [expanded,setExpanded]=useState<string|null>(selectedCategory||null);
  const countFor=(id:string)=>products.filter(p=>p.isActive!==false&&(CATEGORY_GROUPS[id]||[id]).includes(p.category)).length;
@@ -29,7 +30,8 @@ export default function StoreSidebar({language,selectedCategory,selectedSubcateg
    <button type="button" onClick={()=>{onSelect('');setExpanded(null);}} className={'mb-2 flex min-h-10 w-full items-center justify-between rounded-xl px-3 text-xs font-extrabold '+(!selectedCategory?'bg-[#104d43] text-white':'bg-[#edf5f2] text-[#104d43] hover:bg-[#dfece4]')}>
      {t.all}<Grid2X2 size={16}/>
    </button>
-   {STORE_DEPARTMENTS.map((category:Category)=>{
+   {STORE_DEPARTMENTS.map((defaultCategory:Category)=>{
+    const category=categories.find(c=>c.id===defaultCategory.id) || defaultCategory;
     const active=selectedCategory===category.id,open=expanded===category.id,subs=getStoreSubcategories(category.id);
     return <div key={category.id} className={'overflow-hidden rounded-xl border transition-colors '+(active?'border-[#97bead] bg-[#f3f8f4]':'border-slate-100 bg-white')}>
       <div className="flex items-center gap-1.5 p-1.5">
