@@ -132,7 +132,7 @@ export default function ProductFilters({
             placeholder={t.searchLabel}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full bg-slate-50 text-slate-800 placeholder-slate-455 text-sm py-2.5 rounded-2xl outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 border border-slate-200 transition-all font-medium font-sans ${
+            className={`w-full bg-slate-50 text-slate-800 placeholder-slate-455 text-sm py-2.5 rounded-2xl outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 border border-slate-200 transition-all font-medium font-sans ${
               isRtl ? 'pr-11 pl-4 text-right' : 'pl-11 pr-4 text-left'
             }`}
           />
@@ -153,7 +153,7 @@ export default function ProductFilters({
             <select
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value as any)}
-              className={`w-full appearance-none bg-slate-50 text-slate-800 text-sm py-2.5 rounded-2xl outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 border border-slate-200 transition-all font-semibold ${
+              className={`w-full appearance-none bg-slate-50 text-slate-800 text-sm py-2.5 rounded-2xl outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 border border-slate-200 transition-all font-semibold ${
                 isRtl ? 'pr-10 pl-8 text-right' : 'pl-10 pr-8 text-left'
               }`}
             >
@@ -181,7 +181,7 @@ export default function ProductFilters({
             <SlidersHorizontal className="w-4 h-4" />
             <span>{t.advancedFilters}</span>
             {(minPrice !== '' || maxPrice !== '') && (
-              <span className="w-2 h-2 rounded-full bg-orange-600 animate-pulse"></span>
+              <span className="w-2 h-2 rounded-full bg-teal-700 animate-pulse"></span>
             )}
           </button>
 
@@ -212,7 +212,7 @@ export default function ProductFilters({
                   placeholder={t.minPrice}
                   value={minPrice}
                   onChange={(e) => setMinPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 font-mono font-medium"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-teal-700 focus:border-teal-700 font-mono font-medium"
                 />
                 <span className={`absolute ${isRtl ? 'left-2.5' : 'right-2.5'} top-2 text-[10px] text-slate-400 font-bold`}>DH</span>
               </div>
@@ -223,7 +223,7 @@ export default function ProductFilters({
                   placeholder={t.maxPrice}
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 font-mono font-medium"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-teal-700 focus:border-teal-700 font-mono font-medium"
                 />
                 <span className={`absolute ${isRtl ? 'left-2.5' : 'right-2.5'} top-2 text-[10px] text-slate-400 font-bold`}>DH</span>
               </div>
@@ -235,7 +235,7 @@ export default function ProductFilters({
               <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t.allCategories}</span>
               <span className="text-xs font-black text-slate-800 font-mono mt-0.5">{t.foundCount}</span>
             </div>
-            <div className="w-8.5 h-8.5 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 animate-pulse shrink-0">
+            <div className="w-8.5 h-8.5 rounded-full bg-orange-100 flex items-center justify-center text-teal-700 animate-pulse shrink-0">
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
@@ -258,7 +258,7 @@ export default function ProductFilters({
           <div className="relative z-35 shrink-0">
             <button
               onClick={() => setIsAllCategoriesOpen(!isAllCategoriesOpen)}
-              className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-extrabold rounded-full bg-[#1b2f59] text-white border border-[#2d4d87] hover:bg-orange-600 hover:text-white hover:border-orange-500 transition-all duration-300 cursor-pointer whitespace-nowrap group font-sans shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-extrabold rounded-full bg-[#104d43] text-white border border-[#25776b] hover:bg-teal-700 hover:text-white hover:border-teal-700 transition-all duration-300 cursor-pointer whitespace-nowrap group font-sans shadow-sm"
             >
               <Grid size={11} className="text-white group-hover:text-white transition-colors" />
               <span>{language === 'ar' ? 'جميع الفئات' : (language === 'en' ? 'All categories' : 'Toutes les catégories')}</span>
@@ -274,7 +274,7 @@ export default function ProductFilters({
                 {/* Header row with dynamic title, subtitle, and close button */}
                 <div className="flex items-start justify-between gap-4 mb-4 border-b border-[#233e75]/50 pb-3">
                   <div>
-                    <h4 className="text-sm md:text-base font-extrabold text-orange-400">
+                    <h4 className="text-sm md:text-base font-extrabold text-teal-700">
                       {language === 'ar' ? 'اختر فئة لتصفح المنتجات' : (language === 'en' ? 'Select a Category' : 'Sélectionnez une catégorie')}
                     </h4>
                     <p className="text-[11px] text-slate-350 mt-1 font-medium leading-relaxed">
@@ -287,7 +287,7 @@ export default function ProductFilters({
                   </div>
                   <button
                     onClick={() => setIsAllCategoriesOpen(false)}
-                    className="p-1 px-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-orange-600/20 hover:text-orange-400 transition-all cursor-pointer border border-[#2d4d87]/60 hover:border-[#233e75] shrink-0"
+                    className="p-1 px-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-teal-700/20 hover:text-teal-700 transition-all cursor-pointer border border-[#25776b]/60 hover:border-[#233e75] shrink-0"
                     aria-label="Close"
                   >
                     <X size={15} />
@@ -300,11 +300,11 @@ export default function ProductFilters({
                     onClick={() => { setSelectedCategory(''); setIsAllCategoriesOpen(false); }}
                     className={`col-span-1 min-h-[44px] px-3.5 rounded-xl border transition-all flex items-center justify-center gap-2 text-xs md:text-[13px] font-extrabold cursor-pointer ${
                       selectedCategory === ''
-                        ? 'bg-orange-600 text-white border-orange-500 shadow-md shadow-orange-600/30'
-                        : 'bg-[#182847] text-white border-[#2f4a7c] hover:bg-[#20345d] hover:border-orange-500/40 hover:text-white'
+                        ? 'bg-teal-700 text-white border-teal-700 shadow-md shadow-teal-700/30'
+                        : 'bg-[#edf5f2] text-white border-[#c8ddd5] hover:bg-[#dcece5] hover:border-teal-700/40 hover:text-white'
                     }`}
                   >
-                    <Compass className="w-4 h-4 text-orange-400 shrink-0 animate-pulse" />
+                    <Compass className="w-4 h-4 text-teal-700 shrink-0 animate-pulse" />
                     <span>{t.allCategories}</span>
                   </button>
                   
@@ -318,12 +318,12 @@ export default function ProductFilters({
                           isRtl ? 'flex-row-reverse text-right' : 'flex-row text-left'
                         } ${
                           isSelected
-                            ? 'bg-orange-600 text-white border-orange-500 shadow-md shadow-orange-600/30'
-                            : 'bg-[#182847] text-white border-[#2f4a7c] hover:bg-[#20345d] hover:border-[#2d4d87] hover:text-white'
+                            ? 'bg-teal-700 text-white border-teal-700 shadow-md shadow-teal-700/30'
+                            : 'bg-[#edf5f2] text-white border-[#c8ddd5] hover:bg-[#dcece5] hover:border-[#25776b] hover:text-white'
                         }`}
                         dir={isRtl ? 'rtl' : 'ltr'}
                       >
-                        <CategoryIcon categoryId={cat.id} className="w-4 h-4 text-orange-400 shrink-0" />
+                        <CategoryIcon categoryId={cat.id} className="w-4 h-4 text-teal-700 shrink-0" />
                         <span className="truncate flex-1 whitespace-normal leading-snug line-clamp-2">{cat.name[language] || cat.name['fr']}</span>
                       </button>
                     );
@@ -341,7 +341,7 @@ export default function ProductFilters({
           {isOverflowing && (
             <button
               onClick={() => handleScrollClick('left')}
-              className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-[#0B1528] text-white border-2 border-orange-500 hover:bg-orange-600 hover:border-orange-600 active:scale-95 transition-all shadow-md z-20 cursor-pointer"
+              className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-[#104d43] text-white border-2 border-teal-700 hover:bg-teal-700 hover:border-teal-700 active:scale-95 transition-all shadow-md z-20 cursor-pointer"
               aria-label="Scroll left"
             >
               <ChevronLeft size={16} strokeWidth={3} className="text-white" />
@@ -365,8 +365,8 @@ export default function ProductFilters({
                 dir={isRtl ? 'rtl' : 'ltr'}
                 className={`px-3.5 py-1.5 text-[11px] font-extrabold rounded-full transition-all duration-300 whitespace-nowrap uppercase tracking-wider flex items-center justify-center shrink-0 cursor-pointer ${
                   selectedCategory === ''
-                    ? 'bg-orange-600 text-white border border-orange-500 shadow-md shadow-orange-600/20 scale-[1.01]'
-                    : 'bg-[#182847] text-white border border-[#2f4a7c] hover:bg-[#20345d] hover:border-orange-500/40 hover:text-white hover:scale-[1.01]'
+                    ? 'bg-teal-700 text-white border border-teal-700 shadow-md shadow-teal-700/20 scale-[1.01]'
+                    : 'bg-[#edf5f2] text-white border border-[#c8ddd5] hover:bg-[#dcece5] hover:border-teal-700/40 hover:text-white hover:scale-[1.01]'
                 }`}
               >
                 {t.allCategories}
@@ -381,8 +381,8 @@ export default function ProductFilters({
                     dir={isRtl ? 'rtl' : 'ltr'}
                     className={`px-3.5 py-1.5 text-[11px] font-extrabold rounded-full transition-all duration-300 whitespace-nowrap uppercase tracking-wider flex items-center justify-center shrink-0 cursor-pointer ${
                       isSelected
-                        ? 'bg-orange-600 text-white border border-orange-500 shadow-md shadow-orange-600/20 scale-[1.01]'
-                        : 'bg-[#182847] text-white border border-[#2f4a7c] hover:bg-[#20345d] hover:border-orange-500/50 hover:text-white hover:scale-[1.01]'
+                        ? 'bg-teal-700 text-white border border-teal-700 shadow-md shadow-teal-700/20 scale-[1.01]'
+                        : 'bg-[#edf5f2] text-white border border-[#c8ddd5] hover:bg-[#dcece5] hover:border-teal-700/50 hover:text-white hover:scale-[1.01]'
                     }`}
                   >
                     {cat.name[language] || cat.name['fr']}
@@ -396,7 +396,7 @@ export default function ProductFilters({
           {isOverflowing && (
             <button
               onClick={() => handleScrollClick('right')}
-              className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-[#0B1528] text-white border-2 border-orange-500 hover:bg-orange-600 hover:border-orange-600 active:scale-95 transition-all shadow-md z-20 cursor-pointer"
+              className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-[#104d43] text-white border-2 border-teal-700 hover:bg-teal-700 hover:border-teal-700 active:scale-95 transition-all shadow-md z-20 cursor-pointer"
               aria-label="Scroll right"
             >
               <ChevronRight size={16} strokeWidth={3} className="text-white" />
