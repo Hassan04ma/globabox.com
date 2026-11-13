@@ -18,6 +18,7 @@ export interface Product {
     en: string[];
   };
   category: string;
+  subcategory?: string;
   image: string;
   images: string[];
   fallbackImage?: string;
