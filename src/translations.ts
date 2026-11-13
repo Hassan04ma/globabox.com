@@ -7,9 +7,9 @@ export const TRANSLATIONS: TranslationDict = {
     en: "Globabox"
   },
   tagline: {
-    fr: "Premium Store Maroc",
-    ar: "متجر جلوبابوكس المميز بالمغرب",
-    en: "Morocco Premium Store"
+    fr: "Votre shopping, simplifié",
+    ar: "اختيارات ذكية لكل يوم",
+    en: "Smart finds, everyday"
   },
   heroTitle: {
     fr: "Découvrez tout ce qu’il vous faut au quotidien",
