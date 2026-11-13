@@ -30,7 +30,7 @@ export default function TrustBadges({language}:{language:Language}) {
     {icon:PackageCheck,title:t.c,description:t.cd},
     {icon:Headphones,title:t.d,description:t.dd}
   ];
-  return <section dir={language==='ar'?'rtl':'ltr'} aria-label="GLOBABOX service" className="mx-auto my-10 max-w-7xl rounded-2xl border border-slate-200 bg-[#f6f8f6] px-5 py-6">
+  return <section dir={language==='ar'?'rtl':'ltr'} aria-label="GLOBABOX service" className="my-10 w-full max-w-none rounded-2xl border border-slate-200 bg-[#f6f8f6] px-5 py-6">
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
       {items.map((item,i)=><div key={i} className="flex gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#104d43] shadow-sm"><item.icon size={21}/></div>
