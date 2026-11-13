@@ -930,16 +930,6 @@ Merci de confirmer la disponibilité et la livraison.`;
         />
       )}
 
-      {/* Special Camping Offer spotlight ad block for the new Dome Tent */}
-      {!selectedCategory && !searchTerm && (
-        <PromoCampSection
-          language={language}
-          products={products}
-          onViewDetails={(prod) => setSelectedProduct(prod)}
-          onInstantOrder={(prod) => handleInstantCheckout(prod, 1)}
-          onWhatsAppOrder={handleWhatsAppOrderSubmit}
-        />
-      )}
 
       {/* 3.1 Best Selling Products Showcase (High converting) */}
       {!selectedCategory && !searchTerm && (
@@ -1143,7 +1133,7 @@ Merci de confirmer la disponibilité et la livraison.`;
       </main>
 
       {/* 5.1 Real Moroccan Customer Reviews Section (Social Proof) */}
-      <CustomerReviews language={language} />
+
 
       {/* 5.2 Comprehensive Interactive FAQs */}
       <FAQSection language={language} />
@@ -1368,20 +1358,8 @@ Merci de confirmer la disponibilité et la livraison.`;
       </Suspense>
 
       {/* 14. Marketing High-Converting Persistent Persistent/Floating widgets */}
-      <FloatingPersuasionWidget
-        language={language}
-        cart={cart}
-        onOpenCart={() => setIsCartOpen(true)}
-      />
 
-      {/* 15. Exit Intent Offer Modal (Desktop / Mobile tracking) */}
-      <Suspense fallback={null}>
-        <ExitIntentModal
-          language={language}
-          onExploreOffers={handleScrollToCatalog}
-          onWhatsAppOrder={handleWhatsAppOrderSubmit}
-        />
-      </Suspense>
+
     </div>
   );
 }
