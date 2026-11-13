@@ -894,7 +894,7 @@ Merci de confirmer la disponibilité et la livraison.`;
       />
 
       {/* Spacing Offset for Fixed Header */}
-      <div className="h-[145px] md:h-[115px]"></div>
+      <div className="h-[155px] md:h-[150px]"></div>
 
       {/* 2. Hero Section */}
       {!selectedCategory && !searchTerm && (
@@ -986,6 +986,7 @@ Merci de confirmer la disponibilité et la livraison.`;
 
       {/* 4. Main Catalog Section & Filtering */}
       <main 
+        id="product-catalog"
         ref={catalogRef} 
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 scrolls-offset-padding"
       >
@@ -1162,7 +1163,7 @@ Merci de confirmer la disponibilité et la livraison.`;
 
       {/* 7.5 Mobile-Optimized Bottom Action Navigation Bar (Visible only on mobile) */}
       <div 
-        className="fixed bottom-0 left-0 right-0 z-45 bg-[#070d1a] border-t border-[#1a2d4c]/80 py-2.5 px-2 flex items-center justify-around shadow-[0_-10px_35px_rgba(0,0,0,0.5)] md:hidden pb-safe font-sans"
+        className="fixed bottom-0 left-0 right-0 z-45 bg-white border-t border-slate-200 py-2.5 px-2 flex items-center justify-around shadow-[0_-10px_35px_rgba(0,0,0,0.5)] md:hidden pb-safe font-sans"
         style={{ direction: isRtl ? 'rtl' : 'ltr' }}
       >
         {/* Navigation Action 1: Accueil */}
@@ -1173,9 +1174,9 @@ Merci de confirmer la disponibilité et la livraison.`;
             setFilterType('all');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          className="flex flex-col items-center justify-center flex-1 py-1 px-0.5 text-slate-300 hover:text-orange-500 active:scale-95 transition-all select-none min-h-[44px] outline-none group"
+          className="flex flex-col items-center justify-center flex-1 py-1 px-0.5 text-slate-600 hover:text-[#104d43] active:scale-95 transition-all select-none min-h-[44px] outline-none group"
         >
-          <Home className="w-[22px] h-[22px] mb-1 text-slate-300 group-hover:text-orange-500 transition-colors" />
+          <Home className="w-[22px] h-[22px] mb-1 text-slate-600 group-hover:text-[#104d43] transition-colors" />
           <span className="text-[10px] font-black tracking-wider uppercase">
             {language === 'ar' ? 'الرئيسية' : (language === 'en' ? 'Home' : 'Accueil')}
           </span>
@@ -1207,7 +1208,7 @@ Merci de confirmer la disponibilité et la livraison.`;
           <div className="relative">
             <ShoppingCart className="w-[22px] h-[22px] mb-1 text-slate-300 group-hover:text-orange-500 transition-colors" />
             {totalCartItems > 0 && (
-              <span className="absolute -top-1.5 -right-3.5 bg-orange-600 text-white text-[9px] font-black w-[18px] h-[18px] rounded-full border border-[#070d1a] flex items-center justify-center shadow animate-pulse select-none">
+              <span className="absolute -top-1.5 -right-3.5 bg-[#104d43] text-white text-[9px] font-black w-[18px] h-[18px] rounded-full border border-[#070d1a] flex items-center justify-center shadow animate-pulse select-none">
                 {totalCartItems}
               </span>
             )}
