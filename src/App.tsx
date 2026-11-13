@@ -6,14 +6,16 @@ import { TRANSLATIONS } from './translations';
 
 // Subcomponents
 import Header from './components/Header';
-import Hero from './components/Hero';
-import CategoryGrid from './components/CategoryGrid';
+import HomeBannerSlider from './components/HomeBannerSlider';
+import StoreSidebar from './components/StoreSidebar';
+import { isPublicStoreCategory, matchesStoreDepartment } from './storefrontDepartments';
+
 import ProductCard from './components/ProductCard';
 import TrustBadges from './components/TrustBadges';
 import CartDrawer from './components/CartDrawer';
 import OrderSuccessModal from './components/OrderSuccessModal';
 import DeliveryBanner from './components/DeliveryBanner';
-import PremiumSupportWidget from './components/PremiumSupportWidget';
+
 import WhatsAppIcon from './components/WhatsAppIcon';
 import StoreFooter from './components/StoreFooter';
 
@@ -800,9 +802,9 @@ Merci de confirmer la disponibilité et la livraison.`;
   };
 
   // Step-by-step filter operations
-  const activeProducts = products.filter(p => p.isActive !== false && p.isActive !== 'FALSE');
+  const activeProducts = products.filter(p => p.isActive !== false && p.isActive !== 'FALSE' && isPublicStoreCategory(p.category));
   const afterCategory = selectedCategory 
-    ? activeProducts.filter(p => p.category === selectedCategory) 
+    ? activeProducts.filter(p => matchesStoreDepartment(p.category, selectedCategory)) 
     : activeProducts;
 
   // Apply search and sorting
@@ -871,11 +873,11 @@ Merci de confirmer la disponibilité et la livraison.`;
   const totalCartItems = cart.reduce((acc, item) => acc + item.quantity, 0);
   
   const activeCategoryObj = categories.find(cat => cat.id === selectedCategory);
-  const categoryName = activeCategoryObj ? (activeCategoryObj.name[language] || activeCategoryObj.name['fr']) : '';
+  const categoryName = activeCategoryObj ? (activeCategoryObj.name[language] || activeCategoryObj.name['fr']) : (selectedCategory ? (language === 'ar' ? 'القسم' : language === 'en' ? 'Category' : 'Catégorie') : '');
 
   return (
     <div 
-      className="min-h-screen bg-white text-slate-900 selection:bg-teal-700 selection:text-white transition-colors duration-300 pb-20 md:pb-0"
+      className="min-h-screen bg-white text-slate-900 selection:bg-teal-700 selection:text-white transition-colors duration-300"
       style={{ direction: isRtl ? 'rtl' : 'ltr' }}
     >
       {/* 1. Header */}
@@ -893,101 +895,31 @@ Merci de confirmer la disponibilité et la livraison.`;
       />
 
       {/* Spacing Offset for Fixed Header */}
-      <div className="h-[155px] md:h-[150px]"></div>
+      <div className="h-[151px] md:h-[103px]"></div>
 
-      {/* 2. Hero Section */}
+      {/* Store hero: rotating home-and-lifestyle promotions, each with a working catalog action. */}
       {!selectedCategory && !searchTerm && (
-        <Hero 
-          language={language} 
-          onExploreClick={handleScrollToCatalog} 
-          onWhatsAppOrder={handleWhatsAppOrderSubmit}
-        />
-      )}
-
-      {/* 3. Category Grid Selector */}
-      <CategoryGrid
-        language={language}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={(cat) => {
-          setSelectedCategory(cat);
-          handleScrollToCatalog();
-        }}
-        categories={categories}
-      />
-
-      {/* 3.05 Delivery Info & Reassurance Banner */}
-
-
-      {/* 3.08 Active Flash Discounts/Hot Deals ("Offres du moment") */}
-      {!selectedCategory && !searchTerm && (
-        <PromoOffersSection
+        <HomeBannerSlider
           language={language}
-          products={products}
-          onViewDetails={(prod) => setSelectedProduct(prod)}
-          onAddToCart={(prod) => handleAddToCart(prod, 1)}
-          onInstantOrder={(prod) => handleInstantCheckout(prod, 1)}
+          onShopAll={handleScrollToCatalog}
+          onSelectDepartment={(id) => {setSelectedCategory(id); window.requestAnimationFrame(handleScrollToCatalog);}}
         />
       )}
 
-
-      {/* 3.1 Best Selling Products Showcase (High converting) */}
-      {!selectedCategory && !searchTerm && (
-        <BestSellersSection
+      {/* Single category navigation, always on the left beside catalog on desktop. */}
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 pb-10 sm:px-6 lg:flex-row lg:items-start lg:gap-7 lg:px-8" dir="ltr">
+        <StoreSidebar
           language={language}
+          selectedCategory={selectedCategory}
+          onSelect={(id) => {setSelectedCategory(id); window.requestAnimationFrame(handleScrollToCatalog);}}
           products={products}
-          onViewDetails={(prod) => setSelectedProduct(prod)}
-          onAddToCart={(prod) => handleAddToCart(prod, 1)}
-          onInstantOrder={(prod) => handleInstantCheckout(prod, 1)}
-          onExploreMore={handleScrollToCatalog}
         />
-      )}
-
-      {/* 3.15 Economic Combo Packs ("Packs économiques" - High AOV) */}
-      {!selectedCategory && !searchTerm && (
-        <EconomicPacksSection
-          language={language}
-          products={products}
-          onViewDetails={(prod) => setSelectedProduct(prod)}
-          onAddToCart={(prod) => handleAddToCart(prod, 1)}
-          onInstantOrder={(prod) => handleInstantCheckout(prod, 1)}
-          onExploreMore={handleScrollToCatalog}
-        />
-      )}
-
-      {/* 3.2 New Arrivals Showcase (High converting) */}
-      {!selectedCategory && !searchTerm && (
-        <NewArrivalsSection
-          language={language}
-          products={products}
-          onViewDetails={(prod) => setSelectedProduct(prod)}
-          onAddToCart={(prod) => handleAddToCart(prod, 1)}
-          onInstantOrder={(prod) => handleInstantCheckout(prod, 1)}
-          onExploreMore={handleScrollToCatalog}
-        />
-      )}
-
-      {/* 3.25 Under 99 DH Impulse Pocket Area ("Moins de 99 DH") */}
-      {!selectedCategory && !searchTerm && (
-        <Under99Section
-          language={language}
-          products={products}
-          onViewDetails={(prod) => setSelectedProduct(prod)}
-          onAddToCart={(prod) => handleAddToCart(prod, 1)}
-          onInstantOrder={(prod) => handleInstantCheckout(prod, 1)}
-        />
-      )}
-
-      {/* 3.28 Detailed Free Shipping policy layout ("Livraison gratuite") */}
-
-
-      {/* 3.3 Why Choose Globabox Trust & Reassurance Block */}
-
 
       {/* 4. Main Catalog Section & Filtering */}
       <main 
         id="product-catalog"
         ref={catalogRef} 
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 scrolls-offset-padding"
+        className="min-w-0 w-full flex-1 scroll-mt-32 pt-1 pb-10"
       >
         {/* Catalog Header with Tabs & Counter */}
         <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1033,7 +965,7 @@ Merci de confirmer la disponibilité et la livraison.`;
               onClick={() => setFilterType('all')}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 filterType === 'all'
-                  ? 'bg-[#0b1528] text-white shadow-sm'
+                  ? 'bg-[#104d43] text-white shadow-sm'
                   : 'text-slate-650 hover:text-slate-900'
               }`}
             >
@@ -1043,7 +975,7 @@ Merci de confirmer la disponibilité et la livraison.`;
               onClick={() => setFilterType('bestsellers')}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 filterType === 'bestsellers'
-                  ? 'bg-orange-600 text-white shadow-sm'
+                  ? 'bg-[#104d43] text-white shadow-sm'
                   : 'text-slate-650 hover:text-slate-900'
               }`}
             >
@@ -1053,7 +985,7 @@ Merci de confirmer la disponibilité et la livraison.`;
               onClick={() => setFilterType('newarrivals')}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 filterType === 'newarrivals'
-                  ? 'bg-emerald-600 text-white shadow-sm'
+                  ? 'bg-[#104d43] text-white shadow-sm'
                   : 'text-slate-650 hover:text-slate-900'
               }`}
             >
@@ -1062,22 +994,7 @@ Merci de confirmer la disponibilité et la livraison.`;
           </div>
         </div>
 
-        {/* Global Catalog Search, Categories & Pricing filter system */}
-        <ProductFilters
-          language={language}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          minPrice={minPrice}
-          setMinPrice={setMinPrice}
-          maxPrice={maxPrice}
-          setMaxPrice={setMaxPrice}
-          sortOption={sortOption}
-          setSortOption={setSortOption}
-          productsFoundCount={filteredProducts.length}
-        />
-
+        {/* Search is in the header; catalog sorting stays here. Categories are only in the left sidebar. */}
         {/* Debugging Panel for Search */}
         {searchTerm && (process.env.NODE_ENV !== 'production' || (import.meta as any).env.DEV) && (
           <div className="mb-6 p-3 bg-amber-50/50 text-amber-900 text-xs rounded-2xl font-mono text-center border border-amber-200/40 shadow-sm flex items-center justify-center gap-1.5 animate-scale-up">
@@ -1131,6 +1048,7 @@ Merci de confirmer la disponibilité et la livraison.`;
         {/* 5. Reassurance Giga Trust Badges */}
         <TrustBadges language={language} />
       </main>
+      </div>
 
       {/* 5.1 Real Moroccan Customer Reviews Section (Social Proof) */}
 
@@ -1150,125 +1068,6 @@ Merci de confirmer la disponibilité et la livraison.`;
         onCart={() => setIsCartOpen(true)}
         onLegal={(tab) => { setLegalActiveTab(tab); setIsLegalModalOpen(true); }}
       />
-
-      {/* 7. Premium Floating Support Widget */}
-      <PremiumSupportWidget
-        language={language}
-        onOpenTracking={() => setIsTrackingOpen(true)}
-        phoneNumber={ORDER_SUPPORT_NUMBER}
-        whatsappLink={WA_LINK}
-        onWhatsAppOrder={handleWhatsAppOrderSubmit}
-      />
-
-      {/* 7.5 Mobile-Optimized Bottom Action Navigation Bar (Visible only on mobile) */}
-      <div 
-        className="fixed bottom-0 left-0 right-0 z-45 bg-white border-t border-slate-200 py-2.5 px-2 flex items-center justify-around shadow-[0_-10px_35px_rgba(0,0,0,0.5)] md:hidden pb-safe font-sans"
-        style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      >
-        {/* Navigation Action 1: Accueil */}
-        <button
-          onClick={() => {
-            setSearchTerm('');
-            setSelectedCategory('');
-            setFilterType('all');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          className="flex flex-col items-center justify-center flex-1 py-1 px-0.5 text-slate-600 hover:text-[#104d43] active:scale-95 transition-all select-none min-h-[44px] outline-none group"
-        >
-          <Home className="w-[22px] h-[22px] mb-1 text-slate-600 group-hover:text-[#104d43] transition-colors" />
-          <span className="text-[10px] font-black tracking-wider uppercase">
-            {language === 'ar' ? 'الرئيسية' : (language === 'en' ? 'Home' : 'Accueil')}
-          </span>
-        </button>
-
-        {/* Navigation Action 2: Catégories */}
-        <button
-          onClick={() => {
-            const el = document.getElementById('product-filters-container') || catalogRef.current;
-            if (el) {
-              el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else {
-              window.scrollTo({ top: 500, behavior: 'smooth' });
-            }
-          }}
-          className="flex flex-col items-center justify-center flex-1 py-1 px-0.5 text-slate-300 hover:text-orange-500 active:scale-95 transition-all select-none min-h-[44px] outline-none group"
-        >
-          <LayoutGrid className="w-[22px] h-[22px] mb-1 text-slate-300 group-hover:text-orange-500 transition-colors" />
-          <span className="text-[10px] font-black tracking-wider uppercase">
-            {language === 'ar' ? 'الأقسام' : (language === 'en' ? 'Categories' : 'Catégories')}
-          </span>
-        </button>
-
-        {/* Navigation Action 3: Panier */}
-        <button
-          onClick={() => setIsCartOpen(true)}
-          className="flex flex-col items-center justify-center flex-1 py-1 px-0.5 text-slate-300 hover:text-orange-500 active:scale-95 transition-all select-none min-h-[44px] outline-none relative group"
-        >
-          <div className="relative">
-            <ShoppingCart className="w-[22px] h-[22px] mb-1 text-slate-300 group-hover:text-orange-500 transition-colors" />
-            {totalCartItems > 0 && (
-              <span className="absolute -top-1.5 -right-3.5 bg-[#104d43] text-white text-[9px] font-black w-[18px] h-[18px] rounded-full border border-[#070d1a] flex items-center justify-center shadow animate-pulse select-none">
-                {totalCartItems}
-              </span>
-            )}
-          </div>
-          <span className="text-[10px] font-black tracking-wider uppercase">
-            {language === 'ar' ? 'السلة' : 'Panier'}
-          </span>
-        </button>
-
-        {/* Navigation Action 4: WhatsApp */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            triggerWhatsAppClick('Mobile Bottom Action Bar - Sticky Tab');
-            handleWhatsAppOrderSubmit({ source: 'mobile_bottom_bar_whatsapp' });
-          }}
-          className="flex flex-col items-center justify-center flex-1 py-1 px-0.5 text-emerald-400 hover:text-emerald-300 active:scale-95 transition-all select-none min-h-[44px] outline-none group cursor-pointer"
-        >
-          <WhatsAppIcon className="w-[22px] h-[22px] mb-1 text-emerald-500 group-hover:text-emerald-400 transition-colors shrink-0" />
-          <span className="text-[10px] font-black tracking-wider uppercase text-emerald-400">
-            {language === 'ar' ? 'واتساب' : 'WhatsApp'}
-          </span>
-        </button>
-      </div>
-
-      {/* 8. Floating Scroll to Top button */}
-      {showScrollTop && (
-        <>
-          <style>{`
-            .back-to-top-btn {
-              position: fixed;
-              z-index: 40;
-              transition: all 0.3s ease;
-            }
-            @media (max-width: 480px) {
-              .back-to-top-btn {
-                bottom: calc(182px + env(safe-area-inset-bottom, 0px)) !important;
-                ${language === 'ar' ? 'left: 32px !important; right: auto !important;' : 'right: 32px !important; left: auto !important;'}
-              }
-            }
-            @media (min-width: 481px) and (max-width: 1024px) {
-              .back-to-top-btn {
-                bottom: calc(180px + env(safe-area-inset-bottom, 0px)) !important;
-                ${language === 'ar' ? 'left: 32px !important; right: auto !important;' : 'right: 32px !important; left: auto !important;'}
-              }
-            }
-            @media (min-width: 1025px) {
-              .back-to-top-btn {
-                bottom: 112px !important;
-                ${language === 'ar' ? 'left: 48px !important; right: auto !important;' : 'right: 48px !important; left: auto !important;'}
-              }
-            }
-          `}</style>
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="back-to-top-btn bg-[#0B1528] border border-slate-800 text-white hover:text-orange-500 hover:border-orange-500 p-3 rounded-full hover:bg-slate-900 transition-all shadow-xl duration-200 hover:scale-110 active:scale-95"
-          >
-            <ArrowUp size={16} />
-          </button>
-        </>
-      )}
 
       {/* 9. Interactive sliding Cart Drawer */}
       <CartDrawer
