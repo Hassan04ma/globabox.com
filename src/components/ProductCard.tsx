@@ -183,13 +183,6 @@ export default function ProductCard({
 
           <div className="flex flex-col gap-2">
             {/* Commandé aujourd'hui style trust message */}
-            {false && (
-              <div className="text-[9.5px] bg-rose-50/70 border border-rose-100 rounded-xl px-2.5 py-2 text-rose-800 font-bold mb-1 flex items-center gap-1.5 leading-snug">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse shrink-0"></span>
-                <Zap size={11} className="text-rose-600 shrink-0 select-none" />
-                <span>{''}</span>
-              </div>
-            )}
 
             {isOutOfStock ? (
               <div className="bg-slate-50 border border-slate-200 text-slate-500 text-xs font-black py-2.5 px-3 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 text-center select-none w-full shadow-inner">
