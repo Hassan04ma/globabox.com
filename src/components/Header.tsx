@@ -46,7 +46,7 @@ export default function Header({language,setLanguage,searchTerm,onSearchChange,s
       <div className="ms-auto flex shrink-0 items-center gap-2 sm:gap-3">
         <div role="group" aria-label="Language" className="flex rounded-lg border border-slate-200 bg-white p-1">
           {(['fr','ar','en'] as Language[]).map(lang=><button type="button" key={lang} onClick={()=>setLanguage(lang)} aria-pressed={lang===language}
-            className={'min-h-8 rounded-md px-2 text-[11px] font-bold '+(language===lang?'bg-[#104d43] text-white':'text-slate-600 hover:bg-slate-100')}>{lang==='ar'?'ع':lang.toUpperCase()}</button>)}
+            className={'min-h-8 rounded-md px-2 text-[11px] font-bold '+(language===lang?'bg-[#104d43] text-white':'text-slate-600 hover:bg-slate-100')}>{lang.toUpperCase()}</button>)}
         </div>
         {onOpenTracking && <button type="button" onClick={onOpenTracking} className="hidden items-center gap-2 rounded-lg px-2 text-xs font-semibold text-[#104d43] hover:bg-[#f1f6f3] xl:inline-flex"><PackageCheck size={18}/>{c.track}</button>}
         <button type="button" onClick={()=>setIsCartOpen(true)} className="relative flex min-h-11 items-center gap-2 rounded-xl bg-[#104d43] px-3 text-white transition hover:bg-[#0b3931] sm:px-4" aria-label={c.cart}>
