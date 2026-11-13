@@ -213,6 +213,11 @@ export default function App() {
   const [minPrice, setMinPrice] = useState<number | ''>('');
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
 
+  // Reset a child filter whenever the parent department is cleared (e.g. header All Products).
+  useEffect(() => {
+    if (!selectedCategory && selectedSubcategory) setSelectedSubcategory('');
+  }, [selectedCategory, selectedSubcategory]);
+
   // Persistent data states
   const [products, setProducts] = useState<any[]>([]);
 
@@ -831,7 +836,7 @@ Merci de confirmer la disponibilité et la livraison.`;
 
   // Apply search and sorting
   const filteredProducts = afterCategory.filter((product) => {
-    if (selectedSubcategory && !matchesSubcategory(product,selectedSubcategory)) return false;
+    if (selectedCategory && selectedSubcategory && !matchesSubcategory(product,selectedSubcategory)) return false;
     // 2. Search term match
     if (searchTerm.trim() !== '') {
       const normProductText = normalizeText(getSearchableText(product, categories));
