@@ -36,23 +36,23 @@ export default function NewArrivalsSection({
   return (
     <section 
       style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-900 border-t border-b border-slate-800 text-white"
+      className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 border-t border-b border-slate-100 text-slate-900"
       id="new-arrivals-section"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pb-4 border-b border-slate-800">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pb-4 border-b border-slate-200">
           <div>
             <div className="inline-flex items-center gap-1.5 bg-blue-900/80 text-[#a5b4fc] text-[10px] font-black px-2.5 py-1 rounded-md mb-2.5 uppercase tracking-wide border border-blue-800/40">
               <Compass className="w-3.5 h-3.5" />
               <span>{isRtl ? "تجهيزات وصلت حديثاً" : "NOUVEAUTÉS EXCLUSIVES"}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               {isRtl ? "وصل حديثاً لمستودعاتنا" : "Nouveautés & Équipements Récents"}
             </h2>
             <p className="text-xs text-slate-400 mt-1 font-medium select-none">
               {isRtl 
-                ? "أحدث ابتكارات وإكسسوارات ومستلزمات التخييم لرحلتك القادمة." 
-                : "Explorez nos nouveaux arrivages d'équipements de bivouac, conçus pour les passionnés du grand air marocain."}
+                ? "تعرف على المنتجات اللي تزادت مؤخراً للمتجر." 
+                : "Découvrez les derniers produits ajoutés à notre boutique."}
             </p>
           </div>
 
