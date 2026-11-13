@@ -8,21 +8,31 @@ interface Props { language:Language; onShopAll:()=>void; onSelectDepartment:(id:
 type Text = {tag:string;title:string;description:string;button:string;all:string;discover:string};
 type Slide = {id:string;destination:string|null;categories:string[];theme:'dark'|'light'|'blue';copy:Record<Language,Text>};
 
-const slides:Slide[]=[
- {id:'globabox',destination:null,categories:['maison','cuisine','technologie','beaute'],theme:'dark',copy:{
-   fr:{tag:'GLOBABOX · BOUTIQUE MULTI-CATÉGORIES AU MAROC',title:'Un seul magasin. Plein de découvertes.',description:'Maison, cuisine, technologie, beauté, mode et accessoires : explorez nos rayons pour tous les besoins du quotidien.',button:'Voir tous les produits',all:'Maison & décoration',discover:'Nos univers'},
-   ar:{tag:'GLOBABOX · متجر إلكتروني عام بالمغرب',title:'متجر واحد، واختيارات كثيرة.',description:'المنزل، المطبخ، الإلكترونيات، الجمال، الموضة والإكسسوارات. أقسام متنوعة لكل الاحتياجات اليومية.',button:'جميع المنتجات',all:'المنزل والديكور',discover:'اكتشف الأقسام'},
-   en:{tag:'GLOBABOX · YOUR MOROCCAN MULTI-CATEGORY STORE',title:'One store. So many useful finds.',description:'Home, kitchen, electronics, beauty, fashion and accessories. Explore everyday essentials all in one place.',button:'Shop all products',all:'Home & decor',discover:'Explore departments'}
+
+/**
+ * Each of the 13 public departments appears in exactly one slide.
+ * The images below represent categories, not products or offers.
+ */
+const slides: Slide[] = [
+ {id:'home',destination:null,categories:['maison','cuisine','eclairage','entretien'],theme:'dark',copy:{
+   fr:{tag:'GLOBABOX · BOUTIQUE MULTI-CATÉGORIES AU MAROC',title:'Maison, cuisine & vie quotidienne.',description:'Découvrez notre boutique en ligne : maison et décoration, cuisine, éclairage et entretien. Chaque image mène directement à son rayon.',button:'Tous les produits',all:'Découvrir la maison',discover:'Rayons maison'},
+   ar:{tag:'GLOBABOX · متجر إلكتروني عام بالمغرب',title:'منتجات المنزل والمطبخ والحياة اليومية.',description:'جلوبابوكس متجر عام فيه المنزل والديكور، المطبخ، الإنارة والتنظيف. كل صورة كتوصلك مباشرة للقسم ديالها.',button:'جميع المنتجات',all:'قسم المنزل',discover:'أقسام المنزل'},
+   en:{tag:'GLOBABOX · MULTI-CATEGORY ONLINE STORE',title:'Everything for home and everyday living.',description:'Discover home decor, kitchen essentials, lighting and cleaning. Select any category image to explore its products.',button:'All products',all:'Explore home',discover:'Home categories'}
  }},
- {id:'home',destination:'maison',categories:['maison','cuisine','eclairage','entretien'],theme:'light',copy:{
-   fr:{tag:'MAISON · CUISINE · DÉCORATION',title:'Tout pour la maison et la cuisine.',description:'Organisation, ustensiles, éclairage, nettoyage : découvrez des catégories pour aménager chaque pièce.',button:'Découvrir la maison',all:'Tous les produits',discover:'Univers Maison'},
-   ar:{tag:'المنزل · المطبخ · الديكور',title:'كل ما يخص المنزل والمطبخ.',description:'التنظيم، أواني المطبخ، الإنارة والتنظيف: اكتشف أقسام كتعاونك تجهز كل ركن فالدار.',button:'تصفح قسم المنزل',all:'جميع المنتجات',discover:'عالم المنزل'},
-   en:{tag:'HOME · KITCHEN · DECOR',title:'Everyday ideas for your home.',description:'Explore kitchen essentials, storage, lighting and cleaning accessories for a practical home.',button:'Explore home',all:'All products',discover:'Home departments'}
+ {id:'tech',destination:null,categories:['technologie','beaute','mode'],theme:'light',copy:{
+   fr:{tag:'ÉLECTRONIQUE · BEAUTÉ · MODE',title:'Tech, beauté et accessoires.',description:'Des catégories pour les achats du quotidien : électronique, soin et mode. Choisissez une image pour ouvrir le bon rayon.',button:'Tous les produits',all:'Explorer la technologie',discover:'Rayons tech & lifestyle'},
+   ar:{tag:'الإلكترونيات · الجمال · الموضة',title:'التكنولوجيا، الجمال والإكسسوارات.',description:'من الأجهزة والإلكترونيات للعناية الشخصية والموضة. ضغط على الصورة باش تمشي مباشرة للتصنيف.',button:'جميع المنتجات',all:'قسم الإلكترونيات',discover:'أقسام متنوعة'},
+   en:{tag:'ELECTRONICS · BEAUTY · FASHION',title:'Technology, beauty and style.',description:'Discover electronics, personal care and fashion. Every category image takes you directly to its product listings.',button:'All products',all:'Explore electronics',discover:'Tech & lifestyle categories'}
  }},
- {id:'lifestyle',destination:'technologie',categories:['technologie','beaute','automobile','mode'],theme:'blue',copy:{
-   fr:{tag:'TECH · BEAUTÉ · ACCESSOIRES',title:'Les essentiels tech et lifestyle.',description:'Électronique, soin personnel, accessoires auto et mode : trouvez facilement le rayon qui vous convient.',button:'Découvrir la technologie',all:'Tous les produits',discover:'Nos sélections'},
-   ar:{tag:'التكنولوجيا · الجمال · الإكسسوارات',title:'التكنولوجيا والإكسسوارات فمتجر واحد.',description:'الإلكترونيات، العناية الشخصية، لوازم السيارات والموضة: تصفح الأقسام حسب احتياجاتك.',button:'تصفح الإلكترونيات',all:'جميع المنتجات',discover:'اختيارات متنوعة'},
-   en:{tag:'TECH · BEAUTY · ACCESSORIES',title:'Smart everyday accessories.',description:'Discover electronics, personal care, auto accessories and fashion across our departments.',button:'Explore electronics',all:'All products',discover:'Lifestyle departments'}
+ {id:'family',destination:null,categories:['automobile','sport_loisirs','enfants'],theme:'blue',copy:{
+   fr:{tag:'AUTO · SPORT · ENFANTS',title:'Des trouvailles pour toutes vos activités.',description:'Explorez les accessoires automobiles, le sport et les articles pour les enfants. Un clic sur une image ouvre sa catégorie.',button:'Tous les produits',all:'Explorer les accessoires auto',discover:'Rayons auto, sport & famille'},
+   ar:{tag:'السيارات · الرياضة · الأطفال',title:'منتجات للسيارات والرياضة والعائلة.',description:'إكسسوارات السيارات، اللياقة، ومستلزمات الأطفال. كل صورة كتديك لمنتجات القسم مباشرة.',button:'جميع المنتجات',all:'قسم السيارات',discover:'أقسام السيارات والعائلة'},
+   en:{tag:'AUTO · SPORTS · KIDS',title:'Useful finds for active families.',description:'Explore car accessories, sport and fitness, and kids essentials. Open any category by selecting its image.',button:'All products',all:'Explore car accessories',discover:'Auto, sport & family'}
+ }},
+ {id:'discover',destination:null,categories:['jardin','bureau','animaux'],theme:'light',copy:{
+   fr:{tag:'JARDIN · BUREAU · ANIMAUX',title:'Pour le jardin, le bureau et vos compagnons.',description:'Découvrez les accessoires de jardin, l’organisation du bureau et les articles pour animaux. Chaque visuel est un lien vers son rayon.',button:'Tous les produits',all:'Explorer le jardin',discover:'Autres univers'},
+   ar:{tag:'الحديقة · المكتب · الحيوانات الأليفة',title:'الحديقة، المكتب ومستلزمات الحيوانات.',description:'تسوق أقسام الحديقة، تنظيم المكتب ولوازم الحيوانات الأليفة. ضغط على أي صورة باش تشوف القسم.',button:'جميع المنتجات',all:'قسم الحديقة',discover:'باقي الأقسام'},
+   en:{tag:'GARDEN · OFFICE · PETS',title:'Explore more ways to shop.',description:'Browse garden accessories, office organisation and pet supplies. Tap any image to open its department.',button:'All products',all:'Explore garden',discover:'More departments'}
  }}
 ];
 
@@ -53,7 +63,7 @@ export default function HomeBannerSlider({language,onShopAll,onSelectDepartment}
      <p className={'mt-5 max-w-[590px] text-sm leading-7 sm:text-base sm:leading-8 '+palette.sub}>{c.description}</p>
      <div className="mt-8 flex flex-wrap gap-3">
        <button type="button" onClick={()=>go(slide.destination)} className={'inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-5 text-sm font-extrabold shadow-sm transition '+palette.primary}><ShoppingBag size={18}/>{c.button}{rtl?<ArrowLeft size={16}/>:<ArrowRight size={16}/>}</button>
-       <button type="button" onClick={()=>slide.destination?onShopAll():go('maison')} className={'inline-flex min-h-12 items-center justify-center rounded-xl border px-5 text-sm font-bold transition '+palette.secondary}>{c.all}</button>
+       <button type="button" onClick={()=>go(slide.categories[0])} className={'inline-flex min-h-12 items-center justify-center rounded-xl border px-5 text-sm font-bold transition '+palette.secondary}>{c.all}</button>
      </div>
     </div>
     <div className="relative">
@@ -62,10 +72,10 @@ export default function HomeBannerSlider({language,onShopAll,onSelectDepartment}
        {slide.categories.map((id,index)=>{
         const cat=STORE_DEPARTMENTS.find(d=>d.id===id);
         if(!cat)return null;
-        return <button key={id} type="button" onClick={()=>go(id)} aria-label={cat.name[language]} className="group relative min-h-[138px] overflow-hidden rounded-[19px] border-2 border-white/75 bg-white text-start shadow-[0_7px_18px_rgba(0,0,0,.15)] transition hover:-translate-y-1 hover:shadow-xl sm:min-h-[168px] lg:min-h-[176px]">
-         <img src={cat.image} loading={index<2?'eager':'lazy'} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-110"/>
+        return <a key={id} href={'/?category='+encodeURIComponent(id)} onClick={event=>{if(event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();go(id);}} aria-label={cat.name[language]} className={'group relative min-h-[138px] overflow-hidden rounded-[19px] border-2 border-white/75 bg-white text-start shadow-[0_7px_18px_rgba(0,0,0,.15)] transition hover:-translate-y-1 hover:shadow-xl sm:min-h-[168px] lg:min-h-[176px] '+(slide.categories.length===3&&index===2?'col-span-2 sm:col-span-2':'')}>
+         <img src={cat.image} loading={index<2?'eager':'lazy'} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"/>
          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#102b26]/95 via-[#102b26]/75 to-transparent px-3 pb-3 pt-10 text-[12px] font-extrabold leading-5 text-white sm:px-4 sm:pb-4 sm:text-sm">{cat.name[language]}</span>
-        </button>;
+        </a>;
        })}
       </div>
     </div>
