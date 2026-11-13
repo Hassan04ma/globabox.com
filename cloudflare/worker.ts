@@ -145,12 +145,12 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url), path = url.pathname, method = request.method;
     if (!path.startsWith('/api/')) return env.ASSETS.fetch(request);
-    if (method === 'POST' && (path === '/api/admin/login' || path === '/api/orders')) {
+    if (method === 'POST' && (path === '/api/admin/login' || path === '/api/orders' || path === '/api/track-order')) {
       const limiter = path === '/api/admin/login' ? env.ADMIN_RATE_LIMITER : env.CHECKOUT_RATE_LIMITER;
       // Fail closed for production request endpoints when the anti-abuse binding is missing.
       if (!limiter) return json({error:'Service temporarily unavailable'},503);
       const ip = request.headers.get('cf-connecting-ip') || 'unknown';
-      const result = await limiter.limit({key: ip});
+      const result = await limiter.limit({key: path === '/api/track-order' ? 'tracking:' + ip : ip});
       if (!result.success) return json({error:'Too many requests. Try again later.'},429);
     }
     // Image uploads use a separate 750 KB limit and never go through JSON parsing.
@@ -439,6 +439,42 @@ export default {
       if (path === '/api/admin/products' && method === 'GET') {
         if (!await auth(request, env)) return json({ error: 'Unauthorized' }, 401);
         return json(await listProducts(env.DB, true, env.STORE_DEMO_CATALOG === 'true'));
+      }
+      // Public self-service tracking requires two independent order identifiers.
+      // Never expose raw order JSON, address, telephone, name or full order listings.
+      // Requests are rate-limited (at the top of fetch) using an IP-scoped Worker limiter.
+      if (path === '/api/track-order' && method === 'POST') {
+        const body = await readBody(request);
+        const reference = typeof body?.reference === 'string' ? body.reference.trim().toUpperCase() : '';
+        const rawPhone = typeof body?.phone === 'string' ? body.phone.trim() : '';
+        if (!/^GB-[A-Z0-9-]{6,36}$/.test(reference) || rawPhone.length > 32)
+          return json({error:'Invalid order reference or phone number'},400);
+        const normalisePhone = (value:string) => {
+          const digits=value.replace(/[^0-9]/g,'');
+          if(digits.startsWith('00212')) return digits.slice(5);
+          if(digits.startsWith('212')) return digits.slice(3);
+          return digits.startsWith('0') ? digits.slice(1) : digits;
+        };
+        const phone = normalisePhone(rawPhone);
+        if(!/^[5-7][0-9]{8}$/.test(phone)) return json({error:'Invalid order reference or phone number'},400);
+        const row=await env.DB.prepare("SELECT data_json FROM orders WHERE UPPER(json_extract(data_json, '$.reference')) = ? LIMIT 1")
+          .bind(reference).first<{data_json:string}>();
+        const order = row ? JSON.parse(row.data_json) : null;
+        // The same response is used for both an unknown reference and a phone mismatch.
+        if(!order || normalisePhone(String(order.phoneNumber || ''))!==phone)
+          return json({error:'Order not found. Verify your reference and telephone.'},404);
+        const status = ['pending','confirmed','processing','shipped','delivered','cancelled'].includes(order.status)
+          ? order.status : 'pending';
+        return json({success:true,tracking:{
+          reference, status,
+          date:typeof order.date==='string' ? order.date : null,
+          total:Number.isFinite(order.total) ? order.total : null,
+          itemCount:Array.isArray(order.items)
+            ? order.items.reduce((sum:number,item:any)=>sum+(Number.isFinite(item.quantity)?item.quantity:0),0)
+            : 0,
+          source:'store',
+          courierTrackingAvailable:false
+        }});
       }
       if (path === '/api/orders' && method === 'GET') {
         if (!await auth(request, env)) return json({ error: 'Unauthorized' }, 401);
