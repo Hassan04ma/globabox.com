@@ -46,8 +46,8 @@ export default function HomeBannerSlider({language,onShopAll,onSelectDepartment}
  const slide=slides[active],copy=slide.copy[language];
  const action=()=>slide.id==='all'?onShopAll():onSelectDepartment(slide.id);
  const direction=language==='ar'?'rtl':'ltr';
- return <section aria-label={language==='ar'?'عروض المتجر':'Store highlights'} className="mx-auto max-w-7xl px-4 pb-3 pt-6 sm:px-6 lg:px-8" dir={direction}>
-   <div className="relative isolate min-h-[340px] overflow-hidden rounded-[26px] bg-[#104d43] sm:min-h-[420px] lg:min-h-[475px]">
+ return <section aria-label={language==='ar'?'عروض المتجر':'Store highlights'} className="w-full max-w-none px-4 pb-3 pt-6 sm:px-6 lg:px-8" dir={direction}>
+   <div className="relative isolate min-h-[340px] w-full overflow-hidden rounded-[26px] bg-[#104d43] sm:min-h-[420px] lg:min-h-[475px]">
      {slides.map((s,i)=><img key={s.id} src={s.image} alt={s.picture} loading={i===0?'eager':'lazy'} className={'absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out '+(i===active?'opacity-100':'opacity-0')} aria-hidden={i!==active}/>)}
      <div className={'absolute inset-0 '+(language==='ar'?'bg-gradient-to-l':'bg-gradient-to-r')+' from-[#102f2b]/95 via-[#102f2b]/80 to-[#102f2b]/20'} />
      <div className="relative z-10 flex min-h-[340px] max-w-[660px] flex-col justify-center px-7 py-12 text-white sm:min-h-[420px] sm:px-12 lg:min-h-[475px] lg:px-16">
