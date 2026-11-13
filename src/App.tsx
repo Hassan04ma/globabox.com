@@ -981,7 +981,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                   }
                 </p>
                 <p className="text-[11px] font-mono text-slate-400 mt-1.5">
-                  {filteredProducts.length} {filteredProducts.length > 1 ? 'produits' : 'produit'}
+                  {filteredProducts.length} {language==='ar'?'منتج':language==='en'?(filteredProducts.length===1?'product':'products'):(filteredProducts.length===1?'produit':'produits')}
                 </p>
               </div>
             ) : (
@@ -996,42 +996,43 @@ Merci de confirmer la disponibilité et la livraison.`;
             )}
           </div>
 
-          {/* Subtype filters */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-205 shrink-0 self-start">
-            <button
-              onClick={() => setFilterType('all')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                filterType === 'all'
-                  ? 'bg-[#104d43] text-white shadow-sm'
-                  : 'text-slate-650 hover:text-slate-900'
-              }`}
-            >
-              {t('filterAll')}
-            </button>
-            <button
-              onClick={() => setFilterType('bestsellers')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                filterType === 'bestsellers'
-                  ? 'bg-[#104d43] text-white shadow-sm'
-                  : 'text-slate-650 hover:text-slate-900'
-              }`}
-            >
-              <span className="flex items-center gap-1"><Flame size={12} className="shrink-0 text-orange-400" /> <span>{t('filterBestSellers')}</span></span>
-            </button>
-            <button
-              onClick={() => setFilterType('newarrivals')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                filterType === 'newarrivals'
-                  ? 'bg-[#104d43] text-white shadow-sm'
-                  : 'text-slate-650 hover:text-slate-900'
-              }`}
-            >
-              <span className="flex items-center gap-1"><Star size={12} className="shrink-0 text-amber-300" /> <span>{t('filterNewArrivals')}</span></span>
-            </button>
+          {/* Only show merchandising filters supported by real published product data. */}
+          <div className="flex max-w-full flex-wrap items-center gap-2 self-start" aria-label={language==='ar'?'فرز وتصفية المنتجات':'Filtrer et trier les produits'}>
+            <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200 bg-[#f6f8f6] p-1">
+              <button type="button" onClick={() => setFilterType('all')}
+                aria-pressed={filterType==='all'}
+                className={'rounded-lg px-3 py-2 text-xs font-bold transition '+(filterType==='all'?'bg-[#104d43] text-white shadow-sm':'text-slate-600 hover:bg-white')}>
+                {t('filterAll')}
+              </button>
+              {activeProducts.some(p=>p.bestSeller) && (
+                <button type="button" onClick={() => setFilterType('bestsellers')}
+                  aria-pressed={filterType==='bestsellers'}
+                  className={'rounded-lg px-3 py-2 text-xs font-bold transition '+(filterType==='bestsellers'?'bg-[#104d43] text-white shadow-sm':'text-slate-600 hover:bg-white')}>
+                  {t('filterBestSellers')}
+                </button>
+              )}
+              {activeProducts.some(p=>p.newArrival) && (
+                <button type="button" onClick={() => setFilterType('newarrivals')}
+                  aria-pressed={filterType==='newarrivals'}
+                  className={'rounded-lg px-3 py-2 text-xs font-bold transition '+(filterType==='newarrivals'?'bg-[#104d43] text-white shadow-sm':'text-slate-600 hover:bg-white')}>
+                  {t('filterNewArrivals')}
+                </button>
+              )}
+            </div>
+            <label className="flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600">
+              <span>{language==='ar'?'ترتيب':language==='en'?'Sort by':'Trier'}</span>
+              <select value={sortOption} onChange={e=>setSortOption(e.target.value as typeof sortOption)}
+                aria-label={language==='ar'?'ترتيب المنتجات':'Sort products'}
+                className="max-w-[175px] bg-transparent py-2 text-xs font-semibold text-[#104d43] outline-none">
+                <option value="newest">{language==='ar'?'الأحدث':language==='en'?'Newest':'Nouveautés'}</option>
+                <option value="price_low_high">{language==='ar'?'الثمن: من الأقل للأعلى':language==='en'?'Price: low to high':'Prix croissant'}</option>
+                <option value="price_high_low">{language==='ar'?'الثمن: من الأعلى للأقل':language==='en'?'Price: high to low':'Prix décroissant'}</option>
+              </select>
+            </label>
           </div>
         </div>
 
-        {/* Search is in the header; catalog sorting stays here. Categories are only in the left sidebar. */}
+                {/* Search is in the header; catalog sorting stays here. Categories are only in the left sidebar. */}
         {/* Debugging Panel for Search */}
         {searchTerm && (process.env.NODE_ENV !== 'production' || (import.meta as any).env.DEV) && (
           <div className="mb-6 p-3 bg-amber-50/50 text-amber-900 text-xs rounded-2xl font-mono text-center border border-amber-200/40 shadow-sm flex items-center justify-center gap-1.5 animate-scale-up">
@@ -1043,7 +1044,7 @@ Merci de confirmer la disponibilité et la livraison.`;
         {/* Product Grid */}
         {filteredProducts.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm px-4">
-            <ShoppingBag className="w-12 h-12 text-slate-400 mx-auto mb-3 animate-pulse" />
+            <ShoppingBag className="w-12 h-12 text-slate-400 mx-auto mb-3" />
             <p className="text-sm text-slate-700 font-sans leading-relaxed">
               {selectedCategory ? (
                 language === 'ar'
@@ -1051,21 +1052,24 @@ Merci de confirmer la disponibilité et la livraison.`;
                   : language === 'en'
                   ? `No products available in this category at the moment.`
                   : `Aucun produit disponible dans cette catégorie pour le moment.`
+              ) : activeProducts.length===0 ? (
+                language==='ar'?'لا توجد حالياً منتجات منشورة في المتجر.':language==='en'?'There are no published products in the store yet.':'Aucun produit publié dans la boutique pour le moment.'
               ) : (
                 t('noProductsFound')
               )}
             </p>
-            <button
-              onClick={() => {
-                setSelectedCategory('');
-                setSelectedSubcategory('');
-                setSearchTerm('');
-                setFilterType('all');
-              }}
-              className="mt-6 px-5 py-2.5 bg-[#104d43] hover:bg-[#0c3730] text-white rounded-xl text-xs font-bold transition-all uppercase tracking-wider shadow-sm cursor-pointer"
-            >
-              {language === 'ar' ? 'عرض كل المنتجات' : language === 'en' ? 'Show all products' : 'Toutes les catégories'}
-            </button>
+            {activeProducts.length>0 && (
+              <button type="button"
+                onClick={() => {
+                  setSelectedCategory('');
+                  setSelectedSubcategory('');
+                  setSearchTerm('');
+                  setFilterType('all');
+                }}
+                className="mt-6 rounded-xl bg-[#104d43] px-5 py-3 text-xs font-bold text-white shadow-sm transition hover:bg-[#0c3730]">
+                {language === 'ar' ? 'عرض جميع المنتجات' : language === 'en' ? 'View all products' : 'Voir tous les produits'}
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[2100px]:grid-cols-6">
