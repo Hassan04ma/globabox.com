@@ -9,6 +9,7 @@ import Header from './components/Header';
 import HomeBannerSlider from './components/HomeBannerSlider';
 import StoreSidebar from './components/StoreSidebar';
 import StoreInfoPage from './components/StoreInfoPage';
+import CookieConsent from './components/CookieConsent';
 import { STORE_SUBCATEGORIES, matchesSubcategory } from './storefrontSubcategories';
 import { STORE_DEPARTMENTS, isPublicStoreCategory, matchesStoreDepartment } from './storefrontDepartments';
 
@@ -1199,6 +1200,8 @@ Merci de confirmer la disponibilité et la livraison.`;
           />
         )}
       </Suspense>
+
+      {!isAdminOpen && <CookieConsent language={language}/>}
 
       {/* Small, unobtrusive return-to-top action after the user scrolls down. */}
       {showScrollTop && !isCartOpen && !isTrackingOpen && !isSuccessModalOpen && !selectedProduct && !isAdminOpen && (
