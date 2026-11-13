@@ -3,6 +3,7 @@ import { ArrowUpRight, CircleHelp, FileText, Mail, MapPin, PhoneCall, RotateCcw,
 import type { Language } from '../types';
 import { ORDER_SUPPORT_NUMBER, WHATSAPP_LINK } from '../data';
 import WhatsAppIcon from './WhatsAppIcon';
+import { CONTACT_EMAIL, CONTACT_EMAIL_LINK } from '../contactEmail';
 
 interface Props { isOpen:boolean; onClose:()=>void; initialTab?:string; language?:Language; }
 export type TabKey = 'about'|'delivery'|'returns'|'cgv'|'privacy'|'contact';
@@ -84,6 +85,7 @@ export default function LegalPagesModal({isOpen,onClose,initialTab='about',langu
             {active==='contact' && <div className="mt-8 grid gap-3">
               <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center gap-3 rounded-xl border border-[#b9ddc5] bg-[#edf9f0] px-4 text-sm font-bold text-[#15533f] hover:bg-[#dff3e3]"><WhatsAppIcon className="h-5 w-5"/>{c.support}<ArrowUpRight size={15}/></a>
               <a href={'tel:'+ORDER_SUPPORT_NUMBER} className="flex min-h-12 items-center gap-3 rounded-xl border border-slate-200 px-4 text-sm font-bold text-[#193e38] hover:bg-slate-50"><PhoneCall size={18}/>{c.call} <span dir="ltr">{ORDER_SUPPORT_NUMBER}</span></a>
+              {CONTACT_EMAIL && <a href={CONTACT_EMAIL_LINK} className="flex min-h-12 items-center gap-3 rounded-xl border border-slate-200 px-4 text-sm font-bold text-[#193e38] hover:bg-slate-50"><Mail size={18}/><span dir="ltr">{CONTACT_EMAIL}</span></a>}
               <div className="flex items-start gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700"><MapPin size={18}/>{c.location}</div>
             </div>}
             <div className="mt-8 rounded-xl bg-[#f6f8f6] px-4 py-3 text-xs leading-6 text-slate-600">{c.note}</div>
