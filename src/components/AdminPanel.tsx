@@ -6,6 +6,7 @@ import { getTrackingConfig, saveTrackingConfig, TrackingConfig, isTrackerValid }
 import ProductImage from './ProductImage';
 import AdminWorkspaceLayout from './AdminWorkspaceLayout';
 import AdminCategoriesWorkspace from './AdminCategoriesWorkspace';
+import { STORE_DEPARTMENTS, isPublicStoreCategory } from '../storefrontDepartments';
 
 interface AdminPanelProps {
   language: Language;
@@ -268,7 +269,7 @@ export default function AdminPanel({
     descFr: '',
     descAr: '',
     descEn: '',
-    category: 'camping',
+    category: 'maison',
     image: '',
     additionalImages: [],
     inStock: true,
@@ -783,20 +784,20 @@ export default function AdminPanel({
       descFr: '',
       descAr: '',
       descEn: '',
-      category: categories[0]?.id || 'camping',
+      category: categories.find(c=>isPublicStoreCategory(c.id))?.id || STORE_DEPARTMENTS[0].id,
       image: '',
       additionalImages: [],
       inStock: false,
       stockStatus: 'out_of_stock',
       bestSeller: false,
-      newArrival: true,
+      newArrival: false,
       featured: false,
       isActive: false,
       fallbackImage: '',
       fallbackImages: [],
-      featuresFr: ['Haute qualité', 'Robuste & Durable'],
-      featuresAr: ['جودة عالية', 'مقاوم للاستخدام'],
-      featuresEn: ['Premium Quality', 'Durable Outdoor gear'],
+      featuresFr: [],
+      featuresAr: [],
+      featuresEn: [],
     });
     setIsAddingProduct(true);
   };
@@ -1093,454 +1094,111 @@ export default function AdminPanel({
       {/* Main panel body */}
       <div className={activeTab === 'categories' ? 'min-h-full bg-[#f5f7fc]' : 'flex-1 overflow-y-auto p-6 bg-[#070d1a]'}>
         
-        {/* VIEW 0: DASHBOARD */}
+        {/* VIEW 0: Dashboard, optimized for daily order and catalog management. */}
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
-            {false && (
-              <div className="bg-red-950/45 border border-red-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-red-200">
-                <div className="flex items-center gap-3">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shrink-0" />
-                  <div>
-                    <h4 className="text-xs font-black font-sans uppercase text-red-400">⚠️ Alerte de Sécurité : Mot de passe par défaut actif</h4>
-                    <p className="text-xs font-bold leading-normal font-sans mt-0.5">
-                      L'administration utilise actuellement le mot de passe "CHANGE_THIS_PASSWORD". Veuillez modifier la variable d'environnement <code className="bg-red-950 border border-red-800/40 px-1 py-0.5 rounded text-[10px] font-mono text-white">VITE_ADMIN_PASSWORD</code> avant le lancement opérationnel de la boutique.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Ambient greeting */}
-            <div className="bg-[#0b1528] rounded-2xl border border-[#1c2e4a] p-6 relative overflow-hidden">
-              <div className="absolute right-0 top-0 w-32 h-32 bg-gradient-to-bl from-orange-600/10 to-transparent rounded-full -mt-4 -mr-4"></div>
-              <h2 className="text-lg font-black text-white uppercase tracking-wider mb-2 flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-orange-500" />
-                <span>Performances & Indicateurs • Globabox Maroc</span>
-              </h2>
-              <p className="text-xs text-slate-400">
-                Vue d'ensemble et rapports analytiques en temps réel de votre activité e-commerce, taux de conversion et gestion de stock.
-              </p>
-            </div>
-
-            <div className="bg-[#0b1528] border border-[#1c2e4a] rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <section className="flex flex-col justify-between gap-4 rounded-[24px] border border-[#dce9e0] bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:p-7">
               <div>
-                <h3 className="text-xs font-bold text-white">Vérification D1 distante (administrateur)</h3>
-                <p className="text-[11px] text-slate-400">Écrit, relit et supprime une ligne de diagnostic temporaire, sans commande client.</p>
-                {d1ProbeStatus === 'success' && <p className="text-xs text-emerald-400 mt-2">Écriture, lecture et nettoyage D1 validés. Checkout client toujours non vérifié.</p>}
-                {d1ProbeStatus === 'error' && <p className="text-xs text-red-400 mt-2">Vérification échouée. Ne pas activer les commandes.</p>}
+                <p className="text-[11px] font-extrabold uppercase tracking-[.14em] text-[#33866d]">GLOBABOX · ESPACE MARCHAND</p>
+                <h2 className="mt-2 text-2xl font-black tracking-tight text-[#143b32] sm:text-3xl">Bienvenue sur votre tableau de bord</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-7 text-[#5c7368]">Gérez les commandes, préparez vos expéditions manuelles et publiez les produits de votre boutique.</p>
               </div>
-              <button type="button" onClick={runD1Probe} disabled={d1ProbeStatus === 'running'}
-                className="bg-orange-600 hover:bg-orange-500 disabled:opacity-60 px-4 py-2.5 rounded-xl text-xs text-white font-bold cursor-pointer">
-                {d1ProbeStatus === 'running' ? 'Vérification…' : 'Tester écriture D1'}
-              </button>
-            </div>
-            <div className="bg-[#0b1528] border border-[#1c2e4a] rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="text-xs font-bold text-white">Diagnostic Checkout — CAMEL ELECTRON 40</h3>
-                <p className="text-[11px] text-slate-400">Vérifie les prix COD, l’écriture et la lecture d’une commande fictive D1, puis supprime la commande. Les achats publics restent fermés.</p>
-                {checkoutDiagnostic?.success && <p className="text-xs text-emerald-400 mt-2">Validé : {checkoutDiagnostic.total} DH (livraison {checkoutDiagnostic.shippingCost} DH), commande fictive nettoyée.</p>}
-                {checkoutDiagnostic?.error && <p className="text-xs text-red-400 mt-2">Échec : {checkoutDiagnostic.error}. Ne pas ouvrir la boutique.</p>}
+              <div className="flex flex-wrap gap-2">
+                <button type="button" onClick={() => {handleStartAddProduct();setActiveTab('products');}} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#104d43] px-5 text-sm font-extrabold text-white hover:bg-[#0b3830]"><Plus size={18}/>Ajouter un produit</button>
+                <button type="button" onClick={() => {setOrderStatusFilter('pending');setActiveTab('orders');}} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#b6d4c2] bg-white px-5 text-sm font-bold text-[#104d43] hover:bg-[#ecf6ef]"><ClipboardList size={18}/>Commandes à traiter</button>
               </div>
-              <button type="button" disabled={checkoutDiagnosticBusy} onClick={runCheckoutDiagnostic}
-                className="bg-orange-600 hover:bg-orange-500 disabled:opacity-60 px-4 py-2.5 rounded-xl text-xs text-white font-bold">
-                {checkoutDiagnosticBusy?'Test…':'Tester Checkout D1'}
-              </button>
-            </div>
-            <div className="bg-[#0b1528] border border-[#1c2e4a] rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="text-xs font-bold text-white">AMEEX Sandbox • Test connexion sécurisé</h3>
-                <p className="text-[11px] text-slate-400">Vérifie la session admin, les clés de test et la liste des villes. Ne crée aucun colis.</p>
-                <p className="text-xs text-orange-300 mt-2">{ameexStatus}</p>
-              </div>
-              <button type="button" disabled={ameexBusy} onClick={checkAmeexSandbox}
-                className="bg-orange-600 hover:bg-orange-500 disabled:opacity-60 px-4 py-2.5 rounded-xl text-xs text-white font-bold">
-                {ameexBusy ? 'Test en cours…' : 'Tester AMEEX Sandbox'}
-              </button>
-              <button type="button" disabled={ameexBusy} onClick={runAmeexSandboxParcel}
-                className="bg-slate-800 hover:bg-slate-700 disabled:opacity-60 px-4 py-2.5 rounded-xl text-xs text-white font-bold border border-slate-600">
-                Créer 1 colis fictif (Sandbox)
-              </button>
-            </div>
-            {/* Final Launch Checklist Card */}
-            {(() => {
-              const productsWithImagesCount = adminProducts.filter(p => typeof p.image === 'string' && /^https:\/\//.test(p.image)).length;
-              const allProductsHaveImages = adminProducts.length > 0 && productsWithImagesCount === adminProducts.length;
-              const domainConnected = window.location.hostname === 'globabox.com' && window.location.protocol === 'https:';
-              // Owner verified the phone and WhatsApp support line on 2026-10-28.
-              // Mark it validated only while both published numbers remain unchanged.
-              const supportNumberConfirmed = ORDER_SUPPORT_NUMBER === '0649264408' && WHATSAPP_NUMBER === '212649264408';
-              const trackingConfigured = isTrackerValid(trackingForm.metaPixelId) && 
-                                         isTrackerValid(trackingForm.tikTokPixelId) && 
-                                         isTrackerValid(trackingForm.googleAnalyticsId);
-              
-              const checklistItems = [
-                {
-                  id: 'order_api',
-                  label: 'Orders API connected',
-                  desc: launchStatus?.databaseReady ? 'Base D1 disponible et accessible; les commandes se consultent dans Commandes Client.' : 'Vérification D1 indisponible.',
-                  ok: launchStatus?.databaseReady === true,
-                  severity: 'critical' as const,
-                  configInfo: 'Cloudflare D1 /api/launch-readiness'
-                },
-                {
-                  id: 'password',
-                  label: 'Admin password changed from CHANGE_THIS_PASSWORD',
-                  desc: launchStatus?.adminConfigured ? 'Authentification administrateur configurée côté serveur.' : 'Configuration administrateur non vérifiée.',
-                  ok: launchStatus?.adminConfigured === true,
-                  severity: 'critical' as const,
-                  configInfo: 'Runtime Secrets ADMIN_PASSWORD / ADMIN_SESSION_SECRET'
-                },
-                {
-                  id: 'whatsapp',
-                  label: 'Téléphone et WhatsApp du service client validés',
-                  desc: supportNumberConfirmed ? 'Ligne confirmée par le propriétaire : 0649264408 (appel et WhatsApp).' : 'Les coordonnées affichées ont changé depuis la dernière confirmation du propriétaire.',
-                  ok: supportNumberConfirmed,
-                  severity: 'warning' as const,
-                  configInfo: 'WhatsApp Link'
-                },
-                {
-                  id: 'domain',
-                  label: 'Domaine globabox.com connecté au nouveau Worker',
-                  desc: domainConnected ? 'Dashboard accessible en HTTPS sur globabox.com (domaine racine confirmé).' : 'Accès via un autre hôte : globabox.com à vérifier.',
-                  ok: domainConnected,
-                  severity: 'warning' as const,
-                  configInfo: 'www.globabox.com'
-                },
-                {
-                  id: 'images',
-                  label: 'Products have valid images',
-                  desc: allProductsHaveImages 
-                    ? 'Tous les produits enregistrés possèdent une URL image HTTPS (chargement non vérifié).' 
-                    : `${adminProducts.length - productsWithImagesCount} produit(s) n’ont pas encore d’URL image HTTPS.`, 
-                  ok: allProductsHaveImages,
-                  severity: 'warning' as const,
-                  configInfo: 'Catalogue Images'
-                },
-                {
-                  id: 'tracking',
-                  label: 'Tracking pixels configured',
-                  desc: trackingConfigured 
-                    ? 'Meta Facebook Pixel, TikTok Pixel, et Google Analytics fonctionnels.' 
-                    : 'Un ou plusieurs codes de tracking utilisent des valeurs factices ou sont absents.',
-                  ok: trackingConfigured,
-                  severity: 'warning' as const,
-                  configInfo: 'Marketing Tags'
-                },
-                {
-                  id: 'delivery',
-                  label: 'Livraison : transporteur et délais à valider',
-                  desc: 'Tarifs affichés : 35 DH sous 500 DH, gratuit dès 500 DH. Transporteur et délais exacts à confirmer.',
-                  ok: false,
-                  severity: 'warning' as const,
-                  configInfo: 'Logistique'
-                },
-                {
-                  id: 'returns',
-                  label: 'Droit de rétractation et mentions légales à valider',
-                  desc: 'Information de rétractation ajoutée. Identité juridique et procédure pratique à compléter.',
-                  ok: false,
-                  severity: 'warning' as const,
-                  configInfo: 'Politiques'
-                },
-                {
-                  id: 'sheets_sync',
-                  label: 'Checkout réel : commandes reçues en D1',
-                  desc: orders.some(o => o.source === 'website') ? 'Commande passée depuis la boutique et visible dans D1. Les tests annulés ne constituent pas des ventes encaissées.' : 'Aucune commande issue du site visible dans les commandes chargées.',
-                  ok: orders.some(o => o.source === 'website'),
-                  severity: 'warning' as const,
-                  configInfo: 'Remote D1 order verification'
-                }
-              ];
+            </section>
 
-              const totalScore = checklistItems.filter(it => it.ok).length;
-              const percentComplete = Math.round((totalScore / checklistItems.length) * 100);
+            <section aria-label="Indicateurs du magasin" className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-6">
+              {[
+                {label:'Commandes reçues',value:statTotalOrders,unit:'commandes',icon:ClipboardList,color:'text-[#104d43]',bg:'bg-[#e5f4e9]'},
+                {label:'À confirmer',value:statNewOrders,unit:'en attente',icon:RefreshCw,color:'text-[#987126]',bg:'bg-[#fff2d3]'},
+                {label:'En préparation',value:statConfirmedOnly+statProcessingOrders,unit:'à expédier',icon:Package,color:'text-[#4476a1]',bg:'bg-[#eaf2f9]'},
+                {label:'Expédiées',value:statShippedOrders,unit:'en livraison',icon:Truck,color:'text-[#4b719d]',bg:'bg-[#edf2f9]'},
+                {label:'Livrées',value:statDeliveredOrders,unit:'terminées',icon:CheckCircle2,color:'text-[#137a4a]',bg:'bg-[#e8f7ed]'},
+                {label:'Total livré',value:statTotalRevenue.toLocaleString('fr-MA'),unit:'DH · commandes livrées',icon:BarChart3,color:'text-[#104d43]',bg:'bg-[#e5f4e9]'}
+              ].map(({label,value,unit,icon:Icon,color,bg})=>(
+                <div key={label} className="rounded-[18px] border border-[#e1eae4] bg-white p-4 shadow-[0_4px_15px_rgba(17,56,40,.035)]">
+                  <span className={'inline-flex h-10 w-10 items-center justify-center rounded-xl '+bg+' '+color}><Icon size={20}/></span>
+                  <p className="mt-4 text-[11px] font-semibold text-slate-500">{label}</p>
+                  <strong className="mt-1 block text-2xl font-black text-[#193e38]">{value}</strong>
+                  <span className="mt-1 block text-[10px] text-slate-500">{unit}</span>
+                </div>
+              ))}
+            </section>
 
-              return (
-                <div className="bg-[#0b1528] rounded-2xl border border-orange-500/10 p-5 font-sans relative overflow-hidden">
-                  <div className="absolute right-0 top-0 w-48 h-48 bg-gradient-to-bl from-orange-500/5 to-transparent rounded-full pointer-events-none"></div>
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-4 border-b border-[#1c2e4a]">
-                    <div>
-                      <h3 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
-                        <span className="text-orange-500 text-sm">🚀</span> Checklist de Préparation de Lancement (Admin Launch Checklist)
-                      </h3>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
-                        Vérification finale obligatoire des configurations et dépendances critiques avant le lancement de la boutique Globabox.
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <span className="text-[9px] text-slate-400 block uppercase font-bold tracking-wider">État Global</span>
-                        <span className="text-xs font-black font-mono text-orange-400">{totalScore} / {checklistItems.length} Activés</span>
+            <div className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(280px,.8fr)]">
+              <section className="min-w-0 overflow-hidden rounded-[22px] border border-[#dce9e0] bg-white shadow-sm">
+                <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+                  <div><h3 className="text-base font-black text-[#193e38]">Dernières commandes</h3><p className="mt-1 text-xs text-slate-500">Les commandes enregistrées et récupérées depuis D1</p></div>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={handleRefreshOrders} disabled={isRefreshing} aria-label="Actualiser les commandes" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-[#104d43] hover:bg-[#f1f8f3] disabled:opacity-50"><RefreshCw size={16} className={isRefreshing?'animate-spin':''}/></button>
+                    <button type="button" onClick={()=>setActiveTab('orders')} className="rounded-lg bg-[#eaf5ed] px-3 py-2 text-xs font-extrabold text-[#104d43] hover:bg-[#dceee1]">Toutes les commandes</button>
+                  </div>
+                </header>
+                {refreshError&&<p className="mx-5 mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700" role="alert">{refreshError}</p>}
+                {refreshSuccess&&<p className="mx-5 mt-4 rounded-xl border border-[#bde0ca] bg-[#eff9f2] px-3 py-2 text-xs text-[#147548]" role="status">{refreshSuccess}</p>}
+                <div className="divide-y divide-slate-100">
+                  {orders.slice(0,6).map(order=>(
+                    <div key={order.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 text-xs hover:bg-[#f8fbf9]">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-extrabold text-[#193e38]">{order.fullName||'Client'} <span className="ms-2 font-mono text-[11px] font-semibold text-slate-500">{order.reference}</span></p>
+                        <p className="mt-1 text-slate-500">{order.city} · {String(order.date||'').slice(0,24)}</p>
                       </div>
-                      <div className="w-10 h-10 rounded-full border-2 border-orange-950/40 flex items-center justify-center relative overflow-hidden bg-orange-950/20 font-mono text-[11px] font-black text-orange-400">
-                        {percentComplete}%
+                      <div className="flex items-center gap-3">
+                        <span className="font-extrabold text-[#193e38]">{Number(order.total||0).toFixed(2)} DH</span>
+                        <span className={'rounded-full px-3 py-1 text-[11px] font-bold '+(order.status==='delivered'?'bg-[#e4f5ea] text-[#147249]':order.status==='cancelled'?'bg-red-50 text-red-700':order.status==='pending'?'bg-amber-50 text-amber-700':'bg-[#ecf2fb] text-[#315d8a]')}>{({pending:'En attente',confirmed:'Confirmée',processing:'Préparation',shipped:'Expédiée',delivered:'Livrée',cancelled:'Annulée'} as Record<string,string>)[order.status]||order.status}</span>
                       </div>
                     </div>
+                  ))}
+                  {orders.length===0&&<div className="px-5 py-14 text-center"><ClipboardList size={27} className="mx-auto text-[#8fae9d]"/><p className="mt-3 text-sm font-bold text-[#446257]">Aucune commande à afficher</p><p className="mt-1 text-xs text-slate-500">Les nouvelles commandes enregistrées sur le serveur apparaîtront ici.</p></div>}
+                </div>
+              </section>
+
+              <section className="space-y-4">
+                <div className="rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm">
+                  <div className="flex items-center gap-2 text-sm font-black text-[#193e38]"><Package size={19} className="text-[#104d43]"/>Catalogue produits</div>
+                  <div className="mt-4 grid grid-cols-2 gap-3">
+                    <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Produits enregistrés</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{adminProducts.length}</strong></div>
+                    <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Publiés</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{adminProducts.filter(p=>p.isActive===true).length}</strong></div>
+                    <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Brouillons</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{adminProducts.filter(p=>p.isActive!==true).length}</strong></div>
+                    <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Hors stock</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{adminProducts.filter(p=>!p.inStock||p.stockStatus==='out_of_stock').length}</strong></div>
                   </div>
-
-                  {/* Checklist Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                    {checklistItems.map((it) => (
-                      <div 
-                        key={it.id} 
-                        className={`p-3 rounded-xl border flex gap-3 transition-all ${
-                          it.ok 
-                            ? 'bg-emerald-950/10 border-emerald-900/15 text-emerald-300' 
-                            : it.severity === 'critical'
-                              ? 'bg-red-950/10 border-red-900/35 text-red-200'
-                              : 'bg-amber-950/10 border-amber-900/15 text-amber-300'
-                        }`}
-                      >
-                        <div className="shrink-0 mt-0.5">
-                          {it.ok ? (
-                            <svg className="w-5 h-5 text-emerald-500 fill-none stroke-current" strokeWidth="2.5" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          ) : it.severity === 'critical' ? (
-                            <svg className="w-5 h-5 text-red-500 animate-pulse fill-none stroke-current" strokeWidth="2.5" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                          ) : (
-                            <svg className="w-5 h-5 text-amber-500 fill-none stroke-current" strokeWidth="2.5" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="text-[11px] font-bold truncate text-white">{it.label}</span>
-                            <span className={`text-[7px] font-mono leading-none tracking-wider uppercase px-1.5 py-0.5 rounded shrink-0 ${
-                              it.ok 
-                                ? 'bg-emerald-950 border border-emerald-800/20 text-emerald-450' 
-                                : it.severity === 'critical'
-                                  ? 'bg-red-950 border border-red-800/20 text-red-400'
-                                  : 'bg-amber-950 border border-amber-800/20 text-amber-450'
-                            }`}>
-                              {it.configInfo}
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-slate-400 mt-1 leading-normal">
-                            {it.desc}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <button type="button" onClick={()=>setActiveTab('products')} className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#b9d8c5] bg-[#edf7f0] text-xs font-extrabold text-[#104d43] hover:bg-[#dfefe4]">Gérer les produits <ChevronRight size={16}/></button>
                 </div>
-              );
-            })()}
-
-            {/* Statistiques KPI Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
-              
-              {/* Card 1: Total Revenue */}
-              <div className="bg-[#0b1528] p-4 rounded-2xl border border-orange-500/20 flex flex-col justify-between relative overflow-hidden col-span-2 lg:col-span-2 xl:col-span-2">
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-orange-400/5 to-transparent rounded-full -mr-4 -mt-4"></div>
-                <div className="flex items-center justify-between z-10">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Chiffre d'Affaires</span>
-                  <span className="p-2 bg-amber-500/10 text-amber-500 rounded-xl">
-                    <span className="text-xs font-black">MAD</span>
-                  </span>
+                <div className="rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm">
+                  <div className="flex items-center gap-2 text-sm font-black text-[#193e38]"><Truck size={19} className="text-[#104d43]"/>Expédition manuelle</div>
+                  <p className="mt-2 text-xs leading-6 text-[#60776c]">Confirmez les coordonnées, préparez le colis, puis mettez à jour le statut de la commande. Aucun envoi automatique à AMEEX.</p>
+                  <button type="button" onClick={()=>{setOrderStatusFilter('confirmed');setActiveTab('orders');}} className="mt-3 inline-flex min-h-10 items-center gap-2 text-xs font-extrabold text-[#104d43] underline underline-offset-4">Voir les commandes confirmées <ChevronRight size={15}/></button>
                 </div>
-                <div className="mt-4 z-10">
-                  <h3 className="text-xl md:text-2xl font-black font-mono text-amber-400">{statTotalRevenue.toLocaleString()} DH</h3>
-                  <p className="text-[10px] text-slate-400 mt-1">Total brut validé ou en transit</p>
-                </div>
-              </div>
-
-              {/* Card 2: New Orders */}
-              <div className="bg-[#0b1528] p-4 rounded-2xl border border-[#1c2e4a] flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Nouvelles</span>
-                  <span className="p-1.5 bg-orange-500/10 text-orange-400 rounded-lg">
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin-slow" />
-                  </span>
-                </div>
-                <div className="mt-3">
-                  <h3 className="text-2xl font-black font-mono text-orange-400">{statNewOrders}</h3>
-                  <p className="text-[9px] text-orange-400/80 mt-1">Statut: À valider</p>
-                </div>
-              </div>
-
-              {/* Card 3: Confirmed Only */}
-              <div className="bg-[#0b1528] p-4 rounded-2xl border border-[#1c2e4a] flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Confirmées</span>
-                  <span className="p-1.5 bg-indigo-500/10 text-indigo-400 rounded-lg">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                  </span>
-                </div>
-                <div className="mt-3">
-                  <h3 className="text-2xl font-black font-mono text-indigo-400">{statConfirmedOnly}</h3>
-                  <p className="text-[9px] text-indigo-400/80 mt-1">Statut: Prêtes à emballer</p>
-                </div>
-              </div>
-
-              {/* Card 4: Processing */}
-              <div className="bg-[#0b1528] p-4 rounded-2xl border border-[#1c2e4a] flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Préparation</span>
-                  <span className="p-1.5 bg-yellow-500/10 text-yellow-500 rounded-lg">
-                    <Settings className="w-3.5 h-3.5" />
-                  </span>
-                </div>
-                <div className="mt-3">
-                  <h3 className="text-2xl font-black font-mono text-yellow-400">{statProcessingOrders}</h3>
-                  <p className="text-[9px] text-yellow-550 mt-1">Statut: En cours</p>
-                </div>
-              </div>
-
-              {/* Card 5: Shipped */}
-              <div className="bg-[#0b1528] p-4 rounded-2xl border border-[#1c2e4a] flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Expédiées</span>
-                  <span className="p-1.5 bg-blue-500/10 text-blue-400 rounded-lg">
-                    <Truck className="w-3.5 h-3.5" />
-                  </span>
-                </div>
-                <div className="mt-3">
-                  <h3 className="text-2xl font-black font-mono text-blue-400">{statShippedOrders}</h3>
-                  <p className="text-[9px] text-blue-400/80 mt-1">Statut: Chez le livreur</p>
-                </div>
-              </div>
-
-              {/* Card 6: Delivered */}
-              <div className="bg-[#0b1528] p-4 rounded-2xl border border-[#1c2e4a] flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Livrées</span>
-                  <span className="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                  </span>
-                </div>
-                <div className="mt-3">
-                  <h3 className="text-2xl font-black font-mono text-emerald-400">{statDeliveredOrders}</h3>
-                  <p className="text-[9px] text-emerald-400/80 mt-1">Statut: Encaissées</p>
-                </div>
-              </div>
-
-              {/* Card 7: Cancelled */}
-              <div className="bg-[#0b1528] p-4 rounded-2xl border border-[#1c2e4a] flex flex-col justify-between col-span-2 lg:col-span-1 xl:col-span-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Annulées</span>
-                  <span className="p-1.5 bg-red-500/10 text-red-500 rounded-lg">
-                    <Ban className="w-3.5 h-3.5" />
-                  </span>
-                </div>
-                <div className="mt-3">
-                  <h3 className="text-2xl font-black font-mono text-red-400">{statCancelledOrders}</h3>
-                  <p className="text-[9px] text-red-400/80 mt-1">Statut: Retours / Rejets</p>
-                </div>
-              </div>
-
+              </section>
             </div>
 
-            {/* Middle widgets */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
-              
-              {/* CSV Export Widget */}
-              <div className="bg-[#0b1528] p-5 rounded-2xl border border-[#1c2e4a] flex flex-col justify-between space-y-4">
-                <div>
-                  <h3 className="text-xs font-black uppercase text-white tracking-wider mb-2">Exportations de Données (CSV)</h3>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Générez et téléchargez instantanément un fichier CSV contenant toutes les commandes stockées localement. Ce document intègre les détails indispensables de d'expédition (Noms, adresses, articles, quantités et prix total) et préserve l'encodage des caractères arabes et français (UTF-8 BOM).
-                  </p>
+            <details className="rounded-[22px] border border-[#dce9e0] bg-white shadow-sm">
+              <summary className="cursor-pointer list-none rounded-[22px] p-5 text-sm font-black text-[#193e38] [&::-webkit-details-marker]:hidden">
+                <span className="inline-flex items-center gap-3"><ShieldCheck size={19} className="text-[#104d43]"/>Vérifications techniques et préparation au lancement <ChevronRight size={16} className="text-slate-400"/></span>
+              </summary>
+              <div className="grid gap-4 border-t border-slate-100 p-5 md:grid-cols-2">
+                <div className="rounded-xl bg-[#f6f9f7] p-4"><h4 className="text-sm font-bold text-[#193e38]">Écriture D1 distante</h4><p className="mt-1 text-xs leading-6 text-slate-500">Test technique d'écriture/lecture/nettoyage sans commande client.</p>
+                  <p className="mt-2 text-xs font-bold text-[#426753]">{d1ProbeStatus==='success'?'Test validé':d1ProbeStatus==='error'?'Échec de vérification':'Non testé dans cette session'}</p>
+                  <button type="button" disabled={d1ProbeStatus==='running'} onClick={runD1Probe} className="mt-3 rounded-lg bg-[#104d43] px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50">{d1ProbeStatus==='running'?'Vérification…':'Tester D1'}</button>
                 </div>
-                <div className="pt-2">
-                  <button
-                    onClick={exportOrdersToCSV}
-                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-5 py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md cursor-pointer"
-                  >
-                    <span>📊 Exporter toutes les commandes au format CSV</span>
-                  </button>
+                <div className="rounded-xl bg-[#f6f9f7] p-4"><h4 className="text-sm font-bold text-[#193e38]">Diagnostic paiement à la livraison</h4><p className="mt-1 text-xs leading-6 text-slate-500">Vérifie les calculs et une commande fictive suivie de son nettoyage.</p>
+                  {checkoutDiagnostic&&<p className="mt-2 text-xs font-bold text-[#426753]">{checkoutDiagnostic.error|| (checkoutDiagnostic.success?'Test validé · '+checkoutDiagnostic.total+' DH':'Non validé')}</p>}
+                  <button type="button" disabled={checkoutDiagnosticBusy} onClick={runCheckoutDiagnostic} className="mt-3 rounded-lg bg-[#104d43] px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50">{checkoutDiagnosticBusy?'Test…':'Tester Checkout D1'}</button>
                 </div>
-              </div>
-
-              {/* Quick inventory widget */}
-              <div className="bg-[#0b1528] p-5 rounded-2xl border border-[#1c2e4a] flex flex-col justify-between space-y-4">
-                <div>
-                  <h3 className="text-xs font-black uppercase text-white tracking-wider mb-2">Suivi d'Inventaire Produits</h3>
-                  <p className="text-xs text-slate-400 leading-relaxed mb-3">
-                    Statut rapide des produits enregistrés au catalogue Globabox. Ajustez instantanément l'état dans l'onglet catalogue.
-                  </p>
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    <div className="bg-[#070d1a] p-3 rounded-xl border border-[#1c2e4a]">
-                      <span className="text-[11px] font-bold text-emerald-400 block">🟢 En Stock</span>
-                      <span className="text-lg font-black font-mono text-white mt-1 block">
-                        {adminProducts.filter(p => p.inStock !== false && (!p.stockStatus || p.stockStatus === 'in_stock')).length}
-                      </span>
-                    </div>
-                    <div className="bg-[#070d1a] p-3 rounded-xl border border-[#1c2e4a]">
-                      <span className="text-[11px] font-bold text-amber-400 block">🟡 Limité</span>
-                      <span className="text-lg font-black font-mono text-white mt-1 block">
-                        {adminProducts.filter(p => p.inStock !== false && p.stockStatus === 'limited').length}
-                      </span>
-                    </div>
-                    <div className="bg-[#070d1a] p-3 rounded-xl border border-[#1c2e4a]">
-                      <span className="text-[11px] font-bold text-red-500 block">🔴 Rupture</span>
-                      <span className="text-lg font-black font-mono text-white mt-1 block">
-                        {adminProducts.filter(p => p.inStock === false || p.stockStatus === 'out_of_stock').length}
-                      </span>
-                    </div>
-                  </div>
+                <div className="rounded-xl bg-[#f6f9f7] p-4"><h4 className="text-sm font-bold text-[#193e38]">AMEEX Sandbox</h4><p className="mt-1 text-xs leading-6 text-slate-500">Contrôle des clés et de la lecture des villes. La livraison reste manuelle.</p>
+                  <p className="mt-2 text-xs leading-6 text-[#426753]">{ameexStatus}</p>
+                  <button type="button" disabled={ameexBusy} onClick={checkAmeexSandbox} className="mt-3 rounded-lg border border-[#aacdbb] px-4 py-2.5 text-xs font-bold text-[#104d43] disabled:opacity-50">Tester connexion sandbox</button>
+                  <button type="button" disabled={ameexBusy} onClick={runAmeexSandboxParcel} className="mt-3 ms-2 rounded-lg border border-slate-300 px-4 py-2.5 text-xs font-bold text-[#426753] disabled:opacity-50">Tester colis fictif</button>
                 </div>
-                <div className="text-[10px] text-slate-400 text-center">
-                  Bouton de raccourci : <strong className="text-orange-400 cursor-pointer underline hover:text-orange-500" onClick={() => setActiveTab('products')}>Aller au Catalogue de Stock →</strong>
+                <div className="rounded-xl bg-[#f6f9f7] p-4"><h4 className="text-sm font-bold text-[#193e38]">État du Worker</h4>
+                  <p className="mt-2 text-xs leading-6 text-[#426753]">{launchStatus?.databaseReady===true?'Base D1 accessible':'Connexion D1 non vérifiée'} · {launchStatus?.adminConfigured===true?'Authentification configurée':'Authentification à vérifier'}</p>
+                  <p className="mt-2 text-xs leading-6 text-slate-500">Un test de commande réel sur staging et une sauvegarde D1 restent nécessaires avant le lancement.</p>
                 </div>
+                <button type="button" onClick={exportOrdersToCSV} className="col-span-full flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#b9d8c5] bg-[#edf7f0] px-4 text-sm font-bold text-[#104d43] hover:bg-[#ddefe3]"><ClipboardList size={17}/>Exporter les commandes en CSV</button>
               </div>
-
-            </div>
-
-            {/* Quick list of recent orders */}
-            <div className="bg-[#0b1528] rounded-2xl border border-[#1c2e4a] overflow-hidden">
-              <div className="px-5 py-4 border-b border-[#1c2e4a] flex items-center justify-between">
-                <h3 className="text-xs font-black uppercase text-white tracking-widest">Dernières Activités</h3>
-                <button
-                  onClick={() => setActiveTab('orders')}
-                  className="text-xs text-orange-400 font-bold hover:underline"
-                >
-                  Voir toutes les commandes →
-                </button>
-              </div>
-              <div className="divide-y divide-[#1c2e4a]/60">
-                {orders.slice(0, 5).map(o => (
-                  <div key={o.id} className="p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-extrabold text-white">{o.fullName}</span>
-                        <span className="text-[9px] bg-[#122037] text-slate-300 px-2 py-0.5 rounded font-mono font-bold">Réf: {o.reference}</span>
-                      </div>
-                      <span className="text-[10px] text-slate-400 mt-1 flex flex-wrap items-center gap-1.5">
-                        <MapPin size={10} className="text-orange-500 shrink-0" />
-                        <span>{o.city}</span>
-                        <span className="text-slate-600">•</span>
-                        <Phone size={10} className="text-[#a5b4fc] shrink-0" />
-                        <span>{o.phoneNumber}</span>
-                        <span className="text-slate-600">•</span>
-                        <span>{new Date(o.date).toLocaleDateString()}</span>
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-black font-mono text-orange-400">{o.total} DH</span>
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        o.status === 'delivered' ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/40' :
-                        o.status === 'cancelled' ? 'bg-red-950/40 text-red-500 border border-red-900/40' :
-                        o.status === 'pending' ? 'bg-amber-950/40 text-amber-400 border border-amber-900/40' :
-                        'bg-blue-950/40 text-[#a5b4fc] border border-blue-900/40'
-                      }`}>
-                        {o.status === 'pending' ? 'En attente' :
-                         o.status === 'confirmed' ? 'Confirmé' :
-                         o.status === 'shipped' ? 'Expédié' :
-                         o.status === 'delivered' ? 'Livré' : 'Annulé'}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-                {orders.length === 0 && (
-                  <div className="p-8 text-center text-slate-500 text-xs">Aucune commande pour le moment.</div>
-                )}
-              </div>
-            </div>
-
+            </details>
           </div>
         )}
 
