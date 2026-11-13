@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
 import worker from '../cloudflare/worker';
+import {validateTrackingConfig,DEFAULT_TRACKING_CONFIG} from '../src/trackingConfig';
 
 const savedOrders: any[] = [];
+let savedTrackingConfig:string|null=null;
 const db = {
   prepare(sql: string) {
     const execute = (...params: unknown[]) => ({
       async first() {
+        if(sql.includes('FROM store_settings'))return savedTrackingConfig?{data_json:savedTrackingConfig}:null;
         if (sql.includes("UPPER(json_extract(data_json, '$.reference'))")) {
           const matched=savedOrders.find(o=>o.reference?.toUpperCase()===params[0]);
           return matched ? {data_json:JSON.stringify(matched)} : null;
@@ -23,6 +26,8 @@ const db = {
         throw new Error('Unexpected all(): ' + sql);
       },
       async run() {
+        if(sql.startsWith('CREATE TABLE IF NOT EXISTS store_settings'))return {success:true,meta:{changes:0}};
+        if(sql.startsWith('INSERT INTO store_settings')){savedTrackingConfig=String(params[0]);return {success:true,meta:{changes:1}};}
         if (sql.startsWith('CREATE TABLE IF NOT EXISTS category_overrides')) return {success:true,meta:{changes:0}};
         if (sql.startsWith('DELETE FROM orders')) {
           const i=savedOrders.findIndex(o=>o.id===params[0]);
@@ -71,9 +76,32 @@ assert.equal((await request('/api/admin/categories', {
 const publicCategories=await request('/api/categories');
 assert.equal(publicCategories.status,200,'Public category list is readable');
 const publicCategoryItems=await publicCategories.json() as any[];
-assert.equal(publicCategoryItems.length>=16,true,'Default categories remain available if no D1 overrides exist');
+assert.equal(publicCategoryItems.length,13,'Public catalog shows thirteen active main store departments');
+assert.equal(publicCategoryItems.some(c=>c.id==='cuisine'),true);
+assert.equal(publicCategoryItems.some(c=>c.id==='camping'),false,'Legacy camping categories remain private in admin');
 assert.equal((await request('/api/products/demo', {method:'DELETE'})).status, 401,
   'Public visitors cannot remove products');
+
+// Tracking configuration never publishes private keys or allows untrusted writes.
+const trackingGet=await request('/api/tracking-config');
+assert.equal(trackingGet.status,200,'Visitor can read only public tracking IDs');
+assert.deepEqual((await trackingGet.json() as any).config,DEFAULT_TRACKING_CONFIG);
+assert.equal((await request('/api/admin/tracking-config')).status,401,'Tracking admin private');
+assert.equal((await request('/api/admin/tracking-config',{
+ method:'PUT',headers:{'Content-Type':'application/json'},
+ body:JSON.stringify({...DEFAULT_TRACKING_CONFIG,metaPixelId:'123456789123456'})
+})).status,401,'Anonymous users cannot update pixels');
+assert.equal((await request('/api/tracking-config',{
+ method:'PUT',headers:{'Content-Type':'application/json'},
+ body:JSON.stringify(DEFAULT_TRACKING_CONFIG)
+})).status,404,'Public tracking setting changes forbidden');
+assert.equal(validateTrackingConfig({...DEFAULT_TRACKING_CONFIG,metaPixelId:'123456789123456'})?.metaPixelId,
+ '123456789123456','Valid Meta ID accepted');
+assert.equal(validateTrackingConfig({...DEFAULT_TRACKING_CONFIG,metaPixelId:'https://malicious.example.test'}),null,
+ 'Script URL rejected in place of Meta pixel ID');
+assert.equal(validateTrackingConfig({...DEFAULT_TRACKING_CONFIG,webhookUrl:'https://example.com/collect'}),null,
+ 'Private webhook URL cannot be stored with tracking IDs');
+assert.equal(savedTrackingConfig,null,'Unauthorized tracking changes never write D1');
 
 // Any unconfigured public launch must fail closed, even if the request is otherwise valid.
 const gatePayload = {
