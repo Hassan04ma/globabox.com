@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Star, ShoppingCart, MessageSquare, Flame, Truck, ShieldCheck, Clock, Zap, Eye, Percent } from 'lucide-react';
 import { Product, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
-import { getProductSocialProof } from '../utils/socialProof';
+
 import { WHATSAPP_LINK } from '../data';
 import ProductImage from './ProductImage';
 import WhatsAppIcon from './WhatsAppIcon';
@@ -101,7 +101,7 @@ export default function ProductCard({
       {/* Product Image Stage */}
       <div 
         onClick={() => onViewDetails(product)}
-        className="aspect-[4/3] w-full overflow-hidden bg-[#0b1528] relative cursor-pointer"
+        className="aspect-[4/3] w-full overflow-hidden bg-[#f5f7f5] relative cursor-pointer"
       >
         <ProductImage
           src={product.image}
@@ -183,11 +183,11 @@ export default function ProductCard({
 
           <div className="flex flex-col gap-2">
             {/* Commandé aujourd'hui style trust message */}
-            {!isOutOfStock && getProductSocialProof(product, language) && (
+            {false && (
               <div className="text-[9.5px] bg-rose-50/70 border border-rose-100 rounded-xl px-2.5 py-2 text-rose-800 font-bold mb-1 flex items-center gap-1.5 leading-snug">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse shrink-0"></span>
                 <Zap size={11} className="text-rose-600 shrink-0 select-none" />
-                <span>{getProductSocialProof(product, language)}</span>
+                <span>{''}</span>
               </div>
             )}
 
@@ -243,7 +243,7 @@ export default function ProductCard({
           
           <button
             onClick={() => onViewDetails(product)}
-            className="w-full mt-3 py-2 text-slate-400 hover:text-slate-650 text-[10px] uppercase tracking-wider font-extrabold hover:bg-slate-50 rounded-xl transition-colors border border-transparent hover:border-slate-100 flex items-center justify-center gap-1.5"
+            className="w-full mt-3 py-2 text-slate-400 hover:text-slate-650 text-[10px] tracking-wider font-extrabold hover:bg-slate-50 rounded-xl transition-colors border border-transparent hover:border-slate-100 flex items-center justify-center gap-1.5"
           >
             <Eye size={12} className="text-slate-400 shrink-0" />
             <span>{t('productSpecsTab')}</span>
