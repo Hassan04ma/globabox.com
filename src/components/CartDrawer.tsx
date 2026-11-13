@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Trash2, ShoppingCart, ShieldCheck, MapPin, Phone, MessageSquare, Tag, Compass, Truck, Star, Sparkles, Plus, Minus, User, Home, FileText, CheckCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, MapPin, MessageSquare, Minus, PackageCheck, PhoneCall, Plus, ShieldCheck, ShoppingBag, ShoppingCart, Trash2, Truck, UserRound, X } from 'lucide-react';
 import { CartItem, Language, CheckoutForm } from '../types';
 import { TRANSLATIONS } from '../translations';
-import { MOROCCAN_CITIES, WHATSAPP_LINK, WHATSAPP_NUMBER } from '../data';
+import { MOROCCAN_CITIES, WHATSAPP_LINK } from '../data';
 import { triggerInitiateCheckout } from '../utils/analytics';
 import WhatsAppIcon from './WhatsAppIcon';
 
@@ -30,6 +30,64 @@ export default function CartDrawer({
   onWhatsAppOrder,
 }: CartDrawerProps) {
   const isRtl = language === "ar";
+  const copy = {
+    fr: {
+      title:'Votre panier',items:'articles',yourItems:'Articles sélectionnés',empty:'Votre panier est vide',
+      emptyHint:'Explorez nos produits pour composer votre prochaine commande.',continue:'Continuer mes achats',
+      subtotal:'Sous-total',delivery:'Livraison',free:'Offerte',total:'Total à payer',order:'Passer commande',
+      customer:'Vos coordonnées',customerHelp:'Complétez ces informations pour confirmer votre commande.',
+      details:'Récapitulatif',name:'Nom complet',phone:'Numéro de téléphone',city:'Ville de livraison',
+      address:'Adresse de livraison',notes:'Instructions de livraison (facultatif)',
+      namePlaceholder:'Nom et prénom',phonePlaceholder:'06XXXXXXXX',addressPlaceholder:'Rue, quartier, numéro, immeuble...',
+      notesPlaceholder:'Précisions utiles pour le livreur',cityPlaceholder:'Choisir une ville',
+      deliveryMessage:'Livraison au Maroc, selon la disponibilité pour votre destination.',
+      next:'Il vous manque',toFree:'pour profiter de la livraison offerte.',
+      unlocked:'Vous bénéficiez de la livraison offerte !',quantity:'Quantité',remove:'Retirer le produit',
+      processing:'Enregistrement de la commande…',confirm:'Confirmer la commande',whatsapp:'Questions ? WhatsApp',
+      terms:'J’ai lu et j’accepte les',termsLink:'conditions de vente',and:'et la',returnsLink:'politique de retour',
+      payment:'Paiement en espèces à la livraison',privacy:'Vos coordonnées servent uniquement au traitement de la commande.',
+      close:'Fermer le panier',clear:'Vider le panier',products:'produits'
+    },
+    ar: {
+      title:'سلة التسوق',items:'منتج',yourItems:'المنتجات المختارة',empty:'سلتك فارغة',
+      emptyHint:'تصفح المنتجات وأضف اللي عجبك للسلة باش تكمل الطلب.',continue:'مواصلة التسوق',
+      subtotal:'مجموع المنتجات',delivery:'مصاريف التوصيل',free:'مجاني',total:'المجموع النهائي',order:'إتمام الطلب',
+      customer:'معلومات التوصيل',customerHelp:'عمر المعلومات باش نسجلو الطلبية ديالك.',
+      details:'ملخص الطلب',name:'الاسم الكامل',phone:'رقم الهاتف',city:'مدينة التوصيل',
+      address:'عنوان التوصيل',notes:'ملاحظات للتوصيل (اختياري)',
+      namePlaceholder:'الاسم والنسب',phonePlaceholder:'06XXXXXXXX',addressPlaceholder:'الزنقة، الحي، الرقم، العمارة...',
+      notesPlaceholder:'تفاصيل إضافية للموزع',cityPlaceholder:'اختار المدينة',
+      deliveryMessage:'التوصيل داخل المغرب حسب توفر الخدمة فالمدينة ديالك.',
+      next:'باقي ليك',toFree:'باش تستافد من التوصيل المجاني.',
+      unlocked:'تستافد دابا من التوصيل المجاني!',quantity:'الكمية',remove:'حذف المنتج',
+      processing:'جاري تسجيل الطلبية…',confirm:'تأكيد الطلبية',whatsapp:'عندك سؤال؟ واتساب',
+      terms:'قريت ووافقت على',termsLink:'شروط البيع',and:'و',returnsLink:'سياسة الإرجاع',
+      payment:'الدفع نقداً عند الاستلام',privacy:'كنستعملو معلوماتك غير لمعالجة الطلبية.',
+      close:'إغلاق السلة',clear:'تفريغ السلة',products:'منتجات'
+    },
+    en: {
+      title:'Your cart',items:'items',yourItems:'Selected items',empty:'Your cart is empty',
+      emptyHint:'Discover our catalog and add the products you like.',continue:'Continue shopping',
+      subtotal:'Subtotal',delivery:'Delivery',free:'Free',total:'Total to pay',order:'Checkout',
+      customer:'Delivery details',customerHelp:'Enter your details to confirm your order.',
+      details:'Order summary',name:'Full name',phone:'Phone number',city:'Delivery city',
+      address:'Delivery address',notes:'Delivery notes (optional)',
+      namePlaceholder:'First and last name',phonePlaceholder:'06XXXXXXXX',addressPlaceholder:'Street, neighborhood, building...',
+      notesPlaceholder:'Additional notes for the courier',cityPlaceholder:'Select a city',
+      deliveryMessage:'Delivery across Morocco, subject to service availability for your destination.',
+      next:'Add',toFree:'more to unlock free delivery.',
+      unlocked:'Your delivery is now free!',quantity:'Quantity',remove:'Remove product',
+      processing:'Saving your order…',confirm:'Confirm order',whatsapp:'Questions? WhatsApp',
+      terms:'I have read and accept the',termsLink:'terms of sale',and:'and the',returnsLink:'returns policy',
+      payment:'Cash on delivery',privacy:'Your details are used to process your order only.',
+      close:'Close cart',clear:'Clear cart',products:'products'
+    }
+  }[language];
+  const money = (value: number) => new Intl.NumberFormat(language === 'ar' ? 'ar-MA' : 'fr-MA', {maximumFractionDigits:2}).format(value) + ' DH';
+  const orderCount = cart.reduce((sum,item)=>sum+item.quantity,0);
+  const freeDeliveryRemaining = Math.max(0, 500 - cart.reduce((sum,item)=>sum+item.product.price*item.quantity,0));
+  const inputClass = 'min-h-12 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#153e34] placeholder:text-slate-400 outline-none transition focus:border-[#104d43] focus:ring-2 focus:ring-[#104d43]/10';
+  
   const t = (key: string) => {
     return TRANSLATIONS[key]?.[language] || key;
   };
@@ -153,6 +211,7 @@ export default function CartDrawer({
       setCity('');
       setDeliveryAddress('');
       setNotes('');
+      setAcceptedTerms(false);
     } catch (err) {
       console.error('[GLOBABOX] Order completion error:', err);
       setFormErrors({ submit: err instanceof Error ? err.message : (language === 'ar' ? 'تعذر تسجيل الطلب. حاول مرة أخرى.' : 'Commande non enregistrée. Réessayez.') });
@@ -161,481 +220,208 @@ export default function CartDrawer({
     }
   };
 
+
   return (
     <div
-      style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      className={`fixed inset-0 z-50 bg-[#060b13]/85 backdrop-blur-md flex ${isRtl ? 'justify-start animate-slide-in-left' : 'justify-end animate-slide-in-right'}`}
+      role="presentation"
+      className="fixed inset-0 z-[85] flex justify-end bg-[#0c2921]/65 backdrop-blur-[2px]"
+      onMouseDown={(event) => { if(event.target===event.currentTarget) onClose(); }}
     >
-      <div className="w-full sm:max-w-md md:max-w-lg lg:max-w-xl bg-gradient-to-b from-[#0a1120] via-[#0d1626] to-[#0a1120] border-[#1d2d47] border-l border-r h-full flex flex-col shadow-2xl relative select-none">
-        
-        {/* Drawer Header */}
-        <div className="px-5 py-4 sm:px-6 sm:py-5 bg-[#070d1a] border-b border-[#1c2e4a] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
-              <ShoppingCart className="w-5 h-5 text-orange-400" />
-            </div>
-            <div>
-              <h2 className="text-sm sm:text-base font-black text-white tracking-tight uppercase font-sans">
-                {t('cartTitle')}
-              </h2>
-              <p className="text-[10px] text-slate-400 font-bold font-sans mt-0.5">
-                {cart.length} {cart.length > 1 ? t('cartItemsCount') : (language === 'ar' ? 'منتج' : 'produit')}
-              </p>
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-label={copy.title}
+        dir={isRtl?'rtl':'ltr'}
+        className="flex h-full w-full flex-col overflow-hidden border-slate-200 bg-[#f8faf8] shadow-2xl sm:max-w-[570px] sm:border-s"
+      >
+        <header className="flex shrink-0 items-center justify-between gap-3 border-b border-[#dce9e1] bg-white px-5 py-4 sm:px-7">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#e5f2ea] text-[#104d43]">
+              <ShoppingBag size={23}/>
+            </span>
+            <div className="min-w-0">
+              <h2 className="text-lg font-black tracking-tight text-[#163f36]">{copy.title}</h2>
+              <p className="mt-0.5 text-xs font-semibold text-slate-500">{orderCount} {copy.items}</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white hover:bg-[#13223c] rounded-xl cursor-pointer transition-all active:scale-90 border border-transparent hover:border-[#22395e]/60"
-            aria-label="Fermer le panier"
-          >
-            <X size={18} />
+          <button type="button" onClick={onClose} aria-label={copy.close}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-[#f0f6f2] hover:text-[#104d43]">
+            <X size={20}/>
           </button>
-        </div>
+        </header>
 
-        {/* Drawer Scroll Container */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 md:p-6 space-y-5 scroll-smooth scrollbar-thin">
-          {cart.length === 0 ? (
-            <div className="text-center py-20 space-y-5">
-              <div className="w-20 h-20 rounded-full bg-[#13223c]/60 flex items-center justify-center mx-auto border-2 border-[#22395e] shadow-lg">
-                <ShoppingCart className="w-10 h-10 text-slate-400" />
-              </div>
-              <div className="space-y-1.5">
-                <p className="text-sm font-black text-white uppercase tracking-wider">{language === 'ar' ? 'سلتك فارغة' : 'Votre panier est vide'}</p>
-                <p className="text-xs text-slate-400 leading-relaxed font-sans max-w-xs mx-auto">{t('cartEmpty')}</p>
-              </div>
-              <button
-                onClick={onClose}
-                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-orange-950/40 cursor-pointer"
-              >
-                <span>{t('continueShoppingBtn')}</span>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-7 sm:py-6">
+          {cart.length===0 ? (
+            <div className="flex min-h-[420px] flex-col items-center justify-center gap-4 text-center">
+              <span className="flex h-20 w-20 items-center justify-center rounded-full border border-[#c8e0d3] bg-[#eaf4ed] text-[#104d43]">
+                <ShoppingCart size={36}/>
+              </span>
+              <h3 className="text-xl font-black text-[#163f36]">{copy.empty}</h3>
+              <p className="max-w-xs text-sm leading-7 text-slate-500">{copy.emptyHint}</p>
+              <button type="button" onClick={onClose} className="mt-2 inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#104d43] px-7 text-sm font-extrabold text-white transition hover:bg-[#0b3931]">
+                {copy.continue}{isRtl?<ArrowLeft size={17}/>:<ArrowRight size={17}/>}
               </button>
             </div>
           ) : (
-            <>
-              {/* Card 1: Product list (Votre Panier) */}
-              <div className="bg-[#0e1726]/90 rounded-2xl border border-[#213757] p-4 shadow-xl space-y-3">
-                <div className="flex items-center justify-between pb-2.5 border-b border-[#213757]/80">
-                  <span className="text-[11px] font-black text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span>
-                    {language === 'ar' ? 'أصناف طلبيتك' : language === 'en' ? 'Your Items' : 'Vos articles sélectionnés'}
-                  </span>
-                  <span className="text-[10px] font-bold font-mono text-slate-400 bg-[#080f1d] px-2.5 py-1 rounded-full border border-[#192b47]">
-                    {cart.reduce((sum, i) => sum + i.quantity, 0)} {language === 'ar' ? 'قطع' : 'pcs'}
-                  </span>
+            <div className="space-y-5 pb-7">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-4 shadow-[0_5px_20px_rgba(21,61,49,.04)] sm:p-5">
+                <div className="mb-4 flex items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-2 text-sm font-extrabold text-[#163f36]">
+                    <ShoppingBag size={18} className="text-[#104d43]"/>{copy.yourItems}
+                  </div>
+                  <button type="button" onClick={onClearCart} className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-semibold text-slate-500 hover:bg-red-50 hover:text-red-600">
+                    <Trash2 size={14}/>{copy.clear}
+                  </button>
                 </div>
-
-                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 pl-1 scrollbar-thin">
+                <div className="divide-y divide-slate-100">
                   {cart.map((item) => (
-                    <div
-                      key={item.product.id}
-                      className="flex gap-3 bg-[#111e33] p-3 rounded-2xl border border-[#213757]/60 items-center justify-between hover:border-[#1e3455] transition-all group"
-                    >
-                      {/* Left: Product Image */}
-                      <div className="w-14 h-14 rounded-xl bg-[#080e1a] overflow-hidden shrink-0 border border-[#213757] flex items-center justify-center relative shadow-inner">
-                        {failedImages[item.product.image] || !item.product.image ? (
-                          <div className="w-full h-full bg-[#13223c] flex items-center justify-center text-orange-400 font-black text-xs font-sans">
-                            GB
-                          </div>
+                    <article key={[item.product.id,item.selectedSize,item.selectedColor].join('-')}
+                      className="flex gap-3 py-4 first:pt-0 last:pb-0 sm:gap-4">
+                      <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-100 bg-[#f2f6f3] sm:h-[92px] sm:w-[92px]">
+                        {!item.product.image || failedImages[item.product.image] ? (
+                          <PackageCheck className="text-[#9fb8ab]" size={29}/>
                         ) : (
-                          <img
-                            src={item.product.image}
-                            alt=""
-                            onError={() => {
-                              setFailedImages((prev) => ({ ...prev, [item.product.image]: true }));
-                            }}
-                            referrerPolicy="no-referrer"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
+                          <img src={item.product.image} alt={item.product.name[language]||item.product.name.fr}
+                            loading="lazy" referrerPolicy="no-referrer"
+                            onError={()=>setFailedImages(prev=>({...prev,[item.product.image]:true}))}
+                            className="h-full w-full object-contain p-1.5"/>
                         )}
                       </div>
-                      
-                      {/* Middle: Details */}
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-xs font-black text-slate-100 leading-snug truncate group-hover:text-white transition-colors ${isRtl ? 'text-right' : 'text-left'}`}>
-                          {item.product.name[language]}
-                        </p>
-                        
-                        {(item.selectedSize || item.selectedColor) && (
-                          <div className={`flex flex-wrap gap-1 mt-1 text-[9px] text-slate-350 font-bold font-sans ${isRtl ? 'justify-end' : 'justify-start'}`}>
-                            {item.selectedSize && (
-                              <span className="bg-[#192942] px-2 py-0.5 rounded-full border border-[#263e63] shrink-0">
-                                {language === 'ar' ? 'المقاس: ' : language === 'en' ? 'Size: ' : 'Taille : '}{item.selectedSize}
-                              </span>
-                            )}
-                            {item.selectedColor && (
-                              <span className="bg-[#192942] px-2 py-0.5 rounded-full border border-[#263e63] shrink-0">
-                                {language === 'ar' ? 'اللون: ' : language === 'en' ? 'Color: ' : 'Couleur : '}{item.selectedColor}
-                              </span>
-                            )}
+                      <div className="min-w-0 flex-1">
+                        <p className="line-clamp-2 text-[13px] font-bold leading-5 text-[#193e38]">{item.product.name[language]||item.product.name.fr}</p>
+                        {(item.selectedSize||item.selectedColor)&&<p className="mt-1 text-[11px] text-slate-500">
+                          {[item.selectedSize,item.selectedColor].filter(Boolean).join(' · ')}
+                        </p>}
+                        <p className="mt-2 text-sm font-black text-[#104d43]">{money(item.product.price * item.quantity)}</p>
+                        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                          <div className="inline-flex h-9 items-center overflow-hidden rounded-xl border border-slate-200 bg-white" role="group" aria-label={copy.quantity}>
+                            <button type="button" disabled={item.quantity<=1} aria-label={copy.quantity+' -'}
+                              onClick={()=>onUpdateQuantity(item.product.id,Math.max(1,item.quantity-1))}
+                              className="flex h-9 w-9 items-center justify-center text-[#104d43] hover:bg-[#edf5ef] disabled:opacity-30"><Minus size={15}/></button>
+                            <span className="min-w-8 px-1 text-center text-xs font-black text-[#193e38]" aria-live="polite">{item.quantity}</span>
+                            <button type="button" disabled={item.quantity>=99} aria-label={copy.quantity+' +'}
+                              onClick={()=>onUpdateQuantity(item.product.id,Math.min(99,item.quantity+1))}
+                              className="flex h-9 w-9 items-center justify-center text-[#104d43] hover:bg-[#edf5ef] disabled:opacity-30"><Plus size={15}/></button>
                           </div>
-                        )}
-                        
-                        <p className={`text-[11px] font-black font-mono text-orange-400 mt-1 flex items-center gap-1 ${isRtl ? 'justify-end' : 'justify-start'}`}>
-                          <span>{item.product.price} {t('moroccoCurrency')}</span>
-                          <span className="text-[9px] text-slate-400 font-sans">x {item.quantity}</span>
-                        </p>
-                      </div>
-
-                      {/* Right: Quantity Adjusters + Delete */}
-                      <div className="flex flex-col sm:flex-row items-center gap-2 shrink-0">
-                        {/* Up/Down buttons */}
-                        <div className="flex items-center bg-[#070d1a] rounded-lg border border-[#213757] overflow-hidden">
-                          <button
-                            type="button"
-                            onClick={() => onUpdateQuantity(item.product.id, Math.max(1, item.quantity - 1))}
-                            className="w-7 h-7 hover:bg-[#13223c] text-slate-400 hover:text-white cursor-pointer flex items-center justify-center transition-colors border-r border-[#213757]"
-                            aria-label="Diminuer la quantité"
-                          >
-                            <Minus size={10} strokeWidth={3} />
-                          </button>
-                          <span className="w-8 text-center text-xs font-black font-mono text-white select-none">{item.quantity}</span>
-                          <button
-                            type="button"
-                            onClick={() => onUpdateQuantity(item.product.id, item.quantity + 1)}
-                            className="w-7 h-7 hover:bg-[#13223c] text-slate-400 hover:text-white cursor-pointer flex items-center justify-center transition-colors border-l border-[#213757]"
-                            aria-label="Augmenter la quantité"
-                          >
-                            <Plus size={10} strokeWidth={3} />
+                          <button type="button" onClick={()=>onRemoveFromCart(item.product.id)} aria-label={copy.remove} className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-slate-500 hover:bg-red-50 hover:text-red-600">
+                            <Trash2 size={15}/><span>{copy.remove}</span>
                           </button>
                         </div>
-
-                        {/* Trash */}
-                        <button
-                          type="button"
-                          onClick={() => onRemoveFromCart(item.product.id)}
-                          className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all border border-transparent hover:border-red-500/20"
-                          aria-label="Supprimer de la liste"
-                        >
-                          <Trash2 size={13} />
-                        </button>
                       </div>
-                    </div>
+                    </article>
                   ))}
                 </div>
               </div>
 
-              {/* Card 2: Free Shipping Progress Tracker */}
-              {subtotal < 500 ? (
-                <div className="bg-gradient-to-r from-[#1c1206] to-[#2c1d0c] border border-orange-500/25 p-4 rounded-2xl shadow-lg space-y-2.5">
-                  <div className={`flex justify-between items-center text-[11px] font-black ${isRtl ? 'flex-row-reverse' : 'flex-row'}`}>
-                    <span className="text-amber-300 font-sans leading-tight">
-                      {language === 'ar' 
-                        ? `أضف ${500 - subtotal} درهم إضافية للاستفادة من التوصيل المجاني` 
-                        : language === 'en'
-                          ? `Add ${500 - subtotal} DH more to unlock Free Shipping`
-                          : `Ajoutez encore ${500 - subtotal} DH pour bénéficier de la livraison gratuite.`}
-                    </span>
-                    <span className="font-mono text-[10px] text-orange-400 bg-orange-950/65 px-2 py-0.5 rounded border border-orange-500/20">
-                      {Math.round((subtotal / 500) * 100)}%
-                    </span>
+              <div className="rounded-2xl border border-[#d5e7da] bg-[#eef7ef] px-4 py-4">
+                {freeShipping ? (
+                  <div className="flex items-center gap-2 text-sm font-bold text-[#104d43]">
+                    <CheckCircle2 size={19}/>{copy.unlocked}
                   </div>
-                  <div className="w-full bg-[#080e1a] h-2.5 rounded-full overflow-hidden border border-[#213757]/80">
-                    <div 
-                      className="bg-gradient-to-r from-orange-600 via-amber-500 to-orange-400 h-2.5 rounded-full transition-all duration-550 shadow-[0_0_10px_rgba(234,88,12,0.35)]" 
-                      style={{ width: `${Math.min(100, (subtotal / 500) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-gradient-to-r from-[#071d15] to-[#0c3122] border border-emerald-500/35 p-3.5 rounded-2xl text-[11px] font-black text-emerald-300 flex items-center gap-2 justify-center font-sans shadow-md">
-                  <Sparkles className="w-4.5 h-4.5 text-emerald-400 shrink-0 animate-pulse" />
-                  <span>
-                    {language === 'ar' 
-                      ? "تهانينا! لقد حصلت على توصيل مجاني لطلبك!" 
-                      : language === 'en'
-                        ? "Congratulations! You have unlocked FREE DELIVERY!"
-                        : "Félicitations ! Livraison gratuite activée."}
-                  </span>
-                </div>
-              )}
-
-              {/* Card 3: Free Shipping / Delivery Notice Badge */}
-              <div className="bg-slate-900/50 border border-[#22395e]/40 p-3 rounded-2xl text-[10px] text-slate-350 leading-relaxed font-bold font-sans flex items-center gap-2 shrink-0">
-                <Truck className="w-4.5 h-4.5 text-orange-500 shrink-0" />
-                <span className="flex-1">
-                  {language === 'ar'
-                    ? "الشحن مجاني لجميع الطلبات بقيمة 500 درهم أو أكثر. الشحن العادي هو 35 درهم فقط لكافة مدن المغرب."
-                    : language === 'en'
-                      ? "Free delivery for orders of 500 DH+. Otherwise normal shipping is 35 DH all over Morocco."
-                      : "La livraison est GRATUITE dès 500 DH d'achat. Sinon, les frais de livraison s'élèvent à seulement 35 DH partout au Maroc."}
-                </span>
-              </div>
-
-              {/* Card 4: Detailed Order Summary Card */}
-              <div className="bg-[#0c1424] border border-[#213757] p-4.5 rounded-2xl shadow-xl space-y-3 font-sans">
-                <div className="flex items-center justify-between text-[11.5px] font-bold text-slate-400">
-                  <span>{t('subtotalLabel')}</span>
-                  <span className="font-mono text-slate-100 font-extrabold">{subtotal} {t('moroccoCurrency')}</span>
-                </div>
-                
-                <div className="flex items-center justify-between text-[11.5px] font-bold text-slate-400 pb-3 border-b border-[#213757]/80">
-                  <span>{t('deliveryCostLabel')}</span>
-                  {freeShipping ? (
-                    <span className="font-black text-emerald-400 text-[10px] uppercase bg-emerald-950/60 px-3 py-0.5 rounded-full border border-emerald-500/20 tracking-wider">
-                      {language === 'ar' ? 'مجاني' : language === 'en' ? 'Free' : 'Gratuite'}
-                    </span>
-                  ) : (
-                    <span className="font-mono font-black text-orange-400 bg-orange-950/20 px-2.5 py-0.5 rounded border border-orange-500/10">
-                      35 {t('moroccoCurrency')}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-[12.5px] font-black text-slate-200 uppercase tracking-wider">{t('totalLabel')}</span>
-                  <span className="font-mono text-orange-400 text-xl font-black">{total} {t('moroccoCurrency')}</span>
-                </div>
-              </div>
-
-              {/* Card 5: Customer Checkout / Information Form Card */}
-              <div className="bg-[#0c1424] border border-[#213757] p-4 sm:p-5 rounded-2xl shadow-xl space-y-4">
-                
-                {/* Section Header */}
-                <div className={`flex items-start gap-2.5 border-b border-[#213757]/80 pb-3 ${isRtl ? 'flex-row-reverse' : 'flex-row'}`}>
-                  <div className="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
-                    <ShieldCheck className="w-4.5 h-4.5 text-orange-400" />
-                  </div>
-                  <div className={`flex-1 min-w-0 ${isRtl ? 'text-right' : 'text-left'}`}>
-                    <h3 className="text-[12px] font-black text-white uppercase tracking-wider leading-tight">
-                      {t('checkoutTitle')}
-                    </h3>
-                    <p className="text-[9.5px] text-slate-400 font-semibold leading-relaxed mt-0.5">
-                      {t('checkoutSubtitle')}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Secure Information Notice */}
-                <div className="bg-orange-500/5 border border-orange-500/10 p-3 rounded-xl text-[10px] text-orange-200/90 leading-relaxed font-bold font-sans flex items-center gap-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                  <span>
-                    {language === 'ar' 
-                      ? "الدفع نقدًا عند استلام الطرد الخاص بك. يرجى ملء الحقول التالية لتأكيد التوصيل."
-                      : language === 'en'
-                        ? "Secure 100% Cash on Delivery payment. Please fill out details below for quick shipping."
-                        : "Paiement 100% sécurisé à la livraison (En Espèces). Veuillez renseigner ces champs pour débuter la livraison."}
-                  </span>
-                </div>
-
-                {/* Form fields */}
-                <form onSubmit={handleSubmitOrder} className="space-y-4">
-                  {formErrors.submit && (
-                    <p role="alert" className="rounded-lg border border-rose-500/60 bg-rose-950/50 p-3 text-sm text-rose-200">
-                      {formErrors.submit}
-                    </p>
-                  )}
-                  
-                  {/* Full Name field */}
-                  <div className="space-y-1.5">
-                    <label className={`block text-[11px] font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                      <User className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                      <span>{language === 'ar' ? 'الاسم الكامل *' : language === 'en' ? 'Full Name *' : 'Nom complet *'}</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder={t('fullNamePlaceholder')}
-                      value={fullName}
-                      onChange={(e) => handleFullNameChange(e.target.value)}
-                      className={`w-full bg-[#13223c] border ${formErrors.fullName ? 'border-rose-500 focus:ring-rose-500/20' : 'border-[#253d66] focus:border-orange-500 focus:ring-orange-500/20'} text-xs text-white placeholder-slate-400 rounded-xl px-4 py-3 outline-none focus:ring-4 transition-all font-sans ${isRtl ? 'text-right' : 'text-left'}`}
-                      required
-                    />
-                    {formErrors.fullName && (
-                      <div className={`flex items-center gap-1.5 text-rose-400 text-[10px] font-bold mt-1.5 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                        <span className="shrink-0 text-xs">⚠️</span>
-                        <span className="font-sans leading-tight">{formErrors.fullName}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Phone Number Field */}
-                  <div className="space-y-1.5">
-                    <label className={`block text-[11px] font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                      <Phone className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                      <span>{language === 'ar' ? 'رقم الهاتف المحمول *' : language === 'en' ? 'Mobile Phone *' : 'Téléphone portable *'}</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="tel"
-                        placeholder={t('phonePlaceholder')}
-                        value={phoneNumber}
-                        onChange={(e) => handlePhoneChange(e.target.value)}
-                        className={`w-full bg-[#13223c] border ${formErrors.phoneNumber ? 'border-rose-500 focus:ring-rose-500/20' : 'border-[#253d66] focus:border-orange-500 focus:ring-orange-500/20'} text-xs text-white placeholder-slate-400 rounded-xl ${isRtl ? 'pl-20 pr-4 text-right' : 'pr-20 pl-4 text-left'} py-3 outline-none focus:ring-4 transition-all font-sans`}
-                        required
-                      />
-                      <span className={`absolute ${isRtl ? 'left-3' : 'right-3'} top-3 text-slate-400 text-[10px] font-extrabold flex items-center gap-1 bg-[#1a2f52] border border-[#2c4b7b] rounded-md px-2 py-0.5 select-none`}>
-                        <span className="shrink-0">🇲🇦</span>
-                        <span>{language === 'ar' ? 'المغرب' : 'Maroc'}</span>
-                      </span>
+                ) : (
+                  <>
+                    <div className="mb-2 flex items-center justify-between gap-3 text-xs font-bold text-[#104d43]">
+                      <span>{copy.next} <strong>{money(freeDeliveryRemaining)}</strong> {copy.toFree}</span>
+                      <span className="shrink-0">{Math.round(Math.min(100,subtotal/500*100))}%</span>
                     </div>
-                    {formErrors.phoneNumber && (
-                      <div className={`flex items-center gap-1.5 text-rose-400 text-[10px] font-bold mt-1.5 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                        <span className="shrink-0 text-xs">⚠️</span>
-                        <span className="font-sans leading-tight">{formErrors.phoneNumber}</span>
-                      </div>
-                    )}
-                  </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-white" role="progressbar" aria-valuenow={Math.min(500,subtotal)} aria-valuemin={0} aria-valuemax={500}>
+                      <div className="h-full rounded-full bg-[#104d43] transition-all" style={{width:Math.min(100,subtotal/500*100)+'%'}}/>
+                    </div>
+                  </>
+                )}
+              </div>
 
-                  {/* City Select Dropdown Field */}
+              <div className="rounded-[20px] border border-slate-200 bg-white p-5 shadow-[0_5px_20px_rgba(21,61,49,.04)]">
+                <h3 className="mb-4 flex items-center gap-2 text-sm font-black text-[#193e38]"><PackageCheck size={19} className="text-[#104d43]"/>{copy.details}</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between gap-4 text-slate-600"><span>{copy.subtotal}</span><span dir="ltr" className="font-semibold text-[#193e38]">{money(subtotal)}</span></div>
+                  <div className="flex justify-between gap-4 text-slate-600"><span>{copy.delivery}</span><span dir="ltr" className={'font-semibold '+(freeShipping?'text-[#187851]':'text-[#193e38]')}>{freeShipping?copy.free:money(deliveryCost)}</span></div>
+                  <div className="flex justify-between gap-4 border-t border-slate-100 pt-4 text-base font-extrabold text-[#193e38]">
+                    <span>{copy.total}</span><span dir="ltr" className="text-[#104d43]">{money(total)}</span>
+                  </div>
+                </div>
+                <div className="mt-4 flex items-start gap-2 rounded-xl bg-[#f4f8f5] p-3 text-xs leading-6 text-[#47675a]">
+                  <Truck size={18} className="mt-1 shrink-0 text-[#104d43]"/>{copy.deliveryMessage}
+                </div>
+              </div>
+
+              <div className="rounded-[20px] border border-slate-200 bg-white p-4 shadow-[0_5px_20px_rgba(21,61,49,.04)] sm:p-5">
+                <div className="mb-5 flex items-start gap-3 border-b border-slate-100 pb-4">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#eaf4ed] text-[#104d43]"><MapPin size={21}/></span>
+                  <div>
+                    <h3 className="text-sm font-black text-[#193e38]">{copy.customer}</h3>
+                    <p className="mt-1 text-xs leading-6 text-slate-500">{copy.customerHelp}</p>
+                  </div>
+                </div>
+                <form onSubmit={handleSubmitOrder} className="space-y-4" noValidate>
+                  {formErrors.submit&&<p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-semibold leading-6 text-red-700">{formErrors.submit}</p>}
                   <div className="space-y-1.5">
-                    <label className={`block text-[11px] font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                      <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                      <span>{language === 'ar' ? 'مدينة التوصيل *' : language === 'en' ? 'Delivery City *' : 'Ville de livraison *'}</span>
-                    </label>
-                    <select
-                      value={city}
-                      onChange={(e) => handleCityChange(e.target.value)}
-                      className={`w-full bg-[#13223c] border ${formErrors.city ? 'border-rose-500 focus:ring-rose-500/20' : 'border-[#253d66] focus:border-orange-500 focus:ring-orange-500/20'} text-xs text-white rounded-xl px-4 py-3 outline-none focus:ring-4 transition-all font-sans cursor-pointer ${isRtl ? 'text-right' : 'text-left'}`}
-                      required
-                    >
-                      <option value="" disabled className="text-slate-400 bg-[#0c1424]">
-                        -- {t('selectCityText')} --
-                      </option>
-                      {MOROCCAN_CITIES.map((c) => (
-                        <option key={c} value={c} className="bg-[#0c1424] text-white py-2">
-                          {c}
-                        </option>
-                      ))}
+                    <label htmlFor="cart-fullname" className="flex items-center gap-2 text-xs font-extrabold text-[#193e38]"><UserRound size={15} className="text-[#104d43]"/>{copy.name} *</label>
+                    <input id="cart-fullname" type="text" autoComplete="name" maxLength={120} value={fullName}
+                      placeholder={copy.namePlaceholder} onChange={e=>handleFullNameChange(e.target.value)} className={inputClass} required aria-invalid={!!formErrors.fullName}/>
+                    {formErrors.fullName&&<p role="alert" className="text-xs text-red-600">{formErrors.fullName}</p>}
+                  </div>
+                  <div className="space-y-1.5">
+                    <label htmlFor="cart-phone" className="flex items-center gap-2 text-xs font-extrabold text-[#193e38]"><PhoneCall size={15} className="text-[#104d43]"/>{copy.phone} *</label>
+                    <input id="cart-phone" type="tel" dir="ltr" inputMode="tel" autoComplete="tel" maxLength={32} value={phoneNumber}
+                      placeholder={copy.phonePlaceholder} onChange={e=>handlePhoneChange(e.target.value)} className={inputClass} required aria-invalid={!!formErrors.phoneNumber}/>
+                    {formErrors.phoneNumber&&<p role="alert" className="text-xs text-red-600">{formErrors.phoneNumber}</p>}
+                  </div>
+                  <div className="space-y-1.5">
+                    <label htmlFor="cart-city" className="flex items-center gap-2 text-xs font-extrabold text-[#193e38]"><MapPin size={15} className="text-[#104d43]"/>{copy.city} *</label>
+                    <select id="cart-city" value={city} onChange={e=>handleCityChange(e.target.value)} className={inputClass} required aria-invalid={!!formErrors.city}>
+                      <option value="" disabled>{copy.cityPlaceholder}</option>
+                      {MOROCCAN_CITIES.map(item=><option key={item} value={item}>{item}</option>)}
                     </select>
-                    {formErrors.city && (
-                      <div className={`flex items-center gap-1.5 text-rose-400 text-[10px] font-bold mt-1.5 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                        <span className="shrink-0 text-xs">⚠️</span>
-                        <span className="font-sans leading-tight">{formErrors.city}</span>
-                      </div>
-                    )}
+                    {formErrors.city&&<p role="alert" className="text-xs text-red-600">{formErrors.city}</p>}
                   </div>
-
-                  {/* Physical Address Field */}
                   <div className="space-y-1.5">
-                    <label className={`block text-[11px] font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                      <Home className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                      <span>{language === 'ar' ? 'العنوان الدقيق للتسليم *' : language === 'en' ? 'Exact Street Address *' : 'Adresse exacte de livraison *'}</span>
-                    </label>
-                    <textarea
-                      rows={2}
-                      placeholder={t('deliveryAddressPlaceholder')}
-                      value={deliveryAddress}
-                      onChange={(e) => handleAddressChange(e.target.value)}
-                      className={`w-full bg-[#13223c] border ${formErrors.deliveryAddress ? 'border-rose-500 focus:ring-rose-500/20' : 'border-[#253d66] focus:border-orange-500 focus:ring-orange-500/20'} text-xs text-white placeholder-slate-400 rounded-xl px-4 py-3 outline-none focus:ring-4 transition-all font-sans resize-none ${isRtl ? 'text-right' : 'text-left'}`}
-                      required
-                    />
-                    {formErrors.deliveryAddress && (
-                      <div className={`flex items-center gap-1.5 text-rose-400 text-[10px] font-bold mt-1.5 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                        <span className="shrink-0 text-xs">⚠️</span>
-                        <span className="font-sans leading-tight">{formErrors.deliveryAddress}</span>
-                      </div>
-                    )}
+                    <label htmlFor="cart-address" className="flex items-center gap-2 text-xs font-extrabold text-[#193e38]"><MapPin size={15} className="text-[#104d43]"/>{copy.address} *</label>
+                    <textarea id="cart-address" rows={2} maxLength={300} autoComplete="street-address"
+                      value={deliveryAddress} placeholder={copy.addressPlaceholder} onChange={e=>handleAddressChange(e.target.value)}
+                      className={inputClass+' resize-y'} required aria-invalid={!!formErrors.deliveryAddress}/>
+                    {formErrors.deliveryAddress&&<p role="alert" className="text-xs text-red-600">{formErrors.deliveryAddress}</p>}
                   </div>
-
-                  {/* Notes Field (Sizes, colors, etc.) */}
                   <div className="space-y-1.5">
-                    <label className={`block text-[11px] font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                      <MessageSquare className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                      <span>{language === 'ar' ? 'ملاحظات إضافية (اختياري)' : language === 'en' ? 'Order Notes (Optional)' : 'Notes de commande (Optionnel)'}</span>
+                    <label htmlFor="cart-notes" className="flex items-center gap-2 text-xs font-extrabold text-[#193e38]"><MessageSquare size={15} className="text-[#104d43]"/>{copy.notes}</label>
+                    <textarea id="cart-notes" rows={2} maxLength={1000} value={notes} onChange={e=>setNotes(e.target.value)}
+                      placeholder={copy.notesPlaceholder} className={inputClass+' resize-y'}/>
+                  </div>
+                  {formErrors.quantity&&<p role="alert" className="text-xs text-red-600">{formErrors.quantity}</p>}
+                  <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-[#f8faf8] p-4">
+                    <input id="cart-terms" type="checkbox" checked={acceptedTerms} onChange={e=>setAcceptedTerms(e.target.checked)}
+                      className="mt-1 h-4 w-4 shrink-0 accent-[#104d43]"/>
+                    <label htmlFor="cart-terms" className="text-xs leading-6 text-slate-600">
+                      {copy.terms}{' '}
+                      <a href="/?page=cgv" className="font-bold text-[#104d43] underline underline-offset-2 hover:text-[#0b3d32]">{copy.termsLink}</a>
+                      {' '}{copy.and}{' '}
+                      <a href="/?page=returns" className="font-bold text-[#104d43] underline underline-offset-2 hover:text-[#0b3d32]">{copy.returnsLink}</a>.
                     </label>
-                    <input
-                      type="text"
-                      placeholder={t('notesPlaceholder')}
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      className={`w-full bg-[#13223c] border border-[#253d66] focus:border-orange-500 focus:ring-orange-500/20 text-xs text-white placeholder-slate-400 rounded-xl px-4 py-3 outline-none focus:ring-4 transition-all font-sans ${isRtl ? 'text-right' : 'text-left'}`}
-                    />
                   </div>
-
-                  {/* Global Quantity Warning */}
-                  {formErrors.quantity && (
-                    <div className="text-rose-400 text-[11px] font-black text-center bg-rose-950/20 border border-rose-900/30 py-2 px-3 rounded-xl">
-                      {formErrors.quantity}
-                    </div>
-                  )}
-
-                  <label className="flex gap-2 items-start text-xs text-slate-200 bg-[#101e35] p-3 rounded-xl border border-[#273b5f]">
-                    <input type="checkbox" checked={acceptedTerms} onChange={e=>setAcceptedTerms(e.target.checked)} className="mt-1 accent-orange-500" />
-                    <span>{language==='ar' ? 'اطلعت وأوافق على شروط البيع وسياسة التوصيل والإرجاع المعروضة أسفل الموقع.' : language==='en' ? 'I have read and accept the sales, delivery and returns policies linked in the site footer.' : 'J’ai lu et j’accepte les conditions de vente, de livraison et de retour accessibles en bas du site.'}</span>
-                  </label>
-                  {/* Action Buttons: Submit Form CTA */}
-                  <div className="space-y-3 pt-2 select-none">
-                    {/* CONFIRM COMMANDE BUTTON */}
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className={`w-full bg-gradient-to-r from-orange-600 via-orange-500 to-amber-600 hover:from-orange-500 hover:via-orange-400 hover:to-amber-500 active:scale-[0.98] outline-none focus:ring-4 focus:ring-orange-500/20 text-white font-black text-xs sm:text-sm py-4 px-4 rounded-xl shadow-lg shadow-orange-950/25 transition-all flex items-center justify-center gap-2 tracking-wide uppercase ${isSubmitting ? 'opacity-75 cursor-not-allowed' : 'cursor-pointer'}`}
-                    >
-                      {isSubmitting ? (
-                        <span className="flex items-center gap-2">
-                          <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          <span>{language === 'ar' ? 'جاري معالجة طلبكم...' : language === 'en' ? 'Processing...' : 'Traitement de votre commande...'}</span>
-                        </span>
-                      ) : (
-                        <span>{t('btnConfirmOrder')}</span>
-                      )}
-                    </button>
-
-                    {/* ORDER VIA WHATSAPP BUTTON (Green theme) */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (onWhatsAppOrder) {
-                          onWhatsAppOrder({
-                            items: cart,
-                            form: {
-                              fullName: fullName || (language === 'ar' ? 'زبون واتساب' : 'Client WhatsApp'),
-                              phoneNumber: phoneNumber || "",
-                              city: city || "",
-                              deliveryAddress: deliveryAddress || "",
-                              notes: notes || ""
-                            },
-                            source: 'cart'
-                          });
-                        } else {
-                          window.open(WHATSAPP_LINK, '_blank', 'noreferrer');
-                        }
-                      }}
-                      className="w-full bg-gradient-to-r from-emerald-600 to-[#10b981] hover:from-emerald-500 hover:to-[#34d399] active:scale-[0.98] outline-none focus:ring-4 focus:ring-emerald-500/20 text-white font-black text-xs sm:text-sm py-4 px-4 rounded-xl shadow-lg shadow-emerald-950/20 transition-all cursor-pointer flex items-center justify-center gap-2.5 tracking-wide uppercase"
-                    >
-                      <WhatsAppIcon className="w-4.5 h-4.5 text-white shrink-0" />
-                      <span>{t('btnOrderWhatsApp')}</span>
-                    </button>
-                  </div>
+                  <button type="submit" disabled={isSubmitting}
+                    className="flex min-h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#104d43] px-5 py-4 text-sm font-black text-white shadow-sm transition hover:bg-[#0b3931] focus:outline-none focus:ring-4 focus:ring-[#104d43]/20 disabled:cursor-wait disabled:opacity-60">
+                    {isSubmitting?<LoaderCircle size={18} className="animate-spin"/>:<CheckCircle2 size={19}/>}
+                    {isSubmitting?copy.processing:copy.confirm} <span dir="ltr" className="ms-auto font-extrabold">{!isSubmitting&&money(total)}</span>
+                  </button>
+                  <p className="flex items-center justify-center gap-2 text-center text-xs font-semibold text-[#47675a]">
+                    <CreditCard size={16}/>{copy.payment}
+                  </p>
+                  <button type="button" onClick={() => {
+                    if(onWhatsAppOrder) onWhatsAppOrder({items:cart,form:{
+                      fullName:fullName||(language==='ar'?'زبون واتساب':'Client WhatsApp'),
+                      phoneNumber:phoneNumber,city,deliveryAddress,notes
+                    },source:'cart'});
+                    else window.open(WHATSAPP_LINK,'_blank','noopener,noreferrer');
+                  }} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#bde3c9] bg-[#eff9f1] px-4 py-3 text-sm font-extrabold text-[#177147] transition hover:bg-[#e3f5e8]">
+                    <WhatsAppIcon className="h-5 w-5"/>{copy.whatsapp}
+                  </button>
+                  <p className="flex items-center justify-center gap-2 text-center text-[11px] leading-5 text-slate-500"><ShieldCheck size={15}/>{copy.privacy}</p>
                 </form>
-
-                {/* Card 6: Clean Trust Badges Inside Checkout Form Card */}
-                <div className="pt-4 border-t border-[#213757]/80 grid grid-cols-2 gap-2 text-[9.5px] text-slate-300 font-bold font-sans">
-                  <div className="flex items-center gap-1.5 bg-[#0b1528] px-2.5 py-2.5 rounded-xl border border-[#1e324e] hover:border-orange-500/25 transition-all">
-                    <ShieldCheck className="w-4 h-4 text-orange-400 shrink-0" />
-                    <span>{t('trust_cod_title')}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 bg-[#0b1528] px-2.5 py-2.5 rounded-xl border border-[#1e324e] hover:border-orange-500/25 transition-all">
-                    <Compass className="w-4 h-4 text-orange-400 shrink-0" />
-                    <span>{t('trust_morocco_delivery_title')}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 bg-[#0b1528] px-2.5 py-2.5 rounded-xl border border-[#1e324e] hover:border-orange-500/25 transition-all">
-                    <Truck className="w-4 h-4 text-orange-400 shrink-0" />
-                    <span>{t('trust_free_delivery_title')}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 bg-[#0b1528] px-2.5 py-2.5 rounded-xl border border-[#1e324e] hover:border-orange-500/25 transition-all">
-                    <WhatsAppIcon className="w-4 h-4 text-orange-400 shrink-0 fill-current" />
-                    <span>{t('trust_whatsapp_title')}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 bg-[#0b1528] px-2.5 py-2.5 rounded-xl border border-[#1e324e] hover:border-orange-500/25 transition-all">
-                    <Phone className="w-4 h-4 text-orange-400 shrink-0" />
-                    <span>{t('trust_fast_support_title')}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 bg-[#0b1528] px-2.5 py-2.5 rounded-xl border border-[#1e324e] hover:border-orange-500/25 transition-all">
-                    <Star className="w-4 h-4 text-orange-400 shrink-0" />
-                    <span>{t('trust_verified_products_title')}</span>
-                  </div>
-                </div>
-
               </div>
-            </>
+            </div>
           )}
         </div>
-      </div>
+      </section>
     </div>
   );
 }
-
