@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Package, ClipboardList, Settings, Plus, Trash2, Edit2, CheckCircle2, RefreshCw, X, Search, ChevronRight, Ban, Truck, ShieldCheck, CornerDownRight, BarChart3, MapPin, Phone, ShoppingCart, BadgeCheck, Compass } from 'lucide-react';
 import { Product, Category, Order, Language } from '../types';
 import { MOROCCAN_CITIES, ORDER_SUPPORT_NUMBER, WHATSAPP_NUMBER } from '../data';
-import { getTrackingConfig, saveTrackingConfig, TrackingConfig, isTrackerValid } from '../utils/analytics';
+import AdminTrackingWorkspace from './AdminTrackingWorkspace';
 import ProductImage from './ProductImage';
 import AdminWorkspaceLayout from './AdminWorkspaceLayout';
 import AdminCategoriesWorkspace from './AdminCategoriesWorkspace';
@@ -176,9 +176,6 @@ export default function AdminPanel({
     .filter(o => o.status === 'delivered')
     .reduce((acc, o) => acc + o.total, 0);
   
-  // Marketing Config state
-  const [trackingForm, setTrackingForm] = useState<TrackingConfig>(() => getTrackingConfig());
-  const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Live Sync / Refresh orders logic
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -1926,195 +1923,7 @@ export default function AdminPanel({
           />
         )}
 
-        {/* TAB 4: Marketing tracking pixels */}
-        {activeTab === 'marketing' && (
-          <div className="p-6 space-y-6">
-            <div className="bg-[#070d1a] border border-[#1d2f4d] p-5 rounded-2xl max-w-3xl">
-              <h2 className="text-sm font-black text-white uppercase tracking-wider mb-2 flex items-center gap-2 text-orange-400">
-                <BarChart3 className="w-5 h-5 text-orange-400 shrink-0" />
-                <span>Configuration des Pixels Publicitaires & SEO</span>
-              </h2>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                Configurez ici les identifiants réels de suivi d'audience. Enregistrez pour injecter automatiquement les pixels correspondants de Facebook, TikTok, Google Analytics et vérifier votre autorité sur la console Google Search Console Maroc en temps réel.
-              </p>
-
-              {/* Status Indicators Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-                <div className={`p-3.5 rounded-xl border flex flex-col justify-between ${
-                  isTrackerValid(trackingForm.metaPixelId) 
-                    ? 'bg-emerald-950/20 border-emerald-500/30' 
-                    : 'bg-slate-900/40 border-slate-800'
-                }`}>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Meta Pixel</span>
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <span className={`w-2 h-2 rounded-full ${isTrackerValid(trackingForm.metaPixelId) ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
-                    <span className="text-xs font-bold text-white">
-                      {isTrackerValid(trackingForm.metaPixelId) ? 'Configuré' : 'Non configuré'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className={`p-3.5 rounded-xl border flex flex-col justify-between ${
-                  isTrackerValid(trackingForm.tikTokPixelId) 
-                    ? 'bg-emerald-950/20 border-emerald-500/30' 
-                    : 'bg-slate-900/40 border-slate-800'
-                }`}>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">TikTok Pixel</span>
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <span className={`w-2 h-2 rounded-full ${isTrackerValid(trackingForm.tikTokPixelId) ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
-                    <span className="text-xs font-bold text-white">
-                      {isTrackerValid(trackingForm.tikTokPixelId) ? 'Configuré' : 'Non configuré'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className={`p-3.5 rounded-xl border flex flex-col justify-between ${
-                  isTrackerValid(trackingForm.googleAnalyticsId) 
-                    ? 'bg-emerald-950/20 border-emerald-500/30' 
-                    : 'bg-slate-900/40 border-slate-800'
-                }`}>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Google Analytics</span>
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <span className={`w-2 h-2 rounded-full ${isTrackerValid(trackingForm.googleAnalyticsId) ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
-                    <span className="text-xs font-bold text-white">
-                      {isTrackerValid(trackingForm.googleAnalyticsId) ? 'Configuré' : 'Non configuré'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className={`p-3.5 rounded-xl border flex flex-col justify-between ${
-                  isTrackerValid(trackingForm.googleSearchConsoleId) 
-                    ? 'bg-emerald-950/20 border-emerald-500/30' 
-                    : 'bg-slate-900/40 border-slate-800'
-                }`}>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Search Console</span>
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <span className={`w-2 h-2 rounded-full ${isTrackerValid(trackingForm.googleSearchConsoleId) ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
-                    <span className="text-xs font-bold text-white">
-                      {isTrackerValid(trackingForm.googleSearchConsoleId) ? 'Configuré' : 'Non configuré'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {saveSuccess && (
-                <div className="bg-emerald-950/40 border border-emerald-800/40 text-emerald-400 font-sans p-4 rounded-xl text-xs mb-4 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Modifications de suivi enregistrées avec succès ! Les nouveaux scripts d'analytics sont fonctionnels.</span>
-                </div>
-              )}
-
-              <div className="space-y-4">
-                {/* Meta Facebook Pixel */}
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-300 block">Identifiant Pixel Meta / Facebook (FBID)</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: 9876543210123456"
-                    value={trackingForm.metaPixelId}
-                    onChange={(e) => setTrackingForm({ ...trackingForm, metaPixelId: e.target.value })}
-                    className="w-full bg-[#0f1d35] border border-[#22395e] text-xs text-white rounded-xl px-4 py-3 outline-none focus:ring-1 focus:ring-orange-500 font-mono"
-                  />
-                  <p className="text-[10px] text-slate-500">
-                    Déclenche les événements requis : PageView, ViewContent, AddToCart, InitiateCheckout, Purchase (Conversion) et Lead (WhatsApp).
-                  </p>
-                </div>
-
-                {/* TikTok Pixel */}
-                <div className="space-y-1 pt-2">
-                  <label className="text-xs font-bold text-slate-300 block">Identifiant Pixel TikTok (Pixel Code)</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: CDT12345ABCDE678"
-                    value={trackingForm.tikTokPixelId}
-                    onChange={(e) => setTrackingForm({ ...trackingForm, tikTokPixelId: e.target.value })}
-                    className="w-full bg-[#0f1d35] border border-[#22395e] text-xs text-white rounded-xl px-4 py-3 outline-none focus:ring-1 focus:ring-orange-500 font-mono"
-                  />
-                  <p className="text-[10px] text-slate-500">
-                    Propulse de manière optimale vos campagnes d'acquisition pour Globabox Maroc.
-                  </p>
-                </div>
-
-                {/* Google Analytics GA4 */}
-                <div className="space-y-1 pt-2">
-                  <label className="text-xs font-bold text-slate-300 block">ID de Mesure Google Analytics GA4</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: G-XXXXXXXXXX"
-                    value={trackingForm.googleAnalyticsId}
-                    onChange={(e) => setTrackingForm({ ...trackingForm, googleAnalyticsId: e.target.value })}
-                    className="w-full bg-[#0f1d35] border border-[#22395e] text-xs text-white rounded-xl px-4 py-3 outline-none focus:ring-1 focus:ring-orange-500 font-mono"
-                  />
-                  <p className="text-[10px] text-slate-500">
-                    Permet d'analyser les sessions, rebonds, ajouts au panier et entonnoirs de conversion avancés.
-                  </p>
-                </div>
-
-                {/* Google Search Console */}
-                <div className="space-y-1 pt-2">
-                  <label className="text-xs font-bold text-slate-300 block">Code de vérification Google Search Console</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: google-site-verification-code-value"
-                    value={trackingForm.googleSearchConsoleId}
-                    onChange={(e) => setTrackingForm({ ...trackingForm, googleSearchConsoleId: e.target.value })}
-                    className="w-full bg-[#0f1d35] border border-[#22395e] text-xs text-white rounded-xl px-4 py-3 outline-none focus:ring-1 focus:ring-orange-500 font-mono"
-                  />
-                  <p className="text-[10px] text-slate-500 font-sans">
-                    Inscrit la balise meta de propriété dans l'en-tête HTML de Globabox.com pour référencer la boutique sur Google Maroc.
-                  </p>
-                </div>
-
-                {/* Real-time Webhook URL database integration */}
-                <div className="space-y-1 pt-2">
-                  <label className="text-xs font-bold text-slate-300 block">URL du Webhook de Persistence (Google Sheets / Webhook API / Make / Zapier)</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: https://n8n.globabox.com/webhook/orders-receiver-v1"
-                    value={trackingForm.webhookUrl || ''}
-                    onChange={(e) => setTrackingForm({ ...trackingForm, webhookUrl: e.target.value })}
-                    className="w-full bg-[#0f1d35] border border-[#22395e] text-xs text-white rounded-xl px-4 py-3 outline-none focus:ring-1 focus:ring-orange-500 font-mono"
-                  />
-                  <p className="text-[10px] text-slate-500 font-sans">
-                    Chaque fois qu'un client confirme une commande, un payload JSON contenant les coordonnées complètes, la référence de la commande, les produits et les quantités lui sera transmis en arrière-plan. Garde le stockage local en tant que sauvegarde de secours résiliente.
-                  </p>
-                </div>
-
-                <div className="pt-4 flex gap-3">
-                  <button
-                    onClick={() => {
-                      saveTrackingConfig(trackingForm);
-                      setSaveSuccess(true);
-                      setTimeout(() => setSaveSuccess(false), 4500);
-                    }}
-                    className="bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-xs px-6 py-3 rounded-xl shadow-md transition-all active:scale-95 cursor-pointer animate-pulse"
-                  >
-                    Enregistrer les configurations de suivi
-                  </button>
-                  <button
-                    onClick={() => {
-                      const defaults = {
-                        metaPixelId: 'FB-987654321-GLOBABOX-PLACEHOLDER',
-                        tikTokPixelId: 'TT-ABC123XYZ-GLOBABOX-PLACEHOLDER',
-                        googleAnalyticsId: 'G-777777777-GLOBABOX-PLACEHOLDER',
-                        googleSearchConsoleId: 'google-site-verification-globabox-placeholder-code',
-                        webhookUrl: 'https://webhook.globabox.com/api/orders-save-placeholder'
-                      };
-                      setTrackingForm(defaults);
-                      saveTrackingConfig(defaults);
-                      setSaveSuccess(true);
-                      setTimeout(() => setSaveSuccess(false), 4500);
-                    }}
-                    className="bg-[#122037] border border-[#1f3352] hover:bg-[#192b47] text-slate-300 font-bold text-xs px-4 py-3 rounded-xl transition-all"
-                  >
-                    Restaurer les placeholders
-                  </button>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        )}
+        {activeTab === 'marketing' && <AdminTrackingWorkspace/>}
 
       </div>
     </AdminWorkspaceLayout>
