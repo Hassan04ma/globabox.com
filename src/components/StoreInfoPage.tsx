@@ -21,13 +21,13 @@ export default function StoreInfoPage({language,page,onSelectPage,onBackToShop}:
  const c=policyContent[language],t=l[language];
  return <main className="min-h-[65vh] bg-[#f8faf8] pb-16" dir={language==='ar'?'rtl':'ltr'} id="store-policy-page">
   <div className="border-b border-slate-200 bg-white">
-    <div className="mx-auto max-w-7xl px-4 py-9 sm:px-6 lg:px-8">
+    <div className="w-full max-w-none px-4 py-9 sm:px-6 lg:px-8">
       <button type="button" onClick={onBackToShop} className="mb-5 inline-flex items-center gap-2 text-xs font-bold text-[#104d43] hover:underline">{language==='ar'?<ArrowRight size={16}/>:<ArrowLeft size={16}/>} {t.back}</button>
       <h1 className="text-3xl font-black text-[#193e38] sm:text-4xl">{c.labels[p]}</h1>
       <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">{t.subtitle}</p>
     </div>
   </div>
-  <div className="mx-auto grid max-w-7xl gap-7 px-4 pt-10 sm:px-6 lg:grid-cols-[250px_1fr] lg:px-8">
+  <div className="grid w-full max-w-none gap-7 px-4 pt-10 sm:px-6 lg:grid-cols-[250px_1fr] lg:px-8">
     <nav aria-label={t.title} className="h-fit rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
       <h2 className="px-3 pb-3 pt-2 text-xs font-black text-[#193e38]">{t.title}</h2>
       <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-1">
