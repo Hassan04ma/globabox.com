@@ -941,7 +941,7 @@ Merci de confirmer la disponibilité et la livraison.`;
       )}
 
       {/* Single category navigation, always on the left beside catalog on desktop. */}
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 pb-10 sm:px-6 lg:flex-row lg:items-start lg:gap-7 lg:px-8" dir="ltr">
+      <div className="flex w-full max-w-none flex-col gap-6 px-4 pb-10 sm:px-6 lg:flex-row lg:items-start lg:gap-8 lg:px-8 2xl:gap-10 2xl:px-10" dir="ltr">
         <StoreSidebar
           language={language}
           selectedCategory={selectedCategory}
@@ -1068,7 +1068,7 @@ Merci de confirmer la disponibilité et la livraison.`;
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[2100px]:grid-cols-6">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
