@@ -8,7 +8,7 @@ import { TRANSLATIONS } from './translations';
 import Header from './components/Header';
 import HomeBannerSlider from './components/HomeBannerSlider';
 import StoreSidebar from './components/StoreSidebar';
-import { isPublicStoreCategory, matchesStoreDepartment } from './storefrontDepartments';
+import { STORE_DEPARTMENTS, isPublicStoreCategory, matchesStoreDepartment } from './storefrontDepartments';
 
 import ProductCard from './components/ProductCard';
 import TrustBadges from './components/TrustBadges';
@@ -872,7 +872,7 @@ Merci de confirmer la disponibilité et la livraison.`;
 
   const totalCartItems = cart.reduce((acc, item) => acc + item.quantity, 0);
   
-  const activeCategoryObj = categories.find(cat => cat.id === selectedCategory);
+  const activeCategoryObj = STORE_DEPARTMENTS.find(cat => cat.id === selectedCategory) || categories.find(cat => cat.id === selectedCategory);
   const categoryName = activeCategoryObj ? (activeCategoryObj.name[language] || activeCategoryObj.name['fr']) : (selectedCategory ? (language === 'ar' ? 'القسم' : language === 'en' ? 'Category' : 'Catégorie') : '');
 
   return (
@@ -921,6 +921,7 @@ Merci de confirmer la disponibilité et la livraison.`;
         ref={catalogRef} 
         className="min-w-0 w-full flex-1 scroll-mt-32 pt-1 pb-10"
       >
+        <div dir={isRtl ? 'rtl' : 'ltr'}>
         {/* Catalog Header with Tabs & Counter */}
         <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
@@ -1047,6 +1048,7 @@ Merci de confirmer la disponibilité et la livraison.`;
 
         {/* 5. Reassurance Giga Trust Badges */}
         <TrustBadges language={language} />
+        </div>
       </main>
       </div>
 
