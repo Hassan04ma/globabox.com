@@ -28,7 +28,7 @@ export function saveTrackingConsent(choice:{analytics:boolean;marketing:boolean}
   if(old && (old.analytics!==choice.analytics || old.marketing!==choice.marketing)) {
     window.location.reload();return;
   }
-  void initAnalytics();
+  void initAnalytics().then(()=>triggerPageView(window.location.pathname+window.location.search));
 }
 
 export const getTrackingConfig=()=>config;
@@ -48,13 +48,16 @@ function activateTags():void {
   const consent=getTrackingConsent();
   if(!consent || (!consent.analytics&&!consent.marketing))return;
   injected=true;
-  if(config.googleTagManagerId && (consent.analytics||consent.marketing)){
+  // A GTM container can inject both marketing and analytics tags. Only allow
+  // it after both opt-ins; with partial consent load individual permitted tags.
+  const gtmEnabled=Boolean(config.googleTagManagerId && consent.analytics && consent.marketing);
+  if(gtmEnabled){
     win().dataLayer=win().dataLayer||[];
     win().dataLayer.push({event:'globabox_consent',analytics:consent.analytics,marketing:consent.marketing});
     addScript('gb-gtm','https://www.googletagmanager.com/gtm.js?id='+encodeURIComponent(config.googleTagManagerId));
   }
   // Only Google direct tags when no GTM container is set, to prevent duplicate tracking.
-  if(!config.googleTagManagerId && (config.googleAnalyticsId&&consent.analytics || config.googleAdsId&&consent.marketing)){
+  if(!gtmEnabled && (config.googleAnalyticsId&&consent.analytics || config.googleAdsId&&consent.marketing)){
     setGtag();
     win().gtag!('js',new Date());
     // Explicit denied defaults for the categories not accepted.
@@ -129,7 +132,7 @@ const send=(name:string,values:Record<string,unknown>={})=>{
   if(typeof window==='undefined')return;
   if(!loaded){void initAnalytics().then(()=>send(name,values));return;}
   activateTags();
-  if(granted('analytics')&&config.googleAnalyticsId&&!config.googleTagManagerId&&win().gtag)
+  if(granted('analytics')&&config.googleAnalyticsId&&!document.getElementById('gb-gtm')&&win().gtag)
     win().gtag!('event',name==='PageView'?'page_view':name==='ViewContent'?'view_item':name==='AddToCart'?'add_to_cart':name==='InitiateCheckout'?'begin_checkout':name==='Purchase'?'purchase':name==='WhatsAppClick'?'generate_lead':name,values);
   if(granted('marketing')){
     const w=win();
@@ -137,10 +140,10 @@ const send=(name:string,values:Record<string,unknown>={})=>{
     if(config.tikTokPixelId&&w.ttq)(name==='PageView'?w.ttq.page():w.ttq.track(name==='Purchase'?'PlaceAnOrder':name==='WhatsAppClick'?'Contact':name,values));
     if(config.pinterestTagId&&w.pintrk)w.pintrk('track',name==='Purchase'?'checkout':name==='AddToCart'?'addtocart':'pagevisit',values);
     if(config.snapPixelId&&w.snaptr)w.snaptr('track',name==='Purchase'?'PURCHASE':name==='AddToCart'?'ADD_CART':name==='ViewContent'?'VIEW_CONTENT':'PAGE_VIEW',values);
-    if(config.googleAdsId&&config.googleAdsConversionLabel&&!config.googleTagManagerId&&w.gtag&&name==='Purchase')
+    if(config.googleAdsId&&config.googleAdsConversionLabel&&!document.getElementById('gb-gtm')&&w.gtag&&name==='Purchase')
       w.gtag('event','conversion',{send_to:config.googleAdsId+'/'+config.googleAdsConversionLabel,...values});
   }
-  if(config.googleTagManagerId && (granted('analytics')||granted('marketing')))
+  if(config.googleTagManagerId && document.getElementById('gb-gtm'))
     win().dataLayer?.push({event:'globabox_'+name.toLowerCase(),...values});
 };
 export function triggerPageView(path:string){
