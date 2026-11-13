@@ -1051,7 +1051,7 @@ export default function AdminPanel({
       categoriesCount={categories.length}
       databaseReady={launchStatus?.databaseReady}
       showProductAction={!isAddingProduct && !editingProduct}
-      onNewProduct={handleStartAddProduct}
+      onNewProduct={() => {handleStartAddProduct();setActiveTab('products');}}
       onPrepareProduct={fillCamelDraft}
       onPendingOrders={() => { setOrderStatusFilter('pending'); setActiveTab('orders'); }}
       onRefreshOrders={handleRefreshOrders}
