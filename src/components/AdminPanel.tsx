@@ -7,6 +7,7 @@ import ProductImage from './ProductImage';
 import AdminWorkspaceLayout from './AdminWorkspaceLayout';
 import AdminCategoriesWorkspace from './AdminCategoriesWorkspace';
 import { STORE_DEPARTMENTS, isPublicStoreCategory } from '../storefrontDepartments';
+import { getStoreSubcategories } from '../storefrontSubcategories';
 
 interface AdminPanelProps {
   language: Language;
@@ -247,6 +248,7 @@ export default function AdminPanel({
     descAr: string;
     descEn: string;
     category: string;
+    subcategory: string;
     image: string;
     additionalImages: string[];
     inStock: boolean;
@@ -271,6 +273,7 @@ export default function AdminPanel({
     descAr: '',
     descEn: '',
     category: 'maison',
+    subcategory: '',
     image: '',
     additionalImages: [],
     inStock: true,
@@ -786,6 +789,7 @@ export default function AdminPanel({
       descAr: '',
       descEn: '',
       category: categories.find(c=>isPublicStoreCategory(c.id))?.id || STORE_DEPARTMENTS[0].id,
+      subcategory: '',
       image: '',
       additionalImages: [],
       inStock: false,
@@ -817,6 +821,7 @@ export default function AdminPanel({
       descAr: prod.description.ar || '',
       descEn: prod.description.en || '',
       category: prod.category,
+      subcategory: prod.subcategory || '',
       image: prod.image,
       additionalImages: prod.additionalImages || [],
       inStock: prod.inStock,
@@ -880,6 +885,7 @@ export default function AdminPanel({
         en: productForm.featuresEn,
       },
       category: productForm.category,
+      subcategory: productForm.subcategory || undefined,
       image: productForm.image.trim(),
       images: [productForm.image.trim(), ...(productForm.additionalImages || [])].filter(Boolean),
       fallbackImage: productForm.fallbackImage || '',
@@ -1409,7 +1415,7 @@ export default function AdminPanel({
                     <label className="text-[10px] text-slate-400 uppercase font-black">Nom Français *</label>
                     <input
                       type="text"
-                      placeholder="Ex: Tente de Camping Dôme Automatique"
+                      placeholder="Ex: Organisateur multifonction pour cuisine"
                       value={productForm.nameFr}
                       onChange={(e) => setProductForm({...productForm, nameFr: e.target.value})}
                       className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43]"
@@ -1422,7 +1428,7 @@ export default function AdminPanel({
                     <label className="text-[10px] text-slate-400 uppercase font-black">Nom Arabe</label>
                     <input
                       type="text"
-                      placeholder="Ex: خيمة التخييم التلقائية الدائرية"
+                      placeholder="مثال: منظم متعدد الاستعمالات للمطبخ"
                       value={productForm.nameAr}
                       onChange={(e) => setProductForm({...productForm, nameAr: e.target.value})}
                       className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] text-right"
@@ -1434,7 +1440,7 @@ export default function AdminPanel({
                     <label className="text-[10px] text-slate-400 uppercase font-black">Nom Anglais</label>
                     <input
                       type="text"
-                      placeholder="Ex: Automatic Pop Up Camping Dome Tent"
+                      placeholder="Example: Multifunction kitchen organizer"
                       value={productForm.nameEn}
                       onChange={(e) => setProductForm({...productForm, nameEn: e.target.value})}
                       className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43]"
@@ -1469,7 +1475,7 @@ export default function AdminPanel({
                     <label className="text-[10px] text-slate-400 uppercase font-black">Catégorie cible *</label>
                     <select
                       value={productForm.category}
-                      onChange={(e) => setProductForm({...productForm, category: e.target.value})}
+                      onChange={(e) => setProductForm({...productForm, category: e.target.value, subcategory: ''})}
                       className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none"
                     >
                       <optgroup label="Rayons de GLOBABOX">
@@ -1481,6 +1487,19 @@ export default function AdminPanel({
                         ))}
                       </optgroup>
                     </select>
+                  </div>
+
+                  {/* Optional product subcategory: persisted in D1 and respected by nested storefront filters. */}
+                  <div className="space-y-1">
+                    <label htmlFor="gb-product-subcategory" className="text-[10px] font-black uppercase text-slate-500">Sous-catégorie (facultatif)</label>
+                    <select id="gb-product-subcategory"
+                      value={productForm.subcategory}
+                      onChange={e=>setProductForm({...productForm,subcategory:e.target.value})}
+                      className="w-full rounded-xl border border-slate-200 bg-[#f8fbf9] px-3 py-3 text-xs font-bold text-[#193e38] outline-none focus:border-[#104d43]">
+                      <option value="">Aucune — catégorie principale</option>
+                      {getStoreSubcategories(productForm.category).map(sub=><option key={sub.id} value={sub.id}>{sub.name.fr}</option>)}
+                    </select>
+                    <p className="text-[11px] leading-5 text-slate-500">Choisissez un rayon précis pour permettre aux clients de filtrer les produits.</p>
                   </div>
 
                   {/* Product Primary Image Link */}
