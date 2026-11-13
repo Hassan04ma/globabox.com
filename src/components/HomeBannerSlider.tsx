@@ -49,7 +49,7 @@ export default function HomeBannerSlider({language,onShopAll,onSelectDepartment}
  return <section aria-label={language==='ar'?'عروض المتجر':'Store highlights'} className="mx-auto max-w-7xl px-4 pb-3 pt-6 sm:px-6 lg:px-8" dir={direction}>
    <div className="relative isolate min-h-[340px] overflow-hidden rounded-[26px] bg-[#104d43] sm:min-h-[420px] lg:min-h-[475px]">
      {slides.map((s,i)=><img key={s.id} src={s.image} alt={s.picture} loading={i===0?'eager':'lazy'} className={'absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out '+(i===active?'opacity-100':'opacity-0')} aria-hidden={i!==active}/>)}
-     <div className="absolute inset-0 bg-gradient-to-r from-[#102f2b]/95 via-[#102f2b]/80 to-[#102f2b]/20" />
+     <div className={'absolute inset-0 '+(language==='ar'?'bg-gradient-to-l':'bg-gradient-to-r')+' from-[#102f2b]/95 via-[#102f2b]/80 to-[#102f2b]/20'} />
      <div className="relative z-10 flex min-h-[340px] max-w-[660px] flex-col justify-center px-7 py-12 text-white sm:min-h-[420px] sm:px-12 lg:min-h-[475px] lg:px-16">
        <span className="mb-5 w-fit rounded-full border border-white/30 bg-white/10 px-4 py-2 text-[10px] font-bold tracking-[.16em] text-[#f7d885] sm:text-xs">{copy.tag}</span>
        <h1 key={'h-'+active} className="max-w-[600px] text-3xl font-black leading-[1.2] tracking-tight sm:text-[44px] lg:text-[53px]">{copy.title}</h1>
