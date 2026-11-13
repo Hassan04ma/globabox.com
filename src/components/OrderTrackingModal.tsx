@@ -91,7 +91,7 @@ export default function OrderTrackingModal({isOpen,onClose,language}:Props){
    const response=await fetch('/api/track-order',{method:'POST',credentials:'same-origin',
     headers:{'Content-Type':'application/json','Accept':'application/json'},
     body:JSON.stringify({reference:ref,phone:number}),signal:controller.signal});
-   const payload=await response.json().catch(()=>null);
+   const payload=await response.json().catch(()=>null) as {success?:boolean;tracking?:TrackingResult}|null;
    if(controller.signal.aborted)return;
    if(response.ok&&payload?.success&&payload?.tracking){setResult(payload.tracking as TrackingResult);}
    else setError(response.status===404?t.notFound:t.unavailable);
