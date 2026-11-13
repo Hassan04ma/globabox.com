@@ -8,6 +8,8 @@ import { TRANSLATIONS } from './translations';
 import Header from './components/Header';
 import HomeBannerSlider from './components/HomeBannerSlider';
 import StoreSidebar from './components/StoreSidebar';
+import StoreInfoPage from './components/StoreInfoPage';
+import { STORE_SUBCATEGORIES, matchesSubcategory } from './storefrontSubcategories';
 import { STORE_DEPARTMENTS, isPublicStoreCategory, matchesStoreDepartment } from './storefrontDepartments';
 
 import ProductCard from './components/ProductCard';
@@ -204,6 +206,8 @@ export default function App() {
   const [language, setLanguage] = useState<Language>('fr');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState(() => new URLSearchParams(window.location.search).get('subcategory') || '');
+  const [infoPage, setInfoPage] = useState<string|null>(() => new URLSearchParams(window.location.search).get('page'));
   const [filterType, setFilterType] = useState<'all' | 'bestsellers' | 'newarrivals'>('all');
   const [sortOption, setSortOption] = useState<'newest' | 'price_low_high' | 'price_high_low'>('newest');
   const [minPrice, setMinPrice] = useState<number | ''>('');
@@ -318,6 +322,8 @@ export default function App() {
     const searchParams = new URLSearchParams(window.location.search);
     const initialProduct = searchParams.get('product');
     const initialCategory = searchParams.get('category');
+    const initialSubcategory = searchParams.get('subcategory');
+    if(initialSubcategory) setSelectedSubcategory(initialSubcategory);
     if (searchParams.get('admin') === 'true') {
       setIsAdminOpen(true);
     }
@@ -371,17 +377,33 @@ export default function App() {
 
   // Update dynamic clean URL route params without full page reload
   useEffect(() => {
-    const searchParams = new URLSearchParams();
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.delete('category');
+    searchParams.delete('subcategory');
+    searchParams.delete('product');
     if (selectedProduct) {
       searchParams.set('product', selectedProduct.id);
     } else if (selectedCategory) {
       searchParams.set('category', selectedCategory);
+      if (selectedSubcategory) searchParams.set('subcategory', selectedSubcategory);
     }
     
     const query = searchParams.toString();
     const newRelativePathQuery = window.location.pathname + (query ? `?${query}` : '');
     window.history.replaceState(null, '', newRelativePathQuery);
-  }, [selectedProduct, selectedCategory]);
+  }, [selectedProduct, selectedCategory, selectedSubcategory]);
+
+  // Keep full policy pages shareable and responsive to browser back/forward.
+  useEffect(() => {
+    const syncLocation = () => {
+      const query = new URLSearchParams(window.location.search);
+      setInfoPage(query.get('page'));
+      setSelectedCategory(query.get('category') || '');
+      setSelectedSubcategory(query.get('subcategory') || '');
+    };
+    window.addEventListener('popstate', syncLocation);
+    return () => window.removeEventListener('popstate', syncLocation);
+  }, []);
 
   // Log search input changes
   useEffect(() => {
@@ -809,6 +831,7 @@ Merci de confirmer la disponibilité et la livraison.`;
 
   // Apply search and sorting
   const filteredProducts = afterCategory.filter((product) => {
+    if (selectedSubcategory && !matchesSubcategory(product,selectedSubcategory)) return false;
     // 2. Search term match
     if (searchTerm.trim() !== '') {
       const normProductText = normalizeText(getSearchableText(product, categories));
@@ -873,7 +896,8 @@ Merci de confirmer la disponibilité et la livraison.`;
   const totalCartItems = cart.reduce((acc, item) => acc + item.quantity, 0);
   
   const activeCategoryObj = STORE_DEPARTMENTS.find(cat => cat.id === selectedCategory) || categories.find(cat => cat.id === selectedCategory);
-  const categoryName = activeCategoryObj ? (activeCategoryObj.name[language] || activeCategoryObj.name['fr']) : (selectedCategory ? (language === 'ar' ? 'القسم' : language === 'en' ? 'Category' : 'Catégorie') : '');
+  const activeSubcategoryObj=STORE_SUBCATEGORIES.find(sub=>sub.id===selectedSubcategory && sub.parent===selectedCategory);
+  const categoryName = activeSubcategoryObj ? activeSubcategoryObj.name[language] : activeCategoryObj ? (activeCategoryObj.name[language] || activeCategoryObj.name['fr']) : (selectedCategory ? (language === 'ar' ? 'القسم' : language === 'en' ? 'Category' : 'Catégorie') : '');
 
   return (
     <div 
@@ -897,12 +921,17 @@ Merci de confirmer la disponibilité et la livraison.`;
       {/* Spacing Offset for Fixed Header */}
       <div className="h-[151px] md:h-[103px]"></div>
 
+      {infoPage ? (
+        <StoreInfoPage language={language} page={infoPage}
+          onSelectPage={(tab)=>{setInfoPage(tab);window.history.pushState(null,'','?page='+encodeURIComponent(tab));window.scrollTo({top:0,behavior:'smooth'});}}
+          onBackToShop={()=>{setInfoPage(null);window.history.pushState(null,'','/');setSelectedCategory('');setSelectedSubcategory('');window.scrollTo({top:0,behavior:'smooth'});}}/>
+      ) : (<>
       {/* Store hero: rotating home-and-lifestyle promotions, each with a working catalog action. */}
       {!selectedCategory && !searchTerm && (
         <HomeBannerSlider
           language={language}
           onShopAll={handleScrollToCatalog}
-          onSelectDepartment={(id) => {setSelectedCategory(id); window.requestAnimationFrame(handleScrollToCatalog);}}
+          onSelectDepartment={(id) => {setSelectedCategory(id);setSelectedSubcategory(''); window.requestAnimationFrame(handleScrollToCatalog);}}
         />
       )}
 
@@ -911,7 +940,9 @@ Merci de confirmer la disponibilité et la livraison.`;
         <StoreSidebar
           language={language}
           selectedCategory={selectedCategory}
-          onSelect={(id) => {setSelectedCategory(id); window.requestAnimationFrame(handleScrollToCatalog);}}
+          selectedSubcategory={selectedSubcategory}
+          onSelect={(id) => {setSelectedCategory(id);setSelectedSubcategory('');window.requestAnimationFrame(handleScrollToCatalog);}}
+          onSelectSubcategory={(parent,child) => {setSelectedCategory(parent);setSelectedSubcategory(child);window.requestAnimationFrame(handleScrollToCatalog);}}
           products={products}
         />
 
@@ -1022,6 +1053,7 @@ Merci de confirmer la disponibilité et la livraison.`;
             <button
               onClick={() => {
                 setSelectedCategory('');
+                setSelectedSubcategory('');
                 setSearchTerm('');
                 setFilterType('all');
               }}
@@ -1059,16 +1091,17 @@ Merci de confirmer la disponibilité et la livraison.`;
       <FAQSection language={language} />
 
       {/* 5.3 Closing Highly Polished WhatsApp & Direct-Call CTA */}
-      <FinalWhatsAppCTA language={language} onWhatsAppOrder={handleWhatsAppOrderSubmit} />
+      <FinalWhatsAppCTA language={language} />
+      </>)}
 
       {/* 6. Professional public storefront footer */}
       <StoreFooter
         language={language}
-        onHome={() => { setSelectedCategory(''); setSearchTerm(''); setFilterType('all'); window.scrollTo({top: 0, behavior: 'smooth'}); }}
-        onBrowse={handleScrollToCatalog}
+        onHome={() => { setInfoPage(null);window.history.pushState(null,'','/');setSelectedCategory('');setSelectedSubcategory('');setSearchTerm('');setFilterType('all');window.scrollTo({top: 0, behavior: 'smooth'}); }}
+        onBrowse={()=>{setInfoPage(null);window.history.pushState(null,'','/');setSelectedCategory('');setSelectedSubcategory('');window.requestAnimationFrame(handleScrollToCatalog);}}
         onTrack={() => setIsTrackingOpen(true)}
         onCart={() => setIsCartOpen(true)}
-        onLegal={(tab) => { setLegalActiveTab(tab); setIsLegalModalOpen(true); }}
+        onLegal={(tab) => { setInfoPage(tab);window.history.pushState(null,'','?page='+encodeURIComponent(tab));window.scrollTo({top:0,behavior:'smooth'}); }}
       />
 
       {/* 9. Interactive sliding Cart Drawer */}
