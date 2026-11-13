@@ -11,7 +11,7 @@ const copy={
 
 export default function FinalWhatsAppCTA({language}:{language:Language}){
  const t=copy[language];
- return <section id="store-contact" className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8" dir={language==='ar'?'rtl':'ltr'}>
+ return <section id="store-contact" className="w-full max-w-none px-4 py-10 sm:px-6 lg:px-8" dir={language==='ar'?'rtl':'ltr'}>
   <div className="rounded-[26px] border border-[#dce9e1] bg-[#f5f9f6] p-6 sm:p-9">
     <div className="mb-7 max-w-2xl">
       <p className="mb-2 text-[11px] font-extrabold tracking-[.15em] text-[#247565]">{t.tag}</p>
