@@ -1017,7 +1017,7 @@ export default function AdminPanel({
 
   const filteredProductsList = adminProducts.filter(p => {
     const q=productQuery.trim().toLowerCase();
-    const matches=!q || [p.id,p.name?.fr,p.name?.ar,p.name?.en,p.category].some(x=>String(x||'').toLowerCase().includes(q));
+    const matches=!q || [p.id,p.sku,p.name?.fr,p.name?.ar,p.name?.en,p.category,p.subcategory,...(p.tags||[])].some(x=>String(x||'').toLowerCase().includes(q));
     const statusMatches=productStatusFilter==='all' ||
       (productStatusFilter==='published' && p.isActive===true) ||
       (productStatusFilter==='draft' && p.isActive!==true) ||
@@ -1340,7 +1340,7 @@ export default function AdminPanel({
             {/* Catalogue Control & Backup Center */}
             <div className="bg-white rounded-2xl border border-slate-200 p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-black uppercase tracking-wider text-slate-200">📦 Gestion de Transit du Catalogue</span>
+                <span className="text-xs font-black uppercase tracking-wider text-[#193e38]">Importation et sauvegarde des produits</span>
                 <span className="text-[10px] text-slate-400 font-semibold font-sans">Sauvegardez, clonez et restaurez vos fiches produits via des backups CSV ou JSON standard</span>
               </div>
               
@@ -1594,146 +1594,96 @@ export default function AdminPanel({
               </section>
             )}
 
-            {/* Products grid / Search list view */}
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4">
-                <span className="text-xs font-bold text-[#193e38]">Statut du catalogue</span>
+            {/* Shopify-style listing: search, status, images and clear actions. */}
+            <section className="overflow-hidden rounded-[22px] border border-[#d9e7df] bg-white shadow-sm">
+              <header className="flex flex-col justify-between gap-4 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:p-6">
+                <div>
+                  <h3 className="text-lg font-black text-[#193e38]">Liste des produits</h3>
+                  <p className="mt-1 text-xs text-slate-500">Recherchez, modifiez et organisez votre catalogue depuis un seul endroit.</p>
+                </div>
+                <button type="button" onClick={handleStartAddProduct}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#104d43] px-5 text-xs font-extrabold text-white hover:bg-[#0b3931]">
+                  <Plus size={17}/>Ajouter un produit
+                </button>
+              </header>
+              <div className="grid gap-3 border-b border-slate-100 p-4 sm:grid-cols-[minmax(0,1fr)_210px] sm:p-5">
+                <label className="relative">
+                  <Search size={19} className="pointer-events-none absolute start-4 top-3.5 text-slate-400"/>
+                  <input type="search" value={productQuery} onChange={e=>setProductQuery(e.target.value)}
+                    placeholder="Rechercher par nom, référence, catégorie ou tag…" aria-label="Rechercher un produit"
+                    className="min-h-12 w-full rounded-xl border border-slate-200 bg-[#fcfdfc] ps-12 pe-4 text-sm text-[#193e38] outline-none focus:border-[#104d43]"/>
+                </label>
                 <select value={productStatusFilter} onChange={e=>setProductStatusFilter(e.target.value as typeof productStatusFilter)}
-                  aria-label="Filtrer le statut des produits"
-                  className="min-h-10 rounded-xl border border-[#d4e3d8] bg-white px-3 text-xs font-bold text-[#104d43] outline-none focus:border-[#104d43]">
-                  <option value="all">Tous les produits</option>
-                  <option value="published">Publiés</option>
-                  <option value="draft">Brouillons</option>
-                  <option value="outofstock">Rupture de stock</option>
+                  aria-label="Filtrer par statut"
+                  className="min-h-12 w-full rounded-xl border border-slate-200 bg-[#fcfdfc] px-4 text-xs font-bold text-[#193e38] outline-none focus:border-[#104d43]">
+                  <option value="all">Tous les produits ({adminProducts.length})</option>
+                  <option value="published">Publiés ({adminProducts.filter(p=>p.isActive===true).length})</option>
+                  <option value="draft">Brouillons ({adminProducts.filter(p=>p.isActive!==true).length})</option>
+                  <option value="outofstock">Rupture de stock ({adminProducts.filter(p=>!p.inStock||p.stockStatus==='out_of_stock').length})</option>
                 </select>
-                <span className="ms-auto text-xs font-semibold text-slate-500">{filteredProductsList.length} résultat(s) · {adminProducts.length} au total</span>
               </div>
-              <div className="relative max-w-md bg-white rounded-2xl border border-slate-200">
-                <input
-                  type="text"
-                  placeholder="Filtrer les produits par nom..."
-                  value={productQuery}
-                  onChange={(e) => setProductQuery(e.target.value)}
-                  className="w-full bg-transparent border-none text-xs rounded-xl py-2.5 pl-9 pr-4 text-[#193e38] placeholder-slate-400 outline-none"
-                />
-                <Search className="absolute left-3 top-2.5 text-slate-400 w-4 h-4" />
-              </div>
-
-              <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto text-xs">
-                
-                {/* Table Header */}
-                <div className="bg-[#f1f7f3] px-4 py-3 border-b border-slate-200 grid grid-cols-12 gap-2 text-slate-400 uppercase tracking-widest text-[9px] font-black">
-                  <div className="col-span-1">Image</div>
-                  <div className="col-span-5">Détails du Produit Nom</div>
-                  <div className="col-span-2">Catégorie</div>
-                  <div className="col-span-2">Prix Actuel / Ancien</div>
-                  <div className="col-span-1">Stock</div>
-                  <div className="col-span-1 text-center font-bold">Actions</div>
-                </div>
-
-                {/* Table Rows */}
-                <div className="divide-y divide-[#1c2e4a]/50">
-                  {filteredProductsList.map((prod) => (
-                    <div
-                      key={prod.id}
-                      className="min-w-[930px] px-4 py-3.5 grid grid-cols-12 gap-2 items-center hover:bg-[#edf5ef]/40 transition-colors"
-                    >
-                      {/* Thumbnail photo */}
-                      <div className="col-span-1">
-                        <img
-                          src={prod.image}
-                          alt={prod.name.fr}
-                          className="w-9 h-9 object-cover rounded-lg border border-slate-200"
-                        />
-                      </div>
-
-                      {/* Name Details and sub-badges */}
-                      <div className="col-span-5 space-y-1">
-                        <p className="font-extrabold text-[#193e38] text-[12px]">{prod.name.fr}</p>
-                        <p className="text-right text-[10px] text-slate-400 font-sans mt-0.5">{prod.name.ar}</p>
-                        <div className="flex gap-1.5 flex-wrap pt-1 font-sans">
-                          {prod.isActive === true ? (
-                            <span className="bg-emerald-950/40 text-emerald-400 text-[9px] font-bold px-2 py-0.5 rounded border border-emerald-800/50">PUBLIÉ</span>
-                          ) : (
-                            <span className="bg-amber-50 text-amber-400 text-[9px] font-bold px-2 py-0.5 rounded border border-amber-800/50">BROUILLON — NON VISIBLE</span>
-                          )}
-                          {prod.bestSeller && (
-                            <span className="bg-orange-950/40 text-[#147657] text-[8px] font-bold px-1.5 py-0.5 rounded border border-orange-900/30">BEST</span>
-                          )}
-                          {(() => {
-                            const isNew = prod.createdAt 
-                              ? (Date.now() - new Date(prod.createdAt).getTime()) / (1000 * 60 * 60 * 24) <= 7 
-                              : !!prod.newArrival;
-                            return isNew && (
-                              <span className="bg-blue-950/40 text-[#a5b4fc] text-[8px] font-bold px-1.5 py-0.5 rounded border border-blue-900/30">
-                                NEW{prod.createdAt && " (AUTO)"}
-                              </span>
-                            );
-                          })()}
+              <p className="border-b border-slate-100 px-5 py-3 text-xs font-semibold text-[#64796c]">{filteredProductsList.length} produit(s) correspondant à la recherche · Données du catalogue D1</p>
+              <div className="w-full overflow-x-auto">
+                <table className="w-full min-w-[850px] border-collapse text-start text-xs">
+                  <thead className="bg-[#f5f9f6] text-[11px] font-extrabold text-[#527263]">
+                    <tr>
+                      <th className="px-5 py-4 text-start">Produit</th>
+                      <th className="px-4 py-4 text-start">Catégorie</th>
+                      <th className="px-4 py-4 text-start">Statut</th>
+                      <th className="px-4 py-4 text-start">Stock</th>
+                      <th className="px-4 py-4 text-end">Prix</th>
+                      <th className="px-5 py-4 text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#e8eee9]">
+                    {filteredProductsList.map(prod=><tr key={prod.id} className="hover:bg-[#f9fcfa]">
+                      <td className="px-5 py-4">
+                        <div className="flex min-w-0 items-center gap-3">
+                          <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#e2ece5] bg-[#f3f7f4]">
+                            {prod.image?<img src={prod.image} loading="lazy" alt="" className="h-full w-full object-contain"/>:<Package size={23} className="text-[#91aa9b]"/>}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="max-w-[330px] truncate text-sm font-extrabold text-[#193e38]">{prod.name?.fr||prod.id}</p>
+                            <p className="mt-1 font-mono text-[11px] text-slate-500">{prod.sku||prod.id}</p>
+                            {Boolean(prod.tags?.length)&&<p className="mt-1 max-w-[300px] truncate text-[11px] text-[#658274]">{prod.tags?.slice(0,3).join(' · ')}</p>}
+                          </div>
                         </div>
-                      </div>
-
-                      {/* Category ID tag */}
-                      <div className="col-span-2">
-                        <span className="bg-[#f8fbf9] text-slate-600 font-semibold px-2 py-0.5 rounded-md border border-slate-200 uppercase text-[10px]">
-                          {prod.category}
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className="block text-xs font-semibold text-[#193e38]">{categories.find(cat=>cat.id===prod.category)?.name.fr||STORE_DEPARTMENTS.find(cat=>cat.id===prod.category)?.name.fr||prod.category}</span>
+                        {prod.subcategory&&<span className="mt-1 block text-[11px] text-slate-500">{getStoreSubcategories(prod.category).find(sub=>sub.id===prod.subcategory)?.name.fr||prod.subcategory}</span>}
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={'inline-flex rounded-full px-3 py-1.5 text-[11px] font-extrabold '+(prod.isActive===true?'bg-[#e7f6ec] text-[#176b45]':'bg-amber-50 text-amber-700')}>{prod.isActive===true?'Publié':'Brouillon'}</span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={'text-[11px] font-bold '+(!prod.inStock||prod.stockStatus==='out_of_stock'?'text-red-700':prod.stockStatus==='limited'?'text-amber-700':'text-[#17714c]')}>
+                          {!prod.inStock||prod.stockStatus==='out_of_stock'?'Rupture':prod.stockStatus==='limited'?'Stock limité':'En stock'}
                         </span>
-                      </div>
-
-                      {/* Prices */}
-                      <div className="col-span-2 font-mono font-bold">
-                        <span className="text-[#147657] text-xs">{prod.price} DH</span>
-                        {prod.originalPrice && (
-                          <span className="text-slate-500 line-through text-[10px] block font-light">
-                            {prod.originalPrice} DH
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Status checkbox summary */}
-                      <div className="col-span-1 flex items-center gap-1.5">
-                        {(!prod.inStock || prod.stockStatus === 'out_of_stock') ? (
-                          <>
-                            <span className="w-2.5 h-2.5 rounded-full bg-red-500" title="Rupture de stock"></span>
-                            <span className="text-[10px] font-bold text-red-400">Rupture</span>
-                          </>
-                        ) : prod.stockStatus === 'limited' ? (
-                          <>
-                            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" title="Stock limité"></span>
-                            <span className="text-[10px] font-bold text-amber-400 font-sans">Limité</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" title="En stock"></span>
-                            <span className="text-[10px] font-bold text-emerald-400">En stock</span>
-                          </>
-                        )}
-                      </div>
-
-                      {/* Primary Actions */}
-                      <div className="col-span-1 flex gap-2 justify-center">
-                        <button
-                          onClick={() => handleStartEditProduct(prod)}
-                          className="p-1 px-2.5 bg-indigo-900/40 border border-indigo-700/50 hover:bg-[#1f3054] text-indigo-300 rounded-lg font-bold"
-                          title="Modifier le produit"
-                        >
-                          Éditer
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProduct(prod.id)}
-                          className="p-1.5 bg-[#26121b] border border-red-950/50 hover:bg-[#341824] text-red-400 rounded-lg font-bold"
-                          title="Supprimer du catalogue"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-
-                    </div>
-                  ))}
-                </div>
-
+                      </td>
+                      <td className="px-4 py-4 text-end">
+                        <strong className="whitespace-nowrap text-sm text-[#193e38]">{prod.price.toFixed(2)} DH</strong>
+                        {prod.originalPrice&&prod.originalPrice>prod.price&&<span className="mt-1 block text-[11px] text-slate-400 line-through">{prod.originalPrice.toFixed(2)} DH</span>}
+                      </td>
+                      <td className="px-5 py-4 text-end">
+                        <div className="flex items-center justify-end gap-2">
+                          <button type="button" onClick={()=>handleStartEditProduct(prod)} className="min-h-10 rounded-xl border border-[#bed9c8] bg-[#f0f8f2] px-4 text-xs font-extrabold text-[#104d43] hover:bg-[#e0f0e5]">Modifier</button>
+                          <button type="button" onClick={()=>handleDeleteProduct(prod.id)} aria-label={'Retirer '+(prod.name?.fr||prod.id)} title="Retirer du catalogue"
+                            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-red-600 hover:bg-red-50"><Trash2 size={16}/></button>
+                        </div>
+                      </td>
+                    </tr>)}
+                    {filteredProductsList.length===0&&<tr><td colSpan={6} className="px-5 py-16 text-center">
+                      <Package size={33} className="mx-auto text-[#9db5a3]"/>
+                      <h4 className="mt-4 text-base font-black text-[#193e38]">Aucun produit trouvé</h4>
+                      <p className="mt-2 text-xs text-slate-500">{adminProducts.length===0?'Commencez par ajouter votre premier produit.':'Essayez un autre filtre ou une autre recherche.'}</p>
+                      <button type="button" onClick={()=>{setProductQuery('');setProductStatusFilter('all');}} className="mt-4 rounded-xl border border-[#b8d8c4] px-4 py-2.5 text-xs font-bold text-[#104d43]">Effacer les filtres</button>
+                    </td></tr>}
+                  </tbody>
+                </table>
               </div>
-            </div>
+            </section>
+
 
           </div>
         )}
