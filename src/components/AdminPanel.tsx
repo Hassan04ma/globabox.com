@@ -1384,405 +1384,211 @@ export default function AdminPanel({
               </div>
             </div>
             
-            {/* Adding / Editing Form overlay */}
+            {/* Shopify-style product editor: essential fields first, advanced options collapsible. */}
             {(isAddingProduct || editingProduct) && (
-              <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-7 space-y-5">
-                <div className="flex items-center justify-between border-b border-slate-200/85 pb-3">
-                  <h3 className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
-                    <Edit2 className="w-4 h-4 text-[#147657]" />
-                    <span>{editingProduct ? `Modifier: ${editingProduct.name.fr}` : 'Ajouter un nouveau produit'}</span>
-                  </h3>
-                  <button
-                    onClick={() => { setEditingProduct(null); setIsAddingProduct(false); }}
-                    className="p-1 px-3 bg-[#edf5ef] hover:bg-[#1e3254] text-slate-600 text-xs font-bold rounded-lg"
-                  >
-                    Fermer le formulaire
-                  </button>
-                </div>
-
-                <div className="bg-[#f2f7f4] border border-slate-200 rounded-xl p-3">
-                  <label className="block text-xs font-bold text-[#193e38] mb-2">Photos du produit (JPG / PNG / WebP, 750 Ko maximum)</label>
-                  <input type="file" multiple accept="image/webp,image/jpeg,image/png"
-                    disabled={mediaUploading} onChange={e=>{void uploadProductPhotos(e.target.files);e.target.value='';}}
-                    className="text-xs text-slate-600 w-full" />
-                  {mediaUploading && <p className="text-xs text-[#147657] mt-2">Téléchargement…</p>}
-                </div>
-                <form onSubmit={handleSaveProduct} className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
-                  
-                  {/* Product ID / slug */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 uppercase font-black">ID / Slug du Produit *</label>
-                    <input
-                      type="text"
-                      placeholder="Ex: organisateur-cuisine"
-                      value={productForm.id}
-                      onChange={(e) => setProductForm({...productForm, id: e.target.value.toLowerCase().trim().replace(/[^a-z0-9-_]/g, '-')})}
-                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono"
-                      required
-                    />
+              <section id="gb-product-editor" className="overflow-hidden rounded-[22px] border border-[#cfdfd4] bg-[#f6faf7] shadow-sm">
+                <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-[#dce9df] bg-white/95 px-5 py-4 backdrop-blur sm:px-7">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[.15em] text-[#32856e]">GLOBABOX / PRODUITS</p>
+                    <h3 className="mt-1 text-lg font-black text-[#193e38]">{editingProduct?'Modifier le produit':'Ajouter un produit'}</h3>
+                    <p className="mt-1 text-xs text-slate-500">{editingProduct?'Modifiez les informations et enregistrez vos changements.':'Votre nouveau produit sera d’abord enregistré en brouillon.'}</p>
                   </div>
-
-                  {/* Name FR */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 uppercase font-black">Nom Français *</label>
-                    <input
-                      type="text"
-                      placeholder="Ex: Organisateur multifonction pour cuisine"
-                      value={productForm.nameFr}
-                      onChange={(e) => setProductForm({...productForm, nameFr: e.target.value})}
-                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43]"
-                      required
-                    />
+                  <div className="flex items-center gap-2">
+                    <span className={'rounded-full px-3 py-1.5 text-xs font-extrabold '+(editingProduct&&productForm.isActive?'bg-[#e6f6eb] text-[#166b45]':'bg-amber-50 text-amber-700')}>{editingProduct&&productForm.isActive?'Publié':'Brouillon'}</span>
+                    <button type="button" onClick={()=>{setEditingProduct(null);setIsAddingProduct(false);}} className="min-h-10 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50">Fermer</button>
                   </div>
-
-                  {/* Name AR */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 uppercase font-black">Nom Arabe</label>
-                    <input
-                      type="text"
-                      placeholder="مثال: منظم متعدد الاستعمالات للمطبخ"
-                      value={productForm.nameAr}
-                      onChange={(e) => setProductForm({...productForm, nameAr: e.target.value})}
-                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] text-right"
-                    />
-                  </div>
-
-                  {/* Name EN */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 uppercase font-black">Nom Anglais</label>
-                    <input
-                      type="text"
-                      placeholder="Example: Multifunction kitchen organizer"
-                      value={productForm.nameEn}
-                      onChange={(e) => setProductForm({...productForm, nameEn: e.target.value})}
-                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43]"
-                    />
-                  </div>
-
-                  {/* Pricing (Base) */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 uppercase font-black">Prix de Vente (DH) *</label>
-                    <input
-                      type="number"
-                      value={productForm.price}
-                      onChange={(e) => setProductForm({...productForm, price: Number(e.target.value)})}
-                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono font-bold"
-                      required
-                    />
-                  </div>
-
-                  {/* Original / crossed Price */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 uppercase font-black">Ancien Prix (DH - Pour réduction)</label>
-                    <input
-                      type="number"
-                      value={productForm.originalPrice}
-                      onChange={(e) => setProductForm({...productForm, originalPrice: Number(e.target.value)})}
-                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono"
-                    />
-                  </div>
-
-                  {/* Category dropdown Selection */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 uppercase font-black">Catégorie cible *</label>
-                    <select
-                      value={productForm.category}
-                      onChange={(e) => setProductForm({...productForm, category: e.target.value, subcategory: ''})}
-                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none"
-                    >
-                      <optgroup label="Rayons de GLOBABOX">
-                        {STORE_DEPARTMENTS.map(c=><option key={c.id} value={c.id}>{c.name.fr}</option>)}
-                      </optgroup>
-                      <optgroup label="Autres catégories existantes">
-                        {categories.filter(c=>!STORE_DEPARTMENTS.some(store=>store.id===c.id)).map(c=>(
-                          <option key={c.id} value={c.id}>{c.name.fr||c.id} ({c.id})</option>
-                        ))}
-                      </optgroup>
-                    </select>
-                  </div>
-
-                  {/* Optional product subcategory: persisted in D1 and respected by nested storefront filters. */}
-                  <div className="space-y-1">
-                    <label htmlFor="gb-product-subcategory" className="text-[10px] font-black uppercase text-slate-500">Sous-catégorie (facultatif)</label>
-                    <select id="gb-product-subcategory"
-                      value={productForm.subcategory}
-                      onChange={e=>setProductForm({...productForm,subcategory:e.target.value})}
-                      className="w-full rounded-xl border border-slate-200 bg-[#f8fbf9] px-3 py-3 text-xs font-bold text-[#193e38] outline-none focus:border-[#104d43]">
-                      <option value="">Aucune — catégorie principale</option>
-                      {getStoreSubcategories(productForm.category).map(sub=><option key={sub.id} value={sub.id}>{sub.name.fr}</option>)}
-                    </select>
-                    <p className="text-[11px] leading-5 text-slate-500">Choisissez un rayon précis pour permettre aux clients de filtrer les produits.</p>
-                  </div>
-
-                  {/* Product Primary Image Link */}
-                  <div className="space-y-1 md:col-span-2">
-                    <label className="text-[10px] text-slate-400 uppercase font-black">URL de l'image principale du produit</label>
-                    <input
-                      type="text"
-                      value={productForm.image}
-                      onChange={(e) => setProductForm({...productForm, image: e.target.value})}
-                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2.5 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono text-xs"
-                      placeholder="Insérer l'URL Unsplash ou image valide"
-                    />
-                  </div>
-
-                  {/* Product Gallery Images Link */}
-                  <div className="space-y-1 md:col-span-2">
-                    <label className="text-[10px] text-slate-400 uppercase font-black">
-                      URLs des images de la galerie (séparées par des virgules ou des retours à la ligne)
-                    </label>
-                    <textarea
-                      rows={2}
-                      value={productForm.additionalImages.join(', ')}
-                      onChange={(e) => {
-                        const urls = e.target.value.split(/,|\n/).map(u => u.trim()).filter(Boolean);
-                        setProductForm({...productForm, additionalImages: urls});
-                      }}
-                      className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono text-xs"
-                      placeholder="URL Galerie 1, URL Galerie 2, URL Galerie 3..."
-                    />
-                  </div>
-
-                  {/* Fallback Image & Fallback Gallery */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:col-span-2">
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 uppercase font-black">Image de secours (Fallback Image)</label>
-                      <input
-                        type="text"
-                        value={productForm.fallbackImage}
-                        onChange={(e) => setProductForm({...productForm, fallbackImage: e.target.value})}
-                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2.5 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono text-xs"
-                        placeholder="Insérer l'URL d'image de secours"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 uppercase font-black">Images de secours Galerie (séparées par des virgules)</label>
-                      <input
-                        type="text"
-                        value={productForm.fallbackImages.join(', ')}
-                        onChange={(e) => {
-                          const urls = e.target.value.split(',').map(u => u.trim()).filter(Boolean);
-                          setProductForm({...productForm, fallbackImages: urls});
-                        }}
-                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2.5 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-mono text-xs"
-                        placeholder="Fallback URL 1, Fallback URL 2..."
-                      />
-                    </div>
-                  </div>
-
-                  {/* Multilingual Features List */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2 bg-[#09111e]/40 p-4 rounded-xl border border-[#1b2b45]">
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 uppercase font-black block">Caractéristiques FR (une par ligne)</label>
-                      <textarea
-                        rows={3}
-                        value={productForm.featuresFr.join('\n')}
-                        onChange={(e) => {
-                          const list = e.target.value.split('\n').map(l => l.trim()).filter(Boolean);
-                          setProductForm({...productForm, featuresFr: list});
-                        }}
-                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-sans text-xs"
-                        placeholder="Caractéristique 1&#10;Caractéristique 2"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 uppercase font-black block text-right">الخصائص بالعربية (واحدة في كل سطر)</label>
-                      <textarea
-                        rows={3}
-                        value={productForm.featuresAr.join('\n')}
-                        onChange={(e) => {
-                          const list = e.target.value.split('\n').map(l => l.trim()).filter(Boolean);
-                          setProductForm({...productForm, featuresAr: list});
-                        }}
-                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-sans text-xs text-right"
-                        placeholder="ميزة 1&#10;ميزة 2"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 uppercase font-black block">Features EN (one per line)</label>
-                      <textarea
-                        rows={3}
-                        value={productForm.featuresEn.join('\n')}
-                        onChange={(e) => {
-                          const list = e.target.value.split('\n').map(l => l.trim()).filter(Boolean);
-                          setProductForm({...productForm, featuresEn: list});
-                        }}
-                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-sans text-xs"
-                        placeholder="Feature 1&#10;Feature 2"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Image Preview Grid */}
-                  <div className="space-y-2 md:col-span-2 bg-[#09111e]/60 p-4 rounded-xl border border-[#1b2b45] mt-1">
-                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
-                      Aperçu en temps réel
-                    </span>
-                    <div className="flex flex-wrap gap-3 mt-1.5">
-                      {/* Main Image Preview */}
-                      <div className="flex flex-col items-center gap-1">
-                        <span className="text-[9px] text-[#22c55e] font-extrabold uppercase">
-                          Principale
-                        </span>
-                        <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 relative">
-                          <ProductImage
-                            src={productForm.image}
-                            alt="Aperçu principal"
-                            language={language}
-                            className="w-full h-full object-cover"
-                            containerClassName="w-16 h-16"
-                          />
-                        </div>
+                </header>
+                <form onSubmit={handleSaveProduct} className="grid gap-5 p-4 sm:p-6 xl:grid-cols-[minmax(0,1.75fr)_minmax(300px,.75fr)]">
+                  <div className="min-w-0 space-y-5">
+                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
+                      <h4 className="mb-4 text-base font-black text-[#193e38]">Informations du produit</h4>
+                      <label htmlFor="gb-product-title" className="mb-1.5 block text-xs font-extrabold text-[#385647]">Nom du produit *</label>
+                      <input id="gb-product-title" required maxLength={220} value={productForm.nameFr}
+                        onChange={e=>setProductForm({...productForm,nameFr:e.target.value})}
+                        placeholder="Ex. Organisateur de cuisine multifonction" className="mb-4 min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold text-[#193e38] outline-none focus:border-[#104d43]"/>
+                      <label htmlFor="gb-product-description" className="mb-1.5 block text-xs font-extrabold text-[#385647]">Description du produit</label>
+                      <textarea id="gb-product-description" rows={7} maxLength={6000} value={productForm.descFr}
+                        onChange={e=>setProductForm({...productForm,descFr:e.target.value})}
+                        placeholder="Expliquez les avantages, les caractéristiques, les dimensions, le contenu du colis et l'utilisation réelle du produit."
+                        className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 text-sm leading-7 text-[#193e38] outline-none focus:border-[#104d43]"/>
+                      <p className="mt-2 text-[11px] text-slate-500">Décrivez uniquement les caractéristiques vérifiées. Pas de promesses non confirmées.</p>
+                    </section>
+                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
+                      <div className="mb-4 flex items-start justify-between gap-3">
+                        <div><h4 className="text-base font-black text-[#193e38]">Photos et galerie</h4>
+                          <p className="mt-1 text-xs text-slate-500">JPG, PNG ou WebP · 750 Ko par image · 8 images par sélection.</p></div>
                       </div>
-
-                      {/* Gallery Previews */}
-                      {productForm.additionalImages.map((url, i) => (
-                        <div key={i} className="flex flex-col items-center gap-1">
-                          <span className="text-[9px] text-[#147657] font-extrabold uppercase">
-                            Galerie {i + 1}
-                          </span>
-                          <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 relative">
-                            <ProductImage
-                              src={url}
-                              alt={`Aperçu galerie ${i + 1}`}
-                              language={language}
-                              className="w-full h-full object-cover"
-                              containerClassName="w-16 h-16"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const copy = [...productForm.additionalImages];
-                                copy.splice(i, 1);
-                                setProductForm({...productForm, additionalImages: copy});
-                              }}
-                              className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-650 rounded-full flex items-center justify-center text-[#193e38] text-[8px] hover:bg-red-650/80 z-10"
-                              title="Retirer"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                   {/* Descriptions */}
-                  <div className="space-y-1 md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div>
-                      <label className="text-[10px] text-slate-400 uppercase font-black">Description Française</label>
-                      <textarea
-                        rows={3}
-                        value={productForm.descFr}
-                        onChange={(e) => setProductForm({...productForm, descFr: e.target.value})}
-                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43]"
-                        placeholder="Description commerciale du produit..."
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-slate-400 uppercase font-black">الوصف بالعربية</label>
-                      <textarea
-                        rows={3}
-                        value={productForm.descAr}
-                        onChange={(e) => setProductForm({...productForm, descAr: e.target.value})}
-                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] text-right"
-                        placeholder="الوصف التجاري للمنتج..."
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-slate-400 uppercase font-black">Description Anglaise</label>
-                      <textarea
-                        rows={3}
-                        value={productForm.descEn}
-                        onChange={(e) => setProductForm({...productForm, descEn: e.target.value})}
-                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43]"
-                        placeholder="Commercial description in English..."
-                      />
-                    </div>
-                  </div>
-
-                  {/* Status checklist parameters */}
-                  <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 bg-[#070e1c] p-4 rounded-xl border border-[#1b2b45] mt-2 font-sans text-xs">
-                    
-                    {/* Stock Status Selector */}
-                    <div>
-                      <label className="text-[10px] text-slate-400 uppercase font-black block mb-1.5">État du Stock</label>
-                      <select
-                        value={productForm.stockStatus}
-                        onChange={(e) => setProductForm({...productForm, stockStatus: e.target.value as any})}
-                        className="w-full bg-[#f8fbf9] border border-slate-200 rounded-xl py-2 px-3 text-[#193e38] outline-none focus:border-[#104d43] font-semibold"
-                      >
-                        <option value="in_stock" className="bg-[#f8fbf9] text-[#193e38]">🟢 En stock</option>
-                        <option value="limited" className="bg-[#f8fbf9] text-[#193e38]">🟡 Stock limité</option>
-                        <option value="out_of_stock" className="bg-[#f8fbf9] text-[#193e38]">🔴 Rupture de stock</option>
-                      </select>
-                    </div>
-
-                    <div className="flex flex-col justify-center gap-2 md:col-span-2 pt-2 md:pt-4">
-                      <div className="flex flex-wrap items-center gap-6">
-                        <label className="flex items-center gap-2 cursor-pointer font-semibold font-sans">
-                          <input
-                            type="checkbox"
-                            checked={productForm.bestSeller}
-                            onChange={(e) => setProductForm({...productForm, bestSeller: e.target.checked})}
-                            className="w-4 h-4 rounded border-slate-200 accent-orange-500"
-                          />
-                          <span>Meilleure Vente 🔥</span>
+                      <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[#bad7c5] bg-[#f6fbf7] p-4 text-center text-xs font-bold text-[#104d43] hover:bg-[#edf7f0]">
+                        <Plus size={24}/>{mediaUploading?'Téléversement des images…':'Ajouter des images depuis votre ordinateur'}
+                        <input type="file" multiple accept="image/webp,image/jpeg,image/png" className="sr-only"
+                          disabled={mediaUploading} onChange={e=>{void uploadProductPhotos(e.target.files);e.target.value='';}}/>
+                      </label>
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        {productForm.image&&<div className="group relative h-24 w-24 overflow-hidden rounded-xl border-2 border-[#93c2a6] bg-white">
+                          <img src={productForm.image} alt="Image principale" className="h-full w-full object-contain"/>
+                          <span className="absolute bottom-0 inset-x-0 bg-[#104d43] py-1 text-center text-[10px] font-bold text-white">Principale</span>
+                        </div>}
+                        {productForm.additionalImages.map((image,i)=><div key={image+'-'+i} className="relative h-24 w-24 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                          <img src={image} alt={'Galerie '+(i+1)} className="h-full w-full object-contain"/>
+                          <button type="button" onClick={()=>setProductForm({...productForm,image,additionalImages:[productForm.image,...productForm.additionalImages.filter((_,j)=>j!==i)].filter(Boolean)})}
+                            className="absolute bottom-0 start-0 bg-[#104d43] px-2 py-1 text-[10px] text-white" title="Définir comme principale">1ère</button>
+                          <button type="button" onClick={()=>setProductForm({...productForm,additionalImages:productForm.additionalImages.filter((_,j)=>j!==i)})}
+                            className="absolute end-1 top-1 rounded-full bg-white p-1 text-red-700 shadow" aria-label="Retirer image"><X size={13}/></button>
+                        </div>)}
+                      </div>
+                      <details className="mt-4 rounded-xl bg-[#f5f8f6] p-3">
+                        <summary className="cursor-pointer text-xs font-bold text-[#104d43]">Ajouter une image par lien URL</summary>
+                        <label className="mt-3 block text-xs text-slate-500">Image principale</label>
+                        <input value={productForm.image} onChange={e=>setProductForm({...productForm,image:e.target.value})}
+                          placeholder="https://..." className="mt-1 min-h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs text-[#193e38]"/>
+                        <label className="mt-3 block text-xs text-slate-500">Autres photos (une URL par ligne)</label>
+                        <textarea rows={3} value={productForm.additionalImages.join('\n')}
+                          onChange={e=>setProductForm({...productForm,additionalImages:e.target.value.split(/\n/).map(v=>v.trim()).filter(Boolean)})}
+                          className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-[#193e38]"/>
+                      </details>
+                    </section>
+                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
+                      <h4 className="mb-4 text-base font-black text-[#193e38]">Prix et disponibilité</h4>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <label className="text-xs font-bold text-[#385647]">Prix de vente (DH) *
+                          <input type="number" min="0.01" step="0.01" required value={productForm.price||''}
+                            onChange={e=>setProductForm({...productForm,price:Number(e.target.value)})}
+                            className="mt-2 min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-bold text-[#193e38] outline-none focus:border-[#104d43]"/>
                         </label>
-
-                        <label className="flex items-center gap-2 cursor-pointer font-semibold font-sans">
-                          <input
-                            type="checkbox"
-                            checked={productForm.newArrival}
-                            onChange={(e) => setProductForm({...productForm, newArrival: e.target.checked})}
-                            className="w-4 h-4 rounded border-slate-200 accent-orange-500"
-                          />
-                          <span>Nouveauté Coquette ⛺</span>
-                        </label>
-
-                        <label className="flex items-center gap-2 cursor-pointer font-semibold font-sans">
-                          <input
-                            type="checkbox"
-                            checked={productForm.featured}
-                            onChange={(e) => setProductForm({...productForm, featured: e.target.checked})}
-                            className="w-4 h-4 rounded border-slate-200 accent-orange-500"
-                          />
-                          <span>À la Une (Accueil) ⭐</span>
-                        </label>
-
-                        <label className="flex items-center gap-2 cursor-pointer font-semibold font-sans">
-                          <input
-                            type="checkbox"
-                            checked={productForm.isActive}
-                            onChange={(e) => setProductForm({...productForm, isActive: e.target.checked})}
-                            className="w-4 h-4 rounded border-slate-200 accent-green-500"
-                          />
-                          <span>Actif (Affiché sur le site) ✅</span>
+                        <label className="text-xs font-bold text-[#385647]">Prix barré (facultatif)
+                          <input type="number" min="0" step="0.01" value={productForm.originalPrice||''}
+                            onChange={e=>setProductForm({...productForm,originalPrice:Number(e.target.value)})}
+                            className="mt-2 min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm text-[#193e38] outline-none focus:border-[#104d43]"/>
                         </label>
                       </div>
+                      <p className="mt-3 text-xs text-slate-500">La livraison est calculée au passage de commande (35 DH en dessous de 500 DH).</p>
+                    </section>
+                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
+                      <h4 className="mb-4 text-base font-black text-[#193e38]">Tags et mots-clés</h4>
+                      <label htmlFor="gb-product-tags" className="mb-2 block text-xs font-bold text-[#385647]">Étiquettes produit</label>
+                      <input id="gb-product-tags" type="text" value={productForm.tags.join(', ')}
+                        onChange={e=>setProductForm({...productForm,tags:e.target.value.split(',').map(x=>x.trim()).filter(Boolean).slice(0,30)})}
+                        placeholder="Ex. rangement, cuisine, maison, organisation"
+                        className="min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm text-[#193e38] outline-none focus:border-[#104d43]"/>
+                      <p className="mt-2 text-xs text-slate-500">Séparez les mots-clés par une virgule. Ils servent à la recherche interne et à l'organisation du catalogue.</p>
+                      {productForm.tags.length>0&&<div className="mt-3 flex flex-wrap gap-2">{productForm.tags.map((tag,i)=><span key={tag+i} className="rounded-full bg-[#e9f5ee] px-3 py-1 text-[11px] font-bold text-[#104d43]">{tag}</span>)}</div>}
+                    </section>
+                    <details className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
+                      <summary className="cursor-pointer text-base font-black text-[#193e38]">Référencement Google (SEO) · facultatif</summary>
+                      <div className="mt-4 space-y-4">
+                        <label className="block text-xs font-bold text-[#385647]">Titre SEO
+                          <input maxLength={100} value={productForm.seoTitle} onChange={e=>setProductForm({...productForm,seoTitle:e.target.value})}
+                            placeholder={productForm.nameFr||'Titre affiché dans Google'} className="mt-2 min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm text-[#193e38]"/>
+                        </label>
+                        <label className="block text-xs font-bold text-[#385647]">Meta description
+                          <textarea rows={3} maxLength={320} value={productForm.seoDescription} onChange={e=>setProductForm({...productForm,seoDescription:e.target.value})}
+                            placeholder="Résumé court et précis de votre produit." className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm leading-6 text-[#193e38]"/>
+                        </label>
+                        <div className="rounded-xl border border-slate-200 bg-[#f8faf8] p-4">
+                          <p className="truncate text-[15px] font-bold text-[#225fba]">{productForm.seoTitle||productForm.nameFr||'Nom du produit'}</p>
+                          <p className="mt-1 text-xs text-[#2e8056]">globabox.com/?product={encodeURIComponent(productForm.id||'produit')}</p>
+                          <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{productForm.seoDescription||productForm.descFr||'Aperçu du produit dans les moteurs de recherche.'}</p>
+                        </div>
+                        <p className="text-xs leading-6 text-slate-500">L’aperçu SEO est indicatif. L’indexation réelle dépend du rendu et de la configuration technique du site.</p>
+                      </div>
+                    </details>
+                    <details className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
+                      <summary className="cursor-pointer text-base font-black text-[#193e38]">Traductions & caractéristiques · facultatif</summary>
+                      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                        <label className="text-xs font-bold text-[#385647]">Nom en arabe
+                          <input dir="rtl" value={productForm.nameAr} onChange={e=>setProductForm({...productForm,nameAr:e.target.value})}
+                            className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm text-[#193e38]"/>
+                        </label>
+                        <label className="text-xs font-bold text-[#385647]">Nom en anglais
+                          <input value={productForm.nameEn} onChange={e=>setProductForm({...productForm,nameEn:e.target.value})}
+                            className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm text-[#193e38]"/>
+                        </label>
+                        <label className="text-xs font-bold text-[#385647]">Description en arabe
+                          <textarea dir="rtl" rows={4} value={productForm.descAr} onChange={e=>setProductForm({...productForm,descAr:e.target.value})}
+                            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 text-sm text-[#193e38]"/>
+                        </label>
+                        <label className="text-xs font-bold text-[#385647]">Description en anglais
+                          <textarea rows={4} value={productForm.descEn} onChange={e=>setProductForm({...productForm,descEn:e.target.value})}
+                            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 text-sm text-[#193e38]"/>
+                        </label>
+                        {(['fr','ar','en'] as const).map(lang=>{
+                          const prop=lang==='fr'?'featuresFr':lang==='ar'?'featuresAr':'featuresEn';
+                          return <label key={lang} className="text-xs font-bold text-[#385647]">Caractéristiques {lang.toUpperCase()} (une par ligne)
+                            <textarea rows={4} dir={lang==='ar'?'rtl':'ltr'} value={productForm[prop].join('\n')}
+                              onChange={e=>setProductForm({...productForm,[prop]:e.target.value.split('\n').map(x=>x.trim()).filter(Boolean)})}
+                              className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 text-sm text-[#193e38]"/>
+                          </label>;
+                        })}
+                      </div>
+                    </details>
+                  </div>
+                  <aside className="min-w-0 space-y-5 xl:sticky xl:top-[86px] xl:self-start">
+                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm">
+                      <h4 className="mb-4 text-base font-black text-[#193e38]">Statut de vente</h4>
+                      {editingProduct?<label className="flex items-center justify-between gap-4 rounded-xl bg-[#f5f9f6] p-3 text-xs font-bold text-[#193e38]">
+                        {productForm.isActive?'Publié sur le site':'Brouillon · Non visible'}
+                        <input type="checkbox" checked={productForm.isActive} onChange={e=>setProductForm({...productForm,isActive:e.target.checked})} className="h-5 w-5 accent-[#104d43]"/>
+                      </label>:<p className="rounded-xl bg-amber-50 p-3 text-xs leading-6 text-amber-900">Le nouveau produit sera enregistré en brouillon. Vous pourrez le publier après validation des photos, du prix et du stock.</p>}
+                      <label className="mt-4 block text-xs font-bold text-[#385647]">Disponibilité
+                        <select value={productForm.stockStatus} onChange={e=>setProductForm({...productForm,stockStatus:e.target.value as typeof productForm.stockStatus})}
+                          className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-[#193e38]">
+                          <option value="in_stock">En stock</option><option value="limited">Stock limité</option><option value="out_of_stock">Rupture de stock</option>
+                        </select>
+                      </label>
+                      <div className="mt-4 space-y-3 border-t border-slate-100 pt-4">
+                        {([['bestSeller','Meilleure vente'],['newArrival','Nouveauté'],['featured','Mis en avant']] as const).map(([field,label])=>
+                          <label key={field} className="flex items-center justify-between text-xs font-bold text-[#385647]">{label}
+                            <input type="checkbox" checked={productForm[field]} onChange={e=>setProductForm({...productForm,[field]:e.target.checked})} className="h-4 w-4 accent-[#104d43]"/>
+                          </label>)}
+                      </div>
+                    </section>
+                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm">
+                      <h4 className="mb-4 text-base font-black text-[#193e38]">Organisation</h4>
+                      <label className="block text-xs font-bold text-[#385647]">Catégorie principale *
+                        <select value={productForm.category} onChange={e=>setProductForm({...productForm,category:e.target.value,subcategory:''})}
+                          className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-[#193e38]">
+                          <optgroup label="Rayons de la boutique">
+                            {STORE_DEPARTMENTS.map(category=><option key={category.id} value={category.id}>{categories.find(c=>c.id===category.id)?.name.fr||category.name.fr}</option>)}
+                          </optgroup>
+                          {categories.some(c=>c.id===productForm.category&&!STORE_DEPARTMENTS.some(dept=>dept.id===c.id))&&<optgroup label="Catégorie historique"><option value={productForm.category}>{productForm.category}</option></optgroup>}
+                        </select>
+                      </label>
+                      <label className="mt-4 block text-xs font-bold text-[#385647]">Sous-catégorie
+                        <select value={productForm.subcategory} onChange={e=>setProductForm({...productForm,subcategory:e.target.value})}
+                          className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-[#193e38]">
+                          <option value="">Aucune</option>
+                          {getStoreSubcategories(productForm.category).map(sub=><option key={sub.id} value={sub.id}>{sub.name.fr}</option>)}
+                        </select>
+                      </label>
+                    </section>
+                    <details className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm">
+                      <summary className="cursor-pointer text-base font-black text-[#193e38]">Inventaire & références</summary>
+                      <div className="mt-4 space-y-4">
+                        <label className="block text-xs font-bold text-[#385647]">SKU (référence interne)
+                          <input value={productForm.sku} maxLength={80} onChange={e=>setProductForm({...productForm,sku:e.target.value})}
+                            placeholder="Ex. GB-CUI-001" className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm text-[#193e38]"/>
+                        </label>
+                        <label className="block text-xs font-bold text-[#385647]">Code-barres (facultatif)
+                          <input value={productForm.barcode} maxLength={80} onChange={e=>setProductForm({...productForm,barcode:e.target.value})}
+                            className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm text-[#193e38]"/>
+                        </label>
+                        <label className="block text-xs font-bold text-[#385647]">Identifiant technique
+                          <input disabled={Boolean(editingProduct)} value={productForm.id}
+                            onChange={e=>setProductForm({...productForm,id:e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g,'-')})}
+                            className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-[#f7faf8] px-3 font-mono text-xs text-[#193e38]"/>
+                        </label>
+                      </div>
+                    </details>
+                    <div className="rounded-2xl border border-[#c9e1d1] bg-white p-4 shadow-sm">
+                      <button type="submit" disabled={mediaUploading} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#104d43] px-5 text-sm font-black text-white hover:bg-[#0b3931] disabled:opacity-50">
+                        <CheckCircle2 size={18}/>{editingProduct?'Enregistrer les changements':'Enregistrer le brouillon'}
+                      </button>
+                      <button type="button" onClick={()=>{setEditingProduct(null);setIsAddingProduct(false);}} className="mt-2 min-h-10 w-full rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-slate-50">Annuler</button>
+                      <p className="mt-3 text-center text-[11px] leading-5 text-slate-500">Enregistrement sur Cloudflare D1. Vérifiez votre fiche après sauvegarde.</p>
                     </div>
-
-                  </div>
-
-                  {/* Form Submission code */}
-                  <div className="md:col-span-2 pt-4 flex gap-3">
-                    <button
-                      type="submit"
-                      className="bg-[#104d43] hover:bg-[#0a3d33] text-white font-extrabold px-6 py-3 rounded-xl transition-all shadow-md cursor-pointer"
-                    >
-                      Sauvegarder les modifications du produit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setEditingProduct(null); setIsAddingProduct(false); }}
-                      className="bg-[#edf5ef] hover:bg-[#dcefe3] text-slate-600 font-bold px-4 py-3 rounded-xl transition-all cursor-pointer"
-                    >
-                      Annuler
-                    </button>
-                  </div>
-
+                  </aside>
                 </form>
-              </div>
+              </section>
             )}
 
             {/* Products grid / Search list view */}
