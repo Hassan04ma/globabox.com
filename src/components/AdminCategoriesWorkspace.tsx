@@ -4,6 +4,8 @@ import {
   Pencil, Plus, RefreshCw, Search, Upload, X
 } from 'lucide-react';
 import type { Category, Product } from '../types';
+import { STORE_DEPARTMENTS } from '../storefrontDepartments';
+import { getStoreSubcategories } from '../storefrontSubcategories';
 
 type ManagedCategory = Category & { isActive?: boolean };
 type Editor = {
@@ -27,6 +29,7 @@ interface Props {
 export default function AdminCategoriesWorkspace({categories,products,onCategoriesChange}:Props) {
   const [all,setAll]=useState<ManagedCategory[]>(categories);
   const [search,setSearch]=useState('');
+  const [showHistorical,setShowHistorical]=useState(false);
   const [page,setPage]=useState(1);
   const [pageSize,setPageSize]=useState(8);
   const [editing,setEditing]=useState(false);
@@ -53,9 +56,10 @@ export default function AdminCategoriesWorkspace({categories,products,onCategori
   useEffect(()=>{void refresh();},[]);
 
   const visible=useMemo(()=>all.filter(c=>{
+    if(!showHistorical && !STORE_DEPARTMENTS.some(d=>d.id===c.id))return false;
     const q=search.trim().toLowerCase();
     return !q || [c.id,c.name.fr,c.name.ar,c.name.en].some(v=>String(v||'').toLowerCase().includes(q));
-  }),[all,search]);
+  }),[all,search,showHistorical]);
   const maxPage=Math.max(1,Math.ceil(visible.length/pageSize));
   const safePage=Math.min(page,maxPage);
   const pageItems=visible.slice((safePage-1)*pageSize,safePage*pageSize);
@@ -143,6 +147,29 @@ export default function AdminCategoriesWorkspace({categories,products,onCategori
             <Plus size={18}/> Ajouter une catégorie
           </button>
         </div>
+        <section className="rounded-[20px] border border-[#dbe8df] bg-white p-5 shadow-sm">
+          <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+            <div><h3 className="text-base font-black text-[#193e38]">Rayons visibles dans la boutique</h3>
+              <p className="mt-1 text-xs leading-6 text-slate-500">Les 13 rayons correspondent à la boutique et aux bannières. Modifiez les noms et les images ici : les changements sont enregistrés dans D1.</p></div>
+            <span className="rounded-full bg-[#edf6ef] px-3 py-1.5 text-xs font-bold text-[#104d43]">{STORE_DEPARTMENTS.length} rayons</span>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+            {STORE_DEPARTMENTS.map(dept=>{
+             const cat=all.find(x=>x.id===dept.id)||dept;
+             const children=getStoreSubcategories(dept.id);
+             return <button key={dept.id} type="button" onClick={()=>beginEdit(cat)}
+               className="group flex min-w-0 items-center gap-3 rounded-xl border border-[#e3eee6] bg-[#fbfdfb] p-3 text-start hover:border-[#80b49a] hover:bg-[#eff8f1]">
+               <img src={cat.image} alt="" className="h-16 w-16 shrink-0 rounded-lg bg-slate-100 object-cover"/>
+               <span className="min-w-0 flex-1">
+                 <span className="block truncate text-xs font-black text-[#193e38]">{cat.name.fr}</span>
+                 <span className="mt-1 block text-[11px] text-slate-500">{children.length} sous-catégories · {counts.get(dept.id)||0} produits</span>
+                 <span className="mt-1 block text-[10px] font-bold text-[#176d55]">Modifier image et libellé</span>
+               </span>
+             </button>;
+            })}
+          </div>
+          <p className="mt-4 text-xs leading-6 text-slate-500">Les sous-catégories sont proposées dans la fiche produit. Les anciennes catégories et les anciens produits restent conservés dans D1.</p>
+        </section>
         <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           {stats.map(({title,value,icon:Icon})=>(
             <div key={title} className={card+' flex items-center gap-3 p-4 sm:p-5'}>
@@ -165,7 +192,10 @@ export default function AdminCategoriesWorkspace({categories,products,onCategori
                 </select>
                 éléments
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <label className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-[#193e38]">
+                  <input type="checkbox" checked={showHistorical} onChange={e=>{setShowHistorical(e.target.checked);setPage(1);}} className="accent-[#104d43]"/>Catégories historiques
+                </label>
                 <label className="relative">
                   <Search size={17} className="pointer-events-none absolute left-3 top-3 text-slate-400"/>
                   <input value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} placeholder="Rechercher une catégorie…" aria-label="Rechercher une catégorie" className="w-48 rounded-xl border border-slate-200 py-2.5 pl-9 pr-3 text-sm text-slate-900 outline-none focus:border-[#104d43] sm:w-64"/>
