@@ -1,4 +1,6 @@
 import { PRODUCTS, CATEGORIES } from '../src/data';
+import { STORE_DEPARTMENTS, HIDDEN_LEGACY_CATEGORIES, CATEGORY_GROUPS } from '../src/storefrontDepartments';
+import { DEFAULT_TRACKING_CONFIG, validateTrackingConfig } from '../src/trackingConfig';
 import { isAdmin, handleAdminAuth } from './auth';
 import { quoteOrder } from './orderQuote';
 
@@ -80,14 +82,17 @@ async function categoryList(db:D1Database, includeInactive=false):Promise<Catego
       overrides.set(row.id,{...parsed,isActive:row.active===1}); }
     catch { console.error('Invalid category override',row.id); }
   }
-  const fromDefault=CATEGORIES.map(cat=>({
+  const fromDefault=[...CATEGORIES, ...STORE_DEPARTMENTS.filter(dept=>!CATEGORIES.some(cat=>cat.id===dept.id))].map(cat=>({
     id:cat.id,name:cat.name,image:cat.image,
     description:cat.description||{fr:'',ar:'',en:''},isActive:true
   }));
   const all=fromDefault.map(cat=>overrides.get(cat.id)||cat);
   const ids=new Set(fromDefault.map(cat=>cat.id));
   for(const [id,cat] of overrides) if(!ids.has(id)) all.push(cat);
-  return includeInactive?all:all.filter(cat=>cat.isActive);
+  // Historic camping departments remain available in the admin for data safety,
+  // but are never accidentally made public by the new storefront.
+  const aliases=new Set(Object.values(CATEGORY_GROUPS).flatMap(group=>group.slice(1)));
+  return includeInactive?all:all.filter(cat=>cat.isActive && !HIDDEN_LEGACY_CATEGORIES.has(cat.id) && !aliases.has(cat.id));
 }
 
 const auth = isAdmin;
@@ -395,6 +400,32 @@ export default {
         },writeVerified && cleanupVerified ? 200 : 503);
       }
 
+      // Store tracking settings are public IDs (not passwords, tokens or webhooks).
+      // They are persisted in D1 and served to all storefront clients, so the
+      // admin's browser is never used as the source of truth.
+      if ((path === '/api/tracking-config' || path === '/api/admin/tracking-config') &&
+          (method === 'GET' || method === 'PUT')) {
+        if (method === 'PUT' && path !== '/api/admin/tracking-config')
+          return json({error:'Not found'},404);
+        if (path.startsWith('/api/admin/') && !await auth(request,env))
+          return json({error:'Unauthorized'},401);
+        await env.DB.prepare('CREATE TABLE IF NOT EXISTS store_settings (key TEXT PRIMARY KEY, data_json TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run();
+        if (method === 'GET') {
+          const found=await env.DB.prepare("SELECT data_json FROM store_settings WHERE key='tracking-config' LIMIT 1")
+            .first<{data_json:string}>();
+          let config={...DEFAULT_TRACKING_CONFIG};
+          if (found?.data_json) {
+            try {config=validateTrackingConfig(JSON.parse(found.data_json)) || config;}
+            catch {console.error('Invalid tracking settings data in D1');}
+          }
+          return json({config});
+        }
+        const submitted=validateTrackingConfig(await readBody(request));
+        if (!submitted) return json({error:'Invalid tracking IDs. Only public vendor identifiers are accepted.'},400);
+        const stored=await env.DB.prepare("INSERT INTO store_settings (key,data_json) VALUES ('tracking-config',?) ON CONFLICT(key) DO UPDATE SET data_json=excluded.data_json,updated_at=CURRENT_TIMESTAMP")
+          .bind(JSON.stringify(submitted)).run();
+        return stored.success?json({success:true,config:submitted}):json({error:'D1 did not confirm settings update'},503);
+      }
       if (path === '/api/categories' && method === 'GET') {
         const categories=await categoryList(env.DB);
         return json(categories);
