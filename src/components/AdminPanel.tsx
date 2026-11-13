@@ -896,7 +896,7 @@ export default function AdminPanel({
       },
       category: productForm.category,
       subcategory: productForm.subcategory || undefined,
-      tags:[...new Set(tagsInput.split(',').map(tag=>tag.trim()).filter(Boolean))].slice(0,30),
+      tags:Array.from(new Set<string>(tagsInput.split(',').map((tag:string)=>tag.trim()).filter(Boolean))).slice(0,30),
       sku:productForm.sku.trim() || undefined,
       barcode:productForm.barcode.trim() || undefined,
       seoTitle:productForm.seoTitle.trim() || undefined,
