@@ -55,7 +55,7 @@ export default function StoreFooter({language,onHome,onBrowse,onTrack,onCart,onL
   const openFAQ=()=>document.getElementById('faq-section')?.scrollIntoView({behavior:'smooth',block:'start'});
   return (
     <footer className="border-t border-[#164f43] bg-[#103e35] text-white" dir={language==='ar'?'rtl':'ltr'}>
-      <div className="mx-auto grid max-w-7xl gap-10 px-5 pb-12 pt-14 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1.2fr_1fr_1fr_1.15fr] lg:gap-8 lg:px-8">
+      <div className="grid w-full max-w-none gap-10 px-5 pb-12 pt-14 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1.2fr_1fr_1fr_1.15fr] lg:gap-8 lg:px-8">
         <section aria-label="GLOBABOX" className="max-w-sm">
           <div className="mb-4 flex items-center gap-3">
             <img src="/brand/globabox-mark.svg" alt="" className="h-12 w-12 shrink-0 rounded-xl" loading="lazy" />
@@ -115,7 +115,7 @@ export default function StoreFooter({language,onHome,onBrowse,onTrack,onCart,onL
         </section>
       </div>
       <div className="border-t border-white/10 bg-[#0c332b]">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-5 py-5 text-center text-xs text-white/60 sm:flex-row sm:px-6 lg:px-8">
+        <div className="flex w-full max-w-none flex-col items-center justify-between gap-2 px-5 py-5 text-center text-xs text-white/60 sm:flex-row sm:px-6 lg:px-8">
           <p>© {new Date().getFullYear()} GLOBABOX. {c.rights}</p>
           <p>{c.notice}</p>
         </div>
