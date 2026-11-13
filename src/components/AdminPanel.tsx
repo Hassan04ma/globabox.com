@@ -259,6 +259,11 @@ export default function AdminPanel({
     featuresFr: string[];
     featuresAr: string[];
     featuresEn: string[];
+    tags: string[];
+    sku: string;
+    barcode: string;
+    seoTitle: string;
+    seoDescription: string;
   }>({
     id: '',
     nameFr: '',
@@ -284,6 +289,7 @@ export default function AdminPanel({
     featuresFr: [],
     featuresAr: [],
     featuresEn: [],
+    tags: [],sku: '',barcode: '',seoTitle: '',seoDescription: '',
   });
 
   // Persist before updating the visible order; never report an unsaved state as successful.
@@ -747,7 +753,8 @@ export default function AdminPanel({
       featuresAr:['السعة المعلنة 40 لتر','جيوب متعددة','أحزمة مبطنة قابلة للتعديل','ظهر شبكي للتهوية'],
       featuresEn:['Advertised capacity 40 L','Multiple pockets','Adjustable padded straps','Breathable mesh back'],
       image:'',additionalImages:[],fallbackImage:'',fallbackImages:[],inStock:false,stockStatus:'out_of_stock',
-      bestSeller:false,newArrival:false,featured:false,isActive:false
+      bestSeller:false,newArrival:false,featured:false,isActive:false,
+      tags:[],sku:'',barcode:'',seoTitle:'',seoDescription:''
     });
     setIsAddingProduct(true);
   };
@@ -800,6 +807,7 @@ export default function AdminPanel({
       featuresFr: [],
       featuresAr: [],
       featuresEn: [],
+      tags: [],sku:'',barcode:'',seoTitle:'',seoDescription:'',
     });
     setIsAddingProduct(true);
   };
@@ -832,6 +840,8 @@ export default function AdminPanel({
       featuresFr: prod.features?.fr || [],
       featuresAr: prod.features?.ar || [],
       featuresEn: prod.features?.en || [],
+      tags:prod.tags || [],sku:prod.sku || '',barcode:prod.barcode || '',
+      seoTitle:prod.seoTitle || '',seoDescription:prod.seoDescription || '',
     });
     setIsAddingProduct(false);
   };
@@ -883,6 +893,11 @@ export default function AdminPanel({
       },
       category: productForm.category,
       subcategory: productForm.subcategory || undefined,
+      tags: productForm.tags,
+      sku:productForm.sku.trim() || undefined,
+      barcode:productForm.barcode.trim() || undefined,
+      seoTitle:productForm.seoTitle.trim() || undefined,
+      seoDescription:productForm.seoDescription.trim() || undefined,
       image: productForm.image.trim(),
       images: [productForm.image.trim(), ...(productForm.additionalImages || [])].filter(Boolean),
       fallbackImage: productForm.fallbackImage || '',
