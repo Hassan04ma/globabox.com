@@ -1,10 +1,11 @@
 import {
   ArrowUpRight, CircleHelp, FileText, House, MapPin, PackageSearch,
-  PhoneCall, RotateCcw, ShieldCheck, ShoppingBag, ShoppingCart, Truck
+  Mail, PhoneCall, RotateCcw, ShieldCheck, ShoppingBag, ShoppingCart, Truck
 } from 'lucide-react';
 import type { Language } from '../types';
 import { ORDER_SUPPORT_NUMBER, WHATSAPP_LINK } from '../data';
 import WhatsAppIcon from './WhatsAppIcon';
+import { CONTACT_EMAIL, CONTACT_EMAIL_LINK } from '../contactEmail';
 
 interface StoreFooterProps {
   language: Language;
@@ -22,7 +23,7 @@ const messages = {
     policy:'Informations & politiques',about:'À propos de nous',shipping:'Livraison et frais',returns:'Retours & échanges',
     terms:'Conditions de vente',privacy:'Confidentialité',contactPolicy:'Informations de contact',
     shop:'Votre boutique',home:'Accueil',browse:'Tous les produits',track:'Suivre mon colis',cart:'Mon panier',faq:'Questions fréquentes',
-    contact:'Contact & assistance',whatsapp:'Écrire sur WhatsApp',call:'Nous appeler',
+    contact:'Contact & assistance',whatsapp:'Écrire sur WhatsApp',call:'Nous appeler',email:'E-mail',
     zone:'Zone de livraison',morocco:'Maroc — disponibilité à confirmer selon la destination',
     notice:'Paiement à la livraison · Frais indiqués avant validation',rights:'Tous droits réservés.'
   },
@@ -32,7 +33,7 @@ const messages = {
     policy:'السياسات والمعلومات',about:'من نحن',shipping:'سياسة التوصيل',returns:'الإرجاع والتبديل',
     terms:'شروط البيع',privacy:'سياسة الخصوصية',contactPolicy:'معلومات التواصل',
     shop:'التسوق والخدمات',home:'الرئيسية',browse:'جميع المنتجات',track:'تتبع الطرد',cart:'سلة التسوق',faq:'الأسئلة الشائعة',
-    contact:'التواصل والمساعدة',whatsapp:'مراسلتنا عبر واتساب',call:'اتصل بنا',
+    contact:'التواصل والمساعدة',whatsapp:'مراسلتنا عبر واتساب',call:'اتصل بنا',email:'البريد الإلكتروني',
     zone:'منطقة التوصيل',morocco:'المغرب — التوصيل حسب توفر الخدمة لعنوانك',
     notice:'الدفع عند الاستلام · مصاريف التوصيل كتظهر قبل التأكيد',rights:'جميع الحقوق محفوظة.'
   },
@@ -42,7 +43,7 @@ const messages = {
     policy:'Policies & information',about:'About us',shipping:'Delivery information',returns:'Returns & exchanges',
     terms:'Terms of sale',privacy:'Privacy policy',contactPolicy:'Contact information',
     shop:'Shop & services',home:'Home',browse:'All products',track:'Track my parcel',cart:'My cart',faq:'Frequently asked questions',
-    contact:'Contact & support',whatsapp:'Chat on WhatsApp',call:'Call us',
+    contact:'Contact & support',whatsapp:'Chat on WhatsApp',call:'Call us',email:'Email',
     zone:'Delivery area',morocco:'Morocco — service subject to destination confirmation',
     notice:'Cash on delivery · Delivery fees shown before confirmation',rights:'All rights reserved.'
   }
@@ -107,6 +108,10 @@ export default function StoreFooter({language,onHome,onBrowse,onTrack,onCart,onL
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-[#f4c75a]"><PhoneCall size={19}/></span>
               <span className="min-w-0 flex-1"><span className="block text-[11px] text-white/60">{c.call}</span><span className="block text-sm font-bold" dir="ltr">{ORDER_SUPPORT_NUMBER}</span></span>
             </a>
+            {CONTACT_EMAIL && <a href={CONTACT_EMAIL_LINK} className="group flex min-h-[52px] items-center gap-3 rounded-xl border border-[#3b7666] bg-[#1a5849] px-4 transition hover:border-[#f4c75a] hover:bg-[#206856]">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-[#f4c75a]"><Mail size={19}/></span>
+              <span className="min-w-0 flex-1"><span className="block text-[11px] text-white/60">{c.email}</span><span dir="ltr" className="block break-all text-[13px] font-bold">{CONTACT_EMAIL}</span></span>
+            </a>}
             <div className="flex items-start gap-3 rounded-xl border border-white/10 px-4 py-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-[#f4c75a]"><MapPin size={20}/></span>
               <div><p className="text-[12px] font-bold">{c.zone}</p><p className="mt-1 text-xs leading-5 text-white/65">{c.morocco}</p></div>
