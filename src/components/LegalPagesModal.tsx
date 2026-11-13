@@ -5,10 +5,10 @@ import { ORDER_SUPPORT_NUMBER, WHATSAPP_LINK } from '../data';
 import WhatsAppIcon from './WhatsAppIcon';
 
 interface Props { isOpen:boolean; onClose:()=>void; initialTab?:string; language?:Language; }
-type TabKey = 'about'|'delivery'|'returns'|'cgv'|'privacy'|'contact';
-const keys:TabKey[]=['about','delivery','returns','cgv','privacy','contact'];
+export type TabKey = 'about'|'delivery'|'returns'|'cgv'|'privacy'|'contact';
+export const policyKeys:TabKey[]=['about','delivery','returns','cgv','privacy','contact'];
 const icons={about:CircleHelp,delivery:Truck,returns:RotateCcw,cgv:FileText,privacy:ShieldCheck,contact:PhoneCall};
-const content:Record<Language,{title:string;subtitle:string;labels:Record<TabKey,string>;pages:Record<TabKey,string[]>;support:string;call:string;location:string;note:string}> = {
+export const policyContent:Record<Language,{title:string;subtitle:string;labels:Record<TabKey,string>;pages:Record<TabKey,string[]>;support:string;call:string;location:string;note:string}> = {
  fr:{
   title:'Informations et politiques',subtitle:'Des réponses claires avant votre commande.',
   labels:{about:'À propos',delivery:'Livraison',returns:'Retours & échanges',cgv:'Conditions de vente',privacy:'Confidentialité',contact:'Contact'},
@@ -51,7 +51,7 @@ const content:Record<Language,{title:string;subtitle:string;labels:Record<TabKey
 };
 
 export default function LegalPagesModal({isOpen,onClose,initialTab='about',language='fr'}:Props){
-  const [active,setActive]=useState<TabKey>(keys.includes(initialTab as TabKey)?initialTab as TabKey:'about');
+  const [active,setActive]=useState<TabKey>(policyKeys.includes(initialTab as TabKey)?initialTab as TabKey:'about');
   useEffect(()=>{if(isOpen)setActive(keys.includes(initialTab as TabKey)?initialTab as TabKey:'about');},[initialTab,isOpen]);
   useEffect(()=>{
     if(!isOpen)return;
@@ -60,7 +60,7 @@ export default function LegalPagesModal({isOpen,onClose,initialTab='about',langu
     return()=>document.removeEventListener('keydown',esc);
   },[isOpen,onClose]);
   if(!isOpen)return null;
-  const c=content[language];
+  const c=policyContent[language];
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center bg-[#071d17]/75 p-3 backdrop-blur-sm sm:p-6" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
       <div role="dialog" aria-modal="true" aria-label={c.title} dir={language==='ar'?'rtl':'ltr'} className="flex h-[min(90vh,760px)] w-full max-w-[920px] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
@@ -70,7 +70,7 @@ export default function LegalPagesModal({isOpen,onClose,initialTab='about',langu
         </header>
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
           <nav className="flex shrink-0 gap-2 overflow-x-auto border-b border-slate-200 bg-[#f5f8f5] p-3 md:w-[220px] md:flex-col md:border-b-0 md:border-e" aria-label={c.title}>
-            {keys.map(key=>{
+            {policyKeys.map(key=>{
               const Icon=icons[key];
               return <button type="button" key={key} onClick={()=>setActive(key)} aria-current={active===key?'page':undefined}
                 className={'flex shrink-0 items-center gap-2 rounded-xl px-3 py-3 text-start text-xs font-bold transition md:w-full '+(active===key?'bg-[#104d43] text-white':'bg-white text-slate-700 hover:bg-[#e6efea]')}>
