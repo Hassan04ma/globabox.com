@@ -7,7 +7,7 @@
  *
  * Public by nature: do not use this setting for passwords or private data.
  */
-const candidate = String(import.meta.env.VITE_CONTACT_EMAIL || '').trim().toLowerCase();
+const candidate = String((import.meta as ImportMeta & {env?:Record<string,string|undefined>}).env?.VITE_CONTACT_EMAIL || '').trim().toLowerCase();
 
 export const CONTACT_EMAIL =
   /^[a-z0-9][a-z0-9.+_-]{0,62}@gmail\.com$/.test(candidate) ? candidate : '';
