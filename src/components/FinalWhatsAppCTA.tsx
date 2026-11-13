@@ -1,99 +1,33 @@
-import React from 'react';
-import { MessageSquare, PhoneCall, CheckCircle, Flame } from 'lucide-react';
-import { Language } from '../types';
+import { MessageCircle, Phone, Headphones } from 'lucide-react';
+import type { Language } from '../types';
 import { triggerWhatsAppClick } from '../utils/analytics';
 import { DISPLAY_PHONE, WHATSAPP_LINK } from '../data';
-import WhatsAppIcon from './WhatsAppIcon';
 
-interface FinalWhatsAppCTAProps {
-  language: Language;
-  onWhatsAppOrder?: (params?: any) => void;
-}
+interface Props { language: Language; onWhatsAppOrder?: (params?: any)=>void; }
 
-export default function FinalWhatsAppCTA({ language, onWhatsAppOrder }: FinalWhatsAppCTAProps) {
-  const isRtl = language === "ar";
-  const supportNumber = DISPLAY_PHONE;
-  const waLink = WHATSAPP_LINK;
+const copy = {
+  fr: {badge:'SERVICE CLIENT',title:'Une question avant de commander ?',text:'Contactez GLOBABOX pour vous renseigner sur un produit, sa disponibilité ou sa livraison.',whatsapp:'Écrire sur WhatsApp',call:'Appeler le service client'},
+  ar: {badge:'خدمة الزبناء',title:'عندك شي سؤال قبل ما تطلب؟',text:'تواصل مع جلوبابوكس باش تستفسر على المنتجات، التوفر أو التوصيل.',whatsapp:'تواصل عبر واتساب',call:'اتصل بخدمة الزبناء'},
+  en: {badge:'CUSTOMER SUPPORT',title:'Need help before ordering?',text:'Contact GLOBABOX for product details, stock and delivery questions.',whatsapp:'Message on WhatsApp',call:'Call customer service'}
+} as const;
 
-  return (
-    <section 
-      style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
-      id="final-whatsapp-cta-section"
-    >
-      <div className="relative overflow-hidden bg-gradient-to-br from-blue-950 via-[#0B1528] to-slate-900 rounded-3xl border border-blue-900 p-8 sm:p-12 text-white flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-12 shadow-2xl relative">
-        {/* Animated ambient blob */}
-        <div className="absolute top-0 right-0 w-72 h-72 bg-orange-600/10 rounded-full blur-3xl -mr-20 -mt-20 -z-10" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-emerald-600/10 rounded-full blur-3xl -ml-20 -mb-20 -z-10" />
-
-        <div className="space-y-4 max-w-2xl text-center lg:text-left">
-          <div className="inline-flex items-center gap-1.5 bg-emerald-950/50 border border-emerald-900/40 text-emerald-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-405 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span>{isRtl ? "خدمة مبيعات فورية متوفرة الآن" : "SUPPORT MAROC EN DIRECT SUR WHATSAPP"}</span>
-          </div>
-
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
-            {isRtl ? "هل تفضل الطلب والاستفسار مباشرة عبر واتساب ؟" : "Vous préférez commander directement sur WhatsApp ?"}
-          </h2>
-
-          <p className="text-xs sm:text-sm text-slate-350 leading-relaxed font-semibold">
-            {isRtl 
-              ? "إذا واجهت أي صعوبة في استخدام السلة والطلب من الموقع، أو لديك أسئلة بخصوص مقاسات تينت وخيمة الكامبينغ، فإن وكلائنا متصلون الآن لمساعدتك خطوة بخطوة بالصور والفيديو !"
-              : "Nos conseillers clientèle basés au Maroc sont en ligne ! Que ce soit pour poser des questions sur les dimensions de nos tentes de camping, demander des photos réelles ou commander sans passer par le panier, nous sommes là."}
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs font-bold text-slate-300">
-            <div className="flex items-center gap-1">
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
-              <span>{isRtl ? "رد فوري في أقل من 10 دقائق" : "Réponse en moins de 10 minutes"}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
-              <span>{isRtl ? "توصيل آمن لجميع مدن المملكة" : "Expédition le jour-même"}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full lg:w-auto shrink-0 flex flex-col sm:flex-row items-center gap-4 justify-center">
-          {/* Main Huge WhatsApp CTA button */}
-          <button
-            onClick={() => {
-              triggerWhatsAppClick('Final CTA Section');
-              if (onWhatsAppOrder) {
-                onWhatsAppOrder({ source: 'final_cta' });
-              } else {
-                window.open(waLink, '_blank', 'noreferrer');
-              }
-            }}
-            className="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-500 hover:shadow-emerald-500/20 text-white font-extrabold rounded-2xl text-sm transition-all flex items-center justify-center gap-3 shadow-xl transform hover:scale-103 active:scale-97 cursor-pointer"
-          >
-            <WhatsAppIcon className="w-5 h-5 text-white shrink-0" />
-            <div className="text-left font-sans leading-tight">
-              <span className="text-[10px] text-emerald-100 font-bold uppercase tracking-wider block">
-                {isRtl ? "اطلب عبر المراسلة" : "COMMANDER PAR WHATSAPP"}
-              </span>
-              <span className="text-xs font-black">{supportNumber}</span>
-            </div>
-          </button>
-
-          {/* Phone call support fallback CTA */}
-          <a
-            href={`tel:${supportNumber}`}
-            className="w-full sm:w-auto px-8 py-4 bg-[#122037] border border-[#213757] text-white font-bold rounded-2xl text-sm transition-all flex items-center justify-center gap-3 hover:bg-[#1a2e4e]"
-          >
-            <PhoneCall className="w-4 h-4 text-orange-400" />
-            <div className="text-left leading-tight">
-              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest block">
-                {isRtl ? "اتصال مباشر" : "S'ENTRETENIR PAR TÉLÉPHONE"}
-              </span>
-              <span className="text-xs font-mono font-bold text-white">{supportNumber}</span>
-            </div>
-          </a>
-        </div>
-      </div>
-    </section>
-  );
+export default function FinalWhatsAppCTA({language,onWhatsAppOrder}:Props) {
+ const c=copy[language];
+ return <section id="final-whatsapp-cta-section" className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8" dir={language==='ar'?'rtl':'ltr'}>
+   <div className="flex flex-col items-center justify-between gap-7 rounded-[26px] bg-[#104d43] px-6 py-10 text-white sm:px-10 lg:flex-row">
+     <div className="max-w-xl text-center lg:text-start">
+       <div className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold tracking-widest text-[#f4c75a]"><Headphones size={17}/>{c.badge}</div>
+       <h2 className="text-2xl font-black sm:text-3xl">{c.title}</h2>
+       <p className="mt-3 text-sm leading-7 text-white/80">{c.text}</p>
+     </div>
+     <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+       <button type="button" onClick={()=>{triggerWhatsAppClick('Final CTA Section'); if(onWhatsAppOrder){onWhatsAppOrder({source:'final_cta',customMessage:language==='ar'?'سلام، بغيت نستفسر على شي منتج فـ GLOBABOX.':'Bonjour, je souhaite des informations sur les produits GLOBABOX.'});}else{window.open(WHATSAPP_LINK,'_blank','noopener,noreferrer');}}} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#f4c75a] px-5 text-sm font-bold text-[#193e38] hover:bg-yellow-300">
+         <MessageCircle size={18}/>{c.whatsapp}
+       </button>
+       <a href={'tel:'+DISPLAY_PHONE} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/45 px-5 text-sm font-bold text-white hover:bg-white/10">
+         <Phone size={17}/>{c.call}
+       </a>
+     </div>
+   </div>
+ </section>;
 }
