@@ -146,6 +146,11 @@ function getSearchableText(product: any, categories: any[] = []): string {
   if (product.description_ar) texts.push(String(product.description_ar));
   if (product.description_en) texts.push(String(product.description_en));
 
+  // Public merchandizing labels, SKU and tags are also searchable.
+  if (product.sku) texts.push(String(product.sku));
+  if (product.subcategory) texts.push(String(product.subcategory));
+  if (Array.isArray(product.tags)) texts.push(...product.tags.map(String));
+
   // 6. Features (nested features object, arrays & flat properties)
   if (product.features) {
     if (typeof product.features === 'object' && !Array.isArray(product.features)) {
