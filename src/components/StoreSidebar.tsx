@@ -61,7 +61,7 @@ export default function StoreSidebar({language,selectedCategory,selectedSubcateg
    })}
   </div>
  );
- return <aside className="w-full shrink-0 lg:w-[266px] xl:w-[278px]" dir={language==='ar'?'rtl':'ltr'} aria-label={t.title}>
+ return <aside className="w-full shrink-0 lg:w-[278px] xl:w-[294px] 2xl:w-[312px]" dir={language==='ar'?'rtl':'ltr'} aria-label={t.title}>
    <div className="hidden rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_6px_24px_rgba(0,0,0,.035)] lg:sticky lg:top-[115px] lg:block">
     <div className="mb-4 flex items-center gap-2 border-b border-slate-100 pb-4 text-[#104d43]"><Grid2X2 size={19}/><div><h2 className="text-sm font-black">{t.title}</h2><span className="text-[11px] text-slate-500">{t.subtitle}</span></div></div>
     <div className="max-h-[min(70vh,760px)] overflow-y-auto pe-1">{section()}</div>
