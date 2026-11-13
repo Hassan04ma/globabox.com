@@ -1,10 +1,10 @@
 
 import { useEffect, useState } from 'react';
 import { ArrowDown, Banknote, ChevronLeft, ChevronRight, PackageCheck, Pause, Play, ShoppingBag, Truck } from 'lucide-react';
-import type { Language } from '../types';
+import type { Language, Category } from '../types';
 import { STORE_DEPARTMENTS } from '../storefrontDepartments';
 
-interface Props { language:Language; onShopAll:()=>void; onSelectDepartment:(id:string)=>void; }
+interface Props { language:Language; categories:Category[]; onShopAll:()=>void; onSelectDepartment:(id:string)=>void; }
 type Text = {tag:string;title:string;description:string;button:string;all:string;discover:string};
 type Slide = {id:string;destination:string|null;categories:string[];theme:'dark'|'light'|'blue';copy:Record<Language,Text>};
 
@@ -42,7 +42,7 @@ const appearance={
  blue:{bg:'bg-[#1b3947] border-[#244c5d]',text:'text-white',sub:'text-white/80',tag:'bg-white/10 text-[#f4c75a] border-white/20',primary:'bg-[#f4c75a] text-[#153d35] hover:bg-yellow-300',secondary:'border-white/40 text-white hover:bg-white/10',hint:'text-white/70'}
 } as const;
 
-export default function HomeBannerSlider({language,onShopAll,onSelectDepartment}:Props){
+export default function HomeBannerSlider({language,categories,onShopAll,onSelectDepartment}:Props){
  const [active,setActive]=useState(0),[paused,setPaused]=useState(false);
  useEffect(()=>{
    if(paused||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
@@ -68,7 +68,7 @@ export default function HomeBannerSlider({language,onShopAll,onSelectDepartment}
       <div className="mb-3 flex items-center justify-between"><span className={'text-[11px] font-extrabold tracking-widest '+palette.hint}>{c.discover}</span><span className={'text-[11px] font-semibold '+palette.hint}>{active+1} / {slides.length}</span></div>
       <div className="grid grid-cols-2 gap-3 sm:gap-4">
        {slide.categories.map((id,index)=>{
-        const cat=STORE_DEPARTMENTS.find(d=>d.id===id);
+        const cat=categories.find(d=>d.id===id) || STORE_DEPARTMENTS.find(d=>d.id===id);
         if(!cat)return null;
         return <a key={id} href={'/?category='+encodeURIComponent(id)} onClick={event=>{if(event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();go(id);}} aria-label={cat.name[language]} className={'group relative min-h-[138px] overflow-hidden rounded-[19px] border-2 border-white/75 bg-white text-start shadow-[0_7px_18px_rgba(0,0,0,.15)] transition hover:-translate-y-1 hover:shadow-xl sm:min-h-[168px] lg:min-h-[176px] '+(slide.categories.length===3&&index===2?'col-span-2 sm:col-span-2':'')}>
          <img src={cat.image} loading={index<2?'eager':'lazy'} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"/>
