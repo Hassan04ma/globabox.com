@@ -13,7 +13,7 @@ export default function AdminTrackingWorkspace(){
   try{
     const res=await fetch('/api/admin/tracking-config',{credentials:'same-origin',cache:'no-store'});
     if(!res.ok)throw new Error(res.status===401?'Session administrateur expirée':'Chargement impossible (HTTP '+res.status+')');
-    const data=await res.json();
+    const data=await res.json() as {config?:unknown;success?:boolean;error?:string};
     const parsed=validateTrackingConfig(data?.config);
     if(!parsed)throw new Error('Données de tracking invalides sur le serveur');
     setForm(parsed);setLoaded(true);setStatus('idle');
@@ -29,7 +29,7 @@ export default function AdminTrackingWorkspace(){
      method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},
      body:JSON.stringify(validated)
     });
-    const data=await res.json();
+    const data=await res.json() as {config?:unknown;success?:boolean;error?:string};
     if(!res.ok||!data.success)throw new Error(data.error||'Sauvegarde D1 non confirmée (HTTP '+res.status+')');
     setForm(validateTrackingConfig(data.config)||validated);setStatus('saved');
   }catch(err){setError(err instanceof Error?err.message:'Erreur lors de la sauvegarde');setStatus('error');}
