@@ -12,12 +12,12 @@ export const TRANSLATIONS: TranslationDict = {
     en: "Morocco Premium Store"
   },
   heroTitle: {
-    fr: "Équipez vos aventures avec les meilleurs produits outdoor",
-    ar: "جهّز مغامراتك بأفضل المنتجات البرية والخارجية",
-    en: "Equip Your Adventures With The Best Outdoor Products"
+    fr: "Découvrez tout ce qu’il vous faut au quotidien",
+    ar: "تسوق كل ما تحتاجه لحياتك اليومية",
+    en: "Discover everyday essentials and more"
   },
   heroSubtitle: {
-    fr: "Camping, randonnée, pêche, chasse, voyage et accessoires — qualité premium, prix adaptés et livraison express partout au Maroc.",
+    fr: "Maison, technologie, accessoires, sport et bien plus — des produits utiles à prix clairs, livrés au Maroc.",
     ar: "التخييم، المشي لمسافات طويلة، الصيد، السفر والإكسسوارات — جودة ممتازة، أسعار مناسبة وتوصيل سريع لكافة أنحاء المغرب.",
     en: "Camping, hiking, fishing, hunting, travel & accessories — premium quality, tailored prices, and express shipping across Morocco."
   },
