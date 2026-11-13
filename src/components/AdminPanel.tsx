@@ -219,6 +219,7 @@ export default function AdminPanel({
 
   // Searching Products
   const [productQuery, setProductQuery] = useState('');
+  const [tagsInput,setTagsInput] = useState('');
   const [productStatusFilter,setProductStatusFilter]=useState<'all'|'published'|'draft'|'outofstock'>('all');
   const [adminProducts, setAdminProducts] = useState<Product[]>([]);
   const [catalogLoadError, setCatalogLoadError] = useState('');
@@ -782,6 +783,7 @@ export default function AdminPanel({
   // Initiate Product Create
   const handleStartAddProduct = () => {
     setEditingProduct(null);
+    setTagsInput('');
     setProductForm({
       id: `prod-${Date.now()}`,
       nameFr: '',
@@ -815,6 +817,7 @@ export default function AdminPanel({
   // Initiate Product Edit
   const handleStartEditProduct = (prod: Product) => {
     setEditingProduct(prod);
+    setTagsInput((prod.tags || []).join(', '));
     setProductForm({
       id: prod.id,
       nameFr: prod.name.fr || '',
@@ -893,7 +896,7 @@ export default function AdminPanel({
       },
       category: productForm.category,
       subcategory: productForm.subcategory || undefined,
-      tags: productForm.tags,
+      tags:[...new Set(tagsInput.split(',').map(tag=>tag.trim()).filter(Boolean))].slice(0,30),
       sku:productForm.sku.trim() || undefined,
       barcode:productForm.barcode.trim() || undefined,
       seoTitle:productForm.seoTitle.trim() || undefined,
@@ -1466,12 +1469,12 @@ export default function AdminPanel({
                     <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
                       <h4 className="mb-4 text-base font-black text-[#193e38]">Tags et mots-clés</h4>
                       <label htmlFor="gb-product-tags" className="mb-2 block text-xs font-bold text-[#385647]">Étiquettes produit</label>
-                      <input id="gb-product-tags" type="text" value={productForm.tags.join(', ')}
-                        onChange={e=>setProductForm({...productForm,tags:e.target.value.split(',').map(x=>x.trim()).filter(Boolean).slice(0,30)})}
+                      <input id="gb-product-tags" type="text" value={tagsInput}
+                        onChange={e=>setTagsInput(e.target.value)}
                         placeholder="Ex. rangement, cuisine, maison, organisation"
                         className="min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm text-[#193e38] outline-none focus:border-[#104d43]"/>
                       <p className="mt-2 text-xs text-slate-500">Séparez les mots-clés par une virgule. Ils servent à la recherche interne et à l'organisation du catalogue.</p>
-                      {productForm.tags.length>0&&<div className="mt-3 flex flex-wrap gap-2">{productForm.tags.map((tag,i)=><span key={tag+i} className="rounded-full bg-[#e9f5ee] px-3 py-1 text-[11px] font-bold text-[#104d43]">{tag}</span>)}</div>}
+                      {tagsInput.split(',').some(tag=>tag.trim())&&<div className="mt-3 flex flex-wrap gap-2">{tagsInput.split(',').map(tag=>tag.trim()).filter(Boolean).map((tag,i)=><span key={tag+i} className="rounded-full bg-[#e9f5ee] px-3 py-1 text-[11px] font-bold text-[#104d43]">{tag}</span>)}</div>}
                     </section>
                     <details className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
                       <summary className="cursor-pointer text-base font-black text-[#193e38]">Référencement Google (SEO) · facultatif</summary>
