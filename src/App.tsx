@@ -208,7 +208,7 @@ export default function App() {
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
 
   // Persistent data states
-  const [products, setProducts] = useState<any[]>(PRODUCTS);
+  const [products, setProducts] = useState<any[]>([]);
 
   // Live category metadata is served by D1; keep bundled defaults only as a network fallback.
   const [categories, setCategories] = useState<any[]>(CATEGORIES);
@@ -599,13 +599,8 @@ export default function App() {
     customMessage?: string;
     source?: string;
   } = {}) => {
-    // Fallback if empty (generic lead)
-    const activeItems: CartItem[] = items.length > 0 
-      ? items 
-      : [{ 
-          product: (products[0] || PRODUCTS[0]) as Product, 
-          quantity: 1 
-        }];
+    // An empty WhatsApp enquiry is support, not a fabricated product order.
+    const activeItems: CartItem[] = items;
 
     const finalForm: CheckoutForm = {
       fullName: form?.fullName?.trim() || "WhatsApp Customer",
@@ -623,6 +618,13 @@ export default function App() {
 
     // Generate WhatsApp pre-filled text
     let whatsappMessage = customMessage || "";
+    if (!whatsappMessage && activeItems.length === 0) {
+      whatsappMessage = language === 'ar'
+        ? 'سلام جلوبابوكس، بغيت نستفسر على المنتجات المتوفرة والتوصيل.'
+        : language === 'en'
+        ? 'Hello GLOBABOX, I would like information about your available products and delivery.'
+        : 'Bonjour GLOBABOX, je souhaite des informations sur vos produits disponibles et la livraison.';
+    }
     if (!whatsappMessage) {
       const productBlocks = activeItems.map((it, idx) => {
         let name = it.product.name[language] || it.product.name['fr'];
@@ -1003,10 +1005,10 @@ Merci de confirmer la disponibilité et la livraison.`;
                 </h2>
                 <p className="text-xs md:text-sm text-slate-600 max-w-2xl leading-relaxed mt-1 font-medium">
                   {language === 'ar'
-                    ? `اكتشف تشكيلتنا من جلوبابوكس لـ ${categoryName} مع توصيل سريع لجميع المدن المغربية والدفع عند الاستلام.`
+                    ? `اكتشف منتجات ${categoryName} مع الدفع عند الاستلام وتأكيد إمكانية التوصيل قبل الإرسال.`
                     : language === 'en'
-                    ? `Discover our Globabox selection for ${categoryName} with express shipping across Morocco and safe cash on delivery.`
-                    : `Découvrez notre sélection Globabox pour ${categoryName} avec livraison partout au Maroc et paiement à la livraison.`
+                    ? `Explore ${categoryName} products with cash on delivery; delivery options are confirmed before dispatch.`
+                    : `Découvrez notre sélection ${categoryName}, avec paiement à la livraison et disponibilité du transport confirmée avant l'expédition.`
                   }
                 </p>
                 <p className="text-[11px] font-mono text-slate-400 mt-1.5">
@@ -1105,7 +1107,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                 setSearchTerm('');
                 setFilterType('all');
               }}
-              className="mt-6 px-5 py-2.5 bg-[#0b1528] hover:bg-[#1a2d4c] text-white rounded-xl text-xs font-bold transition-all uppercase tracking-wider shadow-sm cursor-pointer"
+              className="mt-6 px-5 py-2.5 bg-[#104d43] hover:bg-[#0c3730] text-white rounded-xl text-xs font-bold transition-all uppercase tracking-wider shadow-sm cursor-pointer"
             >
               {language === 'ar' ? 'عرض كل المنتجات' : language === 'en' ? 'Show all products' : 'Toutes les catégories'}
             </button>
