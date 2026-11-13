@@ -1,5 +1,5 @@
 import { PRODUCTS, CATEGORIES } from '../src/data';
-import { STORE_DEPARTMENTS, HIDDEN_LEGACY_CATEGORIES, CATEGORY_GROUPS } from '../src/storefrontDepartments';
+import { STORE_DEPARTMENTS } from '../src/storefrontDepartments';
 import { DEFAULT_TRACKING_CONFIG, validateTrackingConfig } from '../src/trackingConfig';
 import { isAdmin, handleAdminAuth } from './auth';
 import { quoteOrder } from './orderQuote';
@@ -82,7 +82,7 @@ async function categoryList(db:D1Database, includeInactive=false):Promise<Catego
       overrides.set(row.id,{...parsed,isActive:row.active===1}); }
     catch { console.error('Invalid category override',row.id); }
   }
-  const fromDefault=[...CATEGORIES, ...STORE_DEPARTMENTS.filter(dept=>!CATEGORIES.some(cat=>cat.id===dept.id))].map(cat=>({
+  const fromDefault=[...STORE_DEPARTMENTS, ...CATEGORIES.filter(cat=>!STORE_DEPARTMENTS.some(dept=>dept.id===cat.id))].map(cat=>({
     id:cat.id,name:cat.name,image:cat.image,
     description:cat.description||{fr:'',ar:'',en:''},isActive:true
   }));
@@ -91,8 +91,8 @@ async function categoryList(db:D1Database, includeInactive=false):Promise<Catego
   for(const [id,cat] of overrides) if(!ids.has(id)) all.push(cat);
   // Historic camping departments remain available in the admin for data safety,
   // but are never accidentally made public by the new storefront.
-  const aliases=new Set(Object.values(CATEGORY_GROUPS).flatMap(group=>group.slice(1)));
-  return includeInactive?all:all.filter(cat=>cat.isActive && !HIDDEN_LEGACY_CATEGORIES.has(cat.id) && !aliases.has(cat.id));
+  const mainIds=new Set(STORE_DEPARTMENTS.map(dept=>dept.id));
+  return includeInactive?all:all.filter(cat=>cat.isActive && mainIds.has(cat.id));
 }
 
 const auth = isAdmin;
