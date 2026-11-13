@@ -74,7 +74,7 @@ export default function ProductCard({
       <div className="absolute top-4 left-4 right-4 z-10 flex flex-wrap justify-between items-start gap-1.5 pointer-events-none">
         <div className="flex flex-wrap gap-1">
           {product.bestSeller && (
-            <span className="bg-orange-600 text-white text-[10px] uppercase font-extrabold px-2.5 py-1.5 rounded-lg shadow-md flex items-center gap-1">
+            <span className="bg-[#104d43] text-white text-[10px] uppercase font-extrabold px-2.5 py-1.5 rounded-lg shadow-md flex items-center gap-1">
               <Flame className="w-3.5 h-3.5 fill-white" />
               {t('filterBestSellers')}
             </span>
@@ -91,7 +91,7 @@ export default function ProductCard({
           })()}
         </div>
         {discountPercent > 0 && (
-          <span className="bg-red-650 text-white text-[10px] font-black px-2.5 py-1.5 rounded-lg shadow-md self-start shrink-0 flex items-center gap-1">
+          <span className="bg-red-600 text-white text-[10px] font-black px-2.5 py-1.5 rounded-lg shadow-md self-start shrink-0 flex items-center gap-1">
             <Percent className="w-3.5 h-3.5 text-white shrink-0" />
             <span>{t('badge_promo')} -{discountPercent}%</span>
           </span>
@@ -122,30 +122,13 @@ export default function ProductCard({
       {/* Card Content Details */}
       <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between">
         <div>
-          {/* Rating */}
-          <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
-            <div className="flex items-center gap-1">
-              <div className="flex items-center text-amber-450">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-3.5 h-3.5 ${
-                      i < Math.floor(product.rating) ? 'fill-amber-400 text-amber-400' : 'text-slate-200'
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-[10px] text-slate-400 font-mono font-medium">
-                ({product.reviewsCount})
-              </span>
-            </div>
-            {renderStockBadge()}
-          </div>
+          {/* Availability is shown directly; no unverified star ratings. */}
+          <div className="mb-3 flex justify-end">{renderStockBadge()}</div>
 
           {/* Title */}
           <h3 
             onClick={() => onViewDetails(product)}
-            className="text-sm font-extrabold text-slate-900 group-hover:text-teal-700 transition-colors cursor-pointer line-clamp-2 min-h-[40px] leading-snug font-sans"
+            className="text-sm font-bold text-slate-900 group-hover:text-teal-700 transition-colors cursor-pointer line-clamp-2 min-h-[40px] leading-snug font-sans"
           >
             {product.name[language]}
           </h3>
@@ -171,11 +154,11 @@ export default function ProductCard({
         {/* Pricing & CTA Buttons */}
         <div className="mt-5 pt-3 border-t border-slate-100/80">
           <div className="flex items-center justify-between mb-3.5 gap-2">
-            <span className="text-lg font-black font-mono text-[#0B1528] bg-slate-50 border border-slate-200 px-3.5 py-1 rounded-xl shadow-sm text-center">
+            <span className="text-lg font-black font-mono text-[#104d43] bg-slate-50 border border-slate-200 px-3.5 py-1 rounded-xl shadow-sm text-center">
               {product.price} {t('moroccoCurrency')}
             </span>
             {product.originalPrice && (
-              <span className="text-xs text-slate-405 line-through font-mono font-medium">
+              <span className="text-xs text-slate-400 line-through font-mono font-medium">
                 {product.originalPrice} {t('moroccoCurrency')}
               </span>
             )}
@@ -196,7 +179,7 @@ export default function ProductCard({
                   {/* Quick checkout direct drawer order button (Vibrant Orange CTA) */}
                   <button
                     onClick={() => onInstantOrder(product)}
-                    className="bg-teal-700 hover:bg-teal-800 text-white text-[11px] font-black py-3 sm:py-2.5 px-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center shadow-lg hover:shadow-orange-500/20 shadow-orange-500/10 hover:scale-[1.02] active:scale-[0.98] min-h-[44px]"
+                    className="bg-[#104d43] hover:bg-[#0d3f36] text-white text-[11px] font-black py-3 sm:py-2.5 px-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center shadow-lg hover:shadow-orange-500/20 shadow-orange-500/10 hover:scale-[1.02] active:scale-[0.98] min-h-[44px]"
                     title={t('btnOrderNow')}
                   >
                     <ShoppingCart size={14} className="text-white shrink-0" />
