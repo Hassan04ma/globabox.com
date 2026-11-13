@@ -1203,7 +1203,7 @@ Merci de confirmer la disponibilité et la livraison.`;
       {/* Small, unobtrusive return-to-top action after the user scrolls down. */}
       {showScrollTop && !isCartOpen && !isTrackingOpen && !isSuccessModalOpen && !selectedProduct && !isAdminOpen && (
         <button type="button"
-          onClick={() => window.scrollTo({top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'})}
+          onClick={() => window.scrollTo({top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})}
           aria-label={language === 'ar' ? 'الرجوع لأعلى الصفحة' : language === 'en' ? 'Back to top' : 'Retour en haut'}
           title={language === 'ar' ? 'الرجوع للفوق' : language === 'en' ? 'Back to top' : 'Retour en haut'}
           className="fixed bottom-5 end-5 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-[#b9dbc7] bg-[#104d43] text-white shadow-[0_6px_24px_rgba(11,48,39,.25)] transition-colors hover:bg-[#0b382f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#104d43] sm:bottom-7 sm:end-7">
