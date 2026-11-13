@@ -1,7 +1,8 @@
-import { ArrowLeft, ArrowRight, ChevronRight, MapPin, PhoneCall } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronRight, Mail, MapPin, PhoneCall } from 'lucide-react';
 import type { Language } from '../types';
 import { ORDER_SUPPORT_NUMBER, WHATSAPP_LINK } from '../data';
 import WhatsAppIcon from './WhatsAppIcon';
+import { CONTACT_EMAIL, CONTACT_EMAIL_LINK } from '../contactEmail';
 import { policyContent, policyKeys, type TabKey } from './LegalPagesModal';
 
 interface Props {
@@ -11,9 +12,9 @@ interface Props {
  onBackToShop:()=>void;
 }
 const l={
- fr:{back:'Retour à la boutique',title:'Informations et politiques',subtitle:'Toutes les informations utiles pour commander chez GLOBABOX.',contact:'Parler au service client',call:'Appeler',area:'Zone de livraison : Maroc',updated:'Ces informations restent soumises aux conditions applicables à chaque commande.'},
- ar:{back:'الرجوع للمتجر',title:'المعلومات والسياسات',subtitle:'المعلومات اللي كتحتاج قبل ما تطلب من جلوبابوكس.',contact:'التواصل مع خدمة الزبناء',call:'اتصل بنا',area:'منطقة التوصيل: المغرب',updated:'تطبق كذلك الشروط والحقوق القانونية الخاصة بكل طلبية.'},
- en:{back:'Back to store',title:'Information and policies',subtitle:'Key information for shopping at GLOBABOX.',contact:'Contact customer support',call:'Call us',area:'Delivery area: Morocco',updated:'The applicable order terms and statutory rights also apply.'}
+ fr:{back:'Retour à la boutique',title:'Informations et politiques',subtitle:'Toutes les informations utiles pour commander chez GLOBABOX.',contact:'Parler au service client',call:'Appeler',email:'E-mail',area:'Zone de livraison : Maroc',updated:'Ces informations restent soumises aux conditions applicables à chaque commande.'},
+ ar:{back:'الرجوع للمتجر',title:'المعلومات والسياسات',subtitle:'المعلومات اللي كتحتاج قبل ما تطلب من جلوبابوكس.',contact:'التواصل مع خدمة الزبناء',call:'اتصل بنا',email:'البريد الإلكتروني',area:'منطقة التوصيل: المغرب',updated:'تطبق كذلك الشروط والحقوق القانونية الخاصة بكل طلبية.'},
+ en:{back:'Back to store',title:'Information and policies',subtitle:'Key information for shopping at GLOBABOX.',contact:'Contact customer support',call:'Call us',email:'Email',area:'Delivery area: Morocco',updated:'The applicable order terms and statutory rights also apply.'}
 } as const;
 
 export default function StoreInfoPage({language,page,onSelectPage,onBackToShop}:Props){
@@ -43,6 +44,7 @@ export default function StoreInfoPage({language,page,onSelectPage,onBackToShop}:
       {(p==='contact'||p==='delivery'||p==='returns')&&<div className="mt-9 grid gap-3 border-t border-slate-100 pt-7 sm:grid-cols-2">
         <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center gap-3 rounded-xl border border-[#b3debe] bg-[#f0faf2] px-4 text-sm font-bold text-[#115337] hover:bg-[#e2f3e6]"><WhatsAppIcon className="h-5 w-5"/>{t.contact}</a>
         <a href={'tel:'+ORDER_SUPPORT_NUMBER} className="flex min-h-12 items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-[#193e38] hover:bg-slate-50"><PhoneCall size={19}/>{t.call}<span dir="ltr">{ORDER_SUPPORT_NUMBER}</span></a>
+        {CONTACT_EMAIL && <a href={CONTACT_EMAIL_LINK} className="flex min-h-12 items-center gap-3 rounded-xl border border-slate-200 px-4 text-sm font-bold text-[#193e38] hover:bg-slate-50"><Mail size={18}/>{t.email}<span dir="ltr" className="break-all text-xs">{CONTACT_EMAIL}</span></a>}
         <p className="flex items-center gap-2 text-xs text-slate-500 sm:col-span-2"><MapPin size={16}/>{t.area}</p>
       </div>}
       <p className="mt-10 rounded-xl bg-[#f3f7f4] px-4 py-3 text-xs leading-6 text-slate-600">{t.updated}</p>
