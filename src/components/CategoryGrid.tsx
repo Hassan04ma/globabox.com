@@ -24,7 +24,7 @@ export default function CategoryGrid({
   return (
     <section 
       style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
     >
       <div className="flex items-center gap-2 mb-6">
         <Grid2X2 className="w-5 h-5 text-teal-700" />
@@ -42,7 +42,7 @@ export default function CategoryGrid({
               onClick={() => setSelectedCategory(cat.id)}
               className={`group overflow-hidden rounded-2xl border text-center transition-all duration-300 cursor-pointer flex flex-col relative aspect-[4/5] sm:aspect-square hover:-translate-y-1 shadow-sm hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 ${
                 isSelected
-                  ? 'border-orange-500 ring-2 ring-orange-500/35 shadow-lg shadow-orange-500/10'
+                  ? 'border-teal-700 ring-2 ring-teal-700/25 shadow-sm'
                   : 'border-slate-200 bg-slate-900 hover:border-orange-500/40'
               }`}
             >
