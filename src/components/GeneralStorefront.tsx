@@ -1,4 +1,4 @@
-import { useMemo, useState, type RefObject } from 'react';
+import { useMemo, useState, type ReactNode, type RefObject } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronDown, CreditCard, Headphones, LayoutGrid, PackageCheck, Search, ShieldCheck, ShoppingBag, ShoppingCart, SlidersHorizontal, Sparkles, Truck } from 'lucide-react';
 import type { Category, Language, Product } from '../types';
 import ProductImage from './ProductImage';
@@ -98,6 +98,7 @@ const messages = {
 };
 
 function StoreProductCard({ product, language, onViewDetails, onAddToCart, onInstantOrder }: {
+  key?: string;
   product: Product; language: Language;
   onViewDetails: (product: Product) => void;
   onAddToCart: (product: Product) => void;
@@ -144,7 +145,7 @@ function StoreProductCard({ product, language, onViewDetails, onAddToCart, onIns
   );
 }
 
-function BlockTitle({ title, subtitle, language, extra }: { title: string; subtitle: string; language: Language; extra?: React.ReactNode }) {
+function BlockTitle({ title, subtitle, language, extra }: { title: string; subtitle: string; language: Language; extra?: ReactNode }) {
   return (
     <div className="mb-5 flex flex-wrap items-end justify-between gap-4 border-b border-slate-200 pb-4" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div><p className="mb-1 text-xs font-bold uppercase tracking-wider text-red-600">{subtitle}</p><h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-[28px]">{title}</h2></div>
@@ -162,7 +163,7 @@ export default function GeneralStorefront({
   const t = messages[language];
   const [showAllCategories, setShowAllCategories] = useState(false);
   const isHome = !selectedCategory && !searchTerm;
-  const activeCategories = useMemo(() => categories.filter(c => c.isActive !== false), [categories]);
+  const activeCategories = useMemo(() => categories.filter(c => (c as Category & {isActive?: boolean}).isActive !== false), [categories]);
   const namedCategory = activeCategories.find(c => c.id === selectedCategory);
   const pickedOffers = useMemo(() => products.filter(p => p.isActive !== false && p.inStock !== false && p.stockStatus !== 'out_of_stock' && !!p.originalPrice && p.originalPrice > p.price).slice(0, 4), [products]);
   const selectedCategories = showAllCategories ? activeCategories : activeCategories.slice(0, 10);
