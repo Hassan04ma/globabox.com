@@ -52,7 +52,7 @@ export const policyContent:Record<Language,{title:string;subtitle:string;labels:
 
 export default function LegalPagesModal({isOpen,onClose,initialTab='about',language='fr'}:Props){
   const [active,setActive]=useState<TabKey>(policyKeys.includes(initialTab as TabKey)?initialTab as TabKey:'about');
-  useEffect(()=>{if(isOpen)setActive(keys.includes(initialTab as TabKey)?initialTab as TabKey:'about');},[initialTab,isOpen]);
+  useEffect(()=>{if(isOpen)setActive(policyKeys.includes(initialTab as TabKey)?initialTab as TabKey:'about');},[initialTab,isOpen]);
   useEffect(()=>{
     if(!isOpen)return;
     const esc=(e:KeyboardEvent)=>{if(e.key==='Escape')onClose();};
