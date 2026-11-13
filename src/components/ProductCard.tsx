@@ -68,7 +68,7 @@ export default function ProductCard({
     <div
       id={`product-card-${product.id}`}
       style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      className="group bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(30,41,59,0.1)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col relative"
+      className="group bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(30,41,59,0.1)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col relative"
     >
       {/* Promotional Labels & Tags */}
       <div className="absolute top-4 left-4 right-4 z-10 flex flex-wrap justify-between items-start gap-1.5 pointer-events-none">
@@ -120,7 +120,7 @@ export default function ProductCard({
       </div>
 
       {/* Card Content Details */}
-      <div className="p-5 flex-1 flex flex-col justify-between">
+      <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between">
         <div>
           {/* Rating */}
           <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
@@ -145,7 +145,7 @@ export default function ProductCard({
           {/* Title */}
           <h3 
             onClick={() => onViewDetails(product)}
-            className="text-sm font-extrabold text-slate-900 group-hover:text-orange-600 transition-colors cursor-pointer line-clamp-2 min-h-[40px] leading-snug font-sans"
+            className="text-sm font-extrabold text-slate-900 group-hover:text-teal-700 transition-colors cursor-pointer line-clamp-2 min-h-[40px] leading-snug font-sans"
           >
             {product.name[language]}
           </h3>
@@ -203,7 +203,7 @@ export default function ProductCard({
                   {/* Quick checkout direct drawer order button (Vibrant Orange CTA) */}
                   <button
                     onClick={() => onInstantOrder(product)}
-                    className="bg-orange-600 hover:bg-orange-500 text-white text-[11px] font-black py-3 sm:py-2.5 px-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center shadow-lg hover:shadow-orange-500/20 shadow-orange-500/10 hover:scale-[1.02] active:scale-[0.98] min-h-[44px]"
+                    className="bg-teal-700 hover:bg-teal-800 text-white text-[11px] font-black py-3 sm:py-2.5 px-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center shadow-lg hover:shadow-orange-500/20 shadow-orange-500/10 hover:scale-[1.02] active:scale-[0.98] min-h-[44px]"
                     title={t('btnOrderNow')}
                   >
                     <ShoppingCart size={14} className="text-white shrink-0" />
@@ -213,7 +213,7 @@ export default function ProductCard({
                   {/* Classic add to cart (Vibrant Blue CTA) */}
                   <button
                     onClick={() => onAddToCart(product)}
-                    className="bg-blue-900 hover:bg-blue-950 text-white text-[11px] font-bold py-3 sm:py-2.5 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-900/5 hover:bg-[#0c1a30] min-h-[44px]"
+                    className="bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold py-3 sm:py-2.5 px-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-900/5 hover:bg-[#0c1a30] min-h-[44px]"
                   >
                     <ShoppingCart className="w-3.5 h-3.5 text-orange-400" />
                     <span>{t('btnAddToCart')}</span>
