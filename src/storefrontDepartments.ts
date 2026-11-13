@@ -52,6 +52,21 @@ export const STORE_DEPARTMENTS: Category[] = [
     image:'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=700&h=700&q=82'
   },
   {
+    id: 'entretien',
+    name: {fr:'Entretien & Nettoyage',ar:'التنظيف والعناية بالمنزل',en:'Cleaning & Home Care'},
+    image:'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=700&h=700&q=82'
+  },
+  {
+    id: 'eclairage',
+    name: {fr:'Éclairage & Ambiance',ar:'الإنارة والإضاءة',en:'Lighting & Decor'},
+    image:'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=700&h=700&q=82'
+  },
+  {
+    id: 'animaux',
+    name: {fr:'Animaux & Accessoires',ar:'الحيوانات الأليفة ومستلزماتها',en:'Pet Accessories'},
+    image:'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=700&h=700&q=82'
+  },
+  {
     id: 'bureau',
     name: {fr:'Bureau & Organisation',ar:'المكتب والتنظيم',en:'Office & Organization'},
     image:'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=700&h=700&q=82'
@@ -76,7 +91,10 @@ export const CATEGORY_GROUPS: Record<string,string[]> = {
   automobile: ['automobile'],
   enfants: ['enfants'],
   jardin: ['jardin'],
-  bureau: ['bureau']
+  bureau: ['bureau'],
+  entretien: ['entretien'],
+  eclairage: ['eclairage'],
+  animaux: ['animaux']
 };
 
 export const isPublicStoreCategory = (id: string) =>
