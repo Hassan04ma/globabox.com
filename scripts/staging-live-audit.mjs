@@ -16,19 +16,13 @@ for(let attempt=1;attempt<=5;attempt++){
   assert(home.response.status===200,'Homepage status '+home.response.status);
   assert(/<html/i.test(home.body),'Homepage must serve HTML');
   checks.push('Home 200 (HTML)');
-  // Verify the complete 13-department QA page is deployed; this is a LOCAL simulation only.
-  // HTTP 200 without the expected content is not enough to confirm the current deployment.
-  const qa=await get('/catalogue-test.html');
-  assert(qa.response.status===200,'13-product QA page HTTP '+qa.response.status);
-  assert(qa.body.includes('13 références proposées') && qa.body.includes('function showCart()') && qa.body.includes('function confirmTest()'),'13-product QA page missing or outdated');
-  assert(qa.body.includes('Aucune commande sauvegardée dans Cloudflare D1'),'QA page must disclose no real order is saved');
-  const match=qa.body.match(/const products=(\[[\s\S]*?\]);\s*const cart=new Map\(\)/);
-  assert(!!match,'13-product embedded catalog not found');
-  const qaProducts=JSON.parse(match[1]);
-  assert(qaProducts.length===13,'Expected 13 QA products, got '+qaProducts.length);
-  assert(new Set(qaProducts.map(p=>p.category)).size===13,'Expected one distinct department per QA product');
-  assert(qaProducts.every(p=>p.id&&p.title&&Number(p.price)>0&&p.illustration),'QA product data incomplete');
-  checks.push('13 unique QA products + local cart/COD simulation deployed (no D1 write)');
+  // Live storefront should contain only authorized, published catalog entries.
+  // Never treat standalone demonstration pages as a launch readiness criterion.
+  const readiness=await get('/api/launch-readiness');
+  assert([200,503].includes(readiness.response.status),'Readiness endpoint HTTP '+readiness.response.status);
+  assert(readiness.value && typeof readiness.value === 'object','Missing launch readiness response');
+  assert(readiness.value.demoCatalogEnabled !== true,'Bundled sample catalog is enabled: disable STORE_DEMO_CATALOG before launch');
+  checks.push('Demo product fallback disabled');
 
   const categories=await get('/api/categories');
   assert(categories.response.status===200,'Categories HTTP '+categories.response.status);
@@ -41,7 +35,8 @@ for(let attempt=1;attempt<=5;attempt++){
   const products=await get('/api/products');
   assert(products.response.status===200,'Products HTTP '+products.response.status);
   assert(Array.isArray(products.value),'Products must be an array');
-  assert(products.value.every(p=>p.isActive!==false),'Public endpoint leaked draft product(s)');
+  assert(products.value.every(p=>p.isActive===true),'Public endpoint leaked draft or unverified product(s)');
+  assert(products.value.every(p=>!String(p.id||'').startsWith('gb_source_')),'Public endpoint exposes sourced test products');
   checks.push(products.value.length+' publicly visible products (drafts excluded)');
 
   const unauthorized=await get('/api/admin/products');
