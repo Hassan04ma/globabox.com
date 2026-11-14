@@ -18,8 +18,8 @@ export const TRANSLATIONS: TranslationDict = {
   },
   heroSubtitle: {
     fr: "Maison, technologie, accessoires, sport et bien plus — des produits utiles à prix clairs, livrés au Maroc.",
-    ar: "التخييم، المشي لمسافات طويلة، الصيد، السفر والإكسسوارات — جودة ممتازة، أسعار مناسبة وتوصيل سريع لكافة أنحاء المغرب.",
-    en: "Camping, hiking, fishing, hunting, travel & accessories — premium quality, tailored prices, and express shipping across Morocco."
+    ar: "منتجات للمنزل والمطبخ والإلكترونيات والجمال والإكسسوارات وغيرها، بأثمنة واضحة والدفع عند الاستلام داخل المغرب.",
+    en: "Home, kitchen, electronics, beauty, accessories and more — clear prices and cash on delivery across Morocco."
   },
   btnDiscover: {
     fr: "Découvrir la boutique",
@@ -107,14 +107,14 @@ export const TRANSLATIONS: TranslationDict = {
     en: "Best Sellers & New Arrivals"
   },
   allProductsTitle: {
-    fr: "Tous nos équipements outdoor",
-    ar: "كل منتجاتنا للرحلات والمغامرات",
-    en: "All Outdoor Gear"
+    fr: "Tous les produits de notre boutique",
+    ar: "تصفح جميع منتجات المتجر",
+    en: "Explore All Our Products"
   },
   searchPlaceholder: {
-    fr: "Rechercher un produit (tente, sac de couchage, réchaud...)",
-    ar: "ابحث عن منتج (خيمة، كيس نوم، موقد...)",
-    en: "Search for a product (tent, sleeping bag, stove...)"
+    fr: "Rechercher un produit ou une catégorie...",
+    ar: "ابحث عن منتج أو قسم...",
+    en: "Search products or categories..."
   },
   allCategoriesLabel: {
     fr: "Toutes les catégories",
