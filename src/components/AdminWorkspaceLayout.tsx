@@ -2,11 +2,11 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   ArrowUpRight, BarChart3, Check, ChevronDown, ChevronRight, CircleHelp, ClipboardList,
   Command, ExternalLink, LayoutDashboard, LogOut, Menu, Package, Plus, Search, ShieldCheck,
-  Store, Tags, Truck, X
+  Store, Tags, Truck, X, ClipboardCheck
 } from 'lucide-react';
 import '../adminPlatform.css';
 
-type AdminTab='dashboard'|'orders'|'products'|'categories'|'marketing';
+type AdminTab='dashboard'|'orders'|'products'|'categories'|'marketing'|'operations';
 interface Props{
  activeTab:AdminTab; onTabChange:(tab:AdminTab)=>void;
  onClose:()=>void;onLogout:()=>void;
@@ -21,7 +21,8 @@ const tabs=[
  {id:'orders' as const,label:'Commandes',sub:'Livraison & paiements',icon:ClipboardList,group:'COMMERCE'},
  {id:'products' as const,label:'Produits',sub:'Catalogue & inventaire',icon:Package,group:'COMMERCE'},
  {id:'categories' as const,label:'Collections',sub:'Rayons & catégories',icon:Tags,group:'COMMERCE'},
- {id:'marketing' as const,label:'Marketing',sub:'Pixels & acquisition',icon:BarChart3,group:'DÉVELOPPEMENT'}
+ {id:'marketing' as const,label:'Marketing',sub:'Pixels & acquisition',icon:BarChart3,group:'DÉVELOPPEMENT'},
+ {id:'operations' as const,label:'Opérations',sub:'Préparation & contrôles',icon:ClipboardCheck,group:'DÉVELOPPEMENT'}
 ];
 export default function AdminWorkspaceLayout({
  activeTab,onTabChange,onClose,onLogout,ordersCount,pendingOrders,productsCount,
