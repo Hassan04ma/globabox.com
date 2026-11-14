@@ -1399,7 +1399,7 @@ export default function AdminPanel({
                           </div>)}</div>
                           <p className="mt-3 text-xs font-black text-[#104d43]">Total : {order.total} DH</p>
                         </div>
-                        <AdminShippingEditor key={order.id} order={order} onSaved={saved=>setOrders(current=>current.map(item=>item.id===saved.id?saved:item))}/>
+                        <AdminShippingEditor order={order} onSaved={saved=>setOrders(current=>current.map(item=>item.id===saved.id?saved:item))}/>
                         <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-4 md:col-span-3">
                           <button type="button" onClick={()=>void handleDeleteOrder(order.id)} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-rose-200 bg-white px-4 text-xs font-bold text-rose-700 hover:bg-rose-50"><Trash2 size={16}/>Supprimer la commande</button>
                           <p className="self-center text-xs text-slate-500">Les changements de statut sont enregistrés dans D1 avant mise à jour de l'interface.</p>
