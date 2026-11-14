@@ -34,6 +34,11 @@ const db = {
           if(i>=0)savedOrders.splice(i,1);
           return {success:true,meta:{changes:i>=0?1:0}};
         }
+        if(sql.startsWith('UPDATE orders SET status=')){
+          const i=savedOrders.findIndex(o=>o.id===params[2]);
+          if(i>=0)savedOrders[i]=JSON.parse(params[1] as string);
+          return {success:true,meta:{changes:i>=0?1:0}};
+        }
         if (sql.startsWith('INSERT INTO products')) return {success:true,meta:{changes:1}};
         if (sql.startsWith('INSERT INTO orders')) {
           savedOrders.push(JSON.parse(params[3] as string));
@@ -202,6 +207,28 @@ assert.equal((await request('/api/track-order')).status,404,'GET tracking endpoi
 
 // A trusted admin creating a product cannot make it public in a single POST.
 const adminEnv = {...env, ADMIN_API_KEY:'ci_dummy_admin_api_key_very_long_not_a_secret_00001'};
+// Manual courier details are protected, persisted and private notes never leave admin APIs.
+const adminHeaders={'Content-Type':'application/json','x-admin-api-key':'ci_dummy_admin_api_key_very_long_not_a_secret_00001'};
+const changeShipping=async (shipping:unknown)=>worker.fetch(new Request(
+  'https://preview.example.test/api/orders/'+encodeURIComponent(data.order.id),{
+    method:'PUT',headers:adminHeaders,body:JSON.stringify({shipping})
+  }),adminEnv);
+assert.equal((await request('/api/orders/'+data.order.id,{
+  method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({shipping:{carrier:'Private'}})
+})).status,401,'Anonymous users cannot change courier');
+assert.equal((await changeShipping({carrier:'<script>',trackingNumber:'GB-123'})).status,400,'HTML disallowed in courier fields');
+assert.equal((await changeShipping({carrier:'AMEEX',trackingNumber:'GB TEST 123',token:'private'})).status,400,'Unexpected carrier secrets rejected');
+const savedShipping=await changeShipping({carrier:'Livraison interne',trackingNumber:'GB-TRACK-0001',internalNote:'Internal call note'});
+assert.equal(savedShipping.status,200,'Authorized admin can save manual shipment metadata');
+assert.equal(savedOrders.find(o=>o.id===data.order.id)?.shipping?.trackingNumber,'GB-TRACK-0001');
+const afterShipping=await track({reference:savedRef,phone:'0612345678'});
+assert.equal(afterShipping.status,200);
+const customerShipping=await afterShipping.json() as any;
+assert.equal(customerShipping.tracking.carrier,'Livraison interne');
+assert.equal(customerShipping.tracking.trackingNumber,'GB-TRACK-0001');
+assert.equal(customerShipping.tracking.courierTrackingAvailable,true);
+assert.equal(JSON.stringify(customerShipping).includes('Internal call note'),false,'Never show private shipping note in customer tracking');
+
 const draft = await worker.fetch(new Request('https://preview.example.test/api/products', {
   method:'POST',headers:{'Content-Type':'application/json','x-admin-api-key':'ci_dummy_admin_api_key_very_long_not_a_secret_00001'},
   body:JSON.stringify({id:'safe-demo-draft',name:{fr:'Draft Test'},price:99,
