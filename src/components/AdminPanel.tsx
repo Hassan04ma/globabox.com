@@ -334,20 +334,11 @@ export default function AdminPanel({
     }
   };
 
-  const handleDeleteOrder = async (orderId: string) => {
-    if (!window.confirm('Voulez-vous vraiment supprimer cette commande ?')) return;
-    try {
-      const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, {
-        method: 'DELETE', credentials: 'same-origin'
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const updated = orders.filter(o => o.id !== orderId);
-      setOrders(updated);
-
-    } catch (err) {
-      console.error('[GLOBABOX] Order deletion failed', err);
-      alert("La commande n'a pas été supprimée sur le serveur.");
-    }
+  const handleCancelOrder = async (orderId: string) => {
+    const order=orders.find(item=>item.id===orderId);
+    if(!order || order.status==='cancelled')return;
+    if(!window.confirm('Annuler cette commande ? La commande et son historique resteront enregistrés dans D1.'))return;
+    await handleUpdateOrderStatus(orderId,'cancelled');
   };
 
   // Export Orders to CSV helper
@@ -1401,8 +1392,8 @@ export default function AdminPanel({
                         </div>
                         <AdminShippingEditor order={order} onSaved={saved=>setOrders(current=>current.map(item=>item.id===saved.id?saved:item))}/>
                         <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-4 md:col-span-3">
-                          <button type="button" onClick={()=>void handleDeleteOrder(order.id)} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-rose-200 bg-white px-4 text-xs font-bold text-rose-700 hover:bg-rose-50"><Trash2 size={16}/>Supprimer la commande</button>
-                          <p className="self-center text-xs text-slate-500">Les changements de statut sont enregistrés dans D1 avant mise à jour de l'interface.</p>
+                          <button type="button" onClick={()=>void handleCancelOrder(order.id)} disabled={order.status==='cancelled'} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-rose-200 bg-white px-4 text-xs font-bold text-rose-700 hover:bg-rose-50"><Trash2 size={16}/>Annuler la commande</button>
+                          <p className="self-center text-xs text-slate-500">Les statuts et les informations d'expédition sont sauvegardés dans D1. L'annulation conserve l'historique.</p>
                         </div>
                       </div>
                     </details>
