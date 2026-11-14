@@ -1080,37 +1080,44 @@ export default function AdminPanel({
     >
       {/* Keep current business screens and permissions, redesign navigation only. */}
       {/* Main panel body */}
-      <div className={activeTab === 'categories' ? 'min-h-full bg-[#f5f8f6]' : 'min-h-full bg-[#f5f8f6] p-4 text-[#193e38] sm:p-6 xl:p-8'}>
+      <div className={activeTab === 'categories' ? 'min-h-full bg-[#f3f5f7] p-4 sm:p-5 xl:p-7' : 'min-h-full bg-[#f3f5f7] p-4 text-[#213638] sm:p-5 xl:p-7'}>
         
         {/* VIEW 0: Dashboard, optimized for daily order and catalog management. */}
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
-            <section className="flex flex-col justify-between gap-4 rounded-[24px] border border-[#dce9e0] bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:p-7">
+
+            <section className="flex flex-col gap-5 rounded-[18px] border border-[#dfe7e4] bg-white px-6 py-6 shadow-[0_2px_10px_rgba(16,43,32,.03)] sm:flex-row sm:items-center sm:justify-between sm:px-7">
               <div>
-                <p className="text-[11px] font-extrabold uppercase tracking-[.14em] text-[#33866d]">GLOBABOX · ESPACE MARCHAND</p>
-                <h2 className="mt-2 text-2xl font-black tracking-tight text-[#143b32] sm:text-3xl">Bienvenue sur votre tableau de bord</h2>
-                <p className="mt-2 max-w-2xl text-sm leading-7 text-[#5c7368]">Gérez les commandes, préparez vos expéditions manuelles et publiez les produits de votre boutique.</p>
+                <p className="text-[11px] font-extrabold tracking-[.13em] text-[#5e9280]">VUE D’ENSEMBLE · AUJOURD’HUI</p>
+                <h2 className="mt-1.5 text-[23px] font-extrabold tracking-tight text-[#233638] sm:text-[28px]">Pilotez votre boutique en un clin d’œil</h2>
+                <p className="mt-2 text-[13px] leading-6 text-[#7a8a8b]">Commandes, catalogue, expédition et activité commerciale dans un seul espace.</p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={() => {handleStartAddProduct();setActiveTab('products');}} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#104d43] px-5 text-sm font-extrabold text-white hover:bg-[#0b3830]"><Plus size={18}/>Ajouter un produit</button>
-                <button type="button" onClick={() => {setOrderStatusFilter('pending');setActiveTab('orders');}} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#b6d4c2] bg-white px-5 text-sm font-bold text-[#104d43] hover:bg-[#ecf6ef]"><ClipboardList size={18}/>Commandes à traiter</button>
+                <button type="button" onClick={() => {handleStartAddProduct();setActiveTab('products');}}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-[10px] bg-[#174d40] px-5 text-[12px] font-extrabold text-white shadow-sm hover:bg-[#0e3c32]"><Plus size={17}/>Nouveau produit</button>
+                <button type="button" onClick={() => {setOrderStatusFilter('pending');setActiveTab('orders');}}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-[10px] border border-[#d5e4db] bg-white px-5 text-[12px] font-bold text-[#38584e] hover:bg-[#f4faf6]"><ClipboardList size={17}/>Voir les commandes</button>
               </div>
             </section>
 
-            <section aria-label="Indicateurs du magasin" className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-6">
+            <section aria-label="Indicateurs du magasin" className="grid grid-cols-2 gap-4 lg:grid-cols-3 2xl:grid-cols-4">
               {[
-                {label:'Commandes reçues',value:statTotalOrders,unit:'commandes',icon:ClipboardList,color:'text-[#104d43]',bg:'bg-[#e5f4e9]'},
-                {label:'À confirmer',value:statNewOrders,unit:'en attente',icon:RefreshCw,color:'text-[#987126]',bg:'bg-[#fff2d3]'},
-                {label:'En préparation',value:statConfirmedOnly+statProcessingOrders,unit:'à expédier',icon:Package,color:'text-[#4476a1]',bg:'bg-[#eaf2f9]'},
-                {label:'Expédiées',value:statShippedOrders,unit:'en livraison',icon:Truck,color:'text-[#4b719d]',bg:'bg-[#edf2f9]'},
-                {label:'Livrées',value:statDeliveredOrders,unit:'terminées',icon:CheckCircle2,color:'text-[#137a4a]',bg:'bg-[#e8f7ed]'},
-                {label:'Total livré',value:statTotalRevenue.toLocaleString('fr-MA'),unit:'DH · commandes livrées',icon:BarChart3,color:'text-[#104d43]',bg:'bg-[#e5f4e9]'}
-              ].map(({label,value,unit,icon:Icon,color,bg})=>(
-                <div key={label} className="rounded-[18px] border border-[#e1eae4] bg-white p-4 shadow-[0_4px_15px_rgba(17,56,40,.035)]">
-                  <span className={'inline-flex h-10 w-10 items-center justify-center rounded-xl '+bg+' '+color}><Icon size={20}/></span>
-                  <p className="mt-4 text-[11px] font-semibold text-slate-500">{label}</p>
-                  <strong className="mt-1 block text-2xl font-black text-[#193e38]">{value}</strong>
-                  <span className="mt-1 block text-[10px] text-slate-500">{unit}</span>
+                {label:'Commandes totales',value:statTotalOrders,unit:'commandes enregistrées',icon:ClipboardList,tint:'bg-[#ebf3fa]',color:'text-[#487da6]'},
+                {label:'À traiter',value:statNewOrders,unit:'en attente de confirmation',icon:RefreshCw,tint:'bg-[#fff4e4]',color:'text-[#b98538]'},
+                {label:'En préparation',value:statConfirmedOnly+statProcessingOrders,unit:'à préparer manuellement',icon:Package,tint:'bg-[#f0eafa]',color:'text-[#8668ac]'},
+                {label:'Expédiées',value:statShippedOrders,unit:'livraison en cours',icon:Truck,tint:'bg-[#e8f3fa]',color:'text-[#407caa]'},
+                {label:'Livrées',value:statDeliveredOrders,unit:'commandes terminées',icon:CheckCircle2,tint:'bg-[#e8f5ee]',color:'text-[#247b53]'},
+                {label:'Total livré',value:statTotalRevenue.toLocaleString('fr-MA')+' DH',unit:'montant des commandes livrées',icon:BarChart3,tint:'bg-[#e8f5ee]',color:'text-[#247b53]'},
+                {label:'Produits actifs',value:adminProducts.filter(p=>p.isActive===true).length,unit:'visibles sur la boutique',icon:Package,tint:'bg-[#e8f5ee]',color:'text-[#247b53]'},
+                {label:'Brouillons',value:adminProducts.filter(p=>p.isActive!==true).length,unit:'produits non publiés',icon:Edit2,tint:'bg-[#f2f4f5]',color:'text-[#76838a]'}
+              ].map(({label,value,unit,icon:Icon,color,tint})=>(
+                <div key={label} className="min-w-0 rounded-[16px] border border-[#e0e8e6] bg-white p-5 shadow-[0_2px_10px_rgba(16,43,32,.025)]">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-[12px] font-semibold text-[#687b79]">{label}</p>
+                    <span className={'gb-overview-icon shrink-0 '+tint+' '+color}><Icon size={19}/></span>
+                  </div>
+                  <strong className="mt-3 block break-words text-[29px] font-extrabold tracking-tight text-[#213638]">{value}</strong>
+                  <span className="mt-1 block text-[11px] text-[#8a9795]">{unit}</span>
                 </div>
               ))}
             </section>
@@ -1139,7 +1146,7 @@ export default function AdminPanel({
                       </div>
                     </div>
                   ))}
-                  {orders.length===0&&<div className="px-5 py-14 text-center"><ClipboardList size={27} className="mx-auto text-[#8fae9d]"/><p className="mt-3 text-sm font-bold text-[#446257]">Aucune commande à afficher</p><p className="mt-1 text-xs text-slate-500">Les nouvelles commandes enregistrées sur le serveur apparaîtront ici.</p></div>}
+                  {orders.length===0&&<div className="px-5 py-10 text-center"><ClipboardList size={27} className="mx-auto text-[#8fae9d]"/><p className="mt-3 text-sm font-bold text-[#446257]">Aucune commande à afficher</p><p className="mt-1 text-xs text-slate-500">Les nouvelles commandes enregistrées sur le serveur apparaîtront ici.</p></div>}
                 </div>
               </section>
 
