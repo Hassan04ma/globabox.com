@@ -29,7 +29,7 @@ export default function ProductCard({ product, language, onViewDetails }: Produc
         type="button"
         onClick={() => onViewDetails(product)}
         aria-label={`${t('btnViewingProduct')}: ${product.name[language] || product.name.fr || ''}`}
-        className="relative block w-full overflow-hidden bg-slate-50 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-900"
+        className="relative block w-full overflow-hidden bg-slate-50 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#104d43]"
       >
         <div className="aspect-[4/3] w-full overflow-hidden">
           <ProductImage
@@ -43,7 +43,7 @@ export default function ProductCard({ product, language, onViewDetails }: Produc
           />
         </div>
         {discountPercent > 0 && (
-          <span className="absolute start-3 top-3 rounded-lg bg-red-600 px-2.5 py-1.5 text-xs font-extrabold text-white shadow-sm">
+          <span className="absolute start-3 top-3 rounded-lg bg-[#104d43] px-2.5 py-1.5 text-xs font-extrabold text-white shadow-sm">
             -{discountPercent}%
           </span>
         )}
@@ -53,7 +53,7 @@ export default function ProductCard({ product, language, onViewDetails }: Produc
         <button
           type="button"
           onClick={() => onViewDetails(product)}
-          className="min-h-[2.75rem] text-start text-sm font-semibold leading-6 text-slate-900 line-clamp-2 transition-colors hover:text-[#104d43] focus-visible:outline-none focus-visible:underline"
+          className="min-h-[2.75rem] text-start text-sm font-semibold leading-6 text-[#193e38] line-clamp-2 transition-colors hover:text-[#104d43] focus-visible:outline-none focus-visible:underline"
         >
           {product.name[language] || product.name.fr}
         </button>
