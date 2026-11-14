@@ -543,8 +543,9 @@ export default {
         }
         if (!existing) return json({error:'Order not found'},404);
         if (method === 'DELETE') {
-          await env.DB.prepare('DELETE FROM orders WHERE id=?').bind(resolvedId).run();
-          return json({success:true});
+          // Preserve sales history and customer references. Use cancelled status
+          // instead of permanently removing merchant order records from D1.
+          return json({error:'Order deletion disabled. Set status to cancelled instead.'},403);
         }
         const update = await readBody(request);
         const allowed = ['pending','confirmed','processing','shipped','delivered','cancelled'];
