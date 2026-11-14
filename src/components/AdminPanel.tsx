@@ -1372,8 +1372,8 @@ export default function AdminPanel({
 
             {/* Shopify-style product editor: essential fields first, advanced options collapsible. */}
             {(isAddingProduct || editingProduct) && (
-              <section id="gb-product-editor" className="overflow-hidden rounded-[22px] border border-[#cfdfd4] bg-[#f6faf7] shadow-sm">
-                <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-[#dce9df] bg-white/95 px-5 py-4 backdrop-blur sm:px-7">
+              <section id="gb-product-editor" className="rounded-[18px] border border-[#dce6df] bg-[#f4f7f5] shadow-[0_2px_12px_rgba(18,55,34,.04)]">
+                <header className="flex flex-wrap items-center justify-between gap-3 rounded-t-[18px] border-b border-[#dce9df] bg-white px-5 py-4 sm:px-7">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[.15em] text-[#32856e]">GLOBABOX / PRODUITS</p>
                     <h3 className="mt-1 text-lg font-black text-[#193e38]">{editingProduct?'Modifier le produit':'Ajouter un produit'}</h3>
@@ -1384,7 +1384,7 @@ export default function AdminPanel({
                     <button type="button" onClick={()=>{setEditingProduct(null);setIsAddingProduct(false);}} className="min-h-10 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50">Fermer</button>
                   </div>
                 </header>
-                <form onSubmit={handleSaveProduct} className="grid gap-5 p-4 sm:p-6 xl:grid-cols-[minmax(0,1.75fr)_minmax(300px,.75fr)]">
+                <form onSubmit={handleSaveProduct} className="grid min-h-[min(720px,calc(100dvh-180px))] items-start gap-4 p-4 sm:p-5 xl:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
                   <div className="min-w-0 space-y-5">
                     <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
                       <h4 className="mb-4 text-base font-black text-[#193e38]">Informations du produit</h4>
@@ -1393,7 +1393,7 @@ export default function AdminPanel({
                         onChange={e=>setProductForm({...productForm,nameFr:e.target.value})}
                         placeholder="Ex. Organisateur de cuisine multifonction" className="mb-4 min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold text-[#193e38] outline-none focus:border-[#104d43]"/>
                       <label htmlFor="gb-product-description" className="mb-1.5 block text-xs font-extrabold text-[#385647]">Description du produit</label>
-                      <textarea id="gb-product-description" rows={7} maxLength={6000} value={productForm.descFr}
+                      <textarea id="gb-product-description" rows={5} maxLength={6000} value={productForm.descFr}
                         onChange={e=>setProductForm({...productForm,descFr:e.target.value})}
                         placeholder="Expliquez les avantages, les caractéristiques, les dimensions, le contenu du colis et l'utilisation réelle du produit."
                         className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 text-sm leading-7 text-[#193e38] outline-none focus:border-[#104d43]"/>
@@ -1508,7 +1508,27 @@ export default function AdminPanel({
                       </div>
                     </details>
                   </div>
-                  <aside className="min-w-0 space-y-5 xl:sticky xl:top-[86px] xl:self-start">
+                  <aside className="min-w-0 space-y-4 xl:sticky xl:top-5 xl:self-start">
+                    <section className="overflow-hidden rounded-2xl border border-[#dfe9e2] bg-white shadow-sm">
+                      <header className="flex items-center justify-between border-b border-slate-100 px-5 py-3.5">
+                        <h4 className="text-sm font-black text-[#193e38]">Aperçu du produit</h4>
+                        <span className="text-[10px] font-bold text-[#6c8476]">Temps réel</span>
+                      </header>
+                      <div className="p-4">
+                        <div className="flex min-h-[155px] items-center justify-center overflow-hidden rounded-xl border border-[#e4ede7] bg-[#f4f7f5]">
+                          {productForm.image?<img src={productForm.image} alt="Aperçu de la photo principale" className="h-[170px] w-full object-contain p-2"/>:
+                            <div className="flex flex-col items-center gap-2 text-[#86a092]"><Package size={36} strokeWidth={1.5}/><span className="text-xs">Votre photo principale</span></div>}
+                        </div>
+                        <p className="mt-3 line-clamp-2 min-h-[22px] text-sm font-extrabold leading-6 text-[#193e38]">{productForm.nameFr.trim()||'Nom du produit'}</p>
+                        <p className="mt-1 text-lg font-black text-[#104d43]">{productForm.price>0?productForm.price.toLocaleString('fr-MA',{minimumFractionDigits:2,maximumFractionDigits:2})+' DH':'— DH'}</p>
+                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                          <span className="rounded-full bg-[#edf6f0] px-2.5 py-1 text-[10px] font-bold text-[#315f4c]">{categories.find(c=>c.id===productForm.category)?.name.fr||STORE_DEPARTMENTS.find(c=>c.id===productForm.category)?.name.fr||'Sans catégorie'}</span>
+                          <span className={'rounded-full px-2.5 py-1 text-[10px] font-bold '+(editingProduct&&productForm.isActive?'bg-[#e4f7eb] text-[#17734b]':'bg-amber-50 text-amber-800')}>{editingProduct&&productForm.isActive?'Publié':'Brouillon'}</span>
+                        </div>
+                        <p className="mt-3 text-[11px] leading-5 text-slate-500">Aperçu indicatif. Enregistrez puis vérifiez le produit sur la boutique.</p>
+                      </div>
+                    </section>
+
                     <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm">
                       <h4 className="mb-4 text-base font-black text-[#193e38]">Statut de vente</h4>
                       {editingProduct?<label className="flex items-center justify-between gap-4 rounded-xl bg-[#f5f9f6] p-3 text-xs font-bold text-[#193e38]">
@@ -1565,14 +1585,15 @@ export default function AdminPanel({
                         </label>
                       </div>
                     </details>
-                    <div className="rounded-2xl border border-[#c9e1d1] bg-white p-4 shadow-sm">
-                      <button type="submit" disabled={mediaUploading} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#104d43] px-5 text-sm font-black text-white hover:bg-[#0b3931] disabled:opacity-50">
-                        <CheckCircle2 size={18}/>{editingProduct?'Enregistrer les changements':'Enregistrer le brouillon'}
-                      </button>
-                      <button type="button" onClick={()=>{setEditingProduct(null);setIsAddingProduct(false);}} className="mt-2 min-h-10 w-full rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-slate-50">Annuler</button>
-                      <p className="mt-3 text-center text-[11px] leading-5 text-slate-500">Enregistrement sur Cloudflare D1. Vérifiez votre fiche après sauvegarde.</p>
-                    </div>
+
                   </aside>
+                  <footer className="sticky bottom-0 z-20 col-span-full flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#c9e1d1] bg-white/95 px-4 py-3 shadow-[0_-5px_25px_rgba(22,60,40,.08)] backdrop-blur sm:px-5">
+                    <p className="flex min-w-0 items-center gap-2 text-[11px] leading-5 text-[#667f70]"><CheckCircle2 size={16} className="shrink-0 text-[#237953]"/>{editingProduct?'Enregistrement des modifications dans D1':'Création en brouillon dans Cloudflare D1'}</p>
+                    <div className="flex flex-1 justify-end gap-2 sm:flex-none">
+                      <button type="button" onClick={()=>{setEditingProduct(null);setIsAddingProduct(false);}} className="min-h-11 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-[#486658] hover:bg-[#f2f7f4]">Annuler</button>
+                      <button type="submit" disabled={mediaUploading} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#104d43] px-5 text-xs font-extrabold text-white hover:bg-[#0b3931] disabled:cursor-wait disabled:opacity-50"><CheckCircle2 size={17}/>{editingProduct?'Enregistrer':'Enregistrer le brouillon'}</button>
+                    </div>
+                  </footer>
                 </form>
               </section>
             )}
