@@ -13,6 +13,8 @@ export default function AdminOperationsWorkspace({products,orders,launchStatus,o
  const sourced=products.filter(p=>p.id.startsWith('gb_source_'));
  const pending=orders.filter(o=>['pending','confirmed','processing'].includes(o.status));
  const noPhoto=products.filter(p=>!p.image);
+ const photoCount=(p:Product)=>new Set([p.image,...(Array.isArray(p.images)?p.images:[]),...(Array.isArray(p.additionalImages)?p.additionalImages:[])].filter((url):url is string=>typeof url==='string'&&/^https:\/\//.test(url))).size;
+ const photoMissing=sourced.reduce((count,p)=>count+Math.max(0,6-photoCount(p)),0);
  const noStock=products.filter(p=>!p.inStock||p.stockStatus==='out_of_stock');
  const unverified=sourced.filter(p=>p.needsSupplierVerification || !p.imageRightsConfirmed || !p.readyToPublish);
  const checks=[
@@ -60,6 +62,16 @@ export default function AdminOperationsWorkspace({products,orders,launchStatus,o
        <div className="flex justify-between border-b border-slate-100 pb-3"><span className="text-slate-600">Sources / photos à confirmer</span><strong>{unverified.length}</strong></div>
        <div className="flex justify-between border-b border-slate-100 pb-3"><span className="text-slate-600">Produits sans stock</span><strong>{noStock.length}</strong></div>
        <div className="flex justify-between border-b border-slate-100 pb-3"><span className="text-slate-600">Total des produits</span><strong>{products.length}</strong></div>
+      </div>
+      <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+       <p className="text-sm font-extrabold text-amber-950">Photos produit manquantes : {photoMissing} / {sourced.length*6}</p>
+       <p className="mt-1 text-xs leading-5 text-amber-900">Six photos réelles du même modèle par référence, avec preuve de droits et accord fournisseur. Ne jamais remplacer par des photos d'un autre produit.</p>
+       <div className="mt-3 max-h-64 space-y-2 overflow-y-auto">
+        {sourced.map(p=><div key={p.id} className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2 text-xs">
+         <span className="min-w-0 truncate font-semibold text-slate-700" title={p.name.fr}>{p.name.fr}</span>
+         <strong className={photoCount(p)>=6?'shrink-0 text-emerald-700':'shrink-0 text-amber-800'}>{photoCount(p)}/6</strong>
+        </div>)}
+       </div>
       </div>
       <div className="mt-6 grid gap-2 sm:grid-cols-2">
        <button type="button" onClick={onProducts} className="min-h-11 rounded-xl bg-[#104d43] px-4 text-xs font-bold text-white hover:bg-[#0b3931]">Gérer les produits</button>
