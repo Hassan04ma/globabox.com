@@ -79,7 +79,7 @@ export default function AdminWorkspaceLayout({
     <div className="mx-2 mt-9 rounded-[14px] border border-[#3b5955] bg-[#233b3b] p-4">
       <div className="flex items-center gap-2 text-xs font-extrabold text-[#b4efd0]"><Truck size={17}/>Expédition manuelle</div>
       <p className="mt-2 text-[12px] leading-5 text-[#b9cac5]">{pendingOrders===0?'Aucune commande en attente.':pendingOrders+' commande(s) à confirmer.'}</p>
-      <button type="button" onClick={onPendingOrders} className="mt-3 inline-flex min-h-9 items-center gap-1.5 text-[12px] font-bold text-white underline decoration-[#81c4a1] underline-offset-4">Gérer les commandes <ArrowUpRight size={14}/></button>
+      <button type="button" onClick={()=>{onPendingOrders();setMobileOpen(false);}} className="mt-3 inline-flex min-h-9 items-center gap-1.5 text-[12px] font-bold text-white underline decoration-[#81c4a1] underline-offset-4">Gérer les commandes <ArrowUpRight size={14}/></button>
     </div>
   </div>
   <div className="shrink-0 border-t border-white/10 px-4 py-4">
@@ -138,7 +138,7 @@ export default function AdminWorkspaceLayout({
            <p className="mt-1 text-xs text-[#728389]">{current.sub}</p>
          </div>
          <div className="flex flex-wrap items-center gap-2">
-           {showProductAction&&<button type="button" onClick={onNewProduct} className="inline-flex min-h-11 items-center gap-2 rounded-[10px] bg-[#174d40] px-5 text-xs font-extrabold text-white shadow-sm transition hover:bg-[#0f3b31]"><Plus size={18}/>Nouveau produit</button>}
+           {showProductAction&&(activeTab==='dashboard'||activeTab==='products')&&<button type="button" onClick={onNewProduct} className="inline-flex min-h-11 items-center gap-2 rounded-[10px] bg-[#174d40] px-5 text-xs font-extrabold text-white shadow-sm transition hover:bg-[#0f3b31]"><Plus size={18}/>Nouveau produit</button>}
            {activeTab==='orders'&&<button type="button" onClick={onPendingOrders} className="inline-flex min-h-11 items-center gap-2 rounded-[10px] border border-[#d6e2db] bg-white px-4 text-xs font-bold text-[#315448] hover:bg-[#f1f8f4]"><ClipboardList size={16}/>À traiter {pendingOrders>0?'('+pendingOrders+')':''}</button>}
          </div>
        </section>
