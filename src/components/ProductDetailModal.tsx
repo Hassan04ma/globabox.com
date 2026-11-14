@@ -614,7 +614,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                       <span className="text-lg font-black text-slate-900">{Number(product.rating || 0).toFixed(1)}</span>
                       <div className="flex items-center gap-0.5" aria-label={`Rating ${product.rating || 0} out of 5`}>
                         {[1,2,3,4,5].map(star => (
-                          <Star key={star} size={14} className={star <= Math.round(product.rating || 0) ? 'fill-orange-500 text-[#176b5c]' : 'text-slate-300'} />
+                          <Star key={star} size={14} className={star <= Math.round(product.rating || 0) ? 'fill-[#176b5c] text-[#176b5c]' : 'text-slate-300'} />
                         ))}
                       </div>
                       <span className="text-[11px] font-semibold text-slate-500">
