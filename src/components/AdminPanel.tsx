@@ -1200,7 +1200,7 @@ export default function AdminPanel({
         {/* VIEW 1: Customer orders and manual delivery management */}
         {activeTab === 'orders' && (
           <div className="space-y-5">
-            <header className="flex flex-col justify-between gap-4 rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:p-6">
+            <header className="flex flex-col justify-between gap-4 rounded-[16px] border border-[#e0e8e5] bg-white p-5 shadow-[0_2px_10px_rgba(16,43,32,.025)] sm:flex-row sm:items-center sm:p-6">
               <div>
                 <p className="text-[11px] font-extrabold uppercase tracking-[.13em] text-[#38866e]">GESTION DES VENTES</p>
                 <h3 className="mt-1 flex items-center gap-2 text-xl font-black text-[#193e38]"><ClipboardList size={22} className="text-[#104d43]"/>Toutes les commandes</h3>
@@ -1227,13 +1227,13 @@ export default function AdminPanel({
                 ['Expédiées',statShippedOrders,'shipped']
               ].map(([label,value,status])=>
                 <button type="button" key={String(status)} onClick={()=>setOrderStatusFilter(String(status))}
-                  className={'rounded-2xl border px-4 py-4 text-start shadow-sm transition '+(orderStatusFilter===status?'border-[#8ab99a] bg-[#ebf6ee]':'border-slate-200 bg-white hover:border-[#bbd7c6]')}>
+                  className={'rounded-[14px] border px-4 py-4 text-start shadow-[0_2px_9px_rgba(15,43,31,.02)] transition '+(orderStatusFilter===status?'border-[#9ac7ad] bg-[#eaf5ef]':'border-[#e0e8e5] bg-white hover:border-[#c0d9c9]')}>
                   <span className="block text-[11px] font-bold text-slate-500">{label}</span>
                   <strong className="mt-1 block text-2xl font-black text-[#193e38]">{value}</strong>
                 </button>
               )}
             </div>
-            <div className="grid gap-3 rounded-[20px] border border-[#dce9e0] bg-white p-4 shadow-sm md:grid-cols-3">
+            <div className="grid gap-3 rounded-[14px] border border-[#e0e8e5] bg-white p-4 shadow-[0_2px_9px_rgba(15,43,31,.02)] md:grid-cols-3">
               <label className="relative">
                 <Search size={17} className="pointer-events-none absolute start-3 top-3.5 text-slate-400"/>
                 <input type="search" value={orderQuery} onChange={e=>setOrderQuery(e.target.value)}
@@ -1261,16 +1261,24 @@ export default function AdminPanel({
               <span>Montant des commandes affichées : <strong className="text-[#104d43]">{filteredOrders.reduce((total,order)=>total+Number(order.total||0),0).toLocaleString('fr-MA')} DH</strong> <span className="text-slate-400">(non encaissé inclus)</span></span>
             </div>
             {filteredOrders.length===0?(
-              <div className="rounded-2xl border border-[#dce9e0] bg-white px-4 py-16 text-center">
-                <ClipboardList size={34} className="mx-auto text-[#a6c2ae]"/>
-                <h4 className="mt-3 text-sm font-bold text-[#193e38]">Aucune commande trouvée</h4>
-                <p className="mt-1 text-xs text-slate-500">Essayez de modifier les filtres ou d'actualiser les commandes.</p>
-                <button type="button" onClick={()=>{setOrderQuery('');setOrderStatusFilter('all');setOrderCityFilter('all');}} className="mt-4 rounded-xl bg-[#edf6f0] px-4 py-2.5 text-xs font-bold text-[#104d43] hover:bg-[#dcefe3]">Réinitialiser les filtres</button>
-              </div>
+              <section className="gb-empty-orders flex flex-col items-center justify-center rounded-[16px] border border-[#e0e8e5] bg-white px-5 py-9 text-center shadow-[0_2px_8px_rgba(14,48,37,.02)]">
+                <span className="flex h-[60px] w-[60px] items-center justify-center rounded-[18px] bg-[#edf4f0] text-[#4b8b70]"><ClipboardList size={27}/></span>
+                <h4 className="mt-4 text-[16px] font-extrabold text-[#213a36]">{statTotalOrders===0?'Aucune commande pour le moment':'Aucune commande ne correspond aux filtres'}</h4>
+                <p className="mt-2 max-w-lg text-[12px] leading-6 text-[#718684]">
+                  {statTotalOrders===0?'Lorsqu’un client passe une commande sur la boutique, elle apparaît ici après enregistrement dans Cloudflare D1.':'Modifiez les critères de recherche pour consulter davantage de commandes.'}
+                </p>
+                <div className="mt-5 flex flex-wrap justify-center gap-2">
+                  <button type="button" onClick={()=>{setOrderQuery('');setOrderStatusFilter('all');setOrderCityFilter('all');}}
+                    className="inline-flex min-h-10 items-center gap-2 rounded-[10px] border border-[#d4e5da] bg-[#f1f8f3] px-4 text-xs font-bold text-[#225240] hover:bg-[#e7f2e9]">Effacer les filtres</button>
+                  <button type="button" onClick={handleRefreshOrders} disabled={isRefreshing}
+                    className="inline-flex min-h-10 items-center gap-2 rounded-[10px] border border-[#dce5e1] bg-white px-4 text-xs font-bold text-[#3e5850] hover:bg-slate-50 disabled:opacity-50">
+                    <RefreshCw size={14} className={isRefreshing?'animate-spin':''}/>Actualiser</button>
+                </div>
+              </section>
             ):(
               <div className="space-y-3">
                 {filteredOrders.map(order=>(
-                  <article key={order.id} className="overflow-hidden rounded-[20px] border border-[#dbe8e0] bg-white shadow-[0_5px_18px_rgba(19,62,42,.035)]">
+                  <article key={order.id} className="gb-order-card overflow-hidden rounded-[14px] border border-[#dfe8e4] bg-white shadow-[0_2px_9px_rgba(15,43,31,.025)]">
                     <div className="flex flex-col gap-4 p-5 xl:flex-row xl:items-center xl:justify-between">
                       <div className="flex min-w-0 flex-1 items-start gap-3">
                         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#edf6ef] text-[#104d43]"><Package size={20}/></span>
