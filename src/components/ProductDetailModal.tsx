@@ -603,6 +603,36 @@ Merci de confirmer la disponibilité et la livraison.`;
                 </div>
               )}
 
+              {/* Customer reviews block — presentation-ready; review persistence remains server-side work. */}
+              <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" aria-label="Avis clients">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
+                      {language === 'ar' ? 'آراء العملاء' : language === 'en' ? 'Customer reviews' : 'Avis clients'}
+                    </p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <span className="text-lg font-black text-slate-900">{Number(product.rating || 0).toFixed(1)}</span>
+                      <div className="flex items-center gap-0.5" aria-label={`Rating ${product.rating || 0} out of 5`}>
+                        {[1,2,3,4,5].map(star => (
+                          <Star key={star} size={14} className={star <= Math.round(product.rating || 0) ? 'fill-orange-500 text-orange-500' : 'text-slate-300'} />
+                        ))}
+                      </div>
+                      <span className="text-[11px] font-semibold text-slate-500">
+                        ({product.reviewsCount || 0})
+                      </span>
+                    </div>
+                  </div>
+                  <div className="rounded-full bg-orange-50 px-3 py-1.5 text-[10px] font-bold text-orange-700">
+                    {language === 'ar' ? 'تقييمات موثوقة' : language === 'en' ? 'Verified ratings' : 'Évaluations'}
+                  </div>
+                </div>
+                <div className="mt-3 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-xs leading-relaxed text-slate-500">
+                  {product.reviewsCount
+                    ? (language === 'ar' ? 'ستظهر آراء العملاء هنا.' : language === 'en' ? 'Customer comments will appear here.' : 'Les commentaires clients apparaîtront ici.')
+                    : (language === 'ar' ? 'لا توجد تعليقات بعد. كن أول من يقيّم هذا المنتج.' : language === 'en' ? 'No reviews yet. Be the first to review this product.' : 'Aucun avis pour le moment. Soyez le premier à évaluer ce produit.')}
+                </div>
+              </section>
+
               {/* Trust badges footer inside modal */}
               <div className="grid grid-cols-2 gap-2 pt-4 mt-2 border-t border-slate-150 text-[10px] text-slate-655 font-bold font-sans">
                 <div className="flex items-center gap-1.5 bg-slate-50 p-2 rounded-lg border border-slate-100">
