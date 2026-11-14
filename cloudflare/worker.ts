@@ -623,6 +623,17 @@ export default {
           ? (p.visibilityChanged === true && typeof p.isActive === 'boolean'
             ? p.isActive : previous.active === 1)
           : false;
+        // Provisional sourced products must not be offered for sale unless their
+        // media and supply checks have been explicitly completed by the merchant.
+        // Existing ordinary products and historical orders are unaffected.
+        if(active && id.startsWith('gb_source_')) {
+          const gallery=[p.image,...(Array.isArray(p.images)?p.images:[]),...(Array.isArray(p.additionalImages)?p.additionalImages:[])]
+            .filter((value:unknown)=>typeof value==='string' && /^https:\/\//.test(value as string));
+          if(p.needsSupplierVerification===true || p.imageRightsConfirmed!==true ||
+             p.readyToPublish!==true || new Set(gallery).size<6 || p.inStock!==true) {
+            return json({error:'Publish blocked: verify stock, supplier, image rights and six distinct product photos.'},422);
+          }
+        }
         const row = { ...p, id, isActive: active };
         await env.DB.prepare('INSERT INTO products (id,source_url,supplier,category,name_fr,price_mad,image_url,active,data_json) VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET category=excluded.category,name_fr=excluded.name_fr,price_mad=excluded.price_mad,image_url=excluded.image_url,active=excluded.active,data_json=excluded.data_json,updated_at=CURRENT_TIMESTAMP')
           .bind(id,p.sourceUrl || null,p.supplier || null,p.category || '',p.name.fr,p.price,p.image || '',row.isActive ? 1 : 0,JSON.stringify(row)).run();
