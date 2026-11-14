@@ -1384,7 +1384,7 @@ export default function AdminPanel({
                     <button type="button" onClick={()=>{setEditingProduct(null);setIsAddingProduct(false);}} className="min-h-10 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50">Fermer</button>
                   </div>
                 </header>
-                <form onSubmit={handleSaveProduct} className="grid min-h-[min(720px,calc(100dvh-180px))] items-start gap-4 p-4 sm:p-5 xl:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
+                <form onSubmit={handleSaveProduct} className="grid items-start gap-4 p-4 sm:p-5 xl:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
                   <div className="min-w-0 space-y-5">
                     <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
                       <h4 className="mb-4 text-base font-black text-[#193e38]">Informations du produit</h4>
@@ -1392,12 +1392,6 @@ export default function AdminPanel({
                       <input id="gb-product-title" required maxLength={220} value={productForm.nameFr}
                         onChange={e=>setProductForm({...productForm,nameFr:e.target.value})}
                         placeholder="Ex. Organisateur de cuisine multifonction" className="mb-4 min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold text-[#193e38] outline-none focus:border-[#104d43]"/>
-                      <label htmlFor="gb-product-description" className="mb-1.5 block text-xs font-extrabold text-[#385647]">Description du produit</label>
-                      <textarea id="gb-product-description" rows={5} maxLength={6000} value={productForm.descFr}
-                        onChange={e=>setProductForm({...productForm,descFr:e.target.value})}
-                        placeholder="Expliquez les avantages, les caractéristiques, les dimensions, le contenu du colis et l'utilisation réelle du produit."
-                        className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 text-sm leading-7 text-[#193e38] outline-none focus:border-[#104d43]"/>
-                      <p className="mt-2 text-[11px] text-slate-500">Décrivez uniquement les caractéristiques vérifiées. Pas de promesses non confirmées.</p>
                     </section>
                     <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
                       <div className="mb-4 flex items-start justify-between gap-3">
@@ -1432,6 +1426,15 @@ export default function AdminPanel({
                           onChange={e=>setProductForm({...productForm,additionalImages:e.target.value.split(/\n/).map(v=>v.trim()).filter(Boolean)})}
                           className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-[#193e38]"/>
                       </details>
+                    </section>
+                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
+                      <h4 className="mb-4 text-base font-black text-[#193e38]">Description détaillée</h4>
+                      <label htmlFor="gb-product-description" className="mb-1.5 block text-xs font-extrabold text-[#385647]">Description du produit</label>
+                      <textarea id="gb-product-description" rows={5} maxLength={6000} value={productForm.descFr}
+                        onChange={e=>setProductForm({...productForm,descFr:e.target.value})}
+                        placeholder="Expliquez les avantages, les caractéristiques, les dimensions, le contenu du colis et l'utilisation réelle du produit."
+                        className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 text-sm leading-7 text-[#193e38] outline-none focus:border-[#104d43]"/>
+                      <p className="mt-2 text-[11px] text-slate-500">Décrivez uniquement les caractéristiques vérifiées. Pas de promesses non confirmées.</p>
                     </section>
                     <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
                       <h4 className="mb-4 text-base font-black text-[#193e38]">Prix et disponibilité</h4>
@@ -1598,6 +1601,7 @@ export default function AdminPanel({
               </section>
             )}
 
+            {!isAddingProduct && !editingProduct && (
             {/* Shopify-style listing: search, status, images and clear actions. */}
             <section className="overflow-hidden rounded-[22px] border border-[#d9e7df] bg-white shadow-sm">
               <header className="flex flex-col justify-between gap-4 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:p-6">
@@ -1687,7 +1691,7 @@ export default function AdminPanel({
                 </table>
               </div>
             </section>
-
+            )}
 
           </div>
         )}
