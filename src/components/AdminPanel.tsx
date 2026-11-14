@@ -4,6 +4,7 @@ import { Product, Category, Order, Language } from '../types';
 import { MOROCCAN_CITIES, ORDER_SUPPORT_NUMBER, WHATSAPP_NUMBER } from '../data';
 import AdminTrackingWorkspace from './AdminTrackingWorkspace';
 import AdminShippingEditor from './AdminShippingEditor';
+import AdminOperationsWorkspace from './AdminOperationsWorkspace';
 import ProductImage from './ProductImage';
 import AdminWorkspaceLayout from './AdminWorkspaceLayout';
 import AdminCategoriesWorkspace from './AdminCategoriesWorkspace';
@@ -34,7 +35,7 @@ export default function AdminPanel({
   setOrders,
   isOrdersApiConfigured = false
 }: AdminPanelProps) {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'products' | 'categories' | 'marketing'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'products' | 'categories' | 'marketing' | 'operations'>('dashboard');
 
   const [launchStatus, setLaunchStatus] = useState<{databaseReady:boolean;adminConfigured:boolean;checkoutEnabled:boolean;checkoutVerified:boolean}|null>(null);
   const [d1ProbeStatus, setD1ProbeStatus] = useState<'idle'|'running'|'success'|'error'>('idle');
@@ -1799,6 +1800,12 @@ export default function AdminPanel({
         )}
 
         {activeTab === 'marketing' && <AdminTrackingWorkspace/>}
+        {activeTab === 'operations' && <AdminOperationsWorkspace
+          products={adminProducts} orders={orders} launchStatus={launchStatus}
+          onProducts={()=>setActiveTab('products')}
+          onOrders={()=>setActiveTab('orders')}
+          onReload={()=>void handleRefreshOrders()}/>}
+
 
       </div>
     </AdminWorkspaceLayout>
