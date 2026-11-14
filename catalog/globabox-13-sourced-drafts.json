@@ -20,11 +20,21 @@
         "Format pliable",
         "Rangement vertical"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "10 أقسام للتخزين",
+        "تعليق داخل الخزانة",
+        "تصميم قابل للطي",
+        "تنظيم عمودي"
+      ],
+      "en": [
+        "10 storage compartments",
+        "Hanging closet installation",
+        "Foldable design",
+        "Vertical organization"
+      ]
     },
     "category": "maison",
-    "subcategory": "",
+    "subcategory": "rangement",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -58,7 +68,19 @@
     "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
     "sourcePageVerification": "listing_found_in_public_web_results",
     "priceReferenceVerification": "listing_price_observed_not_store_price",
-    "readyToPublish": false
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "exact_listing_verified",
+      "referencePage": "https://www.jumia.ma/generic-organisateur-de-vetements-suspendu-et-pliable-organisateur-de-placard-10-couches-65199381.html",
+      "comparableMinMAD": 109,
+      "comparableMaxMAD": 149,
+      "observedReferenceMAD": 109.9,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   },
   {
     "id": "gb_source_cuisine",
@@ -68,7 +90,7 @@
       "ar": "طقم 6 قنينات زجاج للتوابل بأغطية خيزران",
       "en": "Set of 6 Glass Spice Jars with Bamboo Lids"
     },
-    "price": 199,
+    "price": 119,
     "description": {
       "fr": "Ensemble de six bocaux en verre munis de couvercles en bambou pour ranger les épices et les ingrédients secs. Les récipients transparents permettent de voir leur contenu.",
       "ar": "طقم من ست علب زجاجية بأغطية من الخيزران لحفظ التوابل والمواد الجافة. الزجاج شفاف لتسهيل التعرف على المحتوى.",
@@ -81,11 +103,21 @@
         "Couvercles bambou",
         "Organisation des épices"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "طقم 6 علب",
+        "زجاج شفاف",
+        "غطاء خيزران",
+        "تنظيم التوابل"
+      ],
+      "en": [
+        "Set of six jars",
+        "Transparent glass",
+        "Bamboo lids",
+        "Spice organization"
+      ]
     },
     "category": "cuisine",
-    "subcategory": "",
+    "subcategory": "conservation",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -110,7 +142,7 @@
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/lot-de-6-bocaux-en-verre-avec-couvercles-en-bambou-hermetiques-pour-epices-generic-mpg1523280.html",
     "sourceGalleryImagesReported": 8,
-    "priceReferenceMAD": 199,
+    "priceReferenceMAD": 119,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
     "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
@@ -118,8 +150,20 @@
     "galleryPhotosUploaded": 0,
     "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
     "sourcePageVerification": "listing_found_in_public_web_results",
-    "priceReferenceVerification": "listing_price_observed_not_store_price",
-    "readyToPublish": false
+    "priceReferenceVerification": "market_range_reference_only_not_same_sku",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "market_comparables_only",
+      "referencePage": "https://www.jumia.ma/slp/bocaux-hermetiques-vrac/",
+      "comparableMinMAD": 95,
+      "comparableMaxMAD": 175,
+      "observedReferenceMAD": 119,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   },
   {
     "id": "gb_source_technologie",
@@ -129,7 +173,7 @@
       "ar": "سماعات لينوفو LP40 Pro لاسلكية بلوتوث 5.1",
       "en": "Lenovo LP40 Pro Bluetooth 5.1 Wireless Earbuds"
     },
-    "price": 169,
+    "price": 149,
     "description": {
       "fr": "Écouteurs sans fil Lenovo LP40 Pro avec commandes tactiles et étui de charge. La fiche consultée indique Bluetooth 5.1, autonomie annoncée de 5 heures et compatibilité iOS, Android et Windows ; spécifications à confirmer sur le lot réel.",
       "ar": "سماعات Lenovo LP40 Pro لاسلكية باللمس مع علبة شحن. مصدر المنتج يذكر بلوتوث 5.1 وحوالي 5 ساعات تشغيل وتوافقاً مع أندرويد وiOS وويندوز؛ يلزم تأكيد مواصفات الدفعة الفعلية.",
@@ -142,11 +186,21 @@
         "Boîtier de recharge",
         "Compatible Android / iOS / Windows"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "بلوتوث حسب المرجع",
+        "تحكم باللمس",
+        "علبة شحن",
+        "يجب تأكيد النسخة الأصلية"
+      ],
+      "en": [
+        "Bluetooth per listing",
+        "Touch controls",
+        "Charging case",
+        "Verify model authenticity"
+      ]
     },
     "category": "technologie",
-    "subcategory": "",
+    "subcategory": "audio",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -171,7 +225,7 @@
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/lenovo-ecouteurs-lp40-pro-bluetooth-5.1-sans-fil-tactile-65368821.html",
     "sourceGalleryImagesReported": null,
-    "priceReferenceMAD": 169,
+    "priceReferenceMAD": 149,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
     "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
@@ -179,8 +233,20 @@
     "galleryPhotosUploaded": 0,
     "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
     "sourcePageVerification": "listing_not_independently_verified",
-    "priceReferenceVerification": "unverified_price_candidate",
-    "readyToPublish": false
+    "priceReferenceVerification": "market_range_reference_only_not_same_sku",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "market_comparables_only",
+      "referencePage": "https://www.jumia.ma/ar/mlp-lp40-pro/",
+      "comparableMinMAD": 99,
+      "comparableMaxMAD": 190,
+      "observedReferenceMAD": 149,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   },
   {
     "id": "gb_source_beaute",
@@ -190,7 +256,7 @@
       "ar": "مجموعة MAANGE من 13 فرشاة مكياج و2 إسفنجة وحقيبة",
       "en": "MAANGE 13 Makeup Brushes + 2 Powder Puffs + Pouch"
     },
-    "price": 214,
+    "price": 178,
     "description": {
       "fr": "Kit MAANGE comprenant treize pinceaux pour le teint et les yeux, deux houppettes et une pochette. Fibres synthétiques et manches ergonomiques mentionnés par le vendeur.",
       "ar": "مجموعة MAANGE تشمل 13 فرشاة للمكياج وقطعتين للبودرة وحقيبة حفظ. يذكر البائع شعيرات صناعية ومقابض مريحة.",
@@ -203,11 +269,21 @@
         "1 pochette de rangement",
         "Fibres synthétiques"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "13 فرشاة مكياج",
+        "قطعتان للبودرة",
+        "حقيبة حفظ",
+        "شعيرات صناعية حسب المصدر"
+      ],
+      "en": [
+        "13 makeup brushes",
+        "Two powder puffs",
+        "Storage pouch",
+        "Synthetic bristles per listing"
+      ]
     },
     "category": "beaute",
-    "subcategory": "",
+    "subcategory": "maquillage",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -228,20 +304,32 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://www.jumia.ma/ar/maange-set-13-pinceaux-maquillage-professionnels-make-up-artist-2-houppettes-pochette-kit-complet-visage-yeux-fond-de-teint-poudre-blush-sourcils-67682404.html",
+    "sourceUrl": "https://www.jumia.ma/ar/maange-kit-pinceaux-maquillage-professionnel-13-pieces-avec-trousse-set-pinceaux-visage-yeux-2-houppettes-poudre-accessoires-maquillage-67682220.html",
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/maange-set-13-pinceaux-maquillage-professionnels-make-up-artist-2-houppettes-pochette-kit-complet-visage-yeux-fond-de-teint-poudre-blush-sourcils-67682404.html",
     "sourceGalleryImagesReported": null,
-    "priceReferenceMAD": 214,
+    "priceReferenceMAD": 178,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
     "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
     "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
-    "sourcePageVerification": "listing_not_independently_verified",
+    "sourcePageVerification": "comparable_listing_verified_not_exact_variant",
     "priceReferenceVerification": "unverified_price_candidate",
-    "readyToPublish": false
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "similar_model_listing_verified",
+      "referencePage": "https://www.jumia.ma/ar/maange-kit-pinceaux-maquillage-professionnel-13-pieces-avec-trousse-set-pinceaux-visage-yeux-2-houppettes-poudre-accessoires-maquillage-67682220.html",
+      "comparableMinMAD": 178,
+      "comparableMaxMAD": 214,
+      "observedReferenceMAD": 178,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   },
   {
     "id": "gb_source_mode",
@@ -264,11 +352,21 @@
         "Usage quotidien",
         "Coloris à confirmer"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "حزام كتف",
+        "جيوب متعددة",
+        "للاستعمال اليومي",
+        "اللون حسب الدفعة"
+      ],
+      "en": [
+        "Crossbody strap",
+        "Multiple pockets",
+        "Everyday carry",
+        "Verify actual color"
+      ]
     },
     "category": "mode",
-    "subcategory": "",
+    "subcategory": "sacs",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -302,7 +400,19 @@
     "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
     "sourcePageVerification": "listing_found_in_public_web_results",
     "priceReferenceVerification": "listing_price_observed_not_store_price",
-    "readyToPublish": false
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "needs_independent_verification",
+      "referencePage": "https://www.jumia.ma/ar/generic-sac-bandouliere-femme-impermeable-sac-leger-multi-compartiments-sac-a-main-multi-poches-grande-capacite-pour-voyage-travail-et-usage-quotidien-68167011.html",
+      "comparableMinMAD": null,
+      "comparableMaxMAD": null,
+      "observedReferenceMAD": null,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   },
   {
     "id": "gb_source_automobile",
@@ -325,11 +435,21 @@
         "Recharge USB",
         "Entretien léger"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "مكنسة محمولة",
+        "لاسلكية",
+        "شحن USB",
+        "للتنظيف الخفيف"
+      ],
+      "en": [
+        "Handheld vacuum",
+        "Cordless",
+        "USB rechargeable",
+        "Light-duty cleaning"
+      ]
     },
     "category": "automobile",
-    "subcategory": "",
+    "subcategory": "entretien-auto",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -363,7 +483,19 @@
     "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
     "sourcePageVerification": "listing_found_in_public_web_results",
     "priceReferenceVerification": "listing_price_observed_not_store_price",
-    "readyToPublish": false
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "exact_listing_verified",
+      "referencePage": "https://www.jumia.ma/generic-mini-aspirateur-portable-sans-fil-pour-voiture-et-maison-puissant-leger-et-rechargeable-usb-67242674.html",
+      "comparableMinMAD": 129,
+      "comparableMaxMAD": 189,
+      "observedReferenceMAD": 129,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   },
   {
     "id": "gb_source_sport_loisirs",
@@ -386,11 +518,21 @@
         "Yoga / Pilates",
         "Résistances à confirmer"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "طقم 5 أربطة",
+        "تمارين اللياقة",
+        "التمدد والمقاومة",
+        "المستويات حسب الدفعة"
+      ],
+      "en": [
+        "Set of five bands",
+        "Fitness training",
+        "Stretch and resistance",
+        "Verify resistance levels"
+      ]
     },
     "category": "sport_loisirs",
-    "subcategory": "",
+    "subcategory": "fitness",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -424,7 +566,19 @@
     "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
     "sourcePageVerification": "listing_not_independently_verified",
     "priceReferenceVerification": "unverified_price_candidate",
-    "readyToPublish": false
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "needs_independent_verification",
+      "referencePage": "https://www.jumia.ma/ar/generic-pack-de-5-bandes-delastique-de-resistance-fitness-bandes-elastiques-de-musculation-pour-fessiers-cuisses-yoga-pilates-et-remise-en-forme-5-niveaux-68170919.html",
+      "comparableMinMAD": null,
+      "comparableMaxMAD": null,
+      "observedReferenceMAD": null,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   },
   {
     "id": "gb_source_enfants",
@@ -447,11 +601,21 @@
         "Partie pliable",
         "Sécurité à vérifier"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "حقيبة حفاضات",
+        "جيوب للتخزين",
+        "جزء قابل للطي",
+        "يجب التحقق من السلامة"
+      ],
+      "en": [
+        "Diaper backpack",
+        "Storage pockets",
+        "Fold-out section",
+        "Safety verification required"
+      ]
     },
     "category": "enfants",
-    "subcategory": "",
+    "subcategory": "bebe",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -486,7 +650,19 @@
     "sourcePageVerification": "listing_not_independently_verified",
     "priceReferenceVerification": "unverified_price_candidate",
     "readyToPublish": false,
-    "safetyDocumentationNeeded": true
+    "safetyDocumentationNeeded": true,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "needs_independent_verification",
+      "referencePage": "https://www.jumia.ma/ar/generic-sac-a-dos-a-langer-pour-bebesac-de-voyage-avec-lit-de-bebe-portablegrande-capacite-sac-a-couches-multifonction-impermeable-gris-68171868.html",
+      "comparableMinMAD": null,
+      "comparableMaxMAD": null,
+      "observedReferenceMAD": null,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   },
   {
     "id": "gb_source_jardin",
@@ -509,11 +685,21 @@
         "Taille de branches",
         "Caractéristiques à confirmer"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "مقص أغصان",
+        "للحدائق",
+        "تقليم النباتات",
+        "تأكيد رقم الموديل"
+      ],
+      "en": [
+        "Pruning lopper",
+        "Gardening use",
+        "Branch pruning",
+        "Verify exact model number"
+      ]
     },
     "category": "jardin",
-    "subcategory": "",
+    "subcategory": "jardinage",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -547,7 +733,19 @@
     "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
     "sourcePageVerification": "listing_not_independently_verified",
     "priceReferenceVerification": "unverified_price_candidate",
-    "readyToPublish": false
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "needs_independent_verification",
+      "referencePage": "https://www.jumia.ma/ar/altuna-secateur-ebrancheur-usage-au-jardin-61901907.html",
+      "comparableMinMAD": null,
+      "comparableMaxMAD": null,
+      "observedReferenceMAD": null,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   },
   {
     "id": "gb_source_entretien",
@@ -557,7 +755,7 @@
       "ar": "مسّاحة بخاخ بقطعة ميكروفايبر وخزان ورأس يدور 360°",
       "en": "Microfiber Spray Mop with Tank and 360° Swivel Head"
     },
-    "price": 149,
+    "price": 145,
     "description": {
       "fr": "Balai plat à pulvérisation, avec réservoir intégré, tête pivotante à 360° et housse microfibre lavable. Décrit pour l’entretien courant des carrelages et sols compatibles ; vérifier les précautions de chaque revêtement.",
       "ar": "مسّاحة أرضيات مزودة بخزان ماء ورأس دوار 360 درجة وقطعة ميكروفايبر قابلة للغسل. تصلح للتنظيف اليومي مع مراعاة تعليمات الأرضية.",
@@ -570,11 +768,21 @@
         "Pad microfibre lavable",
         "Nettoyage des sols"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "خزان للماء",
+        "رأس قابل للدوران",
+        "قطعة ميكروفايبر",
+        "تنظيف الأرضيات"
+      ],
+      "en": [
+        "Built-in water tank",
+        "Swivel head",
+        "Microfiber pad",
+        "Floor cleaning"
+      ]
     },
     "category": "entretien",
-    "subcategory": "",
+    "subcategory": "nettoyage",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -599,7 +807,7 @@
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/generic-balai-serpillere-microfibre-avec-reservoir-deau-balai-spray-tete-rotative-360-serpilliere-reutilisable-pour-parquet-carrelage-et-marbre-68290441.html",
     "sourceGalleryImagesReported": null,
-    "priceReferenceMAD": 149,
+    "priceReferenceMAD": 145,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
     "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
@@ -607,8 +815,20 @@
     "galleryPhotosUploaded": 0,
     "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
     "sourcePageVerification": "listing_not_independently_verified",
-    "priceReferenceVerification": "unverified_price_candidate",
-    "readyToPublish": false
+    "priceReferenceVerification": "market_range_reference_only_not_same_sku",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "market_comparables_only",
+      "referencePage": "https://www.jumia.ma/slp/balai-avec-reservoir",
+      "comparableMinMAD": 98,
+      "comparableMaxMAD": 149,
+      "observedReferenceMAD": 145,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   },
   {
     "id": "gb_source_eclairage",
@@ -618,7 +838,7 @@
       "ar": "مصباح مكتب LED قابل للشحن باللمس و3 أنماط إضاءة",
       "en": "Rechargeable Touch LED Desk Lamp – 3 Light Modes"
     },
-    "price": 97,
+    "price": 89,
     "description": {
       "fr": "Lampe de table LED rechargeable, avec commande tactile et trois modes d’éclairage mentionnés sur la fiche. Usage bureau, étude ou chevet ; autonomie et chargeur à vérifier auprès du vendeur.",
       "ar": "مصباح مكتب LED قابل للشحن، بالتحكم اللمسي وثلاثة أوضاع إضاءة حسب المصدر. مناسب للمكتب أو الدراسة؛ يلزم تأكيد مدة التشغيل والشاحن.",
@@ -631,11 +851,21 @@
         "3 modes de lumière",
         "Rechargeable"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "مصباح LED",
+        "تحكم باللمس",
+        "3 وضعيات إضاءة حسب المصدر",
+        "قابل للشحن"
+      ],
+      "en": [
+        "LED lamp",
+        "Touch controls",
+        "Three reported modes",
+        "Rechargeable"
+      ]
     },
     "category": "eclairage",
-    "subcategory": "",
+    "subcategory": "lampes",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -660,7 +890,7 @@
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/generic-lampe-de-bureau-led-rechargeable-sans-fil-3-modes-de-lumiere-intensite-variable-tactile-design-compact-pour-le-bureau-ou-chambre-65697026.html",
     "sourceGalleryImagesReported": null,
-    "priceReferenceMAD": 97,
+    "priceReferenceMAD": 89,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
     "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
@@ -668,8 +898,20 @@
     "galleryPhotosUploaded": 0,
     "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
     "sourcePageVerification": "listing_not_independently_verified",
-    "priceReferenceVerification": "unverified_price_candidate",
-    "readyToPublish": false
+    "priceReferenceVerification": "market_range_reference_only_not_same_sku",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "market_comparables_only",
+      "referencePage": "https://www.jumia.ma/mlp-lampe-bureau-rechargeable/",
+      "comparableMinMAD": 69,
+      "comparableMaxMAD": 99,
+      "observedReferenceMAD": 89,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   },
   {
     "id": "gb_source_animaux",
@@ -692,11 +934,21 @@
         "Coloris bleu ciel",
         "Mesurer le chien avant achat"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "صدرية ومقود",
+        "مقاس L حسب الوصف",
+        "لون أزرق سماوي",
+        "قِس محيط الصدر أولاً"
+      ],
+      "en": [
+        "Harness and leash",
+        "Reported size L",
+        "Sky blue",
+        "Measure dog chest first"
+      ]
     },
     "category": "animaux",
-    "subcategory": "",
+    "subcategory": "chiens",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -730,7 +982,19 @@
     "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
     "sourcePageVerification": "listing_not_independently_verified",
     "priceReferenceVerification": "unverified_price_candidate",
-    "readyToPublish": false
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "needs_independent_verification",
+      "referencePage": "https://www.jumia.ma/ar/generic-laisse-et-harnai-pour-chien-bleu-ciel-taille-l-58642330.html",
+      "comparableMinMAD": null,
+      "comparableMaxMAD": null,
+      "observedReferenceMAD": null,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   },
   {
     "id": "gb_source_bureau",
@@ -753,11 +1017,21 @@
         "Documents et dossiers",
         "Organisation du bureau"
       ],
-      "ar": [],
-      "en": []
+      "ar": [
+        "4 أقسام",
+        "شبك معدني",
+        "تنظيم الملفات",
+        "مناسب للمكاتب"
+      ],
+      "en": [
+        "Four compartments",
+        "Metal mesh",
+        "Document organizer",
+        "Suitable for desks"
+      ]
     },
     "category": "bureau",
-    "subcategory": "",
+    "subcategory": "organisation",
     "image": "",
     "images": [],
     "additionalImages": [],
@@ -791,6 +1065,18 @@
     "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
     "sourcePageVerification": "listing_not_independently_verified",
     "priceReferenceVerification": "unverified_price_candidate",
-    "readyToPublish": false
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-14",
+      "currency": "MAD",
+      "sourceType": "Moroccan retail marketplace",
+      "status": "needs_independent_verification",
+      "referencePage": "https://www.jumia.ma/ar/generic-organisateur-de-bureau-en-maille-metallique-porte-documents-et-dossiers-range-magazines-presentoir-a-4-compartiments-68289151.html",
+      "comparableMinMAD": null,
+      "comparableMaxMAD": null,
+      "observedReferenceMAD": null,
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   }
 ]
