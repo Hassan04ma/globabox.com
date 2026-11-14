@@ -504,7 +504,10 @@ export default {
             ? order.items.reduce((sum:number,item:any)=>sum+(Number.isFinite(item.quantity)?item.quantity:0),0)
             : 0,
           source:'store',
-          courierTrackingAvailable:false
+          courierTrackingAvailable: Boolean(order.shipping?.carrier && order.shipping?.trackingNumber),
+          ...(order.shipping?.carrier && order.shipping?.trackingNumber
+            ? {carrier:String(order.shipping.carrier).slice(0,100),trackingNumber:String(order.shipping.trackingNumber).slice(0,100)}
+            : {})
         }});
       }
       if (path === '/api/orders' && method === 'GET') {
@@ -545,10 +548,32 @@ export default {
         }
         const update = await readBody(request);
         const allowed = ['pending','confirmed','processing','shipped','delivered','cancelled'];
-        if (!allowed.includes(update?.status)) return json({error:'Invalid order status'},400);
-        const order = {...JSON.parse(existing.data_json),status:update.status,updatedAt:new Date().toISOString()};
-        await env.DB.prepare('UPDATE orders SET status=?,data_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?')
-          .bind(update.status,JSON.stringify(order),resolvedId).run();
+        if (!update || typeof update!=='object' || Array.isArray(update)) return json({error:'Invalid order update'},400);
+        if (update.status!==undefined && !allowed.includes(update.status)) return json({error:'Invalid order status'},400);
+        if (update.status===undefined && update.shipping===undefined) return json({error:'Nothing to update'},400);
+        const oldOrder=JSON.parse(existing.data_json);
+        const status=update.status===undefined ? oldOrder.status : update.status;
+        const nextShipping={...oldOrder.shipping};
+        if(update.shipping!==undefined){
+          if(!update.shipping || typeof update.shipping!=='object' || Array.isArray(update.shipping))
+            return json({error:'Invalid shipping data'},400);
+          const shipping=update.shipping as Record<string,unknown>;
+          const allowedKeys=new Set(['carrier','trackingNumber','internalNote']);
+          if(Object.keys(shipping).some(key=>!allowedKeys.has(key)))return json({error:'Unexpected shipping field'},400);
+          const allowedText=(value:unknown,max:number)=>typeof value==='string' && value.trim().length<=max && !/[<>\r\n]/.test(value);
+          if(!Object.entries(shipping).every(([key,value])=>allowedText(value,key==='internalNote'?500:100)))
+            return json({error:'Invalid shipping text'},400);
+          if(shipping.trackingNumber!==undefined && shipping.trackingNumber && !/^[A-Za-z0-9][A-Za-z0-9 ._\/-]{0,99}$/.test(String(shipping.trackingNumber)))
+            return json({error:'Invalid tracking reference'},400);
+          for(const [key,value] of Object.entries(shipping))nextShipping[key]=String(value).trim();
+          nextShipping.updatedAt=new Date().toISOString();
+        }
+        const order={...oldOrder,status,
+          ...(update.shipping===undefined?{}:{shipping:nextShipping}),
+          updatedAt:new Date().toISOString()};
+        const write=await env.DB.prepare('UPDATE orders SET status=?,data_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?')
+          .bind(status,JSON.stringify(order),resolvedId).run();
+        if(!write.success || write.meta?.changes!==1)return json({error:'D1 did not confirm update'},503);
         return json({success:true,order});
       }
       if (path === '/api/orders-clear' && method === 'DELETE') {
