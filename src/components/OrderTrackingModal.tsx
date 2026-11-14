@@ -6,7 +6,7 @@ import WhatsAppIcon from './WhatsAppIcon';
 
 interface Props {isOpen:boolean;onClose:()=>void;language:Language;}
 type Stage='pending'|'confirmed'|'processing'|'shipped'|'delivered'|'cancelled';
-interface TrackingResult {reference:string;status:Stage;date:string|null;total:number|null;itemCount:number;source:'store';courierTrackingAvailable:false;}
+interface TrackingResult {reference:string;status:Stage;date:string|null;total:number|null;itemCount:number;source:'store';courierTrackingAvailable:boolean;carrier?:string;trackingNumber?:string;}
 
 const stages:Exclude<Stage,'cancelled'>[]=['pending','confirmed','processing','shipped','delivered'];
 const labels={
@@ -165,7 +165,14 @@ export default function OrderTrackingModal({isOpen,onClose,language}:Props){
           <div className="rounded-xl border border-slate-200 p-4"><p className="text-[11px] text-slate-500">{t.items}</p><p className="mt-2 text-sm font-bold text-[#193e38]">{result.itemCount}</p></div>
           <div className="rounded-xl border border-slate-200 p-4"><p className="text-[11px] text-slate-500">{t.total}</p><p className="mt-2 text-sm font-bold text-[#193e38]">{result.total!==null?result.total.toFixed(2)+' DH':'—'}</p></div>
         </div>
-        <div className="flex items-start gap-3 rounded-xl bg-[#f5f8f5] px-4 py-3 text-xs leading-6 text-slate-600"><Truck size={18} className="mt-1 shrink-0 text-[#104d43]"/>{t.noCourier}</div>
+        {result.courierTrackingAvailable&&result.carrier&&result.trackingNumber&&
+          <div className="rounded-xl border border-[#b7dbca] bg-[#f2f9f4] p-4 text-sm text-[#193e38]">
+            <p className="flex items-center gap-2 font-bold"><Truck size={18} className="text-[#104d43]"/>{language==='ar'?'معلومات شركة التوصيل':language==='en'?'Delivery details':'Informations de livraison'}</p>
+            <p className="mt-2 text-xs">{language==='ar'?'شركة التوصيل':language==='en'?'Carrier':'Transporteur'}: <strong>{result.carrier}</strong></p>
+            <p className="mt-1 break-all font-mono text-xs">{language==='ar'?'رقم التتبع':language==='en'?'Tracking reference':'Référence du colis'}: <strong>{result.trackingNumber}</strong></p>
+            <p className="mt-2 text-[11px] text-[#6b8172]">{t.noCourier}</p>
+          </div>}
+        {!result.courierTrackingAvailable&&<div className="flex items-start gap-3 rounded-xl bg-[#f5f8f5] px-4 py-3 text-xs leading-6 text-slate-600"><Truck size={18} className="mt-1 shrink-0 text-[#104d43]"/>{t.noCourier}</div>}
         <button type="button" onClick={()=>{setResult(null);setError('');}} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-xs font-bold text-[#104d43] hover:bg-slate-50">{rtl?<ArrowRight size={16}/>:<ArrowLeft size={16}/>} {t.again}</button>
       </div>}
       <div className="mt-7 border-t border-slate-100 pt-6">
