@@ -235,6 +235,18 @@ export default function AdminPanel({
   // Editing Product states
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+  // Ensure the editor is visible after selecting Add/Edit from a long catalog list.
+  useEffect(()=>{
+    if(activeTab!=='products'||(!isAddingProduct&&!editingProduct))return;
+    const frame=window.requestAnimationFrame(()=>{
+      document.getElementById('gb-product-editor')?.scrollIntoView({
+        behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',
+        block:'start'
+      });
+    });
+    return ()=>window.cancelAnimationFrame(frame);
+  },[activeTab,isAddingProduct,editingProduct?.id]);
+
   const [productForm, setProductForm] = useState<{
     id: string;
     nameFr: string;
