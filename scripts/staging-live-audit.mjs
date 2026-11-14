@@ -16,12 +16,19 @@ for(let attempt=1;attempt<=5;attempt++){
   assert(home.response.status===200,'Homepage status '+home.response.status);
   assert(/<html/i.test(home.body),'Homepage must serve HTML');
   checks.push('Home 200 (HTML)');
-  // Confirm the current five-product QA page is actually deployed, not only committed.
-  const qa=await get('/test-5-produits.html');
-  assert(qa.response.status===200,'Five-product QA page HTTP '+qa.response.status);
-  assert(qa.body.includes('products.splice(5)') && qa.body.includes('function showCart()') && qa.body.includes('function confirmTest()'),'Five-product QA page missing or outdated');
-  assert(qa.body.includes('Aucune commande sauvegardée dans Cloudflare D1'),'QA page must disclose local simulation');
-  checks.push('Five-product QA page deployed with clear simulation notice');
+  // Verify the complete 13-department QA page is deployed; this is a LOCAL simulation only.
+  // HTTP 200 without the expected content is not enough to confirm the current deployment.
+  const qa=await get('/catalogue-test.html');
+  assert(qa.response.status===200,'13-product QA page HTTP '+qa.response.status);
+  assert(qa.body.includes('13 références proposées') && qa.body.includes('function showCart()') && qa.body.includes('function confirmTest()'),'13-product QA page missing or outdated');
+  assert(qa.body.includes('Aucune commande sauvegardée dans Cloudflare D1'),'QA page must disclose no real order is saved');
+  const match=qa.body.match(/const products=(\[[\s\S]*?\]);\s*const cart=new Map\(\)/);
+  assert(!!match,'13-product embedded catalog not found');
+  const qaProducts=JSON.parse(match[1]);
+  assert(qaProducts.length===13,'Expected 13 QA products, got '+qaProducts.length);
+  assert(new Set(qaProducts.map(p=>p.category)).size===13,'Expected one distinct department per QA product');
+  assert(qaProducts.every(p=>p.id&&p.title&&Number(p.price)>0&&p.illustration),'QA product data incomplete');
+  checks.push('13 unique QA products + local cart/COD simulation deployed (no D1 write)');
 
   const categories=await get('/api/categories');
   assert(categories.response.status===200,'Categories HTTP '+categories.response.status);
