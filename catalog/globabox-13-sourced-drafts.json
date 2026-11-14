@@ -51,11 +51,14 @@
     "sourceGalleryImagesReported": 7,
     "priceReferenceMAD": 109.9,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_found_in_public_web_results",
+    "priceReferenceVerification": "listing_price_observed_not_store_price",
+    "readyToPublish": false
   },
   {
     "id": "gb_source_cuisine",
@@ -109,11 +112,14 @@
     "sourceGalleryImagesReported": 8,
     "priceReferenceMAD": 199,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_found_in_public_web_results",
+    "priceReferenceVerification": "listing_price_observed_not_store_price",
+    "readyToPublish": false
   },
   {
     "id": "gb_source_technologie",
@@ -164,14 +170,17 @@
     "sourceUrl": "https://www.jumia.ma/ar/lenovo-ecouteurs-lp40-pro-bluetooth-5.1-sans-fil-tactile-65368821.html",
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/lenovo-ecouteurs-lp40-pro-bluetooth-5.1-sans-fil-tactile-65368821.html",
-    "sourceGalleryImagesReported": 8,
+    "sourceGalleryImagesReported": null,
     "priceReferenceMAD": 169,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_not_independently_verified",
+    "priceReferenceVerification": "unverified_price_candidate",
+    "readyToPublish": false
   },
   {
     "id": "gb_source_beaute",
@@ -222,14 +231,17 @@
     "sourceUrl": "https://www.jumia.ma/ar/maange-set-13-pinceaux-maquillage-professionnels-make-up-artist-2-houppettes-pochette-kit-complet-visage-yeux-fond-de-teint-poudre-blush-sourcils-67682404.html",
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/maange-set-13-pinceaux-maquillage-professionnels-make-up-artist-2-houppettes-pochette-kit-complet-visage-yeux-fond-de-teint-poudre-blush-sourcils-67682404.html",
-    "sourceGalleryImagesReported": 8,
+    "sourceGalleryImagesReported": null,
     "priceReferenceMAD": 214,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_not_independently_verified",
+    "priceReferenceVerification": "unverified_price_candidate",
+    "readyToPublish": false
   },
   {
     "id": "gb_source_mode",
@@ -283,11 +295,14 @@
     "sourceGalleryImagesReported": 7,
     "priceReferenceMAD": 179,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_found_in_public_web_results",
+    "priceReferenceVerification": "listing_price_observed_not_store_price",
+    "readyToPublish": false
   },
   {
     "id": "gb_source_automobile",
@@ -341,11 +356,14 @@
     "sourceGalleryImagesReported": 6,
     "priceReferenceMAD": 129,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_found_in_public_web_results",
+    "priceReferenceVerification": "listing_price_observed_not_store_price",
+    "readyToPublish": false
   },
   {
     "id": "gb_source_sport_loisirs",
@@ -396,14 +414,17 @@
     "sourceUrl": "https://www.jumia.ma/ar/generic-pack-de-5-bandes-delastique-de-resistance-fitness-bandes-elastiques-de-musculation-pour-fessiers-cuisses-yoga-pilates-et-remise-en-forme-5-niveaux-68170919.html",
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/generic-pack-de-5-bandes-delastique-de-resistance-fitness-bandes-elastiques-de-musculation-pour-fessiers-cuisses-yoga-pilates-et-remise-en-forme-5-niveaux-68170919.html",
-    "sourceGalleryImagesReported": 6,
+    "sourceGalleryImagesReported": null,
     "priceReferenceMAD": 79,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_not_independently_verified",
+    "priceReferenceVerification": "unverified_price_candidate",
+    "readyToPublish": false
   },
   {
     "id": "gb_source_enfants",
@@ -454,14 +475,18 @@
     "sourceUrl": "https://www.jumia.ma/ar/generic-sac-a-dos-a-langer-pour-bebesac-de-voyage-avec-lit-de-bebe-portablegrande-capacite-sac-a-couches-multifonction-impermeable-gris-68171868.html",
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/generic-sac-a-dos-a-langer-pour-bebesac-de-voyage-avec-lit-de-bebe-portablegrande-capacite-sac-a-couches-multifonction-impermeable-gris-68171868.html",
-    "sourceGalleryImagesReported": 8,
+    "sourceGalleryImagesReported": null,
     "priceReferenceMAD": 157,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_not_independently_verified",
+    "priceReferenceVerification": "unverified_price_candidate",
+    "readyToPublish": false,
+    "safetyDocumentationNeeded": true
   },
   {
     "id": "gb_source_jardin",
@@ -512,14 +537,17 @@
     "sourceUrl": "https://www.jumia.ma/ar/altuna-secateur-ebrancheur-usage-au-jardin-61901907.html",
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/altuna-secateur-ebrancheur-usage-au-jardin-61901907.html",
-    "sourceGalleryImagesReported": 7,
+    "sourceGalleryImagesReported": null,
     "priceReferenceMAD": 389,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_not_independently_verified",
+    "priceReferenceVerification": "unverified_price_candidate",
+    "readyToPublish": false
   },
   {
     "id": "gb_source_entretien",
@@ -570,14 +598,17 @@
     "sourceUrl": "https://www.jumia.ma/ar/generic-balai-serpillere-microfibre-avec-reservoir-deau-balai-spray-tete-rotative-360-serpilliere-reutilisable-pour-parquet-carrelage-et-marbre-68290441.html",
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/generic-balai-serpillere-microfibre-avec-reservoir-deau-balai-spray-tete-rotative-360-serpilliere-reutilisable-pour-parquet-carrelage-et-marbre-68290441.html",
-    "sourceGalleryImagesReported": 8,
+    "sourceGalleryImagesReported": null,
     "priceReferenceMAD": 149,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_not_independently_verified",
+    "priceReferenceVerification": "unverified_price_candidate",
+    "readyToPublish": false
   },
   {
     "id": "gb_source_eclairage",
@@ -628,14 +659,17 @@
     "sourceUrl": "https://www.jumia.ma/ar/generic-lampe-de-bureau-led-rechargeable-sans-fil-3-modes-de-lumiere-intensite-variable-tactile-design-compact-pour-le-bureau-ou-chambre-65697026.html",
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/generic-lampe-de-bureau-led-rechargeable-sans-fil-3-modes-de-lumiere-intensite-variable-tactile-design-compact-pour-le-bureau-ou-chambre-65697026.html",
-    "sourceGalleryImagesReported": 8,
+    "sourceGalleryImagesReported": null,
     "priceReferenceMAD": 97,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_not_independently_verified",
+    "priceReferenceVerification": "unverified_price_candidate",
+    "readyToPublish": false
   },
   {
     "id": "gb_source_animaux",
@@ -686,14 +720,17 @@
     "sourceUrl": "https://www.jumia.ma/ar/generic-laisse-et-harnai-pour-chien-bleu-ciel-taille-l-58642330.html",
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/generic-laisse-et-harnai-pour-chien-bleu-ciel-taille-l-58642330.html",
-    "sourceGalleryImagesReported": 6,
+    "sourceGalleryImagesReported": null,
     "priceReferenceMAD": 95,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_not_independently_verified",
+    "priceReferenceVerification": "unverified_price_candidate",
+    "readyToPublish": false
   },
   {
     "id": "gb_source_bureau",
@@ -744,13 +781,16 @@
     "sourceUrl": "https://www.jumia.ma/ar/generic-organisateur-de-bureau-en-maille-metallique-porte-documents-et-dossiers-range-magazines-presentoir-a-4-compartiments-68289151.html",
     "sourceMarketplace": "Jumia Maroc",
     "sourceGalleryPage": "https://www.jumia.ma/ar/generic-organisateur-de-bureau-en-maille-metallique-porte-documents-et-dossiers-range-magazines-presentoir-a-4-compartiments-68289151.html",
-    "sourceGalleryImagesReported": 6,
+    "sourceGalleryImagesReported": null,
     "priceReferenceMAD": 159,
     "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
-    "supplier": "Non confirmé",
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
     "galleryPhotosUploaded": 0,
-    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix.",
+    "sourcePageVerification": "listing_not_independently_verified",
+    "priceReferenceVerification": "unverified_price_candidate",
+    "readyToPublish": false
   }
 ]
