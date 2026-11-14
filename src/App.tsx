@@ -6,14 +6,19 @@ import { TRANSLATIONS } from './translations';
 
 // Subcomponents
 import Header from './components/Header';
-import Hero from './components/Hero';
-import CategoryGrid from './components/CategoryGrid';
+import HomeBannerSlider from './components/HomeBannerSlider';
+import StoreSidebar from './components/StoreSidebar';
+import StoreInfoPage from './components/StoreInfoPage';
+import CookieConsent from './components/CookieConsent';
+import { STORE_SUBCATEGORIES, matchesSubcategory } from './storefrontSubcategories';
+import { STORE_DEPARTMENTS, isPublicStoreCategory, matchesStoreDepartment } from './storefrontDepartments';
+
 import ProductCard from './components/ProductCard';
 import TrustBadges from './components/TrustBadges';
 import CartDrawer from './components/CartDrawer';
 import OrderSuccessModal from './components/OrderSuccessModal';
 import DeliveryBanner from './components/DeliveryBanner';
-import PremiumSupportWidget from './components/PremiumSupportWidget';
+
 import WhatsAppIcon from './components/WhatsAppIcon';
 import StoreFooter from './components/StoreFooter';
 
@@ -141,6 +146,11 @@ function getSearchableText(product: any, categories: any[] = []): string {
   if (product.description_ar) texts.push(String(product.description_ar));
   if (product.description_en) texts.push(String(product.description_en));
 
+  // Public merchandizing labels, SKU and tags are also searchable.
+  if (product.sku) texts.push(String(product.sku));
+  if (product.subcategory) texts.push(String(product.subcategory));
+  if (Array.isArray(product.tags)) texts.push(...product.tags.map(String));
+
   // 6. Features (nested features object, arrays & flat properties)
   if (product.features) {
     if (typeof product.features === 'object' && !Array.isArray(product.features)) {
@@ -202,16 +212,20 @@ export default function App() {
   const [language, setLanguage] = useState<Language>('fr');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState(() => new URLSearchParams(window.location.search).get('subcategory') || '');
+  const [infoPage, setInfoPage] = useState<string|null>(() => new URLSearchParams(window.location.search).get('page'));
   const [filterType, setFilterType] = useState<'all' | 'bestsellers' | 'newarrivals'>('all');
   const [sortOption, setSortOption] = useState<'newest' | 'price_low_high' | 'price_high_low'>('newest');
   const [minPrice, setMinPrice] = useState<number | ''>('');
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
 
+  // Reset a child filter whenever the parent department is cleared (e.g. header All Products).
+  useEffect(() => {
+    if (!selectedCategory && selectedSubcategory) setSelectedSubcategory('');
+  }, [selectedCategory, selectedSubcategory]);
+
   // Persistent data states
-  const [products, setProducts] = useState<any[]>(() => {
-    const saved = localStorage.getItem('globabox_products_v1');
-    return saved ? JSON.parse(saved) : PRODUCTS;
-  });
+  const [products, setProducts] = useState<any[]>([]);
 
   // Live category metadata is served by D1; keep bundled defaults only as a network fallback.
   const [categories, setCategories] = useState<any[]>(CATEGORIES);
@@ -319,6 +333,8 @@ export default function App() {
     const searchParams = new URLSearchParams(window.location.search);
     const initialProduct = searchParams.get('product');
     const initialCategory = searchParams.get('category');
+    const initialSubcategory = searchParams.get('subcategory');
+    if(initialSubcategory) setSelectedSubcategory(initialSubcategory);
     if (searchParams.get('admin') === 'true') {
       setIsAdminOpen(true);
     }
@@ -372,17 +388,33 @@ export default function App() {
 
   // Update dynamic clean URL route params without full page reload
   useEffect(() => {
-    const searchParams = new URLSearchParams();
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.delete('category');
+    searchParams.delete('subcategory');
+    searchParams.delete('product');
     if (selectedProduct) {
       searchParams.set('product', selectedProduct.id);
     } else if (selectedCategory) {
       searchParams.set('category', selectedCategory);
+      if (selectedSubcategory) searchParams.set('subcategory', selectedSubcategory);
     }
     
     const query = searchParams.toString();
     const newRelativePathQuery = window.location.pathname + (query ? `?${query}` : '');
     window.history.replaceState(null, '', newRelativePathQuery);
-  }, [selectedProduct, selectedCategory]);
+  }, [selectedProduct, selectedCategory, selectedSubcategory]);
+
+  // Keep full policy pages shareable and responsive to browser back/forward.
+  useEffect(() => {
+    const syncLocation = () => {
+      const query = new URLSearchParams(window.location.search);
+      setInfoPage(query.get('page'));
+      setSelectedCategory(query.get('category') || '');
+      setSelectedSubcategory(query.get('subcategory') || '');
+    };
+    window.addEventListener('popstate', syncLocation);
+    return () => window.removeEventListener('popstate', syncLocation);
+  }, []);
 
   // Log search input changes
   useEffect(() => {
@@ -455,12 +487,12 @@ export default function App() {
     };
 
     let titleText = language === "ar" 
-      ? "جلوبابوكس | متجر مستلزمات التخييم، الكشتات والأنشطة الخارجية بالمغرب" 
-      : "Globabox | Boutique Matériel Camping, Bivouac & Outdoor Maroc";
+      ? "جلوبابوكس | متجر إلكتروني عام بالمغرب" 
+      : "Globabox | Boutique en ligne multi-catégories au Maroc";
     
     let metaDesc = language === "ar"
-      ? "جلوبابوكس هي الماركة المفضلة لمعدات المغامرات والتخييم، الصيد والرحلات بالمغرب. توصيل مجاني ودفع كاش آمن عند الاستلام."
-      : "Globabox est la marque d'équipement d'extérieur préférée au Maroc pour le camping, la randonnée, la pêche et la chasse. Livraison gratuite et paiement de confiance à la livraison.";
+      ? "تسوق منتجات متنوعة للمنزل والتكنولوجيا والحياة اليومية من جلوبابوكس، مع الدفع عند الاستلام بالمغرب."
+      : "Découvrez des produits pour la maison, les accessoires, la technologie et le quotidien au Maroc, avec paiement à la livraison.";
 
     if (selectedProduct) {
       if (selectedProduct.id === "tente-dome-camping-2-3-personnes") {
@@ -602,13 +634,8 @@ export default function App() {
     customMessage?: string;
     source?: string;
   } = {}) => {
-    // Fallback if empty (generic lead)
-    const activeItems: CartItem[] = items.length > 0 
-      ? items 
-      : [{ 
-          product: (products[0] || PRODUCTS[0]) as Product, 
-          quantity: 1 
-        }];
+    // An empty WhatsApp enquiry is support, not a fabricated product order.
+    const activeItems: CartItem[] = items;
 
     const finalForm: CheckoutForm = {
       fullName: form?.fullName?.trim() || "WhatsApp Customer",
@@ -626,6 +653,13 @@ export default function App() {
 
     // Generate WhatsApp pre-filled text
     let whatsappMessage = customMessage || "";
+    if (!whatsappMessage && activeItems.length === 0) {
+      whatsappMessage = language === 'ar'
+        ? 'سلام جلوبابوكس، بغيت نستفسر على المنتجات المتوفرة والتوصيل.'
+        : language === 'en'
+        ? 'Hello GLOBABOX, I would like information about your available products and delivery.'
+        : 'Bonjour GLOBABOX, je souhaite des informations sur vos produits disponibles et la livraison.';
+    }
     if (!whatsappMessage) {
       const productBlocks = activeItems.map((it, idx) => {
         let name = it.product.name[language] || it.product.name['fr'];
@@ -801,13 +835,14 @@ Merci de confirmer la disponibilité et la livraison.`;
   };
 
   // Step-by-step filter operations
-  const activeProducts = products.filter(p => p.isActive !== false && p.isActive !== 'FALSE');
+  const activeProducts = products.filter(p => p.isActive !== false && p.isActive !== 'FALSE' && isPublicStoreCategory(p.category));
   const afterCategory = selectedCategory 
-    ? activeProducts.filter(p => p.category === selectedCategory) 
+    ? activeProducts.filter(p => matchesStoreDepartment(p.category, selectedCategory)) 
     : activeProducts;
 
   // Apply search and sorting
   const filteredProducts = afterCategory.filter((product) => {
+    if (selectedCategory && selectedSubcategory && !matchesSubcategory(product,selectedSubcategory)) return false;
     // 2. Search term match
     if (searchTerm.trim() !== '') {
       const normProductText = normalizeText(getSearchableText(product, categories));
@@ -871,12 +906,13 @@ Merci de confirmer la disponibilité et la livraison.`;
 
   const totalCartItems = cart.reduce((acc, item) => acc + item.quantity, 0);
   
-  const activeCategoryObj = categories.find(cat => cat.id === selectedCategory);
-  const categoryName = activeCategoryObj ? (activeCategoryObj.name[language] || activeCategoryObj.name['fr']) : '';
+  const activeCategoryObj = STORE_DEPARTMENTS.find(cat => cat.id === selectedCategory) || categories.find(cat => cat.id === selectedCategory);
+  const activeSubcategoryObj=STORE_SUBCATEGORIES.find(sub=>sub.id===selectedSubcategory && sub.parent===selectedCategory);
+  const categoryName = activeSubcategoryObj ? activeSubcategoryObj.name[language] : activeCategoryObj ? (activeCategoryObj.name[language] || activeCategoryObj.name['fr']) : (selectedCategory ? (language === 'ar' ? 'القسم' : language === 'en' ? 'Category' : 'Catégorie') : '');
 
   return (
     <div 
-      className="min-h-screen bg-slate-50 text-slate-900 selection:bg-orange-500 selection:text-white transition-colors duration-300 pb-20 md:pb-0"
+      className="min-h-screen bg-white text-slate-900 selection:bg-teal-700 selection:text-white transition-colors duration-300"
       style={{ direction: isRtl ? 'rtl' : 'ltr' }}
     >
       {/* 1. Header */}
@@ -894,118 +930,49 @@ Merci de confirmer la disponibilité et la livraison.`;
       />
 
       {/* Spacing Offset for Fixed Header */}
-      <div className="h-[145px] md:h-[115px]"></div>
+      <div className="h-[151px] md:h-[103px]"></div>
 
-      {/* 2. Hero Section */}
+      {infoPage ? (
+        <StoreInfoPage language={language} page={infoPage}
+          onSelectPage={(tab)=>{setInfoPage(tab);window.history.pushState(null,'','?page='+encodeURIComponent(tab));window.scrollTo({top:0,behavior:'smooth'});}}
+          onBackToShop={()=>{setInfoPage(null);window.history.pushState(null,'','/');setSelectedCategory('');setSelectedSubcategory('');window.scrollTo({top:0,behavior:'smooth'});}}/>
+      ) : (<>
+      {/* Store hero: rotating home-and-lifestyle promotions, each with a working catalog action. */}
       {!selectedCategory && !searchTerm && (
-        <Hero 
-          language={language} 
-          onExploreClick={handleScrollToCatalog} 
-          onWhatsAppOrder={handleWhatsAppOrderSubmit}
-        />
-      )}
-
-      {/* 3. Category Grid Selector */}
-      <CategoryGrid
-        language={language}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={(cat) => {
-          setSelectedCategory(cat);
-          handleScrollToCatalog();
-        }}
-        categories={categories}
-      />
-
-      {/* 3.05 Delivery Info & Reassurance Banner */}
-      <DeliveryBanner language={language} />
-
-      {/* 3.08 Active Flash Discounts/Hot Deals ("Offres du moment") */}
-      {!selectedCategory && !searchTerm && (
-        <PromoOffersSection
+        <HomeBannerSlider
           language={language}
-          products={products}
-          onViewDetails={(prod) => setSelectedProduct(prod)}
-          onAddToCart={(prod) => handleAddToCart(prod, 1)}
-          onInstantOrder={(prod) => handleInstantCheckout(prod, 1)}
+          categories={categories}
+          onShopAll={handleScrollToCatalog}
+          onSelectDepartment={(id) => {setSelectedCategory(id);setSelectedSubcategory(''); window.requestAnimationFrame(handleScrollToCatalog);}}
         />
       )}
 
-      {/* Special Camping Offer spotlight ad block for the new Dome Tent */}
-      {!selectedCategory && !searchTerm && (
-        <PromoCampSection
+      {/* Single category navigation, always on the left beside catalog on desktop. */}
+      <div className="flex w-full max-w-none flex-col gap-6 px-4 pb-10 sm:px-6 lg:flex-row lg:items-start lg:gap-8 lg:px-8 2xl:gap-10 2xl:px-10" dir="ltr">
+        <StoreSidebar
           language={language}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          selectedSubcategory={selectedSubcategory}
+          onSelect={(id) => {setSelectedCategory(id);setSelectedSubcategory('');window.requestAnimationFrame(handleScrollToCatalog);}}
+          onSelectSubcategory={(parent,child) => {setSelectedCategory(parent);setSelectedSubcategory(child);window.requestAnimationFrame(handleScrollToCatalog);}}
           products={products}
-          onViewDetails={(prod) => setSelectedProduct(prod)}
-          onInstantOrder={(prod) => handleInstantCheckout(prod, 1)}
-          onWhatsAppOrder={handleWhatsAppOrderSubmit}
         />
-      )}
-
-      {/* 3.1 Best Selling Products Showcase (High converting) */}
-      {!selectedCategory && !searchTerm && (
-        <BestSellersSection
-          language={language}
-          products={products}
-          onViewDetails={(prod) => setSelectedProduct(prod)}
-          onAddToCart={(prod) => handleAddToCart(prod, 1)}
-          onInstantOrder={(prod) => handleInstantCheckout(prod, 1)}
-          onExploreMore={handleScrollToCatalog}
-        />
-      )}
-
-      {/* 3.15 Economic Combo Packs ("Packs économiques" - High AOV) */}
-      {!selectedCategory && !searchTerm && (
-        <EconomicPacksSection
-          language={language}
-          products={products}
-          onViewDetails={(prod) => setSelectedProduct(prod)}
-          onAddToCart={(prod) => handleAddToCart(prod, 1)}
-          onInstantOrder={(prod) => handleInstantCheckout(prod, 1)}
-          onExploreMore={handleScrollToCatalog}
-        />
-      )}
-
-      {/* 3.2 New Arrivals Showcase (High converting) */}
-      {!selectedCategory && !searchTerm && (
-        <NewArrivalsSection
-          language={language}
-          products={products}
-          onViewDetails={(prod) => setSelectedProduct(prod)}
-          onAddToCart={(prod) => handleAddToCart(prod, 1)}
-          onInstantOrder={(prod) => handleInstantCheckout(prod, 1)}
-          onExploreMore={handleScrollToCatalog}
-        />
-      )}
-
-      {/* 3.25 Under 99 DH Impulse Pocket Area ("Moins de 99 DH") */}
-      {!selectedCategory && !searchTerm && (
-        <Under99Section
-          language={language}
-          products={products}
-          onViewDetails={(prod) => setSelectedProduct(prod)}
-          onAddToCart={(prod) => handleAddToCart(prod, 1)}
-          onInstantOrder={(prod) => handleInstantCheckout(prod, 1)}
-        />
-      )}
-
-      {/* 3.28 Detailed Free Shipping policy layout ("Livraison gratuite") */}
-      <FreeDeliverySection language={language} />
-
-      {/* 3.3 Why Choose Globabox Trust & Reassurance Block */}
-      <WhyChooseGlobabox language={language} />
 
       {/* 4. Main Catalog Section & Filtering */}
       <main 
+        id="product-catalog"
         ref={catalogRef} 
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 scrolls-offset-padding"
+        className="min-w-0 w-full flex-1 scroll-mt-32 pt-1 pb-10"
       >
+        <div dir={isRtl ? 'rtl' : 'ltr'}>
         {/* Catalog Header with Tabs & Counter */}
         <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             {selectedCategory ? (
               <div>
                 <h2 className="text-xl md:text-2xl font-black text-slate-900 flex items-center gap-2">
-                  ⛺{" "}
+                  
                   {language === 'ar' 
                     ? `منتجات فئة: ${categoryName}`
                     : language === 'en'
@@ -1015,20 +982,20 @@ Merci de confirmer la disponibilité et la livraison.`;
                 </h2>
                 <p className="text-xs md:text-sm text-slate-600 max-w-2xl leading-relaxed mt-1 font-medium">
                   {language === 'ar'
-                    ? `اكتشف تشكيلتنا من جلوبابوكس لـ ${categoryName} مع توصيل سريع لجميع المدن المغربية والدفع عند الاستلام.`
+                    ? `اكتشف منتجات ${categoryName} مع الدفع عند الاستلام وتأكيد إمكانية التوصيل قبل الإرسال.`
                     : language === 'en'
-                    ? `Discover our Globabox selection for ${categoryName} with express shipping across Morocco and safe cash on delivery.`
-                    : `Découvrez notre sélection Globabox pour ${categoryName} avec livraison partout au Maroc et paiement à la livraison.`
+                    ? `Explore ${categoryName} products with cash on delivery; delivery options are confirmed before dispatch.`
+                    : `Découvrez notre sélection ${categoryName}, avec paiement à la livraison et disponibilité du transport confirmée avant l'expédition.`
                   }
                 </p>
                 <p className="text-[11px] font-mono text-slate-400 mt-1.5">
-                  ID: {selectedCategory} • {filteredProducts.length} {filteredProducts.length > 1 ? 'produits' : 'produit'}
+                  {filteredProducts.length} {language==='ar'?'منتج':language==='en'?(filteredProducts.length===1?'product':'products'):(filteredProducts.length===1?'produit':'produits')}
                 </p>
               </div>
             ) : (
               <div>
                 <h2 className="text-xl md:text-2xl font-black text-slate-900 flex items-center gap-2">
-                  ⛺ {t('allProductsTitle')}
+                  {t('allProductsTitle')}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
                   {filteredProducts.length} {t('cartItemsCount')} {t('allCategoriesLabel').toLowerCase()}
@@ -1037,57 +1004,43 @@ Merci de confirmer la disponibilité et la livraison.`;
             )}
           </div>
 
-          {/* Subtype filters */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-205 shrink-0 self-start">
-            <button
-              onClick={() => setFilterType('all')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                filterType === 'all'
-                  ? 'bg-[#0b1528] text-white shadow-sm'
-                  : 'text-slate-650 hover:text-slate-900'
-              }`}
-            >
-              {t('filterAll')}
-            </button>
-            <button
-              onClick={() => setFilterType('bestsellers')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                filterType === 'bestsellers'
-                  ? 'bg-orange-600 text-white shadow-sm'
-                  : 'text-slate-650 hover:text-slate-900'
-              }`}
-            >
-              <span className="flex items-center gap-1"><Flame size={12} className="shrink-0 text-orange-400" /> <span>{t('filterBestSellers')}</span></span>
-            </button>
-            <button
-              onClick={() => setFilterType('newarrivals')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                filterType === 'newarrivals'
-                  ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'text-slate-650 hover:text-slate-900'
-              }`}
-            >
-              <span className="flex items-center gap-1"><Star size={12} className="shrink-0 text-amber-300" /> <span>{t('filterNewArrivals')}</span></span>
-            </button>
+          {/* Only show merchandising filters supported by real published product data. */}
+          <div className="flex max-w-full flex-wrap items-center gap-2 self-start" aria-label={language==='ar'?'فرز وتصفية المنتجات':'Filtrer et trier les produits'}>
+            <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200 bg-[#f6f8f6] p-1">
+              <button type="button" onClick={() => setFilterType('all')}
+                aria-pressed={filterType==='all'}
+                className={'rounded-lg px-3 py-2 text-xs font-bold transition '+(filterType==='all'?'bg-[#104d43] text-white shadow-sm':'text-slate-600 hover:bg-white')}>
+                {t('filterAll')}
+              </button>
+              {activeProducts.some(p=>p.bestSeller) && (
+                <button type="button" onClick={() => setFilterType('bestsellers')}
+                  aria-pressed={filterType==='bestsellers'}
+                  className={'rounded-lg px-3 py-2 text-xs font-bold transition '+(filterType==='bestsellers'?'bg-[#104d43] text-white shadow-sm':'text-slate-600 hover:bg-white')}>
+                  {t('filterBestSellers')}
+                </button>
+              )}
+              {activeProducts.some(p=>p.newArrival) && (
+                <button type="button" onClick={() => setFilterType('newarrivals')}
+                  aria-pressed={filterType==='newarrivals'}
+                  className={'rounded-lg px-3 py-2 text-xs font-bold transition '+(filterType==='newarrivals'?'bg-[#104d43] text-white shadow-sm':'text-slate-600 hover:bg-white')}>
+                  {t('filterNewArrivals')}
+                </button>
+              )}
+            </div>
+            <label className="flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600">
+              <span>{language==='ar'?'ترتيب':language==='en'?'Sort by':'Trier'}</span>
+              <select value={sortOption} onChange={e=>setSortOption(e.target.value as typeof sortOption)}
+                aria-label={language==='ar'?'ترتيب المنتجات':'Sort products'}
+                className="max-w-[175px] bg-transparent py-2 text-xs font-semibold text-[#104d43] outline-none">
+                <option value="newest">{language==='ar'?'الأحدث':language==='en'?'Newest':'Nouveautés'}</option>
+                <option value="price_low_high">{language==='ar'?'الثمن: من الأقل للأعلى':language==='en'?'Price: low to high':'Prix croissant'}</option>
+                <option value="price_high_low">{language==='ar'?'الثمن: من الأعلى للأقل':language==='en'?'Price: high to low':'Prix décroissant'}</option>
+              </select>
+            </label>
           </div>
         </div>
 
-        {/* Global Catalog Search, Categories & Pricing filter system */}
-        <ProductFilters
-          language={language}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          minPrice={minPrice}
-          setMinPrice={setMinPrice}
-          maxPrice={maxPrice}
-          setMaxPrice={setMaxPrice}
-          sortOption={sortOption}
-          setSortOption={setSortOption}
-          productsFoundCount={filteredProducts.length}
-        />
-
+                {/* Search is in the header; catalog sorting stays here. Categories are only in the left sidebar. */}
         {/* Debugging Panel for Search */}
         {searchTerm && (process.env.NODE_ENV !== 'production' || (import.meta as any).env.DEV) && (
           <div className="mb-6 p-3 bg-amber-50/50 text-amber-900 text-xs rounded-2xl font-mono text-center border border-amber-200/40 shadow-sm flex items-center justify-center gap-1.5 animate-scale-up">
@@ -1099,7 +1052,7 @@ Merci de confirmer la disponibilité et la livraison.`;
         {/* Product Grid */}
         {filteredProducts.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm px-4">
-            <ShoppingBag className="w-12 h-12 text-slate-400 mx-auto mb-3 animate-pulse" />
+            <ShoppingBag className="w-12 h-12 text-slate-400 mx-auto mb-3" />
             <p className="text-sm text-slate-700 font-sans leading-relaxed">
               {selectedCategory ? (
                 language === 'ar'
@@ -1107,23 +1060,27 @@ Merci de confirmer la disponibilité et la livraison.`;
                   : language === 'en'
                   ? `No products available in this category at the moment.`
                   : `Aucun produit disponible dans cette catégorie pour le moment.`
+              ) : activeProducts.length===0 ? (
+                language==='ar'?'لا توجد حالياً منتجات منشورة في المتجر.':language==='en'?'There are no published products in the store yet.':'Aucun produit publié dans la boutique pour le moment.'
               ) : (
                 t('noProductsFound')
               )}
             </p>
-            <button
-              onClick={() => {
-                setSelectedCategory('');
-                setSearchTerm('');
-                setFilterType('all');
-              }}
-              className="mt-6 px-5 py-2.5 bg-[#0b1528] hover:bg-[#1a2d4c] text-white rounded-xl text-xs font-bold transition-all uppercase tracking-wider shadow-sm cursor-pointer"
-            >
-              {language === 'ar' ? 'عرض كل المنتجات' : language === 'en' ? 'Show all products' : 'Toutes les catégories'}
-            </button>
+            {activeProducts.length>0 && (
+              <button type="button"
+                onClick={() => {
+                  setSelectedCategory('');
+                  setSelectedSubcategory('');
+                  setSearchTerm('');
+                  setFilterType('all');
+                }}
+                className="mt-6 rounded-xl bg-[#104d43] px-5 py-3 text-xs font-bold text-white shadow-sm transition hover:bg-[#0c3730]">
+                {language === 'ar' ? 'عرض جميع المنتجات' : language === 'en' ? 'View all products' : 'Voir tous les produits'}
+              </button>
+            )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[2100px]:grid-cols-6">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
@@ -1140,145 +1097,29 @@ Merci de confirmer la disponibilité et la livraison.`;
 
         {/* 5. Reassurance Giga Trust Badges */}
         <TrustBadges language={language} />
+        </div>
       </main>
+      </div>
 
       {/* 5.1 Real Moroccan Customer Reviews Section (Social Proof) */}
-      <CustomerReviews language={language} />
+
 
       {/* 5.2 Comprehensive Interactive FAQs */}
       <FAQSection language={language} />
 
       {/* 5.3 Closing Highly Polished WhatsApp & Direct-Call CTA */}
-      <FinalWhatsAppCTA language={language} onWhatsAppOrder={handleWhatsAppOrderSubmit} />
+      <FinalWhatsAppCTA language={language} />
+      </>)}
 
       {/* 6. Professional public storefront footer */}
       <StoreFooter
         language={language}
-        onHome={() => { setSelectedCategory(''); setSearchTerm(''); setFilterType('all'); window.scrollTo({top: 0, behavior: 'smooth'}); }}
-        onBrowse={handleScrollToCatalog}
+        onHome={() => { setInfoPage(null);window.history.pushState(null,'','/');setSelectedCategory('');setSelectedSubcategory('');setSearchTerm('');setFilterType('all');window.scrollTo({top: 0, behavior: 'smooth'}); }}
+        onBrowse={()=>{setInfoPage(null);window.history.pushState(null,'','/');setSelectedCategory('');setSelectedSubcategory('');window.requestAnimationFrame(handleScrollToCatalog);}}
         onTrack={() => setIsTrackingOpen(true)}
         onCart={() => setIsCartOpen(true)}
-        onLegal={(tab) => { setLegalActiveTab(tab); setIsLegalModalOpen(true); }}
+        onLegal={(tab) => { setInfoPage(tab);window.history.pushState(null,'','?page='+encodeURIComponent(tab));window.scrollTo({top:0,behavior:'smooth'}); }}
       />
-
-      {/* 7. Premium Floating Support Widget */}
-      <PremiumSupportWidget
-        language={language}
-        onOpenTracking={() => setIsTrackingOpen(true)}
-        phoneNumber={ORDER_SUPPORT_NUMBER}
-        whatsappLink={WA_LINK}
-        onWhatsAppOrder={handleWhatsAppOrderSubmit}
-      />
-
-      {/* 7.5 Mobile-Optimized Bottom Action Navigation Bar (Visible only on mobile) */}
-      <div 
-        className="fixed bottom-0 left-0 right-0 z-45 bg-[#070d1a] border-t border-[#1a2d4c]/80 py-2.5 px-2 flex items-center justify-around shadow-[0_-10px_35px_rgba(0,0,0,0.5)] md:hidden pb-safe font-sans"
-        style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      >
-        {/* Navigation Action 1: Accueil */}
-        <button
-          onClick={() => {
-            setSearchTerm('');
-            setSelectedCategory('');
-            setFilterType('all');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          className="flex flex-col items-center justify-center flex-1 py-1 px-0.5 text-slate-300 hover:text-orange-500 active:scale-95 transition-all select-none min-h-[44px] outline-none group"
-        >
-          <Home className="w-[22px] h-[22px] mb-1 text-slate-300 group-hover:text-orange-500 transition-colors" />
-          <span className="text-[10px] font-black tracking-wider uppercase">
-            {language === 'ar' ? 'الرئيسية' : (language === 'en' ? 'Home' : 'Accueil')}
-          </span>
-        </button>
-
-        {/* Navigation Action 2: Catégories */}
-        <button
-          onClick={() => {
-            const el = document.getElementById('product-filters-container') || catalogRef.current;
-            if (el) {
-              el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else {
-              window.scrollTo({ top: 500, behavior: 'smooth' });
-            }
-          }}
-          className="flex flex-col items-center justify-center flex-1 py-1 px-0.5 text-slate-300 hover:text-orange-500 active:scale-95 transition-all select-none min-h-[44px] outline-none group"
-        >
-          <LayoutGrid className="w-[22px] h-[22px] mb-1 text-slate-300 group-hover:text-orange-500 transition-colors" />
-          <span className="text-[10px] font-black tracking-wider uppercase">
-            {language === 'ar' ? 'الأقسام' : (language === 'en' ? 'Categories' : 'Catégories')}
-          </span>
-        </button>
-
-        {/* Navigation Action 3: Panier */}
-        <button
-          onClick={() => setIsCartOpen(true)}
-          className="flex flex-col items-center justify-center flex-1 py-1 px-0.5 text-slate-300 hover:text-orange-500 active:scale-95 transition-all select-none min-h-[44px] outline-none relative group"
-        >
-          <div className="relative">
-            <ShoppingCart className="w-[22px] h-[22px] mb-1 text-slate-300 group-hover:text-orange-500 transition-colors" />
-            {totalCartItems > 0 && (
-              <span className="absolute -top-1.5 -right-3.5 bg-orange-600 text-white text-[9px] font-black w-[18px] h-[18px] rounded-full border border-[#070d1a] flex items-center justify-center shadow animate-pulse select-none">
-                {totalCartItems}
-              </span>
-            )}
-          </div>
-          <span className="text-[10px] font-black tracking-wider uppercase">
-            {language === 'ar' ? 'السلة' : 'Panier'}
-          </span>
-        </button>
-
-        {/* Navigation Action 4: WhatsApp */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            triggerWhatsAppClick('Mobile Bottom Action Bar - Sticky Tab');
-            handleWhatsAppOrderSubmit({ source: 'mobile_bottom_bar_whatsapp' });
-          }}
-          className="flex flex-col items-center justify-center flex-1 py-1 px-0.5 text-emerald-400 hover:text-emerald-300 active:scale-95 transition-all select-none min-h-[44px] outline-none group cursor-pointer"
-        >
-          <WhatsAppIcon className="w-[22px] h-[22px] mb-1 text-emerald-500 group-hover:text-emerald-400 transition-colors shrink-0" />
-          <span className="text-[10px] font-black tracking-wider uppercase text-emerald-400">
-            {language === 'ar' ? 'واتساب' : 'WhatsApp'}
-          </span>
-        </button>
-      </div>
-
-      {/* 8. Floating Scroll to Top button */}
-      {showScrollTop && (
-        <>
-          <style>{`
-            .back-to-top-btn {
-              position: fixed;
-              z-index: 40;
-              transition: all 0.3s ease;
-            }
-            @media (max-width: 480px) {
-              .back-to-top-btn {
-                bottom: calc(182px + env(safe-area-inset-bottom, 0px)) !important;
-                ${language === 'ar' ? 'left: 32px !important; right: auto !important;' : 'right: 32px !important; left: auto !important;'}
-              }
-            }
-            @media (min-width: 481px) and (max-width: 1024px) {
-              .back-to-top-btn {
-                bottom: calc(180px + env(safe-area-inset-bottom, 0px)) !important;
-                ${language === 'ar' ? 'left: 32px !important; right: auto !important;' : 'right: 32px !important; left: auto !important;'}
-              }
-            }
-            @media (min-width: 1025px) {
-              .back-to-top-btn {
-                bottom: 112px !important;
-                ${language === 'ar' ? 'left: 48px !important; right: auto !important;' : 'right: 48px !important; left: auto !important;'}
-              }
-            }
-          `}</style>
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="back-to-top-btn bg-[#0B1528] border border-slate-800 text-white hover:text-orange-500 hover:border-orange-500 p-3 rounded-full hover:bg-slate-900 transition-all shadow-xl duration-200 hover:scale-110 active:scale-95"
-          >
-            <ArrowUp size={16} />
-          </button>
-        </>
-      )}
 
       {/* 9. Interactive sliding Cart Drawer */}
       <CartDrawer
@@ -1367,21 +1208,19 @@ Merci de confirmer la disponibilité et la livraison.`;
         )}
       </Suspense>
 
-      {/* 14. Marketing High-Converting Persistent Persistent/Floating widgets */}
-      <FloatingPersuasionWidget
-        language={language}
-        cart={cart}
-        onOpenCart={() => setIsCartOpen(true)}
-      />
+      {!isAdminOpen && <CookieConsent language={language}/>}
 
-      {/* 15. Exit Intent Offer Modal (Desktop / Mobile tracking) */}
-      <Suspense fallback={null}>
-        <ExitIntentModal
-          language={language}
-          onExploreOffers={handleScrollToCatalog}
-          onWhatsAppOrder={handleWhatsAppOrderSubmit}
-        />
-      </Suspense>
+      {/* Small, unobtrusive return-to-top action after the user scrolls down. */}
+      {showScrollTop && !isCartOpen && !isTrackingOpen && !isSuccessModalOpen && !selectedProduct && !isAdminOpen && (
+        <button type="button"
+          onClick={() => window.scrollTo({top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})}
+          aria-label={language === 'ar' ? 'الرجوع لأعلى الصفحة' : language === 'en' ? 'Back to top' : 'Retour en haut'}
+          title={language === 'ar' ? 'الرجوع للفوق' : language === 'en' ? 'Back to top' : 'Retour en haut'}
+          className="fixed bottom-5 end-5 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-[#b9dbc7] bg-[#104d43] text-white shadow-[0_6px_24px_rgba(11,48,39,.25)] transition-colors hover:bg-[#0b382f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#104d43] sm:bottom-7 sm:end-7">
+          <ArrowUp size={21} strokeWidth={2.5}/>
+        </button>
+      )}
+
     </div>
   );
 }
