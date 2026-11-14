@@ -1601,8 +1601,8 @@ export default function AdminPanel({
               </section>
             )}
 
-            {!isAddingProduct && !editingProduct && (
             {/* Shopify-style listing: search, status, images and clear actions. */}
+            {!isAddingProduct && !editingProduct && (
             <section className="overflow-hidden rounded-[22px] border border-[#d9e7df] bg-white shadow-sm">
               <header className="flex flex-col justify-between gap-4 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:p-6">
                 <div>
