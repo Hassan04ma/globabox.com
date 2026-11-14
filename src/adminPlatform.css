@@ -1,0 +1,38 @@
+
+/* GLOBABOX Commerce Console — coherent admin design layer.
+   Isolated under .gb-admin-platform so storefront components remain unchanged. */
+.gb-admin-platform{
+ --gb-green:#174d40;--gb-ink:#243436;--gb-surface:#ffffff;--gb-line:#e2e8e7;
+ font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+ letter-spacing:-.005em;
+ -webkit-font-smoothing:antialiased;
+}
+.gb-admin-platform *{scrollbar-color:#c9d8d0 transparent;scrollbar-width:thin;}
+.gb-admin-platform .gb-admin-side-scroll{scrollbar-color:#536e6a transparent;}
+.gb-admin-platform main > div > div{max-width:100%;}
+.gb-admin-platform main .space-y-6 > section,
+.gb-admin-platform main .space-y-5 > section{scroll-margin-top:18px;}
+.gb-admin-platform main input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.gb-admin-platform main textarea,
+.gb-admin-platform main select{font-family:inherit;}
+.gb-admin-platform main button,.gb-admin-platform main a{transition:background-color .16s,border-color .16s,color .16s,box-shadow .16s;}
+.gb-admin-platform main button:focus-visible,
+.gb-admin-platform main a:focus-visible,
+.gb-admin-platform header button:focus-visible,
+.gb-admin-platform aside button:focus-visible{
+ outline:3px solid #94d2b0;outline-offset:2px;
+}
+.gb-admin-platform main table th{font-weight:750;text-transform:none;letter-spacing:.01em;}
+.gb-admin-platform main table tr:hover td{background-color:#f7faf8;}
+.gb-admin-platform main details>summary{list-style:none;user-select:none;}
+.gb-admin-platform main details>summary::-webkit-details-marker{display:none;}
+.gb-admin-platform main details[open]>summary{border-bottom:1px solid #e8edeb;padding-bottom:12px;margin-bottom:12px;}
+.gb-admin-platform .gb-overview-icon{display:flex;width:40px;height:40px;align-items:center;justify-content:center;border-radius:12px;}
+.gb-admin-platform .gb-empty-orders{min-height:220px;}
+@media(max-width:767px){
+ .gb-admin-platform main table{min-width:680px;}
+ .gb-admin-platform main .gb-order-card{padding:14px;}
+}
+@media(prefers-reduced-motion:reduce){
+ .gb-admin-platform *{scroll-behavior:auto!important;transition-duration:.01ms!important;}
+}
