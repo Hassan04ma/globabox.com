@@ -34,6 +34,17 @@ export default function AdminPanel({
   setOrders,
   isOrdersApiConfigured = false
 }: AdminPanelProps) {
+  // Dates are persisted in UTC; display them consistently in Morocco's local time.
+  const formatMoroccoDate = (value?: string | null) => {
+    if (!value) return '—';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+    return new Intl.DateTimeFormat('fr-MA', {
+      timeZone: 'Africa/Casablanca', day: '2-digit', month: '2-digit',
+      year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false
+    }).format(date);
+  };
+
   const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'products' | 'categories' | 'marketing' | 'operations'>('dashboard');
 
   const [launchStatus, setLaunchStatus] = useState<{databaseReady:boolean;adminConfigured:boolean;checkoutEnabled:boolean;checkoutVerified:boolean}|null>(null);
@@ -1171,7 +1182,7 @@ export default function AdminPanel({
                     <div key={order.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 text-xs hover:bg-[#f8fbf9]">
                       <div className="min-w-0 flex-1">
                         <p className="font-extrabold text-[#193e38]">{order.fullName||'Client'} <span className="ms-2 font-mono text-[11px] font-semibold text-slate-500">{order.reference}</span></p>
-                        <p className="mt-1 text-slate-500">{order.city} · {String(order.date||'').slice(0,24)}</p>
+                        <p className="mt-1 text-slate-500">{order.city} · {formatMoroccoDate(order.createdAt || order.date)}</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="font-extrabold text-[#193e38]">{Number(order.total||0).toFixed(2)} DH</span>
@@ -1318,7 +1329,7 @@ export default function AdminPanel({
                         <div className="min-w-0">
                           <p className="font-mono text-sm font-black text-[#193e38]">{order.reference}</p>
                           <p className="mt-1 text-xs font-semibold text-slate-600">{order.fullName||'Client'} · {order.city}</p>
-                          <p className="mt-1 text-[11px] text-slate-500">{String(order.date||'')} · {order.items.reduce((sum,item)=>sum+item.quantity,0)} article(s)</p>
+                          <p className="mt-1 text-[11px] text-slate-500">{formatMoroccoDate(order.createdAt || order.date)} · {order.items.reduce((sum,item)=>sum+item.quantity,0)} article(s)</p>
                         </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-3">
