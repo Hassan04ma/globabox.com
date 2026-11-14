@@ -11,8 +11,8 @@ interface CartDrawerProps {
   onClose: () => void;
   language: Language;
   cart: CartItem[];
-  onRemoveFromCart: (productId: string) => void;
-  onUpdateQuantity: (productId: string, quantity: number) => void;
+  onRemoveFromCart: (productId: string, selectedSize?: string, selectedColor?: string) => void;
+  onUpdateQuantity: (productId: string, quantity: number, selectedSize?: string, selectedColor?: string) => void;
   onClearCart: () => void;
   onOrderSuccess: (orderData: { reference: string; form: CheckoutForm; items: CartItem[]; subtotal?: number; shippingCost?: number; total: number; freeShipping?: boolean }) => void;
   onWhatsAppOrder?: (params: any) => void;
@@ -296,14 +296,14 @@ export default function CartDrawer({
                         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                           <div className="inline-flex h-9 items-center overflow-hidden rounded-xl border border-slate-200 bg-white" role="group" aria-label={copy.quantity}>
                             <button type="button" disabled={item.quantity<=1} aria-label={copy.quantity+' -'}
-                              onClick={()=>onUpdateQuantity(item.product.id,Math.max(1,item.quantity-1))}
+                              onClick={()=>onUpdateQuantity(item.product.id,Math.max(1,item.quantity-1),item.selectedSize,item.selectedColor)}
                               className="flex h-9 w-9 items-center justify-center text-[#104d43] hover:bg-[#edf5ef] disabled:opacity-30"><Minus size={15}/></button>
                             <span className="min-w-8 px-1 text-center text-xs font-black text-[#193e38]" aria-live="polite">{item.quantity}</span>
                             <button type="button" disabled={item.quantity>=99} aria-label={copy.quantity+' +'}
-                              onClick={()=>onUpdateQuantity(item.product.id,Math.min(99,item.quantity+1))}
+                              onClick={()=>onUpdateQuantity(item.product.id,Math.min(99,item.quantity+1),item.selectedSize,item.selectedColor)}
                               className="flex h-9 w-9 items-center justify-center text-[#104d43] hover:bg-[#edf5ef] disabled:opacity-30"><Plus size={15}/></button>
                           </div>
-                          <button type="button" onClick={()=>onRemoveFromCart(item.product.id)} aria-label={copy.remove} className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-slate-500 hover:bg-red-50 hover:text-red-600">
+                          <button type="button" onClick={()=>onRemoveFromCart(item.product.id,item.selectedSize,item.selectedColor)} aria-label={copy.remove} className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-slate-500 hover:bg-red-50 hover:text-red-600">
                             <Trash2 size={15}/><span>{copy.remove}</span>
                           </button>
                         </div>
