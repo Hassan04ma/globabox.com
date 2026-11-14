@@ -1351,69 +1351,25 @@ export default function AdminPanel({
         {activeTab === 'products' && (
           <div className="space-y-6">
 
-            {/* Environment warning */}
-            <div className="rounded-2xl border border-[#e5d4ac] bg-[#fffcf2] p-4 text-amber-800">
-              <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-amber-500/10 border border-amber-500/40 flex items-center justify-center shrink-0 text-[#8a641d] mt-0.5 text-xs font-bold leading-none">!</div>
-                <div>
-                  <h4 className="text-xs font-black font-sans uppercase text-amber-800">Produits enregistrés dans Cloudflare D1</h4>
-                  <p className="text-xs font-semibold leading-relaxed font-sans mt-0.5 text-slate-600">
-                    Les ajouts, modifications, suppressions et imports de produits sont enregistrés côté serveur dans D1. Les nouveaux produits restent en brouillon jusqu’à publication explicite. Les catégories sont gérées dans Cloudflare D1 depuis l'onglet Catégories.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Catalogue Control & Backup Center */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-black uppercase tracking-wider text-[#193e38]">Importation et sauvegarde des produits</span>
-                <span className="text-[10px] text-slate-400 font-semibold font-sans">Sauvegardez, clonez et restaurez vos fiches produits via des backups CSV ou JSON standard</span>
-              </div>
-              
-              <div className="flex flex-wrap items-center gap-2">
-                {/* Export JSON */}
-                <button
-                  type="button"
-                  onClick={exportProductsToJSON}
-                  className="bg-[#f8fbf9] hover:bg-[#1a2d4c] text-[#193e38] text-[10px] font-extrabold uppercase px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all border border-slate-200 cursor-pointer"
-                >
-                  📥 Export JSON
-                </button>
-                
-                {/* Export CSV */}
-                <button
-                  type="button"
-                  onClick={exportProductsToCSV}
-                  className="bg-[#f8fbf9] hover:bg-[#1a2d4c] text-[#193e38] text-[10px] font-extrabold uppercase px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all border border-slate-200 cursor-pointer"
-                >
-                  📥 Export CSV
-                </button>
-
-                {/* Import JSON hidden input & trigger */}
-                <label className="bg-[#104d43]/10 hover:bg-[#104d43]/20 text-[#147657] text-[10px] font-extrabold uppercase px-3 py-2 rounded-xl flex items-center gap-1.5 border border-orange-500/30 transition-all cursor-pointer">
-                  📤 Import JSON
-                  <input
-                    type="file"
-                    accept=".json"
-                    onChange={importProductsFromJSON}
-                    className="hidden"
-                  />
+            {/* Operational backup tools stay available without crowding the product form. */}
+            <details className="group overflow-hidden rounded-xl border border-[#dce6df] bg-white shadow-[0_2px_8px_rgba(20,55,39,.02)]">
+              <summary className="flex min-h-[45px] cursor-pointer items-center justify-between gap-3 px-4 py-2.5 text-xs font-bold text-[#31584a] hover:bg-[#f5faf6] sm:px-5">
+                <span className="inline-flex items-center gap-2"><Package size={16} className="text-[#618c75]"/>Outils du catalogue <span className="hidden font-normal text-slate-500 sm:inline">· Importer, exporter et sauvegarder</span></span>
+                <ChevronRight size={16} className="text-slate-500 transition-transform group-open:rotate-90"/>
+              </summary>
+              <div className="flex flex-wrap items-center gap-2 border-t border-[#e7eee9] px-4 py-3 sm:px-5">
+                <button type="button" onClick={exportProductsToJSON} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-[#31584a] hover:bg-[#f2f8f4]">Exporter JSON</button>
+                <button type="button" onClick={exportProductsToCSV} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-[#31584a] hover:bg-[#f2f8f4]">Exporter CSV</button>
+                <label className="cursor-pointer rounded-lg border border-[#b9d7c2] bg-[#edf7f0] px-3 py-2.5 text-xs font-bold text-[#195c41] hover:bg-[#e0f1e5]">
+                  Importer JSON<input type="file" accept=".json,application/json" onChange={importProductsFromJSON} className="sr-only"/>
                 </label>
-
-                {/* Import CSV hidden input & trigger */}
-                <label className="bg-[#104d43]/10 hover:bg-[#104d43]/20 text-[#147657] text-[10px] font-extrabold uppercase px-3 py-2 rounded-xl flex items-center gap-1.5 border border-orange-500/30 transition-all cursor-pointer">
-                  📤 Import CSV
-                  <input
-                    type="file"
-                    accept=".csv"
-                    onChange={importProductsFromCSV}
-                    className="hidden"
-                  />
+                <label className="cursor-pointer rounded-lg border border-[#b9d7c2] bg-[#edf7f0] px-3 py-2.5 text-xs font-bold text-[#195c41] hover:bg-[#e0f1e5]">
+                  Importer CSV<input type="file" accept=".csv,text/csv" onChange={importProductsFromCSV} className="sr-only"/>
                 </label>
+                <p className="basis-full text-[11px] leading-5 text-[#738a7a]">Les modifications sont sauvegardées dans Cloudflare D1. Les nouveaux produits restent en brouillon jusqu'à publication.</p>
               </div>
-            </div>
-            
+            </details>
+
             {/* Shopify-style product editor: essential fields first, advanced options collapsible. */}
             {(isAddingProduct || editingProduct) && (
               <section id="gb-product-editor" className="overflow-hidden rounded-[22px] border border-[#cfdfd4] bg-[#f6faf7] shadow-sm">
