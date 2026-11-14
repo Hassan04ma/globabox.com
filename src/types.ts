@@ -53,6 +53,13 @@ export interface Order {
   date: string;
   status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   paymentMethod?: string;
+  /** Manual carrier/shipping reference recorded by the merchant in D1. */
+  shipping?: {
+    carrier?: string;
+    trackingNumber?: string;
+    internalNote?: string;
+    updatedAt?: string;
+  };
   whatsappMessage?: string;
   source?: string;
   syncStatus?: 'synced' | 'failed' | 'not-configured';
