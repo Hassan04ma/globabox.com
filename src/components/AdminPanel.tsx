@@ -10,7 +10,6 @@ import AdminWorkspaceLayout from './AdminWorkspaceLayout';
 import AdminCategoriesWorkspace from './AdminCategoriesWorkspace';
 import { STORE_DEPARTMENTS, isPublicStoreCategory } from '../storefrontDepartments';
 import { getStoreSubcategories } from '../storefrontSubcategories';
-import sourcedDrafts from '../catalog/sourcedDrafts.json';
 
 interface AdminPanelProps {
   language: Language;
@@ -512,41 +511,7 @@ export default function AdminPanel({
     reader.readAsText(file);
   };
 
-  const [curatedImportBusy,setCuratedImportBusy] = useState(false);
-  const [curatedImportResult,setCuratedImportResult] = useState('');
-  // Import is an explicit admin action, not a background mutation. Only safe drafts
-  // are inserted, existing IDs are skipped, and live listings are never overwritten.
-  const importCuratedDrafts = async () => {
-    const records = sourcedDrafts as unknown as Product[];
-    if (!window.confirm('Importer '+records.length+' produits de référence en BROUILLON dans D1 ? Photos et stock non confirmés ; aucun ne sera visible pour les clients.')) return;
-    setCuratedImportBusy(true);
-    setCuratedImportResult('');
-    try {
-      let created=0,skipped=0,failed=0;
-      const existing=new Set(adminProducts.map(p=>p.id));
-      for(const product of records){
-        if(existing.has(product.id)){skipped++;continue;}
-        try{
-          const result=await fetch('/api/products',{method:'POST',credentials:'same-origin',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({...product,isActive:false,visibilityChanged:false,
-              inStock:false,stockStatus:'out_of_stock',image:'',images:[],additionalImages:[]})});
-          if(result.status===409){skipped++;continue;}
-          if(!result.ok){failed++;continue;}
-          created++;
-        }catch{failed++;}
-      }
-      const refreshed=await fetch('/api/admin/products',{credentials:'same-origin',cache:'no-store'});
-      if(refreshed.ok){
-        const products=await refreshed.json() as unknown;
-        if(Array.isArray(products))setAdminProducts(products as Product[]);
-      }else{
-        setCuratedImportResult('Import effectué ; rechargement de la liste impossible ('+refreshed.status+'). Vérifier la base.');
-        return;
-      }
-      setCuratedImportResult(created+' brouillon(s) créé(s), '+skipped+' déjà existant(s), '+failed+' échec(s). Photos et approvisionnement à confirmer.');
-    }finally{setCuratedImportBusy(false);}
-  };
+
 
   // Export products as CSV backup
   const exportProductsToCSV = () => {
@@ -1415,9 +1380,7 @@ export default function AdminPanel({
                 <ChevronRight size={16} className="text-slate-500 transition-transform group-open:rotate-90"/>
               </summary>
               <div className="flex flex-wrap items-center gap-2 border-t border-[#e7eee9] px-4 py-3 sm:px-5">
-                <button type="button" disabled={curatedImportBusy} onClick={()=>void importCuratedDrafts()} className="inline-flex items-center gap-2 rounded-lg bg-[#174d40] px-4 py-2.5 text-xs font-extrabold text-white hover:bg-[#0b3931] disabled:opacity-60">
-                  <Plus size={15}/>{curatedImportBusy?'Import en cours…':'Importer 13 produits (brouillons)'}
-                </button>
+                
                                 <button type="button" onClick={exportProductsToJSON} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-[#31584a] hover:bg-[#f2f8f4]">Exporter JSON</button>
                 <button type="button" onClick={exportProductsToCSV} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-[#31584a] hover:bg-[#f2f8f4]">Exporter CSV</button>
                 <label className="cursor-pointer rounded-lg border border-[#b9d7c2] bg-[#edf7f0] px-3 py-2.5 text-xs font-bold text-[#195c41] hover:bg-[#e0f1e5]">
@@ -1427,7 +1390,6 @@ export default function AdminPanel({
                   Importer CSV<input type="file" accept=".csv,text/csv" onChange={importProductsFromCSV} className="sr-only"/>
                 </label>
                 <p className="basis-full text-[11px] leading-5 text-[#738a7a]">Les modifications sont sauvegardées dans Cloudflare D1. Les nouveaux produits restent en brouillon jusqu'à publication.</p>
-                {curatedImportResult&&<p role="status" className="basis-full rounded-lg bg-[#eaf7ef] px-3 py-2 text-xs font-bold text-[#174d40]">{curatedImportResult}</p>}
               </div>
             </details>
 
