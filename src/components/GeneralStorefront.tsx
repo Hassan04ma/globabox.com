@@ -124,7 +124,6 @@ function StoreProductCard({ product, language, onViewDetails, onAddToCart, onIns
         <button type="button" onClick={() => onViewDetails(product)} className="min-h-[3rem] text-start text-sm font-semibold leading-6 text-slate-900 transition-colors hover:text-red-600 line-clamp-2">
           {product.name[language] || product.name.fr}
         </button>
-        <p className="mt-2 line-clamp-2 min-h-9 text-xs leading-relaxed text-slate-500">{product.description?.[language] || product.description?.fr || ''}</p>
         <div className="mt-auto pt-4">
           <div className="flex flex-wrap items-baseline gap-2">
             <span className="text-lg font-extrabold tracking-tight text-slate-950">{product.price.toLocaleString('fr-MA')} <small className="text-[11px] font-semibold">DH</small></span>
