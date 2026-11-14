@@ -587,14 +587,18 @@ export default function App() {
     setIsCartOpen(true);
   };
 
-  const handleRemoveFromCart = (productId: string) => {
-    setCart((prev) => prev.filter((item) => item.product.id !== productId));
+  const handleRemoveFromCart = (productId: string, selectedSize?: string, selectedColor?: string) => {
+    setCart((prev) => prev.filter((item) =>
+      !(item.product.id === productId && item.selectedSize === selectedSize && item.selectedColor === selectedColor)
+    ));
   };
 
-  const handleUpdateQuantity = (productId: string, quantity: number) => {
+  const handleUpdateQuantity = (productId: string, quantity: number, selectedSize?: string, selectedColor?: string) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
+        item.product.id === productId && item.selectedSize === selectedSize && item.selectedColor === selectedColor
+          ? { ...item, quantity }
+          : item
       )
     );
   };
