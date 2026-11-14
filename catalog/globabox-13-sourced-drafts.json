@@ -1,0 +1,756 @@
+[
+  {
+    "id": "gb_source_maison",
+    "sku": "GB-SOURCE-MAISON",
+    "name": {
+      "fr": "Organisateur de placard suspendu – 10 compartiments",
+      "ar": "منظم خزانة ملابس معلق بـ10 أقسام",
+      "en": "10-Compartment Hanging Closet Organizer"
+    },
+    "price": 109.9,
+    "description": {
+      "fr": "Rangement suspendu pour penderie avec dix compartiments, conçu pour organiser vêtements et petits accessoires. Construction textile en maille, pliable et facile à placer dans un placard.",
+      "ar": "منظم معلق للخزانة بعشرة أقسام لتنظيم الملابس والإكسسوارات الصغيرة. مصنوع من قماش شبكي وقابل للطي.",
+      "en": "Hanging closet organizer with ten compartments for clothing and accessories. Mesh textile construction, foldable for compact storage."
+    },
+    "features": {
+      "fr": [
+        "10 compartiments",
+        "Installation suspendue",
+        "Format pliable",
+        "Rangement vertical"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "maison",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "maison",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "Organisateur de placard suspendu – 10 compartiments | GLOBABOX Maroc",
+    "seoDescription": "Rangement suspendu pour penderie avec dix compartiments, conçu pour organiser vêtements et petits accessoires. Construction textile en maille, pliable et facile",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/generic-organisateur-de-vetements-suspendu-et-pliable-organisateur-de-placard-10-couches-65199381.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/generic-organisateur-de-vetements-suspendu-et-pliable-organisateur-de-placard-10-couches-65199381.html",
+    "sourceGalleryImagesReported": 7,
+    "priceReferenceMAD": 109.9,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  },
+  {
+    "id": "gb_source_cuisine",
+    "sku": "GB-SOURCE-CUISINE",
+    "name": {
+      "fr": "Lot de 6 bocaux en verre avec couvercles en bambou",
+      "ar": "طقم 6 قنينات زجاج للتوابل بأغطية خيزران",
+      "en": "Set of 6 Glass Spice Jars with Bamboo Lids"
+    },
+    "price": 199,
+    "description": {
+      "fr": "Ensemble de six bocaux en verre munis de couvercles en bambou pour ranger les épices et les ingrédients secs. Les récipients transparents permettent de voir leur contenu.",
+      "ar": "طقم من ست علب زجاجية بأغطية من الخيزران لحفظ التوابل والمواد الجافة. الزجاج شفاف لتسهيل التعرف على المحتوى.",
+      "en": "Six transparent glass jars with bamboo lids for spice and dry-ingredient organization."
+    },
+    "features": {
+      "fr": [
+        "6 bocaux",
+        "Verre transparent",
+        "Couvercles bambou",
+        "Organisation des épices"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "cuisine",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "cuisine",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "Lot de 6 bocaux en verre avec couvercles en bambou | GLOBABOX Maroc",
+    "seoDescription": "Ensemble de six bocaux en verre munis de couvercles en bambou pour ranger les épices et les ingrédients secs. Les récipients transparents permettent de voir leu",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/lot-de-6-bocaux-en-verre-avec-couvercles-en-bambou-hermetiques-pour-epices-generic-mpg1523280.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/lot-de-6-bocaux-en-verre-avec-couvercles-en-bambou-hermetiques-pour-epices-generic-mpg1523280.html",
+    "sourceGalleryImagesReported": 8,
+    "priceReferenceMAD": 199,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  },
+  {
+    "id": "gb_source_technologie",
+    "sku": "GB-SOURCE-TECHNOLOGIE",
+    "name": {
+      "fr": "Lenovo LP40 Pro – Écouteurs sans fil Bluetooth 5.1",
+      "ar": "سماعات لينوفو LP40 Pro لاسلكية بلوتوث 5.1",
+      "en": "Lenovo LP40 Pro Bluetooth 5.1 Wireless Earbuds"
+    },
+    "price": 169,
+    "description": {
+      "fr": "Écouteurs sans fil Lenovo LP40 Pro avec commandes tactiles et étui de charge. La fiche consultée indique Bluetooth 5.1, autonomie annoncée de 5 heures et compatibilité iOS, Android et Windows ; spécifications à confirmer sur le lot réel.",
+      "ar": "سماعات Lenovo LP40 Pro لاسلكية باللمس مع علبة شحن. مصدر المنتج يذكر بلوتوث 5.1 وحوالي 5 ساعات تشغيل وتوافقاً مع أندرويد وiOS وويندوز؛ يلزم تأكيد مواصفات الدفعة الفعلية.",
+      "en": "Lenovo LP40 Pro wireless earbuds with touch controls and charging case. Source listing reports Bluetooth 5.1, about five hours of playback, and iOS/Android/Windows compatibility; verify actual batch."
+    },
+    "features": {
+      "fr": [
+        "Bluetooth 5.1 (fiche source)",
+        "Commandes tactiles",
+        "Boîtier de recharge",
+        "Compatible Android / iOS / Windows"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "technologie",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "technologie",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "Lenovo LP40 Pro – Écouteurs sans fil Bluetooth 5.1 | GLOBABOX Maroc",
+    "seoDescription": "Écouteurs sans fil Lenovo LP40 Pro avec commandes tactiles et étui de charge. La fiche consultée indique Bluetooth 5.1, autonomie annoncée de 5 heures et compat",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/ar/lenovo-ecouteurs-lp40-pro-bluetooth-5.1-sans-fil-tactile-65368821.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/ar/lenovo-ecouteurs-lp40-pro-bluetooth-5.1-sans-fil-tactile-65368821.html",
+    "sourceGalleryImagesReported": 8,
+    "priceReferenceMAD": 169,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  },
+  {
+    "id": "gb_source_beaute",
+    "sku": "GB-SOURCE-BEAUTE",
+    "name": {
+      "fr": "MAANGE – Kit de 13 pinceaux de maquillage, 2 houppettes et pochette",
+      "ar": "مجموعة MAANGE من 13 فرشاة مكياج و2 إسفنجة وحقيبة",
+      "en": "MAANGE 13 Makeup Brushes + 2 Powder Puffs + Pouch"
+    },
+    "price": 214,
+    "description": {
+      "fr": "Kit MAANGE comprenant treize pinceaux pour le teint et les yeux, deux houppettes et une pochette. Fibres synthétiques et manches ergonomiques mentionnés par le vendeur.",
+      "ar": "مجموعة MAANGE تشمل 13 فرشاة للمكياج وقطعتين للبودرة وحقيبة حفظ. يذكر البائع شعيرات صناعية ومقابض مريحة.",
+      "en": "MAANGE makeup brush set with thirteen face and eye brushes, two powder puffs and storage pouch; seller lists synthetic bristles."
+    },
+    "features": {
+      "fr": [
+        "13 pinceaux",
+        "2 houppettes",
+        "1 pochette de rangement",
+        "Fibres synthétiques"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "beaute",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "beaute",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "MAANGE – Kit de 13 pinceaux de maquillage, 2 houppettes et pochette | GLOBABOX Maroc",
+    "seoDescription": "Kit MAANGE comprenant treize pinceaux pour le teint et les yeux, deux houppettes et une pochette. Fibres synthétiques et manches ergonomiques mentionnés par le ",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/ar/maange-set-13-pinceaux-maquillage-professionnels-make-up-artist-2-houppettes-pochette-kit-complet-visage-yeux-fond-de-teint-poudre-blush-sourcils-67682404.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/ar/maange-set-13-pinceaux-maquillage-professionnels-make-up-artist-2-houppettes-pochette-kit-complet-visage-yeux-fond-de-teint-poudre-blush-sourcils-67682404.html",
+    "sourceGalleryImagesReported": 8,
+    "priceReferenceMAD": 214,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  },
+  {
+    "id": "gb_source_mode",
+    "sku": "GB-SOURCE-MODE",
+    "name": {
+      "fr": "Sac bandoulière femme multi-poches, léger et résistant à l’eau",
+      "ar": "حقيبة نسائية كتف متعددة الجيوب وخفيفة",
+      "en": "Women's Multi-Pocket Water-Resistant Crossbody Bag"
+    },
+    "price": 179,
+    "description": {
+      "fr": "Sac bandoulière léger à plusieurs poches pour garder les effets personnels organisés pendant les déplacements et au quotidien. Coloris et dimensions à confirmer selon le stock.",
+      "ar": "حقيبة كتف خفيفة متعددة الجيوب لتنظيم الأغراض الشخصية أثناء التنقل والاستعمال اليومي. اللون والمقاسات حسب الدفعة ويجب تأكيدها.",
+      "en": "Lightweight multipocket crossbody bag for everyday essentials. Confirm color and dimensions for the actual stock."
+    },
+    "features": {
+      "fr": [
+        "Port bandoulière",
+        "Compartiments multiples",
+        "Usage quotidien",
+        "Coloris à confirmer"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "mode",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "mode",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "Sac bandoulière femme multi-poches, léger et résistant à l’eau | GLOBABOX Maroc",
+    "seoDescription": "Sac bandoulière léger à plusieurs poches pour garder les effets personnels organisés pendant les déplacements et au quotidien. Coloris et dimensions à confirmer",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/ar/generic-sac-bandouliere-femme-impermeable-sac-leger-multi-compartiments-sac-a-main-multi-poches-grande-capacite-pour-voyage-travail-et-usage-quotidien-68167011.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/ar/generic-sac-bandouliere-femme-impermeable-sac-leger-multi-compartiments-sac-a-main-multi-poches-grande-capacite-pour-voyage-travail-et-usage-quotidien-68167011.html",
+    "sourceGalleryImagesReported": 7,
+    "priceReferenceMAD": 179,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  },
+  {
+    "id": "gb_source_automobile",
+    "sku": "GB-SOURCE-AUTOMOBILE",
+    "name": {
+      "fr": "Mini aspirateur sans fil rechargeable USB – voiture et maison",
+      "ar": "مكنسة محمولة صغيرة لاسلكية بشحن USB للسيارة والمنزل",
+      "en": "USB-Rechargeable Cordless Mini Vacuum – Car & Home"
+    },
+    "price": 129,
+    "description": {
+      "fr": "Aspirateur à main compact et rechargeable via USB, proposé pour les miettes et petites poussières dans la voiture et à domicile. Autonomie, puissance et accessoires à confirmer auprès du fournisseur.",
+      "ar": "مكنسة صغيرة محمولة لاسلكية قابلة للشحن عبر USB، للاستعمال الخفيف في السيارة والمنزل. يلزم تأكيد مدة التشغيل والقوة والملحقات.",
+      "en": "Compact cordless handheld vacuum, USB rechargeable, for light dust and crumbs in cars and homes. Confirm runtime and accessories before sale."
+    },
+    "features": {
+      "fr": [
+        "Format portable",
+        "Sans fil",
+        "Recharge USB",
+        "Entretien léger"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "automobile",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "automobile",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "Mini aspirateur sans fil rechargeable USB – voiture et maison | GLOBABOX Maroc",
+    "seoDescription": "Aspirateur à main compact et rechargeable via USB, proposé pour les miettes et petites poussières dans la voiture et à domicile. Autonomie, puissance et accesso",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/generic-mini-aspirateur-portable-sans-fil-pour-voiture-et-maison-puissant-leger-et-rechargeable-usb-67242674.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/generic-mini-aspirateur-portable-sans-fil-pour-voiture-et-maison-puissant-leger-et-rechargeable-usb-67242674.html",
+    "sourceGalleryImagesReported": 6,
+    "priceReferenceMAD": 129,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  },
+  {
+    "id": "gb_source_sport_loisirs",
+    "sku": "GB-SOURCE-SPORT-LOISIRS",
+    "name": {
+      "fr": "Pack de 5 bandes élastiques de résistance pour fitness",
+      "ar": "مجموعة 5 أربطة مطاطية للمقاومة واللياقة",
+      "en": "5-Piece Fitness Resistance Band Set"
+    },
+    "price": 79,
+    "description": {
+      "fr": "Jeu de cinq bandes de résistance pour exercices de mobilité, renforcement musculaire, fitness, yoga et Pilates. Les niveaux de résistance sont à vérifier sur la version livrée.",
+      "ar": "طقم من خمسة أربطة مقاومة للتمارين الرياضية وتقوية العضلات واليوغا والبيلاتس. يجب التحقق من درجات المقاومة الفعلية.",
+      "en": "Set of five fitness resistance bands for strength, mobility, yoga and Pilates. Check resistance levels on the actual version."
+    },
+    "features": {
+      "fr": [
+        "Lot de 5 bandes",
+        "Fitness et étirements",
+        "Yoga / Pilates",
+        "Résistances à confirmer"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "sport_loisirs",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "sport_loisirs",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "Pack de 5 bandes élastiques de résistance pour fitness | GLOBABOX Maroc",
+    "seoDescription": "Jeu de cinq bandes de résistance pour exercices de mobilité, renforcement musculaire, fitness, yoga et Pilates. Les niveaux de résistance sont à vérifier sur la",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/ar/generic-pack-de-5-bandes-delastique-de-resistance-fitness-bandes-elastiques-de-musculation-pour-fessiers-cuisses-yoga-pilates-et-remise-en-forme-5-niveaux-68170919.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/ar/generic-pack-de-5-bandes-delastique-de-resistance-fitness-bandes-elastiques-de-musculation-pour-fessiers-cuisses-yoga-pilates-et-remise-en-forme-5-niveaux-68170919.html",
+    "sourceGalleryImagesReported": 6,
+    "priceReferenceMAD": 79,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  },
+  {
+    "id": "gb_source_enfants",
+    "sku": "GB-SOURCE-ENFANTS",
+    "name": {
+      "fr": "Sac à langer multifonction avec lit pliable – gris",
+      "ar": "حقيبة مستلزمات الطفل مع سرير قابل للطي – رمادي",
+      "en": "Multifunction Diaper Backpack with Foldable Changing Bassinet"
+    },
+    "price": 157,
+    "description": {
+      "fr": "Sac à dos de rangement pour affaires de bébé, vendu avec élément pliable présenté comme lit de change portable. Vérifier dimensions, charge admissible et consignes de sécurité avant commercialisation.",
+      "ar": "حقيبة ظهر لحفظ أغراض الرضيع، مرفقة بجزء قابل للطي يقدمه البائع كمساحة تغيير متنقلة. يلزم التحقق من المقاسات وتعليمات الأمان قبل البيع.",
+      "en": "Diaper backpack with fold-out section marketed as a portable baby-changing bassinet. Verify dimensions and safety instructions before offering it for sale."
+    },
+    "features": {
+      "fr": [
+        "Sac à dos à langer",
+        "Compartiments de rangement",
+        "Partie pliable",
+        "Sécurité à vérifier"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "enfants",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "enfants",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "Sac à langer multifonction avec lit pliable – gris | GLOBABOX Maroc",
+    "seoDescription": "Sac à dos de rangement pour affaires de bébé, vendu avec élément pliable présenté comme lit de change portable. Vérifier dimensions, charge admissible et consig",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/ar/generic-sac-a-dos-a-langer-pour-bebesac-de-voyage-avec-lit-de-bebe-portablegrande-capacite-sac-a-couches-multifonction-impermeable-gris-68171868.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/ar/generic-sac-a-dos-a-langer-pour-bebesac-de-voyage-avec-lit-de-bebe-portablegrande-capacite-sac-a-couches-multifonction-impermeable-gris-68171868.html",
+    "sourceGalleryImagesReported": 8,
+    "priceReferenceMAD": 157,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  },
+  {
+    "id": "gb_source_jardin",
+    "sku": "GB-SOURCE-JARDIN",
+    "name": {
+      "fr": "ALTUNA – Sécateur ébrancheur pour jardin",
+      "ar": "مقص تقليم الأغصان ALTUNA للحديقة",
+      "en": "ALTUNA Garden Pruning Lopper"
+    },
+    "price": 389,
+    "description": {
+      "fr": "Ébrancheur de jardin de marque ALTUNA, destiné à la taille et à l’entretien des branches. Capacité de coupe, dimensions et matière des lames à vérifier selon la référence exacte.",
+      "ar": "مقص تقليم أغصان الحدائق من ماركة ALTUNA. يجب التحقق من قطر القطع والمقاسات ونوع الشفرة حسب رقم الموديل.",
+      "en": "ALTUNA garden lopper intended for branch pruning and maintenance. Confirm model, cutting capacity and blade materials before sale."
+    },
+    "features": {
+      "fr": [
+        "Marque ALTUNA",
+        "Entretien du jardin",
+        "Taille de branches",
+        "Caractéristiques à confirmer"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "jardin",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "jardin",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "ALTUNA – Sécateur ébrancheur pour jardin | GLOBABOX Maroc",
+    "seoDescription": "Ébrancheur de jardin de marque ALTUNA, destiné à la taille et à l’entretien des branches. Capacité de coupe, dimensions et matière des lames à vérifier selon la",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/ar/altuna-secateur-ebrancheur-usage-au-jardin-61901907.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/ar/altuna-secateur-ebrancheur-usage-au-jardin-61901907.html",
+    "sourceGalleryImagesReported": 7,
+    "priceReferenceMAD": 389,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  },
+  {
+    "id": "gb_source_entretien",
+    "sku": "GB-SOURCE-ENTRETIEN",
+    "name": {
+      "fr": "Balai spray microfibre avec réservoir et tête 360°",
+      "ar": "مسّاحة بخاخ بقطعة ميكروفايبر وخزان ورأس يدور 360°",
+      "en": "Microfiber Spray Mop with Tank and 360° Swivel Head"
+    },
+    "price": 149,
+    "description": {
+      "fr": "Balai plat à pulvérisation, avec réservoir intégré, tête pivotante à 360° et housse microfibre lavable. Décrit pour l’entretien courant des carrelages et sols compatibles ; vérifier les précautions de chaque revêtement.",
+      "ar": "مسّاحة أرضيات مزودة بخزان ماء ورأس دوار 360 درجة وقطعة ميكروفايبر قابلة للغسل. تصلح للتنظيف اليومي مع مراعاة تعليمات الأرضية.",
+      "en": "Spray mop with integrated water tank, 360-degree swivel head and washable microfiber pad for routine floor cleaning."
+    },
+    "features": {
+      "fr": [
+        "Réservoir intégré",
+        "Tête pivotante 360°",
+        "Pad microfibre lavable",
+        "Nettoyage des sols"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "entretien",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "entretien",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "Balai spray microfibre avec réservoir et tête 360° | GLOBABOX Maroc",
+    "seoDescription": "Balai plat à pulvérisation, avec réservoir intégré, tête pivotante à 360° et housse microfibre lavable. Décrit pour l’entretien courant des carrelages et sols c",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/ar/generic-balai-serpillere-microfibre-avec-reservoir-deau-balai-spray-tete-rotative-360-serpilliere-reutilisable-pour-parquet-carrelage-et-marbre-68290441.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/ar/generic-balai-serpillere-microfibre-avec-reservoir-deau-balai-spray-tete-rotative-360-serpilliere-reutilisable-pour-parquet-carrelage-et-marbre-68290441.html",
+    "sourceGalleryImagesReported": 8,
+    "priceReferenceMAD": 149,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  },
+  {
+    "id": "gb_source_eclairage",
+    "sku": "GB-SOURCE-ECLAIRAGE",
+    "name": {
+      "fr": "Lampe LED de bureau rechargeable – tactile, 3 modes",
+      "ar": "مصباح مكتب LED قابل للشحن باللمس و3 أنماط إضاءة",
+      "en": "Rechargeable Touch LED Desk Lamp – 3 Light Modes"
+    },
+    "price": 97,
+    "description": {
+      "fr": "Lampe de table LED rechargeable, avec commande tactile et trois modes d’éclairage mentionnés sur la fiche. Usage bureau, étude ou chevet ; autonomie et chargeur à vérifier auprès du vendeur.",
+      "ar": "مصباح مكتب LED قابل للشحن، بالتحكم اللمسي وثلاثة أوضاع إضاءة حسب المصدر. مناسب للمكتب أو الدراسة؛ يلزم تأكيد مدة التشغيل والشاحن.",
+      "en": "Rechargeable touch-control LED desk lamp with three lighting modes according to the source listing. Verify battery runtime and charger."
+    },
+    "features": {
+      "fr": [
+        "Éclairage LED",
+        "Commande tactile",
+        "3 modes de lumière",
+        "Rechargeable"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "eclairage",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "eclairage",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "Lampe LED de bureau rechargeable – tactile, 3 modes | GLOBABOX Maroc",
+    "seoDescription": "Lampe de table LED rechargeable, avec commande tactile et trois modes d’éclairage mentionnés sur la fiche. Usage bureau, étude ou chevet ; autonomie et chargeur",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/ar/generic-lampe-de-bureau-led-rechargeable-sans-fil-3-modes-de-lumiere-intensite-variable-tactile-design-compact-pour-le-bureau-ou-chambre-65697026.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/ar/generic-lampe-de-bureau-led-rechargeable-sans-fil-3-modes-de-lumiere-intensite-variable-tactile-design-compact-pour-le-bureau-ou-chambre-65697026.html",
+    "sourceGalleryImagesReported": 8,
+    "priceReferenceMAD": 97,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  },
+  {
+    "id": "gb_source_animaux",
+    "sku": "GB-SOURCE-ANIMAUX",
+    "name": {
+      "fr": "Ensemble harnais et laisse réglable pour chien – bleu, taille L",
+      "ar": "طقم صدرية ومقود قابل للتعديل للكلب – أزرق مقاس L",
+      "en": "Adjustable Dog Harness and Leash Set – Blue, Size L"
+    },
+    "price": 95,
+    "description": {
+      "fr": "Ensemble de promenade composé d’un harnais et d’une laisse pour chien, coloris bleu ciel, taille L. Vérifiez le tour de poitrine et la longueur avant l’achat : un mauvais ajustement peut être inconfortable.",
+      "ar": "طقم مشي للكلاب يتكون من صدرية ومقود باللون الأزرق السماوي والمقاس L. يلزم قياس محيط صدر الحيوان والتأكد من المقاس.",
+      "en": "Walking harness and lead set for dogs, sky blue, size L. Verify chest measurements and fit before purchase."
+    },
+    "features": {
+      "fr": [
+        "Harnais et laisse",
+        "Taille L",
+        "Coloris bleu ciel",
+        "Mesurer le chien avant achat"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "animaux",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "animaux",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "Ensemble harnais et laisse réglable pour chien – bleu, taille L | GLOBABOX Maroc",
+    "seoDescription": "Ensemble de promenade composé d’un harnais et d’une laisse pour chien, coloris bleu ciel, taille L. Vérifiez le tour de poitrine et la longueur avant l’achat : ",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/ar/generic-laisse-et-harnai-pour-chien-bleu-ciel-taille-l-58642330.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/ar/generic-laisse-et-harnai-pour-chien-bleu-ciel-taille-l-58642330.html",
+    "sourceGalleryImagesReported": 6,
+    "priceReferenceMAD": 95,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  },
+  {
+    "id": "gb_source_bureau",
+    "sku": "GB-SOURCE-BUREAU",
+    "name": {
+      "fr": "Organisateur de bureau métallique à 4 compartiments",
+      "ar": "منظم ملفات مكتبي معدني بأربعة أقسام",
+      "en": "Four-Compartment Metal Mesh Desk File Organizer"
+    },
+    "price": 159,
+    "description": {
+      "fr": "Organiseur de bureau métallique avec quatre compartiments pour classer dossiers, documents, magazines ou cahiers. Format conçu pour libérer de la place sur le bureau.",
+      "ar": "منظم مكتب معدني بأربعة أقسام لتنظيم الملفات والوثائق والدفاتر والمجلات والحفاظ على ترتيب سطح المكتب.",
+      "en": "Four-compartment metal mesh desk organizer for papers, folders, magazines and notebooks."
+    },
+    "features": {
+      "fr": [
+        "4 compartiments",
+        "Maille métallique",
+        "Documents et dossiers",
+        "Organisation du bureau"
+      ],
+      "ar": [],
+      "en": []
+    },
+    "category": "bureau",
+    "subcategory": "",
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "bureau",
+      "à vérifier",
+      "produit réel",
+      "approvisionnement"
+    ],
+    "seoTitle": "Organisateur de bureau métallique à 4 compartiments | GLOBABOX Maroc",
+    "seoDescription": "Organiseur de bureau métallique avec quatre compartiments pour classer dossiers, documents, magazines ou cahiers. Format conçu pour libérer de la place sur le b",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://www.jumia.ma/ar/generic-organisateur-de-bureau-en-maille-metallique-porte-documents-et-dossiers-range-magazines-presentoir-a-4-compartiments-68289151.html",
+    "sourceMarketplace": "Jumia Maroc",
+    "sourceGalleryPage": "https://www.jumia.ma/ar/generic-organisateur-de-bureau-en-maille-metallique-porte-documents-et-dossiers-range-magazines-presentoir-a-4-compartiments-68289151.html",
+    "sourceGalleryImagesReported": 6,
+    "priceReferenceMAD": 159,
+    "priceReferenceNote": "Prix public observé sur un site tiers. PAS un prix d'achat ou de revente approuvé.",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Ne pas publier sans 6 photos authentiques de ce produit autorisées par le fournisseur et vérification du stock/prix."
+  }
+]
