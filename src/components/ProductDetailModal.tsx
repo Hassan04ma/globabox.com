@@ -389,7 +389,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                 </button>
                 <button
                   onClick={() => setActiveTab('guarantees')}
-                  className={`pb-2 text-xs font-black uppercase tracking-wider border-b-2 transition-all cursor-pointer font-sans ${
+                  className={`rounded-lg px-3 py-2 text-xs font-semibold transition-all cursor-pointer font-sans ${
                     activeTab === 'guarantees'
                       ? 'bg-[#eaf2ed] text-[#104d43] ring-1 ring-[#104d43]/10'
                       : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
