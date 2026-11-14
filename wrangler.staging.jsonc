@@ -3,6 +3,10 @@
   "name": "globabox-staging",
   "main": "cloudflare/worker.ts",
   "compatibility_date": "2026-10-01",
+  "vars": {
+    "STORE_ACCEPTING_ORDERS": "true",
+    "STORE_DEMO_CATALOG": "false"
+  },
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
