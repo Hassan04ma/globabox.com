@@ -51,6 +51,8 @@ export interface Order {
   finalTotal?: number;
   freeShipping?: boolean;
   date: string;
+  /** Optional original creation timestamp for migrated and D1-backed records. */
+  createdAt?: string;
   status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   paymentMethod?: string;
   /** Manual carrier/shipping reference recorded by the merchant in D1. */
