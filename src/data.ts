@@ -27,6 +27,12 @@ export interface Product {
   /** Editable search appearance; crawling depends on the hosting/rendering setup. */
   seoTitle?: string;
   seoDescription?: string;
+  /** For source-referenced stock: verified only after supplier confirmation. */
+  needsSupplierVerification?: boolean;
+  imageRightsConfirmed?: boolean;
+  readyToPublish?: boolean;
+  sourceUrl?: string;
+  supplier?: string;
   image: string;
   images: string[];
   fallbackImage?: string;
