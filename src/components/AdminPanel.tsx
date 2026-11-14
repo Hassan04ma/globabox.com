@@ -482,12 +482,13 @@ export default function AdminPanel({
           typeof p.name?.fr === 'string' && !!p.name.fr.trim() &&
           typeof p.price === 'number' && Number.isFinite(p.price) && p.price > 0 &&
           typeof p.category === 'string' && !!p.category.trim() &&
-          typeof p.image === 'string' && /^https:\/\//.test(p.image));
+          typeof p.image === 'string' && (p.image === '' || /^https:\/\//.test(p.image)) &&
+          p.isActive !== true);
         if (!valid) {
-          alert('Produits invalides : ID, nom français, prix, catégorie et URL image HTTPS obligatoires.');
+          alert('Import de brouillons uniquement : identifiant, nom français, prix indicatif et catégorie requis. Image facultative tant que la fiche n’est pas publiée.');
           return;
         }
-        if (!window.confirm('Importer ' + parsed.length + ' produit(s) en BROUILLON sur Cloudflare D1 ? Les doublons seront ignorés.')) return;
+        if (!window.confirm('Importer ' + parsed.length + ' BROUILLON(S) dans D1 ? Les prix et les stocks doivent être vérifiés avant publication. Les photos manquantes restent à ajouter.')) return;
         let saved = 0, failed = 0;
         for (const p of parsed) {
           try {
