@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, MapPin, MessageSquare, Minus, PackageCheck, PhoneCall, Plus, ShieldCheck, ShoppingBag, ShoppingCart, Trash2, Truck, UserRound, X } from 'lucide-react';
 import { CartItem, Language, CheckoutForm } from '../types';
 import { TRANSLATIONS } from '../translations';
@@ -101,6 +101,7 @@ export default function CartDrawer({
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submissionLock = useRef(false);
   const [acceptedTerms,setAcceptedTerms] = useState(false);
 
   // Sync to localStorage on change
@@ -141,6 +142,8 @@ export default function CartDrawer({
   // Validate and submit
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submissionLock.current) return;
+    submissionLock.current = true;
     const errors: { [key: string]: string } = {};
 
     // 1. Name validation
@@ -179,11 +182,13 @@ export default function CartDrawer({
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      submissionLock.current = false;
       return;
     }
 
     if (!acceptedTerms) {
       setFormErrors({submit:language === 'ar' ? 'يرجى الاطلاع والموافقة على شروط البيع وسياسة الإرجاع قبل الطلب.' : 'Veuillez accepter les conditions de vente et la politique de retour avant de commander.'});
+      submissionLock.current = false;
       return;
     }
     setFormErrors({});
@@ -216,6 +221,7 @@ export default function CartDrawer({
       console.error('[GLOBABOX] Order completion error:', err);
       setFormErrors({ submit: err instanceof Error ? err.message : (language === 'ar' ? 'تعذر تسجيل الطلب. حاول مرة أخرى.' : 'Commande non enregistrée. Réessayez.') });
     } finally {
+      submissionLock.current = false;
       setIsSubmitting(false);
     }
   };
