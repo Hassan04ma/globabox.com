@@ -53,13 +53,13 @@ export default function ProductCard({ product, language, onViewDetails }: Produc
         <button
           type="button"
           onClick={() => onViewDetails(product)}
-          className="min-h-[2.75rem] text-start text-sm font-semibold leading-6 text-slate-900 line-clamp-2 transition-colors hover:text-red-700 focus-visible:outline-none focus-visible:underline"
+          className="min-h-[2.75rem] text-start text-sm font-semibold leading-6 text-slate-900 line-clamp-2 transition-colors hover:text-[#104d43] focus-visible:outline-none focus-visible:underline"
         >
           {product.name[language] || product.name.fr}
         </button>
 
         <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-1 border-t border-slate-100 pt-3">
-          <span className="text-xl font-extrabold tracking-tight text-slate-950">
+          <span className="text-xl font-extrabold tracking-tight text-[#193e38]">
             {product.price.toLocaleString('fr-MA')} <small className="text-xs font-semibold">DH</small>
           </span>
           {discountPercent > 0 && product.originalPrice && (
@@ -72,7 +72,7 @@ export default function ProductCard({ product, language, onViewDetails }: Produc
         <button
           type="button"
           onClick={() => onViewDetails(product)}
-          className="inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-800 transition-colors hover:border-slate-900 hover:bg-slate-900 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2"
+          className="inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-[#dce9e1] bg-white px-3 py-2 text-xs font-bold text-[#104d43] transition-colors hover:border-[#104d43] hover:bg-[#104d43] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#104d43] focus-visible:ring-offset-2"
         >
           {language === 'ar' ? 'عرض تفاصيل المنتج' : language === 'en' ? 'View product details' : 'Voir le produit'}
         </button>
