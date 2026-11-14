@@ -218,6 +218,12 @@ assert.equal((await request('/api/orders/'+data.order.id,{
 })).status,401,'Anonymous users cannot change courier');
 assert.equal((await changeShipping({carrier:'<script>',trackingNumber:'GB-123'})).status,400,'HTML disallowed in courier fields');
 assert.equal((await changeShipping({carrier:'AMEEX',trackingNumber:'GB TEST 123',token:'private'})).status,400,'Unexpected carrier secrets rejected');
+const preserved=await worker.fetch(new Request(
+ 'https://preview.example.test/api/orders/'+encodeURIComponent(data.order.id),{
+ method:'DELETE',headers:{'x-admin-api-key':'ci_dummy_admin_api_key_very_long_not_a_secret_00001'}
+}),adminEnv);
+assert.equal(preserved.status,403,'Even administrators cannot erase order history');
+assert.equal(savedOrders.some(o=>o.id===data.order.id),true,'Existing order must survive forbidden deletion');
 const savedShipping=await changeShipping({carrier:'Livraison interne',trackingNumber:'GB-TRACK-0001',internalNote:'Internal call note'});
 assert.equal(savedShipping.status,200,'Authorized admin can save manual shipment metadata');
 assert.equal(savedOrders.find(o=>o.id===data.order.id)?.shipping?.trackingNumber,'GB-TRACK-0001');
