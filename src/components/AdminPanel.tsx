@@ -278,6 +278,11 @@ export default function AdminPanel({
     barcode: string;
     seoTitle: string;
     seoDescription: string;
+    needsSupplierVerification: boolean;
+    imageRightsConfirmed: boolean;
+    readyToPublish: boolean;
+    sourceUrl: string;
+    supplier: string;
   }>({
     id: '',
     nameFr: '',
@@ -304,6 +309,7 @@ export default function AdminPanel({
     featuresAr: [],
     featuresEn: [],
     tags: [],sku: '',barcode: '',seoTitle: '',seoDescription: '',
+    needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
   });
 
   // Persist before updating the visible order; never report an unsaved state as successful.
@@ -860,6 +866,7 @@ export default function AdminPanel({
       featuresAr: [],
       featuresEn: [],
       tags: [],sku:'',barcode:'',seoTitle:'',seoDescription:'',
+      needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
     });
     setIsAddingProduct(true);
   };
@@ -895,6 +902,10 @@ export default function AdminPanel({
       featuresEn: prod.features?.en || [],
       tags:prod.tags || [],sku:prod.sku || '',barcode:prod.barcode || '',
       seoTitle:prod.seoTitle || '',seoDescription:prod.seoDescription || '',
+      needsSupplierVerification:prod.needsSupplierVerification === true,
+      imageRightsConfirmed:prod.imageRightsConfirmed === true,
+      readyToPublish:prod.readyToPublish === true,
+      sourceUrl:prod.sourceUrl || '',supplier:prod.supplier || '',
     });
     setIsAddingProduct(false);
   };
@@ -920,9 +931,18 @@ export default function AdminPanel({
       alert("La catégorie du produit est obligatoire.");
       return;
     }
-    if (!productForm.image.trim()) {
-      alert("L'image principale du produit est obligatoire.");
+    if (!productForm.image.trim() && (productForm.isActive || !editingProduct)) {
+      alert("L'image principale est obligatoire pour publier une fiche ou créer un produit classique. Les produits sourcés peuvent rester en brouillon sans photo.");
       return;
+    }
+    if (editingProduct?.id.startsWith('gb_source_') && productForm.isActive) {
+      const gallery=new Set([productForm.image,...productForm.additionalImages].filter(url=>/^https:\/\//.test(url)));
+      if(productForm.needsSupplierVerification || !productForm.imageRightsConfirmed ||
+        !productForm.readyToPublish || !productForm.supplier.trim() ||
+        productForm.stockStatus==='out_of_stock' || gallery.size < 6){
+        alert('Publication impossible : fournisseur, stock, prix, droits des images et 6 photos distinctes doivent être confirmés.');
+        return;
+      }
     }
 
     const transformedProduct: Product = {
@@ -951,6 +971,11 @@ export default function AdminPanel({
       barcode:productForm.barcode.trim() || undefined,
       seoTitle:productForm.seoTitle.trim() || undefined,
       seoDescription:productForm.seoDescription.trim() || undefined,
+      needsSupplierVerification:productForm.needsSupplierVerification,
+      imageRightsConfirmed:productForm.imageRightsConfirmed,
+      readyToPublish:productForm.readyToPublish,
+      sourceUrl:productForm.sourceUrl.trim() || undefined,
+      supplier:productForm.supplier.trim() || undefined,
       image: productForm.image.trim(),
       images: [productForm.image.trim(), ...(productForm.additionalImages || [])].filter(Boolean),
       fallbackImage: productForm.fallbackImage || '',
@@ -1580,6 +1605,30 @@ export default function AdminPanel({
                         {productForm.isActive?'Publié sur le site':'Brouillon · Non visible'}
                         <input type="checkbox" checked={productForm.isActive} onChange={e=>setProductForm({...productForm,isActive:e.target.checked})} className="h-5 w-5 accent-[#104d43]"/>
                       </label>:<p className="rounded-xl bg-amber-50 p-3 text-xs leading-6 text-amber-900">Le nouveau produit sera enregistré en brouillon. Vous pourrez le publier après validation des photos, du prix et du stock.</p>}
+                      {editingProduct?.id.startsWith('gb_source_') && <div className="mt-4 rounded-xl border border-[#e7d5a9] bg-[#fffaf0] p-4">
+                        <h5 className="text-xs font-black text-[#674d1d]">Contrôle de publication · Produit sourcé</h5>
+                        <p className="mt-1 text-[11px] leading-5 text-[#745f39]">Les six photos doivent montrer exactement l'article vendu et être autorisées. Vérifiez fournisseur, stock et prix avant publication.</p>
+                        <label className="mt-3 block text-[11px] font-bold text-[#6f5d3b]">Fournisseur validé
+                          <input value={productForm.supplier} onChange={e=>setProductForm({...productForm,supplier:e.target.value})} placeholder="Nom réel du fournisseur"
+                            className="mt-1 min-h-10 w-full rounded-lg border border-[#dbcba6] bg-white px-3 text-xs text-[#193e38]"/>
+                        </label>
+                        <label className="mt-3 block text-[11px] font-bold text-[#6f5d3b]">Lien de référence
+                          <input value={productForm.sourceUrl} onChange={e=>setProductForm({...productForm,sourceUrl:e.target.value})}
+                            className="mt-1 min-h-10 w-full rounded-lg border border-[#dbcba6] bg-white px-3 text-xs text-[#193e38]"/>
+                        </label>
+                        <label className="mt-3 flex items-start gap-2 text-[11px] font-bold leading-5 text-[#674d1d]">
+                          <input type="checkbox" checked={!productForm.needsSupplierVerification} onChange={e=>setProductForm({...productForm,needsSupplierVerification:!e.target.checked})} className="mt-1 accent-[#104d43]"/>
+                          J'ai vérifié le fournisseur, le modèle, le stock et le prix.
+                        </label>
+                        <label className="mt-2 flex items-start gap-2 text-[11px] font-bold leading-5 text-[#674d1d]">
+                          <input type="checkbox" checked={productForm.imageRightsConfirmed} onChange={e=>setProductForm({...productForm,imageRightsConfirmed:e.target.checked})} className="mt-1 accent-[#104d43]"/>
+                          Je possède ou j'ai le droit d'utiliser les 6 photos de ce modèle précis.
+                        </label>
+                        <label className="mt-2 flex items-start gap-2 text-[11px] font-bold leading-5 text-[#674d1d]">
+                          <input type="checkbox" checked={productForm.readyToPublish} onChange={e=>setProductForm({...productForm,readyToPublish:e.target.checked})} className="mt-1 accent-[#104d43]"/>
+                          La description et la disponibilité sont vérifiées ; la fiche est prête.
+                        </label>
+                      </div>}
                       <label className="mt-4 block text-xs font-bold text-[#385647]">Disponibilité
                         <select value={productForm.stockStatus} onChange={e=>setProductForm({...productForm,stockStatus:e.target.value as typeof productForm.stockStatus})}
                           className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-[#193e38]">
