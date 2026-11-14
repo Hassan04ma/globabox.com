@@ -16,6 +16,12 @@ for(let attempt=1;attempt<=5;attempt++){
   assert(home.response.status===200,'Homepage status '+home.response.status);
   assert(/<html/i.test(home.body),'Homepage must serve HTML');
   checks.push('Home 200 (HTML)');
+  // Confirm the current five-product QA page is actually deployed, not only committed.
+  const qa=await get('/test-5-produits.html');
+  assert(qa.response.status===200,'Five-product QA page HTTP '+qa.response.status);
+  assert(qa.body.includes('products.splice(5)') && qa.body.includes('function showCart()') && qa.body.includes('function confirmTest()'),'Five-product QA page missing or outdated');
+  assert(qa.body.includes('Aucune commande sauvegardée dans Cloudflare D1'),'QA page must disclose local simulation');
+  checks.push('Five-product QA page deployed with clear simulation notice');
 
   const categories=await get('/api/categories');
   assert(categories.response.status===200,'Categories HTTP '+categories.response.status);
