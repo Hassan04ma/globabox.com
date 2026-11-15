@@ -237,6 +237,7 @@ export default function AdminPanel({
   const [adminProducts, setAdminProducts] = useState<Product[]>([]);
   // Bulk product selection/actions: supports selecting the whole filtered catalog (including 100+ products).
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
+  const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(new Set());
   const [catalogLoadError, setCatalogLoadError] = useState('');
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -1023,6 +1024,80 @@ export default function AdminPanel({
     }
   };
 
+  // Bulk order selection/actions
+  const toggleOrderSelection = (orderId: string) => {
+    setSelectedOrderIds(current => {
+      const next = new Set(current);
+      if (next.has(orderId)) next.delete(orderId);
+      else next.add(orderId);
+      return next;
+    });
+  };
+
+  const toggleSelectAllVisibleOrders = () => {
+    setSelectedOrderIds(current => {
+      const next = new Set(current);
+      const allSelected = filteredOrders.length > 0 && filteredOrders.every(o => next.has(o.id));
+      if (allSelected) filteredOrders.forEach(o => next.delete(o.id));
+      else filteredOrders.forEach(o => next.add(o.id));
+      return next;
+    });
+  };
+
+  const clearOrderSelection = () => setSelectedOrderIds(new Set());
+
+  const handleBulkConfirmOrders = async () => {
+    const ids = Array.from(selectedOrderIds);
+    if (!ids.length) return;
+    if (!window.confirm(`Confirmer ${ids.length} commande(s) sélectionnée(s) ?`)) return;
+
+    let confirmed = 0, failed = 0;
+    for (const id of ids) {
+      try {
+        const response = await fetch(`/api/orders/${encodeURIComponent(id)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ status: 'confirmed' })
+        });
+        if (!response.ok) throw new Error('Confirm failed');
+        confirmed++;
+      } catch {
+        failed++;
+      }
+    }
+
+    setOrders(current => current.map(order => ids.includes(order.id) ? { ...order, status: 'confirmed' } : order));
+    setSelectedOrderIds(new Set());
+    setRefreshSuccess(`Confirmation terminée : ${confirmed} commande(s) confirmée(s), ${failed} échec(s).`);
+    if (failed) setRefreshError(`${failed} commande(s) n'ont pas pu être confirmée(s).`);
+  };
+
+  const handleBulkDeleteOrders = async () => {
+    const ids = Array.from(selectedOrderIds);
+    if (!ids.length) return;
+    if (!window.confirm(`Supprimer définitivement ${ids.length} commande(s) sélectionnée(s) ? Cette action supprime les commandes du stockage local et ne peut pas être annulée.`)) return;
+
+    let deleted = 0, failed = 0;
+    for (const id of ids) {
+      try {
+        const response = await fetch(`/api/orders/${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          credentials: 'same-origin'
+        });
+        if (!response.ok) throw new Error('Delete failed');
+        deleted++;
+      } catch {
+        failed++;
+      }
+    }
+
+    setOrders(current => current.filter(order => !ids.includes(order.id)));
+    setSelectedOrderIds(new Set());
+    setRefreshSuccess(`Suppression terminée : ${deleted} commande(s) supprimée(s), ${failed} échec(s).`);
+    if (failed) setRefreshError(`${failed} commande(s) n'ont pas pu être supprimée(s).`);
+  };
+
   // Delete product
   const handleDeleteProduct = (productId: string) => {
     if (window.confirm('Voulez-vous vraiment retirer ce produit du catalogue ?')) {
@@ -1390,6 +1465,23 @@ export default function AdminPanel({
               <span><strong className="text-[#193e38]">{filteredOrders.length}</strong> commande(s) affichée(s) sur {statTotalOrders}</span>
               <span>Montant des commandes affichées : <strong className="text-[#104d43]">{filteredOrders.reduce((total,order)=>total+Number(order.total||0),0).toLocaleString('fr-MA')} DH</strong> <span className="text-slate-400">(non encaissé inclus)</span></span>
             </div>
+            {selectedOrderIds.size > 0 && (
+              <div className="flex flex-wrap items-center gap-2 rounded-[14px] border border-[#dce8df] bg-[#f3f8f4] px-4 py-3">
+                <span className="me-2 text-xs font-extrabold text-[#193e38]">{selectedOrderIds.size} sélectionnée(s)</span>
+                <button type="button" onClick={handleBulkConfirmOrders}
+                  className="min-h-10 rounded-xl bg-[#104d43] px-4 text-xs font-extrabold text-white hover:bg-[#0b3931]">
+                  Confirmer la sélection
+                </button>
+                <button type="button" onClick={handleBulkDeleteOrders}
+                  className="min-h-10 rounded-xl border border-rose-200 bg-white px-4 text-xs font-extrabold text-rose-700 hover:bg-rose-50">
+                  Supprimer la sélection
+                </button>
+                <button type="button" onClick={clearOrderSelection}
+                  className="min-h-10 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50">
+                  Désélectionner
+                </button>
+              </div>
+            )}
             {filteredOrders.length===0?(
               <section className="gb-empty-orders flex flex-col items-center justify-center rounded-[16px] border border-[#e0e8e5] bg-white px-5 py-9 text-center shadow-[0_2px_8px_rgba(14,48,37,.02)]">
                 <span className="flex h-[60px] w-[60px] items-center justify-center rounded-[18px] bg-[#edf4f0] text-[#4b8b70]"><ClipboardList size={27}/></span>
@@ -1407,10 +1499,30 @@ export default function AdminPanel({
               </section>
             ):(
               <div className="space-y-3">
+                <div className="overflow-hidden rounded-[14px] border border-[#dfe8e4] bg-white shadow-[0_2px_9px_rgba(15,43,31,.025)]">
+                  <div className="flex items-center gap-3 border-b border-slate-100 bg-[#f5f9f6] px-5 py-3">
+                    <input
+                      type="checkbox"
+                      checked={filteredOrders.length > 0 && filteredOrders.every(o => selectedOrderIds.has(o.id))}
+                      ref={el => { if (el) el.indeterminate = filteredOrders.some(o => selectedOrderIds.has(o.id)) && !filteredOrders.every(o => selectedOrderIds.has(o.id)); }}
+                      onChange={toggleSelectAllVisibleOrders}
+                      aria-label="Sélectionner toutes les commandes visibles"
+                      className="h-4 w-4 accent-[#104d43]"
+                    />
+                    <span className="text-xs font-extrabold text-[#527263]">Sélectionner toutes les commandes affichées</span>
+                  </div>
+                  <div className="divide-y divide-[#e8eee9]">
                 {filteredOrders.map(order=>(
-                  <article key={order.id} className="gb-order-card overflow-hidden rounded-[14px] border border-[#dfe8e4] bg-white shadow-[0_2px_9px_rgba(15,43,31,.025)]">
+                  <article key={order.id} className={selectedOrderIds.has(order.id) ? 'gb-order-card overflow-hidden bg-[#f2f8f4]' : 'gb-order-card overflow-hidden bg-white'}>
                     <div className="flex flex-col gap-4 p-5 xl:flex-row xl:items-center xl:justify-between">
                       <div className="flex min-w-0 flex-1 items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedOrderIds.has(order.id)}
+                          onChange={() => toggleOrderSelection(order.id)}
+                          aria-label={'Sélectionner la commande '+order.reference}
+                          className="mt-3 h-4 w-4 shrink-0 accent-[#104d43]"
+                        />
                         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#edf6ef] text-[#104d43]"><Package size={20}/></span>
                         <div className="min-w-0">
                           <p className="font-mono text-sm font-black text-[#193e38]">{order.reference}</p>
@@ -1461,7 +1573,8 @@ export default function AdminPanel({
                     </details>
                   </article>
                 ))}
-              </div>
+                  </div>
+                </div>
             )}
           </div>
         )}
