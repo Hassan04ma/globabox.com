@@ -190,6 +190,54 @@ export default function AdminPanel({
     .reduce((acc, o) => acc + o.total, 0);
   
 
+  // Dashboard analytics: derived only from the authenticated orders returned by the server.
+  const [analyticsPeriod, setAnalyticsPeriod] = useState<'7d'|'15d'|'1m'|'4m'|'6m'|'1y'>('7d');
+  const analyticsDays = analyticsPeriod === '7d' ? 7 : analyticsPeriod === '15d' ? 15 : analyticsPeriod === '1m' ? 30 : analyticsPeriod === '4m' ? 122 : analyticsPeriod === '6m' ? 183 : 365;
+  const analyticsStart = new Date();
+  analyticsStart.setHours(0,0,0,0);
+  analyticsStart.setDate(analyticsStart.getDate() - analyticsDays + 1);
+  const analyticsPreviousStart = new Date(analyticsStart);
+  analyticsPreviousStart.setDate(analyticsPreviousStart.getDate() - analyticsDays);
+  const getOrderDate = (order: Order) => {
+    const parsed = new Date(order.createdAt || order.date);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  };
+  const currentPeriodOrders = orders.filter(order => { const d=getOrderDate(order); return !!d && d >= analyticsStart && d <= new Date(); });
+  const previousPeriodOrders = orders.filter(order => { const d=getOrderDate(order); return !!d && d >= analyticsPreviousStart && d < analyticsStart; });
+  const deliveredRevenue = (list: Order[]) => list.filter(o=>o.status==='delivered').reduce((sum,o)=>sum+Number(o.finalTotal ?? o.total ?? 0),0);
+  const currentRevenue = deliveredRevenue(currentPeriodOrders);
+  const previousRevenue = deliveredRevenue(previousPeriodOrders);
+  const revenueChange = previousRevenue > 0 ? ((currentRevenue-previousRevenue)/previousRevenue)*100 : null;
+  const currentDelivered = currentPeriodOrders.filter(o=>o.status==='delivered').length;
+  const averageOrderValue = currentDelivered ? currentRevenue/currentDelivered : 0;
+  const statusPercent = (status: Order['status']) => currentPeriodOrders.length ? currentPeriodOrders.filter(o=>o.status===status).length/currentPeriodOrders.length*100 : 0;
+  const analyticsBuckets = (() => {
+    const monthly = analyticsDays > 31;
+    const count = monthly ? (analyticsPeriod==='4m'?4:analyticsPeriod==='6m'?6:12) : analyticsDays;
+    const buckets = Array.from({length:count},(_,i)=>{
+      const start = new Date();
+      start.setHours(0,0,0,0);
+      if(monthly){ start.setDate(1); start.setMonth(start.getMonth()-(count-1-i)); }
+      else start.setDate(start.getDate()-(count-1-i));
+      const end = new Date(start);
+      if(monthly){ end.setMonth(end.getMonth()+1); end.setMilliseconds(-1); }
+      else end.setDate(end.getDate()+1), end.setMilliseconds(-1);
+      return {start,end,label:monthly?new Intl.DateTimeFormat('fr-MA',{month:'short'}).format(start):new Intl.DateTimeFormat('fr-MA',{day:'2-digit',month:'2-digit'}).format(start),revenue:0,orders:0};
+    });
+    currentPeriodOrders.forEach(order=>{
+      const d=getOrderDate(order); if(!d)return;
+      const bucket=buckets.find(b=>d>=b.start&&d<=b.end);
+      if(bucket){bucket.orders++;if(order.status==='delivered')bucket.revenue+=Number(order.finalTotal??order.total??0);}
+    });
+    return buckets;
+  })();
+  const maxAnalyticsRevenue = Math.max(1,...analyticsBuckets.map(b=>b.revenue));
+  const topSellingProducts = (() => {
+    const totals = new Map<string,number>();
+    currentPeriodOrders.filter(o=>o.status==='delivered').forEach(o=>o.items?.forEach(item=>totals.set(item.productName,(totals.get(item.productName)||0)+Number(item.quantity||0))));
+    return [...totals.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5);
+  })();
+
   // Live Sync / Refresh orders logic
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
@@ -1325,6 +1373,44 @@ export default function AdminPanel({
                   <span className="mt-1 block text-[11px] text-[#8a9795]">{unit}</span>
                 </div>
               ))}
+            </section>
+
+            <section aria-label="Analyses et statistiques commerciales" className="space-y-5 rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm sm:p-6">
+              <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                <div><p className="text-[11px] font-extrabold tracking-[.13em] text-[#5e9280]">ANALYTICS · GLOBABOX</p><h3 className="mt-1 text-xl font-black text-[#193e38]">Performance commerciale</h3><p className="mt-1 text-xs text-slate-500">Statistiques calculées à partir des commandes chargées depuis le serveur.</p></div>
+                <div className="flex flex-wrap gap-1.5" role="group" aria-label="Période des statistiques">
+                  {([{id:'7d',label:'7 jours'},{id:'15d',label:'15 jours'},{id:'1m',label:'1 mois'},{id:'4m',label:'4 mois'},{id:'6m',label:'6 mois'},{id:'1y',label:'1 an'}] as const).map(p=><button key={p.id} type="button" onClick={()=>setAnalyticsPeriod(p.id)} className={'rounded-lg px-3 py-2 text-[11px] font-extrabold transition '+(analyticsPeriod===p.id?'bg-[#174d40] text-white':'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50')}>{p.label}</button>)}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Chiffre livré</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{currentRevenue.toLocaleString('fr-MA',{maximumFractionDigits:2})} DH</strong><p className="mt-1 text-[10px] text-slate-500">Commandes livrées uniquement</p></div>
+                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Commandes reçues</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{currentPeriodOrders.length}</strong><p className="mt-1 text-[10px] text-slate-500">Sur la période choisie</p></div>
+                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Panier moyen livré</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{averageOrderValue.toLocaleString('fr-MA',{maximumFractionDigits:2})} DH</strong><p className="mt-1 text-[10px] text-slate-500">CA livré ÷ commandes livrées</p></div>
+                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Évolution du CA livré</p><strong className={'mt-1 block text-2xl font-black '+(revenueChange===null?'text-slate-500':revenueChange>=0?'text-emerald-700':'text-rose-700')}>{revenueChange===null?'—':(revenueChange>0?'+':'')+revenueChange.toFixed(1)+'%'}</strong><p className="mt-1 text-[10px] text-slate-500">Comparaison avec la période précédente</p></div>
+              </div>
+              <div className="grid gap-5 xl:grid-cols-[minmax(0,1.6fr)_minmax(250px,.8fr)]">
+                <div className="min-w-0 rounded-xl border border-slate-100 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2"><h4 className="text-sm font-black text-[#193e38]">Chiffre d’affaires livré</h4><span className="text-[10px] text-slate-500">DH · par {analyticsDays>31?'mois':'jour'}</span></div>
+                  <div className="mt-5 flex h-44 items-end gap-1.5 sm:gap-2">
+                    {analyticsBuckets.map((bucket,i)=><div key={bucket.label+'-'+i} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1">
+                      <span className="max-w-full truncate text-[9px] font-semibold text-slate-500">{bucket.revenue>0?Math.round(bucket.revenue).toLocaleString('fr-MA'):''}</span>
+                      <div title={bucket.label+': '+bucket.revenue.toFixed(2)+' DH · '+bucket.orders+' commandes'} className="w-full rounded-t-md bg-[#4c9276] transition-all" style={{height:Math.max(bucket.revenue>0?4:1,(bucket.revenue/maxAnalyticsRevenue)*115)+'px'}}/>
+                      <span className="max-w-full truncate text-[9px] text-slate-500">{bucket.label}</span>
+                    </div>)}
+                  </div>
+                  {currentDelivered===0&&<p className="mt-2 text-center text-xs text-slate-500">Aucune commande livrée sur cette période.</p>}
+                </div>
+                <div className="rounded-xl border border-slate-100 p-4">
+                  <h4 className="text-sm font-black text-[#193e38]">Répartition des commandes</h4>
+                  {([{label:'En attente',status:'pending'},{label:'Confirmées',status:'confirmed'},{label:'En préparation',status:'processing'},{label:'Expédiées',status:'shipped'},{label:'Livrées',status:'delivered'},{label:'Annulées',status:'cancelled'}] as const).map(row=><div key={row.status} className="mt-3"><div className="mb-1 flex justify-between gap-2 text-[11px]"><span className="text-slate-600">{row.label}</span><strong className="text-[#193e38]">{statusPercent(row.status).toFixed(1)}%</strong></div><div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#4c9276]" style={{width:statusPercent(row.status)+'%'}}/></div></div>)}
+                  <p className="mt-3 text-[10px] text-slate-500">النسب محسوبة من مجموع الطلبات في الفترة المختارة.</p>
+                </div>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-xl border border-slate-100 p-4"><h4 className="text-sm font-black text-[#193e38]">حجم الطلبات حسب الفترة</h4><div className="mt-3 flex h-24 items-end gap-1.5">{analyticsBuckets.map((b,i)=><div key={b.label+'orders'+i} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1"><div title={b.label+': '+b.orders+' commandes'} className="w-full rounded-t bg-[#9ab8d0]" style={{height:Math.max(b.orders?4:1,(b.orders/Math.max(1,...analyticsBuckets.map(x=>x.orders)))*65)+'px'}}/><span className="max-w-full truncate text-[9px] text-slate-500">{b.label}</span></div>)}</div></div>
+                <div className="rounded-xl border border-slate-100 p-4"><h4 className="text-sm font-black text-[#193e38]">أفضل المنتجات مبيعاً · بعد التسليم</h4>{topSellingProducts.length?topSellingProducts.map(([name,qty])=><div key={name} className="flex items-center justify-between gap-3 border-b border-slate-50 py-2 text-xs last:border-0"><span className="min-w-0 truncate text-slate-600">{name}</span><strong className="shrink-0 text-[#193e38]">{qty} وحدة</strong></div>):<p className="mt-3 text-xs text-slate-500">لا توجد مبيعات مسلّمة كافية لعرض المنتجات.</p>}</div>
+              </div>
+              <p className="text-[11px] leading-5 text-slate-500">ملاحظة: هذا رقم المعاملات للطلبات المسلّمة، وليس الربح الصافي. الربح الصافي يحتاج تكلفة شراء كل منتج ومصاريف الشحن والتشغيل، وهي غير متوفرة حالياً في بيانات الطلبات.</p>
             </section>
 
             <div className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(280px,.8fr)]">
