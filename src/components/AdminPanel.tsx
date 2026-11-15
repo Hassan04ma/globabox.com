@@ -1375,42 +1375,30 @@ export default function AdminPanel({
               ))}
             </section>
 
-            <section aria-label="Analyses et statistiques commerciales" className="space-y-5 rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm sm:p-6">
-              <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                <div><p className="text-[11px] font-extrabold tracking-[.13em] text-[#5e9280]">ANALYTICS · GLOBABOX</p><h3 className="mt-1 text-xl font-black text-[#193e38]">Performance commerciale</h3><p className="mt-1 text-xs text-slate-500">Statistiques calculées à partir des commandes chargées depuis le serveur.</p></div>
-                <div className="flex flex-wrap gap-1.5" role="group" aria-label="Période des statistiques">
-                  {([{id:'7d',label:'7 jours'},{id:'15d',label:'15 jours'},{id:'1m',label:'1 mois'},{id:'4m',label:'4 mois'},{id:'6m',label:'6 mois'},{id:'1y',label:'1 an'}] as const).map(p=><button key={p.id} type="button" onClick={()=>setAnalyticsPeriod(p.id)} className={'rounded-lg px-3 py-2 text-[11px] font-extrabold transition '+(analyticsPeriod===p.id?'bg-[#174d40] text-white':'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50')}>{p.label}</button>)}
+            <section aria-label="Analyses et statistiques commerciales" className="space-y-5 rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div><h3 className="text-xl font-black text-[#193e38]">Performance commerciale</h3><p className="mt-1 text-xs text-slate-500">Données issues des commandes chargées depuis le serveur · DH</p></div>
+                <div className="flex flex-wrap gap-2">
+                  {([{id:'7d',label:'7 jours'},{id:'15d',label:'15 jours'},{id:'1m',label:'1 mois'},{id:'4m',label:'4 mois'},{id:'6m',label:'6 mois'},{id:'1y',label:'1 an'}] as const).map(p => <button key={p.id} type="button" onClick={() => setAnalyticsPeriod(p.id)} className={analyticsPeriod===p.id ? 'rounded-lg bg-[#174d40] px-3 py-2 text-xs font-bold text-white' : 'rounded-lg border px-3 py-2 text-xs font-bold text-slate-600'}>{p.label}</button>)}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Chiffre livré</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{currentRevenue.toLocaleString('fr-MA',{maximumFractionDigits:2})} DH</strong><p className="mt-1 text-[10px] text-slate-500">Commandes livrées uniquement</p></div>
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Commandes reçues</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{currentPeriodOrders.length}</strong><p className="mt-1 text-[10px] text-slate-500">Sur la période choisie</p></div>
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Panier moyen livré</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{averageOrderValue.toLocaleString('fr-MA',{maximumFractionDigits:2})} DH</strong><p className="mt-1 text-[10px] text-slate-500">CA livré ÷ commandes livrées</p></div>
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Évolution du CA livré</p><strong className={'mt-1 block text-2xl font-black '+(revenueChange===null?'text-slate-500':revenueChange>=0?'text-emerald-700':'text-rose-700')}>{revenueChange===null?'—':(revenueChange>0?'+':'')+revenueChange.toFixed(1)+'%'}</strong><p className="mt-1 text-[10px] text-slate-500">Comparaison avec la période précédente</p></div>
+                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">CA livré</p><strong className="text-2xl">{currentRevenue.toLocaleString('fr-MA')} DH</strong></div>
+                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Commandes reçues</p><strong className="text-2xl">{currentPeriodOrders.length}</strong></div>
+                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Panier moyen livré</p><strong className="text-2xl">{averageOrderValue.toLocaleString('fr-MA')} DH</strong></div>
+                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Évolution vs période précédente</p><strong className="text-2xl">{revenueChange===null?'—':(revenueChange>0?'+':'')+revenueChange.toFixed(1)+'%'}</strong></div>
               </div>
-              <div className="grid gap-5 xl:grid-cols-[minmax(0,1.6fr)_minmax(250px,.8fr)]">
-                <div className="min-w-0 rounded-xl border border-slate-100 p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2"><h4 className="text-sm font-black text-[#193e38]">Chiffre d’affaires livré</h4><span className="text-[10px] text-slate-500">DH · par {analyticsDays>31?'mois':'jour'}</span></div>
-                  <div className="mt-5 flex h-44 items-end gap-1.5 sm:gap-2">
-                    {analyticsBuckets.map((bucket,i)=><div key={bucket.label+'-'+i} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1">
-                      <span className="max-w-full truncate text-[9px] font-semibold text-slate-500">{bucket.revenue>0?Math.round(bucket.revenue).toLocaleString('fr-MA'):''}</span>
-                      <div title={bucket.label+': '+bucket.revenue.toFixed(2)+' DH · '+bucket.orders+' commandes'} className="w-full rounded-t-md bg-[#4c9276] transition-all" style={{height:Math.max(bucket.revenue>0?4:1,(bucket.revenue/maxAnalyticsRevenue)*115)+'px'}}/>
-                      <span className="max-w-full truncate text-[9px] text-slate-500">{bucket.label}</span>
-                    </div>)}
-                  </div>
-                  {currentDelivered===0&&<p className="mt-2 text-center text-xs text-slate-500">Aucune commande livrée sur cette période.</p>}
-                </div>
-                <div className="rounded-xl border border-slate-100 p-4">
-                  <h4 className="text-sm font-black text-[#193e38]">Répartition des commandes</h4>
-                  {([{label:'En attente',status:'pending'},{label:'Confirmées',status:'confirmed'},{label:'En préparation',status:'processing'},{label:'Expédiées',status:'shipped'},{label:'Livrées',status:'delivered'},{label:'Annulées',status:'cancelled'}] as const).map(row=><div key={row.status} className="mt-3"><div className="mb-1 flex justify-between gap-2 text-[11px]"><span className="text-slate-600">{row.label}</span><strong className="text-[#193e38]">{statusPercent(row.status).toFixed(1)}%</strong></div><div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#4c9276]" style={{width:statusPercent(row.status)+'%'}}/></div></div>)}
-                  <p className="mt-3 text-[10px] text-slate-500">النسب محسوبة من مجموع الطلبات في الفترة المختارة.</p>
+              <div className="grid gap-5 lg:grid-cols-2">
+                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Chiffre d’affaires livré · DH</h4><div className="mt-4 flex h-40 items-end gap-2">{analyticsBuckets.map((b,i) => <div key={i} className="flex h-full min-w-0 flex-1 flex-col justify-end"><div title={b.label+' : '+b.revenue+' DH'} className="w-full rounded-t bg-[#4c9276]" style={{height:Math.max(2,b.revenue/maxAnalyticsRevenue*120)+'px'}}></div><span className="mt-1 truncate text-center text-[9px]">{b.label}</span></div>)}</div></div>
+                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Répartition des commandes</h4>
+                  {([{label:'En attente',status:'pending'},{label:'Confirmées',status:'confirmed'},{label:'Préparation',status:'processing'},{label:'Expédiées',status:'shipped'},{label:'Livrées',status:'delivered'},{label:'Annulées',status:'cancelled'}] as const).map(row => <div key={row.status} className="mt-3"><div className="flex justify-between text-xs"><span>{row.label}</span><strong>{statusPercent(row.status).toFixed(1)}%</strong></div><div className="mt-1 h-2 rounded bg-slate-100"><div className="h-2 rounded bg-[#4c9276]" style={{width:statusPercent(row.status)+'%'}}></div></div></div>)}
                 </div>
               </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-xl border border-slate-100 p-4"><h4 className="text-sm font-black text-[#193e38]">حجم الطلبات حسب الفترة</h4><div className="mt-3 flex h-24 items-end gap-1.5">{analyticsBuckets.map((b,i)=><div key={b.label+'orders'+i} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1"><div title={b.label+': '+b.orders+' commandes'} className="w-full rounded-t bg-[#9ab8d0]" style={{height:Math.max(b.orders?4:1,(b.orders/Math.max(1,...analyticsBuckets.map(x=>x.orders)))*65)+'px'}}/><span className="max-w-full truncate text-[9px] text-slate-500">{b.label}</span></div>)}</div></div>
-                <div className="rounded-xl border border-slate-100 p-4"><h4 className="text-sm font-black text-[#193e38]">أفضل المنتجات مبيعاً · بعد التسليم</h4>{topSellingProducts.length?topSellingProducts.map(([name,qty])=><div key={name} className="flex items-center justify-between gap-3 border-b border-slate-50 py-2 text-xs last:border-0"><span className="min-w-0 truncate text-slate-600">{name}</span><strong className="shrink-0 text-[#193e38]">{qty} وحدة</strong></div>):<p className="mt-3 text-xs text-slate-500">لا توجد مبيعات مسلّمة كافية لعرض المنتجات.</p>}</div>
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">عدد الطلبات حسب الفترة</h4><div className="mt-3 flex h-24 items-end gap-1">{analyticsBuckets.map((b,i) => <div key={i} title={b.orders+' commandes'} className="flex-1 rounded-t bg-[#9ab8d0]" style={{height:Math.max(2,b.orders/Math.max(1,...analyticsBuckets.map(x=>x.orders))*75)+'px'}}></div>)}</div></div>
+                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">أفضل المنتجات مبيعاً</h4>{topSellingProducts.length ? topSellingProducts.map(([name,qty]) => <div key={name} className="flex justify-between border-b py-2 text-xs"><span>{name}</span><strong>{qty} وحدة</strong></div>) : <p className="mt-2 text-xs text-slate-500">لا توجد مبيعات مسلّمة في هذه الفترة.</p>}</div>
               </div>
-              <p className="text-[11px] leading-5 text-slate-500">ملاحظة: هذا رقم المعاملات للطلبات المسلّمة، وليس الربح الصافي. الربح الصافي يحتاج تكلفة شراء كل منتج ومصاريف الشحن والتشغيل، وهي غير متوفرة حالياً في بيانات الطلبات.</p>
+              <p className="text-xs leading-5 text-slate-500">هذا رقم المعاملات للطلبات المسلّمة وليس الربح الصافي. حساب الربح الصافي يتطلب تكلفة الشراء والشحن والتشغيل.</p>
             </section>
 
             <div className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(280px,.8fr)]">
