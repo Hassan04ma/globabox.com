@@ -48,11 +48,14 @@ export default function AdminWorkspaceLayout({
  },[]);
  const nav=<div className="flex h-full min-h-0 flex-col">
   <div className="flex h-[82px] shrink-0 items-center gap-3 border-b border-white/10 px-6">
-    <img src="/brand/globabox-mark.svg" alt="" className="h-11 w-11 shrink-0 rounded-[12px] bg-white p-1"/>
-    <div className="min-w-0">
-      <p className="text-[19px] font-black leading-tight tracking-tight text-white">GLOBA<span className="text-[#e5ba55]">BOX</span></p>
-      <p className="mt-0.5 text-[11px] font-medium tracking-wide text-[#95aeaa]">COMMERCE CONSOLE</p>
-    </div>
+    <button type="button" onClick={onClose} title="Retour à la boutique" aria-label="Retour à la boutique"
+      className="flex shrink-0 items-center gap-3 rounded-xl px-1 py-1 text-start transition hover:bg-white/[.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#e4b85a]">
+      <img src="/brand/globabox-mark.svg" alt="" className="h-11 w-11 shrink-0 rounded-[12px] bg-white p-1"/>
+      <span className="min-w-0">
+        <span className="block text-[19px] font-black leading-tight tracking-tight text-white">GLOBA<span className="text-[#e5ba55]">BOX</span></span>
+        <span className="mt-0.5 block text-[11px] font-medium tracking-wide text-[#95aeaa]">COMMERCE CONSOLE</span>
+      </span>
+    </button>
     <button type="button" className="ms-auto rounded-lg p-2 text-white/70 hover:bg-white/10 lg:hidden" onClick={()=>setMobileOpen(false)} aria-label="Fermer le menu"><X size={20}/></button>
   </div>
   <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-5 gb-admin-side-scroll">
