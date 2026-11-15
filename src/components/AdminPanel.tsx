@@ -190,19 +190,41 @@ export default function AdminPanel({
     .reduce((acc, o) => acc + o.total, 0);
   
 
-  // Dashboard analytics: derived only from the authenticated orders returned by the server.
+  // Dashboard analytics: real orders only, with calendar-aware periods and comparisons.
   const [analyticsPeriod, setAnalyticsPeriod] = useState<'7d'|'15d'|'1m'|'4m'|'6m'|'1y'>('7d');
-  const analyticsDays = analyticsPeriod === '7d' ? 7 : analyticsPeriod === '15d' ? 15 : analyticsPeriod === '1m' ? 30 : analyticsPeriod === '4m' ? 122 : analyticsPeriod === '6m' ? 183 : 365;
-  const analyticsStart = new Date();
+  const analyticsNow = new Date();
+  const shiftCalendarMonth = (date: Date, delta: number) => {
+    const shifted = new Date(date);
+    const day = shifted.getDate();
+    shifted.setDate(1);
+    shifted.setMonth(shifted.getMonth() + delta);
+    const lastDay = new Date(shifted.getFullYear(), shifted.getMonth() + 1, 0).getDate();
+    shifted.setDate(Math.min(day, lastDay));
+    return shifted;
+  };
+  const analyticsMonthCount = analyticsPeriod === '4m' ? 4 : analyticsPeriod === '6m' ? 6 : analyticsPeriod === '1y' ? 12 : 0;
+  const analyticsStart = new Date(analyticsNow);
   analyticsStart.setHours(0,0,0,0);
-  analyticsStart.setDate(analyticsStart.getDate() - analyticsDays + 1);
-  const analyticsPreviousStart = new Date(analyticsStart);
-  analyticsPreviousStart.setDate(analyticsPreviousStart.getDate() - analyticsDays);
+  if (analyticsPeriod === '7d') analyticsStart.setDate(analyticsStart.getDate() - 6);
+  else if (analyticsPeriod === '15d') analyticsStart.setDate(analyticsStart.getDate() - 14);
+  else if (analyticsPeriod === '1m') {
+    const oneMonthAgo = shiftCalendarMonth(analyticsNow, -1);
+    analyticsStart.setTime(oneMonthAgo.getTime());
+    analyticsStart.setHours(0,0,0,0);
+  } else {
+    analyticsStart.setDate(1);
+    analyticsStart.setMonth(analyticsStart.getMonth() - (analyticsMonthCount - 1));
+  }
+  const analyticsPreviousStart = analyticsMonthCount
+    ? shiftCalendarMonth(analyticsStart, -analyticsMonthCount)
+    : analyticsPeriod === '1m'
+      ? shiftCalendarMonth(analyticsStart, -1)
+      : new Date(analyticsStart.getTime() - (analyticsPeriod === '7d' ? 7 : 15) * 86400000);
   const getOrderDate = (order: Order) => {
     const parsed = new Date(order.createdAt || order.date);
     return Number.isNaN(parsed.getTime()) ? null : parsed;
   };
-  const currentPeriodOrders = orders.filter(order => { const d=getOrderDate(order); return !!d && d >= analyticsStart && d <= new Date(); });
+  const currentPeriodOrders = orders.filter(order => { const d=getOrderDate(order); return !!d && d >= analyticsStart && d <= analyticsNow; });
   const previousPeriodOrders = orders.filter(order => { const d=getOrderDate(order); return !!d && d >= analyticsPreviousStart && d < analyticsStart; });
   const deliveredRevenue = (list: Order[]) => list.filter(o=>o.status==='delivered').reduce((sum,o)=>sum+Number(o.finalTotal ?? o.total ?? 0),0);
   const currentRevenue = deliveredRevenue(currentPeriodOrders);
@@ -212,26 +234,26 @@ export default function AdminPanel({
   const averageOrderValue = currentDelivered ? currentRevenue/currentDelivered : 0;
   const statusPercent = (status: Order['status']) => currentPeriodOrders.length ? currentPeriodOrders.filter(o=>o.status===status).length/currentPeriodOrders.length*100 : 0;
   const analyticsBuckets = (() => {
-    const monthly = analyticsDays > 31;
-    const count = monthly ? (analyticsPeriod==='4m'?4:analyticsPeriod==='6m'?6:12) : analyticsDays;
+    const monthly = analyticsMonthCount > 0;
+    const count = monthly ? analyticsMonthCount : Math.max(1, Math.floor((new Date(analyticsNow.getFullYear(),analyticsNow.getMonth(),analyticsNow.getDate()).getTime()-new Date(analyticsStart.getFullYear(),analyticsStart.getMonth(),analyticsStart.getDate()).getTime())/86400000)+1);
     const buckets = Array.from({length:count},(_,i)=>{
-      const start = new Date();
-      start.setHours(0,0,0,0);
-      if(monthly){ start.setDate(1); start.setMonth(start.getMonth()-(count-1-i)); }
-      else start.setDate(start.getDate()-(count-1-i));
+      const start = new Date(analyticsStart);
+      if(monthly){ start.setDate(1); start.setMonth(start.getMonth()+i); }
+      else start.setDate(start.getDate()+i);
       const end = new Date(start);
       if(monthly){ end.setMonth(end.getMonth()+1); end.setMilliseconds(-1); }
-      else end.setDate(end.getDate()+1), end.setMilliseconds(-1);
-      return {start,end,label:monthly?new Intl.DateTimeFormat('fr-MA',{month:'short'}).format(start):new Intl.DateTimeFormat('fr-MA',{day:'2-digit',month:'2-digit'}).format(start),revenue:0,orders:0};
+      else { end.setDate(end.getDate()+1); end.setMilliseconds(-1); }
+      return {start,end,label:monthly?new Intl.DateTimeFormat('fr-FR',{month:'short',year:'2-digit'}).format(start):new Intl.DateTimeFormat('fr-FR',{day:'2-digit',month:'2-digit'}).format(start),revenue:0,orders:0};
     });
     currentPeriodOrders.forEach(order=>{
       const d=getOrderDate(order); if(!d)return;
-      const bucket=buckets.find(b=>d>=b.start&&d<=b.end);
+      const bucket=buckets.find(item=>d>=item.start&&d<=item.end);
       if(bucket){bucket.orders++;if(order.status==='delivered')bucket.revenue+=Number(order.finalTotal??order.total??0);}
     });
     return buckets;
   })();
   const maxAnalyticsRevenue = Math.max(1,...analyticsBuckets.map(b=>b.revenue));
+  const maxAnalyticsOrders = Math.max(1,...analyticsBuckets.map(b=>b.orders));
   const topSellingProducts = (() => {
     const totals = new Map<string,number>();
     currentPeriodOrders.filter(o=>o.status==='delivered').forEach(o=>o.items?.forEach(item=>totals.set(item.productName,(totals.get(item.productName)||0)+Number(item.quantity||0))));
@@ -1383,10 +1405,10 @@ export default function AdminPanel({
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">CA livré</p><strong className="text-2xl">{currentRevenue.toLocaleString('fr-MA')} DH</strong></div>
+                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Chiffre d’affaires livré</p><strong className="text-2xl">{currentRevenue.toLocaleString('fr-MA')} DH</strong></div>
                 <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Commandes reçues</p><strong className="text-2xl">{currentPeriodOrders.length}</strong></div>
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Panier moyen livré</p><strong className="text-2xl">{averageOrderValue.toLocaleString('fr-MA')} DH</strong></div>
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Évolution vs période précédente</p><strong className="text-2xl">{revenueChange===null?'—':(revenueChange>0?'+':'')+revenueChange.toFixed(1)+'%'}</strong></div>
+                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Panier moyen des commandes livrées</p><strong className="text-2xl">{averageOrderValue.toLocaleString('fr-MA')} DH</strong></div>
+                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Évolution par rapport à la période précédente</p><strong className="text-2xl">{revenueChange===null?'—':(revenueChange>0?'+':'')+revenueChange.toFixed(1)+'%'}</strong></div>
               </div>
               <div className="grid gap-5 lg:grid-cols-2">
                 <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Chiffre d’affaires livré · DH</h4><div className="mt-4 flex h-40 items-end gap-2">{analyticsBuckets.map((b,i) => <div key={i} className="flex h-full min-w-0 flex-1 flex-col justify-end"><div title={b.label+' : '+b.revenue+' DH'} className="w-full rounded-t bg-[#4c9276]" style={{height:Math.max(2,b.revenue/maxAnalyticsRevenue*120)+'px'}}></div><span className="mt-1 truncate text-center text-[9px]">{b.label}</span></div>)}</div></div>
@@ -1395,10 +1417,10 @@ export default function AdminPanel({
                 </div>
               </div>
               <div className="grid gap-4 lg:grid-cols-2">
-                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">عدد الطلبات حسب الفترة</h4><div className="mt-3 flex h-24 items-end gap-1">{analyticsBuckets.map((b,i) => <div key={i} title={b.orders+' commandes'} className="flex-1 rounded-t bg-[#9ab8d0]" style={{height:Math.max(2,b.orders/Math.max(1,...analyticsBuckets.map(x=>x.orders))*75)+'px'}}></div>)}</div></div>
-                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">أفضل المنتجات مبيعاً</h4>{topSellingProducts.length ? topSellingProducts.map(([name,qty]) => <div key={name} className="flex justify-between border-b py-2 text-xs"><span>{name}</span><strong>{qty} وحدة</strong></div>) : <p className="mt-2 text-xs text-slate-500">لا توجد مبيعات مسلّمة في هذه الفترة.</p>}</div>
+                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Nombre de commandes par période</h4><div className="mt-3 flex h-24 items-end gap-1">{analyticsBuckets.map((b,i) => <div key={i} title={b.orders+' commandes'} className="flex-1 rounded-t bg-[#9ab8d0]" style={{height:Math.max(2,b.orders/maxAnalyticsOrders*75)+'px'}}></div>)}</div></div>
+                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Meilleures ventes</h4>{topSellingProducts.length ? topSellingProducts.map(([name,qty]) => <div key={name} className="flex justify-between border-b py-2 text-xs"><span>{name}</span><strong>{qty} unité(s)</strong></div>) : <p className="mt-2 text-xs text-slate-500">Aucune vente livrée sur cette période.</p>}</div>
               </div>
-              <p className="text-xs leading-5 text-slate-500">هذا رقم المعاملات للطلبات المسلّمة وليس الربح الصافي. حساب الربح الصافي يتطلب تكلفة الشراء والشحن والتشغيل.</p>
+              <p className="text-xs leading-5 text-slate-500">Le chiffre d’affaires livré ne correspond pas au bénéfice net. Le calcul du bénéfice net nécessite les coûts d’achat, de livraison et d’exploitation.</p>
             </section>
 
             <div className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(280px,.8fr)]">
