@@ -1144,7 +1144,7 @@ export default function AdminPanel({
   };
 
   const handleBulkDeleteOrders = async () => {
-    const ids = Array.from(selectedOrderIds);
+    const ids: string[] = Array.from(selectedOrderIds);
     if (!ids.length) return;
     if (!window.confirm(`Supprimer définitivement ${ids.length} commande(s) sélectionnée(s) ? Cette action supprime les commandes du stockage local et ne peut pas être annulée.`)) return;
 
