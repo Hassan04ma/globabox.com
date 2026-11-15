@@ -328,22 +328,21 @@ export default function App() {
     }
   }, [selectedProduct?.id]);
 
-  // Parse initial clean URL search queries for category or product sharing on mount
+  // Parse initial URL state once for admin access; product/category sharing waits for catalog data.
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get('admin') === 'true') setIsAdminOpen(true);
+  }, []);
+
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const initialProduct = searchParams.get('product');
     const initialCategory = searchParams.get('category');
     const initialSubcategory = searchParams.get('subcategory');
     if(initialSubcategory) setSelectedSubcategory(initialSubcategory);
-    if (searchParams.get('admin') === 'true') {
-      setIsAdminOpen(true);
-    }
-
     if (initialProduct) {
       const found = products.find(p => p.id === initialProduct);
-      if (found) {
-        setSelectedProduct(found);
-      }
+      if (found) setSelectedProduct(found);
     } else if (initialCategory) {
       setSelectedCategory(initialCategory);
     }
@@ -1188,7 +1187,13 @@ Merci de confirmer la disponibilité et la livraison.`;
         {isAdminOpen && (
           <AdminPanel
             language={language}
-            onClose={() => setIsAdminOpen(false)}
+            onClose={() => {
+              setIsAdminOpen(false);
+              const params = new URLSearchParams(window.location.search);
+              params.delete('admin');
+              const next = window.location.pathname + (params.toString() ? '?' + params.toString() : '') + window.location.hash;
+              window.history.replaceState(null, '', next);
+            }}
             products={products}
             setProducts={setProducts}
             categories={categories}
