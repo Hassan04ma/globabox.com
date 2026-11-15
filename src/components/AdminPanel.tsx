@@ -235,6 +235,8 @@ export default function AdminPanel({
   const [tagsInput,setTagsInput] = useState('');
   const [productStatusFilter,setProductStatusFilter]=useState<'all'|'published'|'draft'|'outofstock'>('all');
   const [adminProducts, setAdminProducts] = useState<Product[]>([]);
+  // Bulk product selection/actions: supports selecting the whole filtered catalog (including 100+ products).
+  const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
   const [catalogLoadError, setCatalogLoadError] = useState('');
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -1041,6 +1043,90 @@ export default function AdminPanel({
     }
   };
 
+  // Bulk product selection/actions
+  const toggleProductSelection = (productId: string) => {
+    setSelectedProductIds(current => {
+      const next = new Set(current);
+      if (next.has(productId)) next.delete(productId);
+      else next.add(productId);
+      return next;
+    });
+  };
+
+  const toggleSelectAllVisibleProducts = () => {
+    setSelectedProductIds(current => {
+      const next = new Set(current);
+      const allSelected = filteredProductsList.length > 0 && filteredProductsList.every(p => next.has(p.id));
+      if (allSelected) {
+        filteredProductsList.forEach(p => next.delete(p.id));
+      } else {
+        filteredProductsList.forEach(p => next.add(p.id));
+      }
+      return next;
+    });
+  };
+
+  const clearProductSelection = () => setSelectedProductIds(new Set());
+
+  const handleBulkDeleteProducts = async () => {
+    const ids = Array.from(selectedProductIds);
+    if (!ids.length) return;
+    if (!window.confirm(`Supprimer définitivement ${ids.length} produit(s) sélectionné(s) du catalogue D1 ? Cette action ne peut pas être annulée.`)) return;
+
+    let deleted = 0, failed = 0;
+    for (const id of ids) {
+      try {
+        const response = await fetch(`/api/products/${id}`, { method: 'DELETE', credentials: 'same-origin' });
+        if (!response.ok) throw new Error('Delete failed');
+        deleted++;
+      } catch {
+        failed++;
+      }
+    }
+
+    setAdminProducts(current => current.filter(p => !ids.includes(p.id)));
+    setProducts(current => current.filter(p => !ids.includes(p.id)));
+    setSelectedProductIds(new Set());
+    alert(`Suppression terminée : ${deleted} produit(s) supprimé(s), ${failed} échec(s).`);
+  };
+
+  const handleBulkPublishProducts = async () => {
+    const ids = Array.from(selectedProductIds);
+    if (!ids.length) return;
+    if (!window.confirm(`Confirmer et publier ${ids.length} produit(s) sélectionné(s) sur la boutique ?`)) return;
+
+    let published = 0, failed = 0;
+    const selectedProducts = adminProducts.filter(p => ids.includes(p.id));
+    for (const product of selectedProducts) {
+      try {
+        const response = await fetch(`/api/products/${product.id}`, {
+          method: 'PUT',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...product,
+            isActive: true,
+            visibilityChanged: product.isActive !== true
+          })
+        });
+        if (!response.ok) throw new Error('Publish failed');
+        const data: any = await response.json();
+        if (!data?.product) throw new Error('Invalid product response');
+        published++;
+      } catch {
+        failed++;
+      }
+    }
+
+    const refreshed = await fetch('/api/admin/products', { credentials: 'same-origin' });
+    if (refreshed.ok) {
+      const all = await refreshed.json();
+      if (Array.isArray(all)) setAdminProducts(all);
+    }
+    setSelectedProductIds(new Set());
+    alert(`Publication terminée : ${published} produit(s) confirmé(s)/publié(s), ${failed} échec(s).`);
+  };
+
   // Filters calculation
   const filteredOrders = orders.filter(o => {
     const matchesQuery = 
@@ -1689,10 +1775,37 @@ export default function AdminPanel({
                 </select>
               </div>
               <p className="border-b border-slate-100 px-5 py-3 text-xs font-semibold text-[#64796c]">{filteredProductsList.length} produit(s) correspondant à la recherche · Données du catalogue D1</p>
+              {selectedProductIds.size > 0 && (
+                <div className="flex flex-wrap items-center gap-2 border-b border-[#dce8df] bg-[#f3f8f4] px-4 py-3 sm:px-5">
+                  <span className="me-2 text-xs font-extrabold text-[#193e38]">{selectedProductIds.size} sélectionné(s)</span>
+                  <button type="button" onClick={handleBulkPublishProducts}
+                    className="min-h-10 rounded-xl bg-[#104d43] px-4 text-xs font-extrabold text-white hover:bg-[#0b3931]">
+                    Confirmer / publier
+                  </button>
+                  <button type="button" onClick={handleBulkDeleteProducts}
+                    className="min-h-10 rounded-xl border border-rose-200 bg-white px-4 text-xs font-extrabold text-rose-700 hover:bg-rose-50">
+                    Supprimer la sélection
+                  </button>
+                  <button type="button" onClick={clearProductSelection}
+                    className="min-h-10 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50">
+                    Désélectionner
+                  </button>
+                </div>
+              )}
               <div className="w-full overflow-x-auto">
                 <table className="w-full min-w-[850px] border-collapse text-start text-xs">
                   <thead className="bg-[#f5f9f6] text-[11px] font-extrabold text-[#527263]">
                     <tr>
+                      <th className="w-12 px-4 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={filteredProductsList.length > 0 && filteredProductsList.every(p => selectedProductIds.has(p.id))}
+                          ref={el => { if (el) el.indeterminate = filteredProductsList.some(p => selectedProductIds.has(p.id)) && !filteredProductsList.every(p => selectedProductIds.has(p.id)); }}
+                          onChange={toggleSelectAllVisibleProducts}
+                          aria-label="Sélectionner tous les produits visibles"
+                          className="h-4 w-4 accent-[#104d43]"
+                        />
+                      </th>
                       <th className="px-5 py-4 text-start">Produit</th>
                       <th className="px-4 py-4 text-start">Catégorie</th>
                       <th className="px-4 py-4 text-start">Statut</th>
@@ -1702,7 +1815,16 @@ export default function AdminPanel({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#e8eee9]">
-                    {filteredProductsList.map(prod=><tr key={prod.id} className="hover:bg-[#f9fcfa]">
+                    {filteredProductsList.map(prod=><tr key={prod.id} className={selectedProductIds.has(prod.id) ? 'bg-[#f2f8f4] hover:bg-[#edf6f0]' : 'hover:bg-[#f9fcfa]'}>
+                      <td className="w-12 px-4 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedProductIds.has(prod.id)}
+                          onChange={() => toggleProductSelection(prod.id)}
+                          aria-label={'Sélectionner '+(prod.name?.fr||prod.id)}
+                          className="h-4 w-4 accent-[#104d43]"
+                        />
+                      </td>
                       <td className="px-5 py-4">
                         <div className="flex min-w-0 items-center gap-3">
                           <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#e2ece5] bg-[#f3f7f4]">
@@ -1739,7 +1861,7 @@ export default function AdminPanel({
                         </div>
                       </td>
                     </tr>)}
-                    {filteredProductsList.length===0&&<tr><td colSpan={6} className="px-5 py-16 text-center">
+                    {filteredProductsList.length===0&&<tr><td colSpan={7} className="px-5 py-16 text-center">
                       <Package size={33} className="mx-auto text-[#9db5a3]"/>
                       <h4 className="mt-4 text-base font-black text-[#193e38]">Aucun produit trouvé</h4>
                       <p className="mt-2 text-xs text-slate-500">{adminProducts.length===0?'Commencez par ajouter votre premier produit.':'Essayez un autre filtre ou une autre recherche.'}</p>
