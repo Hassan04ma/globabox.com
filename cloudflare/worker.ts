@@ -607,6 +607,39 @@ export default {
           .bind('Atwache',created.length,skipped.length).run();
         return json({status:'draft',created,skipped,rejected});
       }
+      if (path === '/api/admin/products/bulk-delete' && method === 'POST') {
+        if (!await auth(request, env)) return json({error:'Unauthorized'},401);
+        const body = await readBody(request);
+        if (!Array.isArray(body?.ids) || body.ids.length < 1 || body.ids.length > 100)
+          return json({error:'Select between 1 and 100 products'},400);
+        const ids = [...new Set(body.ids)];
+        if (ids.length !== body.ids.length || ids.some((id:unknown) =>
+          typeof id !== 'string' || id.length > 100 || !/^[a-zA-Z0-9_-]+$/.test(id)))
+          return json({error:'Invalid or duplicate product IDs'},400);
+        let hiddenCount = 0;
+        const missing:string[] = [];
+        for (const id of ids as string[]) {
+          const stored = await env.DB.prepare('SELECT data_json FROM products WHERE id=?')
+            .bind(id).first<{data_json:string}>();
+          const oldProduct = stored ? JSON.parse(stored.data_json) : PRODUCTS.find(p => p.id === id);
+          if (!oldProduct) { missing.push(id); continue; }
+          const hidden = {...oldProduct,id,isActive:false};
+          if (stored) {
+            const result = await env.DB.prepare('UPDATE products SET active=0,data_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?')
+              .bind(JSON.stringify(hidden),id).run();
+            if (!result.success || result.meta?.changes !== 1)
+              return json({error:'Bulk action incomplete; refresh the catalogue before retrying',hiddenCount},503);
+          } else {
+            const result = await env.DB.prepare('INSERT INTO products (id,source_url,supplier,category,name_fr,price_mad,image_url,active,data_json) VALUES (?,?,?,?,?,?,?,?,?)')
+              .bind(id,null,null,oldProduct.category || '',oldProduct.name?.fr || id,
+                oldProduct.price,oldProduct.image || '',0,JSON.stringify(hidden)).run();
+            if (!result.success || result.meta?.changes !== 1)
+              return json({error:'Bulk action incomplete; refresh the catalogue before retrying',hiddenCount},503);
+          }
+          hiddenCount++;
+        }
+        return json({success:true,hiddenCount,missing});
+      }
       const productMatch = path.match(/^\/api\/products\/([^/]+)$/);
       if ((path === '/api/products' && method === 'POST') || (productMatch && ['PUT','DELETE'].includes(method))) {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
