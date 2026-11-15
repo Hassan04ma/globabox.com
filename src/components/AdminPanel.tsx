@@ -1048,14 +1048,6 @@ export default function AdminPanel({
       ? (current.includes(productId) ? current : [...current,productId])
       : current.filter(id=>id!==productId));
   };
-  const allFilteredSelected = filteredProductsList.length > 0 &&
-    filteredProductsList.every(product=>selectedProductIds.includes(product.id));
-  const toggleFilteredProductSelection = (checked:boolean) => {
-    const visibleIds=filteredProductsList.map(product=>product.id);
-    setSelectedProductIds(current=>checked
-      ? [...new Set([...current,...visibleIds])]
-      : current.filter(id=>!visibleIds.includes(id)));
-  };
   const handleBulkDeleteProducts = async () => {
     const ids=selectedProductIds.filter(id=>adminProducts.some(product=>product.id===id));
     if(!ids.length || bulkProductsBusy)return;
@@ -1107,6 +1099,15 @@ export default function AdminPanel({
       (productStatusFilter==='outofstock' && (!p.inStock || p.stockStatus==='out_of_stock'));
     return matches && statusMatches;
   });
+
+  const allFilteredSelected = filteredProductsList.length > 0 &&
+    filteredProductsList.every(product=>selectedProductIds.includes(product.id));
+  const toggleFilteredProductSelection = (checked:boolean) => {
+    const visibleIds=filteredProductsList.map(product=>product.id);
+    setSelectedProductIds(current=>checked
+      ? [...new Set([...current,...visibleIds])]
+      : current.filter(id=>!visibleIds.includes(id)));
+  };
 
   if (authLoading) return <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#f4f8f5] text-sm font-bold text-[#104d43]">Vérification de la session administrateur…</div>;
   if (!isAuthenticated) {
