@@ -1399,9 +1399,9 @@ export default function AdminPanel({
 
             <section aria-label="Analyses et statistiques commerciales" className="space-y-5 rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div><h3 className="text-xl font-black text-[#193e38]">Performance commerciale</h3><p className="mt-1 text-xs text-slate-500">Données issues des commandes chargées depuis le serveur · DH</p></div>
+                <div><h3 className="text-xl font-black text-[#193e38]">Performance commerciale</h3><p className="mt-1 text-xs text-slate-500">Données issues des commandes chargées depuis le serveur · DH · {analyticsStart.toLocaleDateString('fr-FR')} – {analyticsNow.toLocaleDateString('fr-FR')}</p></div>
                 <div className="flex flex-wrap gap-2">
-                  {([{id:'7d',label:'7 jours'},{id:'15d',label:'15 jours'},{id:'1m',label:'1 mois'},{id:'4m',label:'4 mois'},{id:'6m',label:'6 mois'},{id:'1y',label:'1 an'}] as const).map(p => <button key={p.id} type="button" onClick={() => setAnalyticsPeriod(p.id)} className={analyticsPeriod===p.id ? 'rounded-lg bg-[#174d40] px-3 py-2 text-xs font-bold text-white' : 'rounded-lg border px-3 py-2 text-xs font-bold text-slate-600'}>{p.label}</button>)}
+                  {([{id:'7d',label:'7 jours'},{id:'15d',label:'15 jours'},{id:'1m',label:'1 mois glissant'},{id:'4m',label:'4 mois'},{id:'6m',label:'6 mois'},{id:'1y',label:'1 an'}] as const).map(p => <button key={p.id} type="button" onClick={() => setAnalyticsPeriod(p.id)} className={analyticsPeriod===p.id ? 'rounded-lg bg-[#174d40] px-3 py-2 text-xs font-bold text-white' : 'rounded-lg border px-3 py-2 text-xs font-bold text-slate-600'}>{p.label}</button>)}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
