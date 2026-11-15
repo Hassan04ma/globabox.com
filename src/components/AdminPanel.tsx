@@ -235,6 +235,8 @@ export default function AdminPanel({
   const [tagsInput,setTagsInput] = useState('');
   const [productStatusFilter,setProductStatusFilter]=useState<'all'|'published'|'draft'|'outofstock'>('all');
   const [adminProducts, setAdminProducts] = useState<Product[]>([]);
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [bulkProductsBusy, setBulkProductsBusy] = useState(false);
   const [catalogLoadError, setCatalogLoadError] = useState('');
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -1041,6 +1043,35 @@ export default function AdminPanel({
     }
   };
 
+  const toggleProductSelection = (productId:string, checked:boolean) => {
+    setSelectedProductIds(current => checked
+      ? (current.includes(productId) ? current : [...current,productId])
+      : current.filter(id=>id!==productId));
+  };
+  const handleBulkDeleteProducts = async () => {
+    const ids=selectedProductIds.filter(id=>adminProducts.some(product=>product.id===id));
+    if(!ids.length || bulkProductsBusy)return;
+    if(!window.confirm(`Retirer ${ids.length} produit(s) du catalogue ? Ils seront masqués, sans toucher aux commandes ni à leur historique.`))return;
+    setBulkProductsBusy(true);
+    try {
+      const response=await fetch('/api/admin/products/bulk-delete',{
+        method:'POST',credentials:'same-origin',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ids})
+      });
+      const data:any=await response.json();
+      if(!response.ok || data?.success!==true)throw new Error(data?.error||'HTTP '+response.status);
+      const removed=new Set(ids);
+      setAdminProducts(current=>current.map(product=>removed.has(product.id)?{...product,isActive:false}:product));
+      setProducts(current=>current.map(product=>removed.has(product.id)?{...product,isActive:false}:product));
+      setSelectedProductIds([]);
+      alert(`${data.hiddenCount} produit(s) retiré(s) du catalogue.`);
+    }catch(error){
+      console.error('[ADMIN] Bulk product action failed',error);
+      alert(error instanceof Error?error.message:'Échec de l’opération groupée. Actualisez le catalogue.');
+    }finally{setBulkProductsBusy(false);}
+  };
+
   // Filters calculation
   const filteredOrders = orders.filter(o => {
     const matchesQuery = 
@@ -1068,6 +1099,15 @@ export default function AdminPanel({
       (productStatusFilter==='outofstock' && (!p.inStock || p.stockStatus==='out_of_stock'));
     return matches && statusMatches;
   });
+
+  const allFilteredSelected = filteredProductsList.length > 0 &&
+    filteredProductsList.every(product=>selectedProductIds.includes(product.id));
+  const toggleFilteredProductSelection = (checked:boolean) => {
+    const visibleIds=filteredProductsList.map(product=>product.id);
+    setSelectedProductIds(current=>checked
+      ? [...new Set([...current,...visibleIds])]
+      : current.filter(id=>!visibleIds.includes(id)));
+  };
 
   if (authLoading) return <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#f4f8f5] text-sm font-bold text-[#104d43]">Vérification de la session administrateur…</div>;
   if (!isAuthenticated) {
@@ -1688,11 +1728,12 @@ export default function AdminPanel({
                   <option value="outofstock">Rupture de stock ({adminProducts.filter(p=>!p.inStock||p.stockStatus==='out_of_stock').length})</option>
                 </select>
               </div>
-              <p className="border-b border-slate-100 px-5 py-3 text-xs font-semibold text-[#64796c]">{filteredProductsList.length} produit(s) correspondant à la recherche · Données du catalogue D1</p>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3"><p className="text-xs font-semibold text-[#64796c]">{filteredProductsList.length} produit(s) correspondant à la recherche · Données du catalogue D1</p>{selectedProductIds.length>0&&<div className="flex flex-wrap items-center gap-3"><span className="text-xs font-bold text-[#385647]">{selectedProductIds.length} sélectionné(s)</span><button type="button" disabled={bulkProductsBusy} onClick={()=>void handleBulkDeleteProducts()} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 text-xs font-extrabold text-red-700 hover:bg-red-100 disabled:opacity-50"><Trash2 size={15}/>{bulkProductsBusy?'Suppression…':'Supprimer la sélection'}</button><button type="button" onClick={()=>setSelectedProductIds([])} className="min-h-10 rounded-xl px-3 text-xs font-bold text-slate-500 hover:bg-slate-100">Annuler la sélection</button></div>}</div>
               <div className="w-full overflow-x-auto">
                 <table className="w-full min-w-[850px] border-collapse text-start text-xs">
                   <thead className="bg-[#f5f9f6] text-[11px] font-extrabold text-[#527263]">
                     <tr>
+                      <th className="w-12 px-4 py-4 text-center"><input type="checkbox" aria-label="Sélectionner tous les produits affichés" checked={allFilteredSelected} onChange={e=>toggleFilteredProductSelection(e.target.checked)} className="h-4 w-4 accent-[#104d43]"/></th>
                       <th className="px-5 py-4 text-start">Produit</th>
                       <th className="px-4 py-4 text-start">Catégorie</th>
                       <th className="px-4 py-4 text-start">Statut</th>
@@ -1703,6 +1744,7 @@ export default function AdminPanel({
                   </thead>
                   <tbody className="divide-y divide-[#e8eee9]">
                     {filteredProductsList.map(prod=><tr key={prod.id} className="hover:bg-[#f9fcfa]">
+                      <td className="px-4 py-4 text-center"><input type="checkbox" aria-label={"Sélectionner "+(prod.name?.fr||prod.id)} checked={selectedProductIds.includes(prod.id)} onChange={e=>toggleProductSelection(prod.id,e.target.checked)} className="h-4 w-4 accent-[#104d43]"/></td>
                       <td className="px-5 py-4">
                         <div className="flex min-w-0 items-center gap-3">
                           <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#e2ece5] bg-[#f3f7f4]">
@@ -1739,7 +1781,7 @@ export default function AdminPanel({
                         </div>
                       </td>
                     </tr>)}
-                    {filteredProductsList.length===0&&<tr><td colSpan={6} className="px-5 py-16 text-center">
+                    {filteredProductsList.length===0&&<tr><td colSpan={7} className="px-5 py-16 text-center">
                       <Package size={33} className="mx-auto text-[#9db5a3]"/>
                       <h4 className="mt-4 text-base font-black text-[#193e38]">Aucun produit trouvé</h4>
                       <p className="mt-2 text-xs text-slate-500">{adminProducts.length===0?'Commencez par ajouter votre premier produit.':'Essayez un autre filtre ou une autre recherche.'}</p>
