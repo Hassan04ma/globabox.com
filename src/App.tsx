@@ -209,7 +209,9 @@ function getSearchableText(product: any, categories: any[] = []): string {
 
 export default function App() {
   // Main states
-  const [language, setLanguage] = useState<Language>('fr');
+  // GLOBABOX is currently published in French across the storefront and administration.
+  const language: Language = 'fr';
+  const setLanguage = (_nextLanguage: Language) => {}; 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubcategory, setSelectedSubcategory] = useState(() => new URLSearchParams(window.location.search).get('subcategory') || '');
