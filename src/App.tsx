@@ -209,9 +209,18 @@ function getSearchableText(product: any, categories: any[] = []): string {
 
 export default function App() {
   // Main states
-  // GLOBABOX is currently published in French across the storefront and administration.
-  const [language] = useState<Language>('fr');
-  const setLanguage = (_nextLanguage: Language) => {}; 
+  // Restore the language selector and remember the customer's choice.
+  const [language, setLanguage] = useState<Language>(() => {
+    try {
+      const savedLanguage = localStorage.getItem('globabox_language');
+      if (savedLanguage === 'fr' || savedLanguage === 'ar' || savedLanguage === 'en') {
+        return savedLanguage;
+      }
+    } catch (error) {
+      console.warn('[GLOBABOX LANGUAGE] Could not read saved language:', error);
+    }
+    return 'fr';
+  });
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubcategory, setSelectedSubcategory] = useState(() => new URLSearchParams(window.location.search).get('subcategory') || '');
@@ -220,6 +229,17 @@ export default function App() {
   const [sortOption, setSortOption] = useState<'newest' | 'price_low_high' | 'price_high_low'>('newest');
   const [minPrice, setMinPrice] = useState<number | ''>('');
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
+
+  // Persist the selected language and keep document-level accessibility direction in sync.
+  useEffect(() => {
+    try {
+      localStorage.setItem('globabox_language', language);
+    } catch (error) {
+      console.warn('[GLOBABOX LANGUAGE] Could not save language preference:', error);
+    }
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+  }, [language]);
 
   // Reset a child filter whenever the parent department is cleared (e.g. header All Products).
   useEffect(() => {
