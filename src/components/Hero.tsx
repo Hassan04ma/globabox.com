@@ -1,10 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, MessageSquare, ChevronLeft, ChevronRight, Flame, Sparkles } from 'lucide-react';
-import { Language } from '../types';
-import { TRANSLATIONS } from '../translations';
-import { triggerWhatsAppClick } from '../utils/analytics';
-import { WHATSAPP_LINK } from '../data';
-import WhatsAppIcon from './WhatsAppIcon';
+import { ArrowRight, ArrowUpRight, CheckCircle2, PackageCheck, ShieldCheck, Truck } from 'lucide-react';
+import type { Language } from '../types';
 
 interface HeroProps {
   language: Language;
@@ -12,189 +7,88 @@ interface HeroProps {
   onWhatsAppOrder?: (params?: any) => void;
 }
 
-const HERO_IMAGES = [
-  "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&q=75&w=1200",
-  "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&q=75&w=1200",
-  "https://images.unsplash.com/photo-1533873984035-25970ab07461?auto=format&fit=crop&q=75&w=1200"
-];
+const text = {
+  fr: {
+    eyebrow: 'GLOBABOX · VOTRE BOUTIQUE AU MAROC',
+    title: 'Les essentiels du quotidien, au bon prix.',
+    subtitle: 'Maison, technologie, accessoires, sport et bien plus. Découvrez une sélection pratique, avec des prix clairs et une commande facile.',
+    discover: 'Découvrir les produits', support: 'Besoin de conseils ?',
+    sideTitle: 'Des trouvailles pour chaque envie.',
+    sideBody: 'Explorez nos catégories et commandez depuis chez vous.',
+    categories: 'Toutes les catégories',
+    feature1: 'Paiement à la livraison', feature2: 'Livraison partout au Maroc',
+    feature3: 'Offerte dès 500 DH'
+  },
+  ar: {
+    eyebrow: 'GLOBABOX · متجرك الإلكتروني بالمغرب',
+    title: 'كل ما تحتاجه، بثمن مناسب.',
+    subtitle: 'منتجات المنزل، التكنولوجيا، الإكسسوارات، الرياضة والمزيد. اختيارات متنوعة، أثمنة واضحة، وطلب سهل من دارك.',
+    discover: 'تصفح المنتجات', support: 'محتاج مساعدة؟',
+    sideTitle: 'منتجات متنوعة لكل احتياجاتك.',
+    sideBody: 'اكتشف الأقسام وطلب المنتجات اللي عجباتك بسهولة.',
+    categories: 'جميع الأقسام',
+    feature1: 'الدفع عند الاستلام', feature2: 'التوصيل بالمغرب',
+    feature3: 'مجاني ابتداءً من 500 درهم'
+  },
+  en: {
+    eyebrow: 'GLOBABOX · YOUR MOROCCAN ONLINE STORE',
+    title: 'Everyday essentials. Better value.',
+    subtitle: 'Home, tech, accessories, sports and more. Discover useful finds, clear prices and a simple shopping experience.',
+    discover: 'Shop products', support: 'Need help?',
+    sideTitle: 'Discover your next favorite find.',
+    sideBody: 'Explore categories and order conveniently from home.',
+    categories: 'All categories',
+    feature1: 'Cash on delivery', feature2: 'Delivery across Morocco',
+    feature3: 'Free from 500 MAD'
+  }
+} as const;
 
 export default function Hero({ language, onExploreClick, onWhatsAppOrder }: HeroProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const isRtl = language === "ar";
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const t = (key: string) => {
-    return TRANSLATIONS[key]?.[language] || key;
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + HERO_IMAGES.length) % HERO_IMAGES.length);
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-  };
-
-  const handleBestSellersClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const el = document.getElementById("best-sellers-section");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      onExploreClick();
-    }
-  };
-
-  const badgeOffer = {
-    fr: "Livraison au Maroc + Paiement à la livraison",
-    ar: "توصيل داخل المغرب + الدفع عند الاستلام",
-    en: "Morocco delivery + Cash on Delivery"
-  }[language] || "Livraison au Maroc + Paiement à la livraison";
-
-  const textBestSellers = {
-    fr: "Voir les meilleures ventes",
-    ar: "عرض الأكثر مبيعاً",
-    en: "View Best Sellers"
-  }[language] || "Voir les meilleures ventes";
-
+  const c = text[language] || text.fr;
   return (
-    <section 
-      style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      className="relative h-[85vh] min-h-[500px] max-h-[800px] overflow-hidden bg-neutral-950 flex flex-col justify-end"
-    >
-      {/* Background Slides */}
-      {HERO_IMAGES.map((img, index) => {
-        const altTexts = language === 'ar' ? [
-          "جلوبابوكس المغرب - معدات التخييم والكشتات الاحترافية",
-          "جلوبابوكس المغرب - خيام مقاومة للماء، أكياس نوم ومعدات المشي الجبلي",
-          "جلوبابوكس المغرب - لوازم الصيد البري والبحري والأنشطة الخارجية"
-        ] : [
-          "Globabox Maroc - Matériel de bivouac et équipement camping professionnel",
-          "Globabox Maroc - Tentes imperméables, sacs de couchage et matériel de randonnée",
-          "Globabox Maroc - Matériel de chasse, pêche et équipement plein air"
-        ];
-        return (
-          <div
-            key={img}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-out ${
-              index === currentIndex ? 'opacity-100 scale-[1.02] z-0' : 'opacity-0 scale-100 -z-10'
-            }`}
-            style={{ transitionProperty: 'opacity, transform' }}
-          >
-            {/* Dark read-optimized overlays */}
-            <div className="absolute inset-0 bg-black/55 z-10" />
-            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-[#070d1a]/85 to-transparent z-10" />
-            <img
-              src={img}
-              alt={altTexts[index]}
-              referrerPolicy="no-referrer"
-              loading={index === 0 ? "eager" : "lazy"}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        );
-      })}
-
-      {/* Content Layer */}
-      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 md:pb-20 w-full animate-fade-in">
-        {/* Badges Container */}
-        <div className="flex flex-wrap items-center gap-2 mb-4">
-          {/* Urgent Promo Strip */}
-          <div className="inline-flex items-center gap-1.5 bg-orange-600 text-white text-[11px] md:text-xs font-black px-4 py-1.5 rounded-full shadow-lg uppercase leading-normal tracking-wide animate-pulse">
-            <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-300 shrink-0" />
-            <span>{t('bannerPromoFr')}</span>
-          </div>
-
-          {/* Delivery & CoD Offer Badge */}
-          <div className="inline-flex items-center gap-1.5 bg-[#070d1a]/80 border border-orange-500/35 text-orange-400 text-[11px] md:text-sm font-black px-4 py-1.5 rounded-full shadow-lg">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-ping"></span>
-            <span>{badgeOffer}</span>
+    <section className="mx-auto max-w-7xl px-4 pt-6 pb-5 sm:px-6 lg:px-8" dir={language === 'ar' ? 'rtl' : 'ltr'} aria-label={c.eyebrow}>
+      <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+        <div className="relative isolate min-h-[390px] overflow-hidden rounded-[28px] bg-[#102c38] px-6 py-10 text-white sm:px-10 sm:py-14 lg:min-h-[470px]">
+          <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=80" alt="" className="absolute inset-0 h-full w-full object-cover opacity-25" fetchPriority="high" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#102c38]/95 via-[#102c38]/85 to-[#102c38]/40" />
+          <div className="relative z-10 flex h-full max-w-xl flex-col justify-center">
+            <p className="mb-5 w-fit rounded-full border border-white/30 bg-white/10 px-4 py-2 text-[11px] font-semibold tracking-[.1em]">{c.eyebrow}</p>
+            <h1 className="max-w-[600px] text-4xl font-extrabold leading-[1.14] tracking-tight sm:text-5xl lg:text-[54px]">{c.title}</h1>
+            <p className="mt-5 max-w-[500px] text-sm leading-7 text-white/85 sm:text-base">{c.subtitle}</p>
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              <button onClick={onExploreClick} className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#f8ce46] px-6 py-3 text-sm font-bold text-[#172c33] transition hover:bg-yellow-300">
+                {c.discover}<ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </button>
+              <button onClick={() => onWhatsAppOrder?.({source:'hero_support',customMessage: language==='ar' ? 'سلام GLOBABOX، بغيت مساعدة بخصوص المنتجات المتوفرة.' : 'Bonjour GLOBABOX, je souhaite des renseignements sur vos produits.'})} className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-white/50 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10">
+                {c.support}<ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
           </div>
         </div>
-
-        <div className="max-w-3xl">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight font-sans tracking-tight">
-            {t('heroTitle')}
-          </h1>
-          <p className="mt-4 text-sm sm:text-base md:text-lg text-neutral-100 font-sans leading-relaxed">
-            {t('heroSubtitle')}
-          </p>
-
-          <div className="mt-8 flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full">
-            {/* CTA 1: Voir les meilleures ventes */}
-            <button
-              onClick={handleBestSellersClick}
-              className="px-7 py-4 bg-orange-600 hover:bg-orange-500 text-white font-extrabold rounded-2xl shadow-lg shadow-orange-500/20 text-sm transition-all flex items-center justify-center gap-2 cursor-pointer group shrink-0"
-              id="hero-bestsellers-btn"
-            >
-              <Flame className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 fill-amber-300 text-amber-300 animate-pulse" />
-              <span>{textBestSellers}</span>
-            </button>
-
-            {/* CTA 2: Order instantly on Whatsapp */}
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                triggerWhatsAppClick('Hero Layout Button');
-                if (onWhatsAppOrder) {
-                  onWhatsAppOrder({ source: 'hero' });
-                } else {
-                  window.open(WHATSAPP_LINK, "_blank", "noreferrer");
-                }
-              }}
-              className="px-7 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-500/20 text-sm transition-all flex items-center justify-center gap-2.5 shrink-0 cursor-pointer"
-              id="hero-whatsapp-btn"
-            >
-              <WhatsAppIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5 md:w-[22px] md:h-[22px] text-white shrink-0" />
-              <span>{t('btnOrderWhatsApp')}</span>
-            </button>
-
-            {/* CTA 3: Scroll to catalog */}
-            <button
-              onClick={onExploreClick}
-              className="px-7 py-4 bg-neutral-900/90 hover:bg-neutral-800 border border-neutral-700 text-slate-100 font-bold rounded-2xl text-sm transition-all flex items-center justify-center gap-2 cursor-pointer group"
-              id="hero-explore-shop-btn"
-            >
-              <span>{t('btnDiscover')}</span>
-              <ArrowRight className={`w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 transition-transform group-hover:translate-x-1 ${isRtl ? 'rotate-180 group-hover:-translate-x-1' : ''}`} />
-            </button>
-          </div>
+        <div className="grid grid-rows-2 gap-4">
+          <button onClick={onExploreClick} className="group relative min-h-[205px] overflow-hidden rounded-[26px] bg-[#edf2f0] p-7 text-start">
+            <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=850&q=80" alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-30 transition-transform duration-700 group-hover:scale-105" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#e7f0ed] via-[#e7f0ed]/90 to-transparent" />
+            <div className="relative max-w-[270px]">
+              <span className="text-[11px] font-bold uppercase tracking-[.15em] text-[#356b66]">GLOBABOX PICKS</span>
+              <h2 className="mt-3 text-2xl font-extrabold leading-tight text-[#1c3439]">{c.sideTitle}</h2>
+              <p className="mt-2 text-xs leading-5 text-slate-600">{c.sideBody}</p>
+            </div>
+          </button>
+          <button onClick={onExploreClick} className="group relative flex min-h-[205px] items-end overflow-hidden rounded-[26px] bg-[#f7e6bc] p-7 text-start">
+            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=850&q=80" alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-35 transition-transform duration-700 group-hover:scale-105" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#f7e6bc] via-[#f7e6bc]/75 to-transparent" />
+            <div className="relative flex w-full items-end justify-between gap-3">
+              <div><span className="text-[11px] font-semibold tracking-widest text-[#806625]">SHOP ALL</span><h2 className="mt-1 text-2xl font-extrabold text-[#263b3c]">{c.categories}</h2></div>
+              <span className="rounded-full bg-white p-3 text-slate-800 shadow-sm"><ArrowUpRight className="h-5 w-5" /></span>
+            </div>
+          </button>
         </div>
       </div>
-
-      {/* Slide Navigation Manual Arrows */}
-      <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 z-20 flex justify-between pointer-events-none">
-        <button
-          onClick={handlePrev}
-          className="w-10 h-10 rounded-full bg-neutral-900/50 hover:bg-neutral-800 text-white flex items-center justify-center border border-neutral-800/40 pointer-events-auto cursor-pointer focus:outline-none"
-        >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-        <button
-          onClick={handleNext}
-          className="w-10 h-10 rounded-full bg-neutral-900/50 hover:bg-neutral-800 text-white flex items-center justify-center border border-neutral-800/40 pointer-events-auto cursor-pointer focus:outline-none"
-        >
-          <ChevronRight className="w-6 h-6" />
-        </button>
-      </div>
-
-      {/* Dots Indicator */}
-      <div className="absolute bottom-4 right-8 z-20 flex gap-2">
-        {HERO_IMAGES.map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => setCurrentIndex(idx)}
-            className={`w-2.5 h-2.5 rounded-full transition-all ${
-              idx === currentIndex ? 'bg-orange-600 w-6' : 'bg-neutral-700'
-            }`}
-          />
-        ))}
+      <div className="mt-5 grid gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-xs font-semibold text-slate-700 sm:grid-cols-3 sm:gap-5">
+        <div className="flex items-center gap-3"><ShieldCheck className="h-5 w-5 text-teal-700"/>{c.feature1}</div>
+        <div className="flex items-center gap-3"><Truck className="h-5 w-5 text-teal-700"/>{c.feature2}</div>
+        <div className="flex items-center gap-3"><PackageCheck className="h-5 w-5 text-teal-700"/>{c.feature3}</div>
       </div>
     </section>
   );

@@ -37,15 +37,15 @@ export default function BestSellersSection({
         <div>
           <div className="inline-flex items-center gap-1.5 bg-orange-100 text-orange-850 text-[10px] font-black px-2.5 py-1 rounded-md mb-2.5 uppercase tracking-wide">
             <Flame className="w-3.5 h-3.5 fill-orange-600 text-orange-600" />
-            <span>{isRtl ? "الأكثر مبيعاً بالمغرب" : "TOP VENTES MAROC"}</span>
+            <span>{isRtl ? "اختيارات جلوبابوكس" : "SÉLECTION GLOBABOX"}</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            {isRtl ? "المستلزمات الأكثر طلباً وشهرة" : "Nos Meilleures Ventes Exclusives"}
+            {isRtl ? "منتجات تستحق الاكتشاف" : "Notre sélection pour vous"}
           </h2>
           <p className="text-xs text-slate-500 mt-1 font-medium select-none">
             {isRtl 
-              ? "معدات وتجهيزات برية حازت على أعلى التقييمات من زبنائنا في كافة المدن المغربية." 
-              : "Les équipements outdoor plébiscités par nos clients campeurs aux quatre coins du Royaume."}
+              ? "اكتشف منتجات مختارة من الكتالوج المتوفر حالياً." 
+              : "Découvrez une sélection de produits disponibles dans notre catalogue."}
           </p>
         </div>
 

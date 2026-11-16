@@ -1,477 +1,169 @@
-import React from 'react';
-import { Language } from '../types';
+import { DEFAULT_TRACKING_CONFIG, getSafeTrackingConfig, type TrackingConfig } from '../trackingConfig';
 
-// Persistent configurable Tracking IDs using localStorage fallback so admins can customize them easily
-export interface TrackingConfig {
-  metaPixelId: string;
-  tikTokPixelId: string;
-  googleAnalyticsId: string;
-  googleSearchConsoleId: string;
-  webhookUrl?: string;
+export type TrackingConsent = { analytics: boolean; marketing: boolean; updatedAt: string };
+const CONSENT_KEY='globabox_tracking_consent_v2';
+let config: TrackingConfig={...DEFAULT_TRACKING_CONFIG};
+let loaded=false;
+let loadingPromise:Promise<void>|null=null;
+let injected=false;
+type AnalyticsWindow=Window & {dataLayer?:unknown[];gtag?:(...args:unknown[])=>void;fbq?:(...args:unknown[])=>void;_fbq?:unknown;ttq?:any;pintrk?:(...args:unknown[])=>void;snaptr?:(...args:unknown[])=>void};
+const win=()=>window as AnalyticsWindow;
+
+export function getTrackingConsent():TrackingConsent|null {
+  if(typeof window==='undefined')return null;
+  try {
+    const raw=window.localStorage.getItem(CONSENT_KEY);
+    if(!raw)return null;
+    const saved=JSON.parse(raw);
+    if(typeof saved?.analytics!=='boolean'||typeof saved?.marketing!=='boolean')return null;
+    return {analytics:saved.analytics,marketing:saved.marketing,updatedAt:String(saved.updatedAt||'')};
+  } catch {return null;}
 }
 
-export const DEFAULT_TRACKING_CONFIG: TrackingConfig = {
-  metaPixelId: 'FB-987654321-GLOBABOX-PLACEHOLDER',
-  tikTokPixelId: 'TT-ABC123XYZ-GLOBABOX-PLACEHOLDER',
-  googleAnalyticsId: 'G-777777777-GLOBABOX-PLACEHOLDER',
-  googleSearchConsoleId: 'google-site-verification-globabox-placeholder-code',
-  webhookUrl: 'https://api.globabox.com/webhooks/orders'
-};
+export function saveTrackingConsent(choice:{analytics:boolean;marketing:boolean}):void {
+  if(typeof window==='undefined')return;
+  const old=getTrackingConsent();
+  window.localStorage.setItem(CONSENT_KEY,JSON.stringify({...choice,updatedAt:new Date().toISOString()}));
+  // Revoking consent must stop any further events. A reload unloads existing vendor scripts.
+  if(old && (old.analytics!==choice.analytics || old.marketing!==choice.marketing)) {
+    window.location.reload();return;
+  }
+  void initAnalytics().then(()=>triggerPageView(window.location.pathname+window.location.search));
+}
 
-// Get current active config
-export function getTrackingConfig(): TrackingConfig {
-  if (typeof window === 'undefined') return DEFAULT_TRACKING_CONFIG;
-  const stored = localStorage.getItem('globabox_tracking_config');
-  if (stored) {
-    try {
-      return { ...DEFAULT_TRACKING_CONFIG, ...JSON.parse(stored) };
-    } catch (e) {
-      return DEFAULT_TRACKING_CONFIG;
+export const getTrackingConfig=()=>config;
+export const isTrackerValid=(id:string)=>Boolean(id&&id.trim()&&!id.toLowerCase().includes('placeholder'));
+
+function addScript(id:string,src:string):void {
+  if(document.getElementById(id))return;
+  const script=document.createElement('script');
+  script.id=id;script.async=true;script.src=src;document.head.appendChild(script);
+}
+function setGtag(){
+  win().dataLayer=win().dataLayer||[];
+  if(!win().gtag)win().gtag=(...args:unknown[])=>{win().dataLayer!.push(args);};
+}
+function activateTags():void {
+  if(injected || typeof window==='undefined')return;
+  const consent=getTrackingConsent();
+  if(!consent || (!consent.analytics&&!consent.marketing))return;
+  injected=true;
+  // A GTM container can inject both marketing and analytics tags. Only allow
+  // it after both opt-ins; with partial consent load individual permitted tags.
+  const gtmEnabled=Boolean(config.googleTagManagerId && consent.analytics && consent.marketing);
+  if(gtmEnabled){
+    win().dataLayer=win().dataLayer||[];
+    win().dataLayer.push({event:'globabox_consent',analytics:consent.analytics,marketing:consent.marketing});
+    addScript('gb-gtm','https://www.googletagmanager.com/gtm.js?id='+encodeURIComponent(config.googleTagManagerId));
+  }
+  // Only Google direct tags when no GTM container is set, to prevent duplicate tracking.
+  if(!gtmEnabled && (config.googleAnalyticsId&&consent.analytics || config.googleAdsId&&consent.marketing)){
+    setGtag();
+    win().gtag!('js',new Date());
+    // Explicit denied defaults for the categories not accepted.
+    win().gtag!('consent','default',{
+      analytics_storage:consent.analytics?'granted':'denied',
+      ad_storage:consent.marketing?'granted':'denied',
+      ad_user_data:consent.marketing?'granted':'denied',
+      ad_personalization:consent.marketing?'granted':'denied'
+    });
+    if(config.googleAnalyticsId&&consent.analytics)win().gtag!('config',config.googleAnalyticsId,{send_page_view:false});
+    if(config.googleAdsId&&consent.marketing)win().gtag!('config',config.googleAdsId);
+    addScript('gb-google-tag','https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(
+      config.googleAnalyticsId&&consent.analytics?config.googleAnalyticsId:config.googleAdsId
+    ));
+  }
+  if(consent.marketing) {
+    if(config.metaPixelId) {
+      const w=win() as any;
+      if(!w.fbq) {
+        const f:any=(...args:any[])=>{if(f.callMethod)f.callMethod.apply(f,args);else f.queue.push(args);};
+        f.queue=[];f.loaded=true;f.version='2.0';w.fbq=f;w._fbq=f;
+      }
+      w.fbq('init',config.metaPixelId);
+      addScript('gb-meta-pixel','https://connect.facebook.net/en_US/fbevents.js');
     }
-  }
-  return DEFAULT_TRACKING_CONFIG;
-}
-
-// Save active config (used in settings panel)
-export function saveTrackingConfig(config: TrackingConfig) {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem('globabox_tracking_config', JSON.stringify(config));
-  
-  // Re-trigger tags injection
-  initAnalytics();
-}
-
-/**
- * Validates a tracking ID to ensure it is not a dummy, empty, placeholder, or template ID.
- */
-export function isTrackerValid(id: string): boolean {
-  if (!id) return false;
-  const normalized = id.toUpperCase().trim();
-  if (normalized === '') return false;
-  if (normalized.includes('PLACEHOLDER')) return false;
-  if (normalized.includes('YOUR_')) return false;
-  if (normalized.includes('TEMPLATE')) return false;
-  if (normalized.includes('TEST')) return false;
-  if (normalized.includes('DEMO')) return false;
-  if (normalized.includes('FB-987654321')) return false;
-  if (normalized.includes('TT-ABC123XYZ')) return false;
-  if (normalized.includes('G-777777777')) return false;
-  if (normalized.includes('SITE-VERIFICATION-GLOBABOX-PLACEHOLDER')) return false;
-  return true;
-}
-
-// Development logger helper
-const logEvent = (eventName: string, params?: any) => {
-  console.log(
-    `%c[GLOBABOX PIXEL TRACKER] 📊 Triggered -> ${eventName}`,
-    'background: #1e293b; color: #f97316; font-weight: bold; padding: 4px 8px; rounded: 4px;',
-    params || ''
-  );
-};
-
-/**
- * Initialize and load marketing scripts on demand.
- * Sets up GTAG, Meta Pixel (FBQ), and TikTok Pixel (TTQ) script blocks as requested.
- */
-export function initAnalytics() {
-  if (typeof window === 'undefined') return;
-  const config = getTrackingConfig();
-
-  // 1. Inject Search Console Verification Header dynamically if it does not exist
-  let metaTag = document.getElementById('gsc-verification') as HTMLMetaElement;
-  if (!metaTag) {
-    metaTag = document.createElement('meta');
-    metaTag.id = 'gsc-verification';
-    metaTag.name = 'google-site-verification';
-    document.head.appendChild(metaTag);
-  }
-  metaTag.content = isTrackerValid(config.googleSearchConsoleId) ? config.googleSearchConsoleId : 'disabled';
-
-  // 2. Setup Google Analytics Script Block (GTAG)
-  if (isTrackerValid(config.googleAnalyticsId)) {
-    const gaScriptId = 'gtag-script';
-    const gaScript = document.getElementById(gaScriptId);
-    if (!gaScript) {
-      const scriptEl = document.createElement('script');
-      scriptEl.id = gaScriptId;
-      scriptEl.async = true;
-      scriptEl.src = `https://www.googletagmanager.com/gtag/js?id=${config.googleAnalyticsId}`;
-      document.head.appendChild(scriptEl);
-
-      // Create window data layer
-      (window as any).dataLayer = (window as any).dataLayer || [];
-      const gtagFn = function (..._args: any[]) {
-        (window as any).dataLayer.push(arguments);
+    if(config.tikTokPixelId) {
+      const w=win() as any, ttq:any=w.ttq||[];
+      w.TiktokAnalyticsObject='ttq';w.ttq=ttq;
+      ttq.methods=['page','track','identify','instances','debug','on','off','once','ready','alias','group','enableCookie','disableCookie'];
+      ttq.setAndDefer=(obj:any,method:string)=>{obj[method]=(...args:any[])=>obj.push([method,...args]);};
+      for(const method of ttq.methods)ttq.setAndDefer(ttq,method);
+      ttq.load=(id:string)=>{
+        ttq._i=ttq._i||{};ttq._i[id]=[];ttq._i[id]._u='https://analytics.tiktok.com/i18n/pixel/events.js';
+        ttq._t=ttq._t||{};ttq._t[id]=Date.now();ttq._o=ttq._o||{};ttq._o[id]={};
+        addScript('gb-tiktok','https://analytics.tiktok.com/i18n/pixel/events.js?sdkid='+encodeURIComponent(id)+'&lib=ttq');
       };
-      (window as any).gtag = gtagFn;
-      gtagFn('js', new Date());
-      gtagFn('config', config.googleAnalyticsId);
+      ttq.load(config.tikTokPixelId);
+    }
+    if(config.pinterestTagId) {
+      const w=win() as any;
+      if(!w.pintrk){const q:any=(...args:any[])=>q.queue.push(args);q.queue=[];q.version='3.0';w.pintrk=q;}
+      w.pintrk('load',config.pinterestTagId);
+      addScript('gb-pinterest','https://s.pinimg.com/ct/core.js');
+    }
+    if(config.snapPixelId) {
+      const w=win() as any;
+      if(!w.snaptr){const q:any=(...args:any[])=>q.handleRequest?q.handleRequest.apply(q,args):q.queue.push(args);q.queue=[];q.version='1.0';w.snaptr=q;}
+      w.snaptr('init',config.snapPixelId,{});
+      addScript('gb-snap','https://sc-static.net/scevent.min.js');
     }
   }
-
-  // 3. Setup Meta Facebook Pixel Block (FBQ)
-  if (isTrackerValid(config.metaPixelId)) {
-    const fbScriptId = 'fb-pixel-script';
-    const fbScript = document.getElementById(fbScriptId);
-    if (!fbScript) {
-      // standard pixel boilerplate
-      (function (f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
-        if (f.fbq) return;
-        n = f.fbq = function () {
-          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-        };
-        if (!f._fbq) f._fbq = n;
-        n.push = n;
-        n.loaded = !0;
-        n.version = '2.0';
-        n.queue = [];
-        t = b.createElement(e);
-        t.async = !0;
-        t.src = v;
-        s = b.getElementsByTagName(e)[0];
-        s.parentNode!.insertBefore(t, s);
-      })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-      
-      (window as any).fbq('init', config.metaPixelId);
-    }
-  }
-
-  // 4. Setup TikTok Pixel Block (TTQ)
-  if (isTrackerValid(config.tikTokPixelId)) {
-    const ttScriptId = 'tt-pixel-script';
-    const ttScript = document.getElementById(ttScriptId);
-    if (!ttScript) {
-      (function (w: any, d: any, t: any) {
-        w.TiktokAnalyticsObject = t;
-        var ttq = (w[t] = w[t] || []);
-        ttq.methods = [
-          'page',
-          'track',
-          'identify',
-          'instances',
-          'debug',
-          'on',
-          'off',
-          'once',
-          'ready',
-          'alias',
-          'group',
-          'enableCookie',
-          'disableCookie',
-        ];
-        ttq.setAndDefer = function (ts: any, ev: any) {
-          ts[ev] = function () {
-            ts.push([ev].concat(Array.prototype.slice.call(arguments, 0)));
-          };
-        };
-        for (var i = 0; i < ttq.methods.length; i++) {
-          ttq.setAndDefer(ttq, ttq.methods[i]);
+}
+export async function initAnalytics():Promise<void>{
+  if(typeof window==='undefined')return;
+  if(!loadingPromise) {
+    loadingPromise=(async()=>{
+      try{
+        const response=await fetch('/api/tracking-config',{cache:'no-store'});
+        if(response.ok){
+          const data=await response.json() as {config?:unknown}|null;
+          config=getSafeTrackingConfig(data?.config);
         }
-        ttq.instance = function (ts: any) {
-          for (var e = ttq._i[ts] || [], n = 0; n < ttq.methods.length; n++) {
-            ttq.setAndDefer(e, ttq.methods[n]);
-          }
-          return e;
-        };
-        ttq.load = function (e: any, n: any) {
-          var i = 'https://analytics.tiktok.com/i18n/pixel/events.js';
-          ttq._i = ttq._i || {};
-          ttq._i[e] = [];
-          ttq._i[e]._u = i;
-          ttq._t = ttq._t || {};
-          ttq._t[e] = +new Date();
-          ttq._o = ttq._o || {};
-          ttq._o[e] = n || {};
-          var o = d.createElement('script');
-          o.type = 'text/javascript';
-          o.async = !0;
-          o.src = i + '?sdkid=' + e + '&lib=' + t;
-          var a = d.getElementsByTagName('script')[0];
-          a.parentNode!.insertBefore(o, a);
-        };
-      })(window, document, 'ttq');
-
-      (window as any).ttq.load(config.tikTokPixelId);
-      (window as any).ttq.page();
-    }
+      }catch{config={...DEFAULT_TRACKING_CONFIG};}
+      loaded=true;
+    })();
   }
+  await loadingPromise;
+  activateTags();
 }
-
-/**
- * Event Trigger 1: PageView
- */
-export function triggerPageView(path: string) {
-  logEvent('PageView', { path });
-  
-  const config = getTrackingConfig();
-
-  // GA4 pageview
-  if (typeof window !== 'undefined' && (window as any).gtag && isTrackerValid(config.googleAnalyticsId)) {
-    (window as any).gtag('event', 'page_view', {
-      page_path: path,
-      page_title: document.title
-    });
+const granted=(type:'analytics'|'marketing')=>Boolean(getTrackingConsent()?.[type]);
+const send=(name:string,values:Record<string,unknown>={})=>{
+  if(typeof window==='undefined')return;
+  if(!loaded){void initAnalytics().then(()=>send(name,values));return;}
+  activateTags();
+  if(granted('analytics')&&config.googleAnalyticsId&&!document.getElementById('gb-gtm')&&win().gtag)
+    win().gtag!('event',name==='PageView'?'page_view':name==='ViewContent'?'view_item':name==='AddToCart'?'add_to_cart':name==='InitiateCheckout'?'begin_checkout':name==='Purchase'?'purchase':name==='WhatsAppClick'?'generate_lead':name,values);
+  if(granted('marketing')){
+    const w=win();
+    if(config.metaPixelId&&w.fbq)w.fbq('track',name==='WhatsAppClick'?'Lead':name,values);
+    if(config.tikTokPixelId&&w.ttq)(name==='PageView'?w.ttq.page():w.ttq.track(name==='Purchase'?'PlaceAnOrder':name==='WhatsAppClick'?'Contact':name,values));
+    if(config.pinterestTagId&&w.pintrk)w.pintrk('track',name==='Purchase'?'checkout':name==='AddToCart'?'addtocart':'pagevisit',values);
+    if(config.snapPixelId&&w.snaptr)w.snaptr('track',name==='Purchase'?'PURCHASE':name==='AddToCart'?'ADD_CART':name==='ViewContent'?'VIEW_CONTENT':'PAGE_VIEW',values);
+    if(config.googleAdsId&&config.googleAdsConversionLabel&&!document.getElementById('gb-gtm')&&w.gtag&&name==='Purchase')
+      w.gtag('event','conversion',{send_to:config.googleAdsId+'/'+config.googleAdsConversionLabel,...values});
   }
-
-  // Meta standard PageView
-  if (typeof window !== 'undefined' && (window as any).fbq && isTrackerValid(config.metaPixelId)) {
-    (window as any).fbq('track', 'PageView');
-  }
-
-  // TikTok standard Page
-  if (typeof window !== 'undefined' && (window as any).ttq && isTrackerValid(config.tikTokPixelId)) {
-    (window as any).ttq.page();
-  }
+  if(config.googleTagManagerId && document.getElementById('gb-gtm'))
+    win().dataLayer?.push({event:'globabox_'+name.toLowerCase(),...values});
+};
+export function triggerPageView(path:string){
+  if(path.startsWith('/admin'))return;
+  send('PageView',{page_path:path,page_title:typeof document!=='undefined'?document.title:''});
 }
-
-/**
- * Event Trigger 2: ViewContent (Viewing product page/popup)
- */
-export function triggerViewContent(product: { id: string; name: string; price: number; category?: string }) {
-  const eventParams = {
-    content_name: product.name,
-    content_category: product.category || 'Camping & Adventure',
-    content_ids: [product.id],
-    content_type: 'product',
-    value: product.price,
-    currency: 'MAD'
-  };
-
-  logEvent('ViewContent', eventParams);
-
-  const config = getTrackingConfig();
-
-  // GA4
-  if (typeof window !== 'undefined' && (window as any).gtag && isTrackerValid(config.googleAnalyticsId)) {
-    (window as any).gtag('event', 'view_item', {
-      currency: 'MAD',
-      value: product.price,
-      items: [{
-        item_id: product.id,
-        item_name: product.name,
-        item_category: product.category,
-        price: product.price,
-        quantity: 1
-      }]
-    });
-  }
-
-  // Meta Pixel
-  if (typeof window !== 'undefined' && (window as any).fbq && isTrackerValid(config.metaPixelId)) {
-    (window as any).fbq('track', 'ViewContent', eventParams);
-  }
-
-  // TikTok Pixel
-  if (typeof window !== 'undefined' && (window as any).ttq && isTrackerValid(config.tikTokPixelId)) {
-    (window as any).ttq.track('ViewContent', {
-      contents: [{
-        content_id: product.id,
-        content_name: product.name,
-        price: product.price,
-        quantity: 1
-      }],
-      value: product.price,
-      currency: 'MAD'
-    });
-  }
+export function triggerViewContent(product:{id:string;name:string;price:number;category?:string}){
+  send('ViewContent',{content_ids:[product.id],content_name:product.name,content_category:product.category||'',content_type:'product',currency:'MAD',value:product.price,
+    items:[{item_id:product.id,item_name:product.name,item_category:product.category,price:product.price,quantity:1}]});
 }
-
-/**
- * Event Trigger 3: AddToCart
- */
-export function triggerAddToCart(
-  product: { id: string; name: string; price: number; category?: string },
-  quantity: number = 1
-) {
-  const eventParams = {
-    content_name: product.name,
-    content_category: product.category || 'Camping & Adventure',
-    content_ids: [product.id],
-    content_type: 'product',
-    value: product.price * quantity,
-    currency: 'MAD',
-    quantity: quantity
-  };
-
-  logEvent('AddToCart', eventParams);
-
-  const config = getTrackingConfig();
-
-  // GA4
-  if (typeof window !== 'undefined' && (window as any).gtag && isTrackerValid(config.googleAnalyticsId)) {
-    (window as any).gtag('event', 'add_to_cart', {
-      currency: 'MAD',
-      value: product.price * quantity,
-      items: [{
-        item_id: product.id,
-        item_name: product.name,
-        item_category: product.category,
-        price: product.price,
-        quantity: quantity
-      }]
-    });
-  }
-
-  // Meta Pixel
-  if (typeof window !== 'undefined' && (window as any).fbq && isTrackerValid(config.metaPixelId)) {
-    (window as any).fbq('track', 'AddToCart', eventParams);
-  }
-
-  // TikTok Pixel
-  if (typeof window !== 'undefined' && (window as any).ttq && isTrackerValid(config.tikTokPixelId)) {
-    (window as any).ttq.track('AddToCart', {
-      contents: [{
-        content_id: product.id,
-        content_name: product.name,
-        price: product.price,
-        quantity: quantity
-      }],
-      value: product.price * quantity,
-      currency: 'MAD'
-    });
-  }
+export function triggerAddToCart(product:{id:string;name:string;price:number;category?:string},quantity=1){
+  send('AddToCart',{content_ids:[product.id],content_name:product.name,content_category:product.category||'',content_type:'product',currency:'MAD',value:product.price*quantity,quantity,
+    items:[{item_id:product.id,item_name:product.name,price:product.price,quantity}]});
 }
-
-/**
- * Event Trigger 4: InitiateCheckout
- */
-export function triggerInitiateCheckout(cartItems: any[], totalPrice: number) {
-  const contentIds = cartItems.map(item => item.id);
-  const eventParams = {
-    content_ids: contentIds,
-    content_type: 'product',
-    value: totalPrice,
-    currency: 'MAD',
-    num_items: cartItems.length
-  };
-
-  logEvent('InitiateCheckout', eventParams);
-
-  const config = getTrackingConfig();
-
-  // GA4
-  if (typeof window !== 'undefined' && (window as any).gtag && isTrackerValid(config.googleAnalyticsId)) {
-    (window as any).gtag('event', 'begin_checkout', {
-      currency: 'MAD',
-      value: totalPrice,
-      items: cartItems.map(item => ({
-        item_id: item.id,
-        item_name: item.name,
-        price: item.price,
-        quantity: item.quantity
-      }))
-    });
-  }
-
-  // Meta Pixel
-  if (typeof window !== 'undefined' && (window as any).fbq && isTrackerValid(config.metaPixelId)) {
-    (window as any).fbq('track', 'InitiateCheckout', eventParams);
-  }
-
-  // TikTok Pixel
-  if (typeof window !== 'undefined' && (window as any).ttq && isTrackerValid(config.tikTokPixelId)) {
-    (window as any).ttq.track('InitiateCheckout', {
-      contents: cartItems.map(item => ({
-        content_id: item.id,
-        content_name: item.name,
-        price: item.price,
-        quantity: item.quantity
-      })),
-      value: totalPrice,
-      currency: 'MAD'
-    });
-  }
+export function triggerInitiateCheckout(cartItems:any[],totalPrice:number){
+  send('InitiateCheckout',{content_ids:cartItems.map(x=>x.id),content_type:'product',currency:'MAD',value:totalPrice,
+    items:cartItems.map(x=>({item_id:x.id,item_name:x.name,price:x.price,quantity:x.quantity}))});
 }
-
-/**
- * Event Trigger 5: Purchase / Lead (Triggered on successful checkout)
- */
-export function triggerPurchase(orderReference: string, cartItems: any[], totalPrice: number) {
-  const contentIds = cartItems.map(item => item.id);
-  const eventParams = {
-    content_ids: contentIds,
-    content_type: 'product',
-    value: totalPrice,
-    currency: 'MAD',
-    num_items: cartItems.length,
-    order_ref: orderReference
-  };
-
-  logEvent('Purchase', eventParams);
-
-  const config = getTrackingConfig();
-
-  // GA4
-  if (typeof window !== 'undefined' && (window as any).gtag && isTrackerValid(config.googleAnalyticsId)) {
-    (window as any).gtag('event', 'purchase', {
-      transaction_id: orderReference,
-      currency: 'MAD',
-      value: totalPrice,
-      items: cartItems.map(item => ({
-        item_id: item.id,
-        item_name: item.name,
-        price: item.price,
-        quantity: item.quantity
-      }))
-    });
-  }
-
-  // Meta Pixel
-  if (typeof window !== 'undefined' && (window as any).fbq && isTrackerValid(config.metaPixelId)) {
-    (window as any).fbq('track', 'Purchase', eventParams);
-  }
-
-  // TikTok Pixel
-  if (typeof window !== 'undefined' && (window as any).ttq && isTrackerValid(config.tikTokPixelId)) {
-    (window as any).ttq.track('PlaceAnOrder', {
-      contents: cartItems.map(item => ({
-        content_id: item.id,
-        content_name: item.name,
-        price: item.price,
-        quantity: item.quantity
-      })),
-      value: totalPrice,
-      currency: 'MAD'
-    });
-  }
+export function triggerPurchase(reference:string,cartItems:any[],totalPrice:number){
+  send('Purchase',{transaction_id:reference,order_ref:reference,content_ids:cartItems.map(x=>x.id),content_type:'product',currency:'MAD',value:totalPrice,
+    items:cartItems.map(x=>({item_id:x.id,item_name:x.name,price:x.price,quantity:x.quantity}))});
 }
-
-/**
- * Event Trigger 6: WhatsAppClick (Direct communication trigger)
- */
-export function triggerWhatsAppClick(label: string = 'Support Button') {
-  const eventParams = {
-    click_label: label,
-    time: new Date().toISOString()
-  };
-
-  logEvent('WhatsAppClick', eventParams);
-
-  const config = getTrackingConfig();
-
-  // GA4 custom event
-  if (typeof window !== 'undefined' && (window as any).gtag && isTrackerValid(config.googleAnalyticsId)) {
-    (window as any).gtag('event', 'whatsapp_click', {
-      click_label: label
-    });
-    (window as any).gtag('event', 'generate_lead', {
-      click_label: label
-    });
-  }
-
-  // Meta Pixel Custom Lead
-  if (typeof window !== 'undefined' && (window as any).fbq && isTrackerValid(config.metaPixelId)) {
-    (window as any).fbq('track', 'Lead', {
-      content_name: 'WhatsApp Contact',
-      content_category: label
-    });
-  }
-
-  // TikTok Custom Click Tracker
-  if (typeof window !== 'undefined' && (window as any).ttq && isTrackerValid(config.tikTokPixelId)) {
-    (window as any).ttq.track('Contact', {
-      type: 'whatsapp',
-      label: label
-    });
-  }
-}
+export function triggerWhatsAppClick(label='Support Button'){send('WhatsAppClick',{click_label:label});}

@@ -1,0 +1,25 @@
+name: GLOBABOX staging live audit (read only)
+
+on:
+  push:
+    branches:
+      - rebuild/globabox-full-20261113
+    paths:
+      - "scripts/staging-live-audit.mjs"
+      - ".github/workflows/staging-live-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  staging-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Audit live staging (no credentials, no writes)
+        run: node scripts/staging-live-audit.mjs

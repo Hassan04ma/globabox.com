@@ -1,9 +1,11 @@
 import {
-  ArrowUpRight, CreditCard, Home, MessageCircle, PackageCheck,
-  Phone, ShieldCheck, ShoppingBag, ShoppingCart, Truck
+  ArrowUpRight, CircleHelp, FileText, House, MapPin, PackageSearch,
+  Mail, PhoneCall, RotateCcw, ShieldCheck, ShoppingBag, ShoppingCart, Truck
 } from 'lucide-react';
 import type { Language } from '../types';
 import { ORDER_SUPPORT_NUMBER, WHATSAPP_LINK } from '../data';
+import WhatsAppIcon from './WhatsAppIcon';
+import { CONTACT_EMAIL, CONTACT_EMAIL_LINK } from '../contactEmail';
 
 interface StoreFooterProps {
   language: Language;
@@ -14,170 +16,114 @@ interface StoreFooterProps {
   onLegal: (tab: string) => void;
 }
 
-const copy = {
+const messages = {
   fr: {
-    about: 'Globabox sélectionne des produits pour le quotidien, la maison et les loisirs. Commandez en ligne avec paiement à la livraison au Maroc.',
-    nav: 'Navigation',
-    home: 'Accueil',
-    shop: 'Découvrir la boutique',
-    track: 'Suivre ma commande',
-    cart: 'Mon panier',
-    deliveryReturns: 'Livraison et retours',
-    contactLink: 'Nous contacter',
-    assurance: 'Livraison et paiement',
-    nationwide: 'Livraison au Maroc',
-    cod: 'Paiement à la livraison',
-    fees: 'Frais affichés avant confirmation de commande',
-    timing: 'Délais précisés lors de la confirmation',
-    contact: 'Service client',
-    hours: 'Tous les jours : 8h00 – 22h00',
-    whatsapp: 'Contacter sur WhatsApp',
-    copyright: 'Tous droits réservés.',
-    aboutLink: 'À propos',
-    deliveryLink: 'Livraison',
-    returnsLink: 'Retours',
-    terms: 'Conditions générales',
-    privacy: 'Confidentialité',
-    legalContact: 'Contact'
+    tagline:'Le quotidien, en mieux.',
+    intro:'Une boutique en ligne marocaine pensée pour vos besoins de tous les jours, avec des achats simples et des informations claires.',
+    policy:'Informations & politiques',about:'À propos de nous',shipping:'Livraison et frais',returns:'Retours & échanges',
+    terms:'Conditions de vente',privacy:'Confidentialité',contactPolicy:'Informations de contact',
+    shop:'Votre boutique',home:'Accueil',browse:'Tous les produits',track:'Suivre mon colis',cart:'Mon panier',faq:'Questions fréquentes',
+    contact:'Contact & assistance',whatsapp:'Écrire sur WhatsApp',call:'Nous appeler',email:'E-mail',
+    zone:'Zone de livraison',morocco:'Maroc — disponibilité à confirmer selon la destination',
+    notice:'Paiement à la livraison · Frais indiqués avant validation',rights:'Tous droits réservés.'
   },
   ar: {
-    about: 'جلوبابوكس متجر إلكتروني لمنتجات الحياة اليومية والمنزل والترفيه. تسوق بسهولة مع الدفع عند الاستلام داخل المغرب.',
-    nav: 'روابط مهمة',
-    home: 'الرئيسية',
-    shop: 'تصفح المتجر',
-    track: 'تتبع طلبي',
-    cart: 'سلة المشتريات',
-    deliveryReturns: 'التوصيل والإرجاع',
-    contactLink: 'اتصل بنا',
-    assurance: 'التوصيل والدفع',
-    nationwide: 'التوصيل داخل المغرب',
-    cod: 'الدفع عند الاستلام',
-    fees: 'مصاريف التوصيل واضحة قبل تأكيد الطلب',
-    timing: 'تأكيد مدة التوصيل عند تأكيد الطلبية',
-    contact: 'خدمة الزبناء',
-    hours: 'يومياً: 08:00 – 22:00',
-    whatsapp: 'تواصل معنا عبر واتساب',
-    copyright: 'جميع الحقوق محفوظة.',
-    aboutLink: 'من نحن',
-    deliveryLink: 'التوصيل',
-    returnsLink: 'الإرجاع',
-    terms: 'شروط البيع',
-    privacy: 'الخصوصية',
-    legalContact: 'التواصل'
+    tagline:'كل يوم، اختيارات أفضل.',
+    intro:'جلوبابوكس متجر مغربي للتسوق عبر الإنترنت، بمنتجات متنوعة وخطوات شراء واضحة وسهلة.',
+    policy:'السياسات والمعلومات',about:'من نحن',shipping:'سياسة التوصيل',returns:'الإرجاع والتبديل',
+    terms:'شروط البيع',privacy:'سياسة الخصوصية',contactPolicy:'معلومات التواصل',
+    shop:'التسوق والخدمات',home:'الرئيسية',browse:'جميع المنتجات',track:'تتبع الطرد',cart:'سلة التسوق',faq:'الأسئلة الشائعة',
+    contact:'التواصل والمساعدة',whatsapp:'مراسلتنا عبر واتساب',call:'اتصل بنا',email:'البريد الإلكتروني',
+    zone:'منطقة التوصيل',morocco:'المغرب — التوصيل حسب توفر الخدمة لعنوانك',
+    notice:'الدفع عند الاستلام · مصاريف التوصيل كتظهر قبل التأكيد',rights:'جميع الحقوق محفوظة.'
   },
   en: {
-    about: 'Globabox offers a selection of everyday, home and leisure products. Shop online in Morocco with cash on delivery.',
-    nav: 'Quick links',
-    home: 'Home',
-    shop: 'Browse the store',
-    track: 'Track my order',
-    cart: 'My cart',
-    deliveryReturns: 'Shipping and returns',
-    contactLink: 'Contact us',
-    assurance: 'Delivery and payment',
-    nationwide: 'Delivery in Morocco',
-    cod: 'Cash on delivery',
-    fees: 'Delivery fees shown before checkout confirmation',
-    timing: 'Delivery timing confirmed with your order',
-    contact: 'Customer support',
-    hours: 'Daily: 8:00 AM – 10:00 PM',
-    whatsapp: 'Chat on WhatsApp',
-    copyright: 'All rights reserved.',
-    aboutLink: 'About',
-    deliveryLink: 'Delivery',
-    returnsLink: 'Returns',
-    terms: 'Terms of sale',
-    privacy: 'Privacy',
-    legalContact: 'Contact'
+    tagline:'Better choices, every day.',
+    intro:'A Moroccan online store for everyday shopping, with useful finds and a clear, simple ordering experience.',
+    policy:'Policies & information',about:'About us',shipping:'Delivery information',returns:'Returns & exchanges',
+    terms:'Terms of sale',privacy:'Privacy policy',contactPolicy:'Contact information',
+    shop:'Shop & services',home:'Home',browse:'All products',track:'Track my parcel',cart:'My cart',faq:'Frequently asked questions',
+    contact:'Contact & support',whatsapp:'Chat on WhatsApp',call:'Call us',email:'Email',
+    zone:'Delivery area',morocco:'Morocco — service subject to destination confirmation',
+    notice:'Cash on delivery · Delivery fees shown before confirmation',rights:'All rights reserved.'
   }
-};
+} as const;
 
-export default function StoreFooter({
-  language, onHome, onBrowse, onTrack, onCart, onLegal
-}: StoreFooterProps) {
-  const c = copy[language] || copy.fr;
-  const rtl = language === 'ar';
-
-  const navButton = (label: string, Icon: typeof Home, onClick: () => void) => (
-    <button type="button" onClick={onClick}
-      className="group inline-flex w-fit items-center gap-2 rounded py-1 text-start text-sm text-slate-300 transition-colors hover:text-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400">
-      <Icon size={15} className="shrink-0 text-slate-500 transition-colors group-hover:text-orange-400" aria-hidden="true" />
-      <span>{label}</span>
-    </button>
-  );
-
-  const legalButton = (label: string, tab: string) => (
-    <button type="button" onClick={() => onLegal(tab)}
-      className="rounded py-1 text-xs text-slate-400 transition-colors hover:text-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400">
-      {label}
-    </button>
-  );
-
+export default function StoreFooter({language,onHome,onBrowse,onTrack,onCart,onLegal}:StoreFooterProps) {
+  const c=messages[language];
+  const linkClass='group flex w-full items-center gap-2.5 rounded-lg py-2 text-start text-[13px] text-white/70 transition-colors hover:text-[#f4c75a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f4c75a]';
+  const iconClass='shrink-0 text-[#b5d5c7] transition-colors group-hover:text-[#f4c75a]';
+  const openFAQ=()=>document.getElementById('faq-section')?.scrollIntoView({behavior:'smooth',block:'start'});
   return (
-    <footer dir={rtl ? 'rtl' : 'ltr'} className="border-t border-[#1c2e4a] bg-[#0b1528] px-5 py-12 text-slate-300 sm:px-8 sm:py-14">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-        <section aria-label="Globabox">
-          <div className="mb-5 flex items-center gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 text-base font-extrabold text-white shadow-lg">
-              GB
-            </span>
-            <span className="text-xl font-extrabold tracking-wide text-white">Globabox</span>
+    <footer className="border-t border-[#164f43] bg-[#103e35] text-white" dir={language==='ar'?'rtl':'ltr'}>
+      <div className="grid w-full max-w-none gap-10 px-5 pb-12 pt-14 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1.2fr_1fr_1fr_1.15fr] lg:gap-8 lg:px-8">
+        <section aria-label="GLOBABOX" className="max-w-sm">
+          <div className="mb-4 flex items-center gap-3">
+            <img src="/brand/globabox-mark.svg" alt="" className="h-12 w-12 shrink-0 rounded-xl" loading="lazy" />
+            <span className="text-[23px] font-black tracking-tight">GLOBA<span className="text-[#f4c75a]">BOX</span></span>
           </div>
-          <p className="max-w-xs text-sm leading-7 text-slate-400">{c.about}</p>
-          <a href="https://globabox.com" className="mt-5 inline-flex items-center gap-1.5 rounded font-medium text-orange-400 hover:text-orange-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400">
-            globabox.com <ArrowUpRight size={15} aria-hidden="true" />
-          </a>
+          <p className="text-sm font-bold text-[#f4c75a]">{c.tagline}</p>
+          <p className="mt-3 text-[13px] leading-7 text-white/70">{c.intro}</p>
+          <div className="mt-6 inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-[11px] font-medium text-white/80">
+            <ShieldCheck size={17} className="shrink-0 text-[#f4c75a]" />
+            {c.notice}
+          </div>
         </section>
 
-        <nav aria-label={c.nav}>
-          <h2 className="mb-5 text-xs font-bold uppercase tracking-[0.12em] text-white">{c.nav}</h2>
-          <div className="flex flex-col items-start gap-2">
-            {navButton(c.home, Home, onHome)}
-            {navButton(c.shop, ShoppingBag, onBrowse)}
-            {navButton(c.track, PackageCheck, onTrack)}
-            {navButton(c.cart, ShoppingCart, onCart)}
-            {navButton(c.deliveryReturns, Truck, () => onLegal('delivery'))}
-            {navButton(c.contactLink, Phone, () => onLegal('contact'))}
+        {/* Dedicated policy column directly after the brand — never a duplicate link list. */}
+        <nav aria-label={c.policy}>
+          <h2 className="mb-4 border-b border-white/15 pb-3 text-sm font-extrabold text-white">{c.policy}</h2>
+          <div className="space-y-0.5">
+            <button type="button" onClick={()=>onLegal('about')} className={linkClass}><CircleHelp size={17} className={iconClass}/>{c.about}</button>
+            <button type="button" onClick={()=>onLegal('delivery')} className={linkClass}><Truck size={17} className={iconClass}/>{c.shipping}</button>
+            <button type="button" onClick={()=>onLegal('returns')} className={linkClass}><RotateCcw size={17} className={iconClass}/>{c.returns}</button>
+            <button type="button" onClick={()=>onLegal('cgv')} className={linkClass}><FileText size={17} className={iconClass}/>{c.terms}</button>
+            <button type="button" onClick={()=>onLegal('privacy')} className={linkClass}><ShieldCheck size={17} className={iconClass}/>{c.privacy}</button>
+            <button type="button" onClick={()=>onLegal('contact')} className={linkClass}><PhoneCall size={17} className={iconClass}/>{c.contactPolicy}</button>
           </div>
         </nav>
 
-        <section aria-label={c.assurance}>
-          <h2 className="mb-5 text-xs font-bold uppercase tracking-[0.12em] text-white">{c.assurance}</h2>
-          <div className="space-y-4 text-sm leading-6 text-slate-400">
-            <p className="flex items-start gap-3"><Truck size={18} className="mt-0.5 shrink-0 text-orange-400" aria-hidden="true" /><span>{c.nationwide}</span></p>
-            <p className="flex items-start gap-3"><CreditCard size={18} className="mt-0.5 shrink-0 text-orange-400" aria-hidden="true" /><span>{c.cod}</span></p>
-            <p className="flex items-start gap-3"><ShieldCheck size={18} className="mt-0.5 shrink-0 text-orange-400" aria-hidden="true" /><span>{c.fees}</span></p>
-            <p className="flex items-start gap-3"><PackageCheck size={18} className="mt-0.5 shrink-0 text-orange-400" aria-hidden="true" /><span>{c.timing}</span></p>
+        <nav aria-label={c.shop}>
+          <h2 className="mb-4 border-b border-white/15 pb-3 text-sm font-extrabold text-white">{c.shop}</h2>
+          <div className="space-y-0.5">
+            <button type="button" onClick={onHome} className={linkClass}><House size={17} className={iconClass}/>{c.home}</button>
+            <button type="button" onClick={onBrowse} className={linkClass}><ShoppingBag size={17} className={iconClass}/>{c.browse}</button>
+            <button type="button" onClick={onTrack} className={linkClass}><PackageSearch size={17} className={iconClass}/>{c.track}</button>
+            <button type="button" onClick={onCart} className={linkClass}><ShoppingCart size={17} className={iconClass}/>{c.cart}</button>
+            <button type="button" onClick={openFAQ} className={linkClass}><CircleHelp size={17} className={iconClass}/>{c.faq}</button>
           </div>
-        </section>
+        </nav>
 
         <section aria-label={c.contact}>
-          <h2 className="mb-5 text-xs font-bold uppercase tracking-[0.12em] text-white">{c.contact}</h2>
-          <a href={'tel:' + ORDER_SUPPORT_NUMBER}
-            className="flex w-fit items-center gap-3 rounded-xl border border-slate-700 bg-[#14233f] px-4 py-3 text-base font-bold text-white transition-colors hover:border-orange-500 hover:text-orange-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400">
-            <Phone size={18} className="shrink-0 text-orange-400" aria-hidden="true" />
-            <span dir="ltr">{ORDER_SUPPORT_NUMBER}</span>
-          </a>
-          <p className="mt-4 text-sm text-slate-400">{c.hours}</p>
-          <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
-            className="mt-5 inline-flex items-center gap-2 rounded-lg border border-emerald-700/50 px-4 py-2.5 text-sm font-semibold text-emerald-400 transition-colors hover:bg-emerald-900/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400">
-            <MessageCircle size={18} aria-hidden="true" />{c.whatsapp}
-          </a>
+          <h2 className="mb-4 border-b border-white/15 pb-3 text-sm font-extrabold text-white">{c.contact}</h2>
+          <div className="space-y-3">
+            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
+              className="group flex min-h-[52px] items-center gap-3 rounded-xl border border-[#3b7666] bg-[#1a5849] px-4 transition hover:border-[#f4c75a] hover:bg-[#206856]"
+              aria-label={c.whatsapp}>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#25d366] text-white"><WhatsAppIcon className="h-5 w-5"/></span>
+              <span className="min-w-0 flex-1 text-[13px] font-semibold">{c.whatsapp}</span><ArrowUpRight size={16} className="text-white/70"/>
+            </a>
+            <a href={'tel:'+ORDER_SUPPORT_NUMBER}
+              className="group flex min-h-[52px] items-center gap-3 rounded-xl border border-[#3b7666] bg-[#1a5849] px-4 transition hover:border-[#f4c75a] hover:bg-[#206856]">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-[#f4c75a]"><PhoneCall size={19}/></span>
+              <span className="min-w-0 flex-1"><span className="block text-[11px] text-white/60">{c.call}</span><span className="block text-sm font-bold" dir="ltr">{ORDER_SUPPORT_NUMBER}</span></span>
+            </a>
+            {CONTACT_EMAIL && <a href={CONTACT_EMAIL_LINK} className="group flex min-h-[52px] items-center gap-3 rounded-xl border border-[#3b7666] bg-[#1a5849] px-4 transition hover:border-[#f4c75a] hover:bg-[#206856]">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-[#f4c75a]"><Mail size={19}/></span>
+              <span className="min-w-0 flex-1"><span className="block text-[11px] text-white/60">{c.email}</span><span dir="ltr" className="block break-all text-[13px] font-bold">{CONTACT_EMAIL}</span></span>
+            </a>}
+            <div className="flex items-start gap-3 rounded-xl border border-white/10 px-4 py-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-[#f4c75a]"><MapPin size={20}/></span>
+              <div><p className="text-[12px] font-bold">{c.zone}</p><p className="mt-1 text-xs leading-5 text-white/65">{c.morocco}</p></div>
+            </div>
+          </div>
         </section>
       </div>
-
-      <div className="mx-auto mt-12 flex max-w-7xl flex-col items-center justify-between gap-4 border-t border-slate-800 pt-7 text-center sm:flex-row sm:text-start">
-        <p className="text-xs text-slate-500">© {new Date().getFullYear()} Globabox. {c.copyright}</p>
-        <nav aria-label={c.terms}>
-          <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 sm:justify-end">
-            {legalButton(c.aboutLink, 'about')}
-            {legalButton(c.deliveryLink, 'delivery')}
-            {legalButton(c.returnsLink, 'returns')}
-            {legalButton(c.terms, 'cgv')}
-            {legalButton(c.privacy, 'privacy')}
-            {legalButton(c.legalContact, 'contact')}
-          </div>
-        </nav>
+      <div className="border-t border-white/10 bg-[#0c332b]">
+        <div className="flex w-full max-w-none flex-col items-center justify-between gap-2 px-5 py-5 text-center text-xs text-white/60 sm:flex-row sm:px-6 lg:px-8">
+          <p>© {new Date().getFullYear()} GLOBABOX. {c.rights}</p>
+          <p>{c.notice}</p>
+        </div>
       </div>
     </footer>
   );

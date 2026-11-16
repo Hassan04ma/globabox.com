@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" role="img" aria-label="Globabox icon">
+ <rect x="5" y="5" width="98" height="98" rx="28" fill="#104D43"/>
+ <path d="M77 36c-6.6-7.2-14-10.4-23.7-10.4-18.1 0-31.5 13.2-31.5 30.1S35.2 86 53.3 86c10.1 0 19.2-3.7 25.8-10V56.4H54.2" fill="none" stroke="white" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round"/>
+ <rect x="68" y="56.2" width="15" height="15" rx="2.5" fill="#F4C75A"/>
+</svg>

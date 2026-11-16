@@ -124,7 +124,7 @@ Merci de confirmer la disponibilité et la livraison.`;
       style={{ direction: isRtl ? 'rtl' : 'ltr' }}
       className="fixed inset-0 z-50 bg-[#070d1a]/85 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4 animate-fade-in"
     >
-      <div className="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl shadow-2xl text-center flex flex-col max-h-[92vh] overflow-hidden">
+      <div className="relative w-full max-w-4xl bg-white border border-slate-200 rounded-3xl shadow-2xl text-center flex flex-col max-h-[92vh] overflow-hidden">
         
         {/* Absolute Close Icon */}
         <button
@@ -136,27 +136,27 @@ Merci de confirmer la disponibilité et la livraison.`;
         </button>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-6 md:p-8 space-y-4 text-center scrollbar-thin">
+        <div className="flex-1 overflow-y-auto p-6 sm:p-8 md:p-10 space-y-6 text-center scrollbar-thin">
           
           {/* Globabox brand header */}
-          <div className="flex items-center justify-center gap-1.5 opacity-85 select-none mt-2">
-            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-orange-600 to-amber-700 flex items-center justify-center text-white text-[10px] font-black font-sans">G</div>
-            <span className="text-xs font-black text-slate-800 tracking-widest font-sans">GLOBABOX.COM</span>
+          <div className="flex items-center justify-center gap-3 select-none mt-1 mb-2">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#104d43] flex items-center justify-center text-white text-3xl sm:text-4xl font-black font-sans shadow-lg">G</div>
+            <div className="text-left"><div className="text-2xl sm:text-3xl font-black tracking-tight text-[#104d43] font-sans">GLOBABOX</div><div className="text-[10px] sm:text-xs font-semibold tracking-[0.24em] text-slate-400 font-sans">SHOP WITH CONFIDENCE</div></div>
           </div>
 
           {/* Success Icon Badge */}
-          <div className="mx-auto w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center border border-orange-200 shadow-sm relative shrink-0">
-            <CheckCircle className="w-8 h-8 text-orange-600 animate-bounce" />
+          <div className="mx-auto w-20 h-20 rounded-full bg-emerald-50 flex items-center justify-center border border-orange-200 shadow-sm relative shrink-0">
+            <CheckCircle className="w-11 h-11 text-[#176b5c]" />
           </div>
 
           {/* Modal Head text */}
           <div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 leading-tight">
               {isRtl ? 'شكراً لكم على طلبكم !' : 'Merci pour votre commande !'}
             </h2>
             <p className="text-xs text-slate-500 mt-2 font-sans px-2">
               {t('orderSuccessDesc')}{' '}
-              <span className="font-mono text-orange-600 font-bold bg-slate-50 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded border border-slate-200 inline-block mt-1">
+              <span className="font-mono text-[#104d43] font-bold bg-emerald-50 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded border border-slate-200 inline-block mt-1">
                 {reference}
               </span>
             </p>
@@ -174,7 +174,7 @@ Merci de confirmer la disponibilité et la livraison.`;
             </div>
             <div className={`flex justify-between items-center pb-1.5 border-b border-slate-150`}>
               <span className="text-slate-500">{isRtl ? 'المدينة :' : 'Ville :'}</span>
-              <span className="text-orange-600 font-bold">{form.city}</span>
+              <span className="text-[#176b5c] font-bold">{form.city}</span>
             </div>
             <div className={`flex justify-between items-start pb-1.5 border-b border-slate-150`}>
               <span className="text-slate-500 shrink-0 mr-4">{isRtl ? 'العنوان :' : 'Adresse :'}</span>
@@ -216,21 +216,27 @@ Merci de confirmer la disponibilité et la livraison.`;
             </div>
             <div className={`flex justify-between items-center pb-1.5 border-b border-slate-150`}>
               <span className="text-slate-500">{isRtl ? 'حالة الطلب :' : 'Statut :'}</span>
-              <span className="font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+              <span className="font-bold text-[#104d43] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                 {isRtl ? 'في انتظار التأكيد' : 'En attente de confirmation'}
               </span>
             </div>
             <div className="flex justify-between items-center font-bold text-sm pt-1 text-slate-900">
               <span>{t('totalLabel')} :</span>
-              <span className="font-mono text-base sm:text-lg text-orange-600">{total} DH</span>
+              <span className="font-mono text-base sm:text-lg text-[#104d43]">{total} DH</span>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+            <div className="rounded-xl border border-slate-200 bg-white p-3 flex items-center gap-3"><span className="w-9 h-9 rounded-lg bg-emerald-50 text-[#104d43] flex items-center justify-center shrink-0"><ShieldAlert size={18} /></span><span className="text-[11px] font-semibold text-slate-700">{isRtl ? 'الدفع عند الاستلام، بلا تسبيق' : language === 'en' ? 'Cash on delivery, no deposit' : 'Paiement à la livraison, sans acompte'}</span></div>
+            <div className="rounded-xl border border-slate-200 bg-white p-3 flex items-center gap-3"><span className="w-9 h-9 rounded-lg bg-emerald-50 text-[#104d43] flex items-center justify-center shrink-0"><Compass size={18} /></span><span className="text-[11px] font-semibold text-slate-700">{isRtl ? 'التوصيل لجميع أنحاء المغرب' : language === 'en' ? 'Delivery across Morocco' : 'Livraison partout au Maroc'}</span></div>
+            <div className="rounded-xl border border-slate-200 bg-white p-3 flex items-center gap-3"><span className="w-9 h-9 rounded-lg bg-emerald-50 text-[#104d43] flex items-center justify-center shrink-0"><MessageSquare size={18} /></span><span className="text-[11px] font-semibold text-slate-700">{isRtl ? 'تأكيد ومتابعة عبر واتساب' : language === 'en' ? 'WhatsApp confirmation and support' : 'Confirmation et suivi sur WhatsApp'}</span></div>
           </div>
 
           {/* Informative Instructions */}
           <div className="text-xs text-slate-650 leading-relaxed font-sans px-1 space-y-3">
             <p>{t('orderSuccessNext')}</p>
-            <div className="bg-orange-50/70 border border-orange-200/50 p-3 rounded-xl text-[11px] text-orange-950 flex gap-2 items-start justify-center">
-              <span className="inline-flex items-center gap-1 shrink-0 ring-1 ring-orange-500/15 rounded px-1.5 py-0.5 bg-orange-100 font-bold text-orange-700">
+            <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-[11px] text-emerald-950 flex gap-2 items-start justify-center">
+              <span className="inline-flex items-center gap-1 shrink-0 ring-1 ring-emerald-600/15 rounded px-1.5 py-0.5 bg-emerald-100 font-bold text-emerald-800">
                 <Info size={11} />
                 <span>Info</span>
               </span>
@@ -243,12 +249,12 @@ Merci de confirmer la disponibilité et la livraison.`;
         </div>
 
         {/* Sticky/Fixed Bottom Footer Actions */}
-        <div className="bg-slate-50 border-t border-slate-150 p-4 sm:p-5 flex flex-col space-y-2.5 shrink-0">
+        <div className="bg-white border-t border-slate-200 p-5 sm:p-6 flex flex-col space-y-2.5 shrink-0">
           
           {/* Confirmer sur WhatsApp */}
           <button
             onClick={handleWhatsAppConfirm}
-            className="w-full bg-[#25D366] hover:bg-[#20ba59] active:scale-98 text-white font-extrabold text-xs sm:text-sm py-3 px-6 rounded-2xl transition-all shadow-md shadow-emerald-100 cursor-pointer flex items-center justify-center gap-2"
+            className="w-full bg-[#104d43] hover:bg-[#176b5c] text-white font-extrabold text-xs sm:text-sm py-3 px-6 rounded-2xl transition-all shadow-md shadow-emerald-100 cursor-pointer flex items-center justify-center gap-2"
           >
             {/* Custom WhatsApp Icon */}
             <svg className="w-5 h-5 fill-current text-white shrink-0" viewBox="0 0 24 24">
@@ -261,14 +267,14 @@ Merci de confirmer la disponibilité et la livraison.`;
           <div className="grid grid-cols-2 gap-2.5">
             <button
               onClick={onOpenTracking || onClose}
-              className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-extrabold text-xs py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm animate-pulse"
+              className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-extrabold text-xs py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm "
             >
-              <Info className="w-4 h-4 text-orange-600" />
+              <Info className="w-4 h-4 text-[#176b5c]" />
               <span>{isRtl ? 'تتبع طلبي' : 'Suivre ma commande'}</span>
             </button>
             <button
               onClick={onClose}
-              className="bg-slate-900 hover:bg-slate-850 text-white font-extrabold text-xs py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+              className="bg-[#104d43] hover:bg-[#176b5c] text-white font-extrabold text-xs py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
             >
               <ShoppingBag className="w-4 h-4 text-white" />
               <span>{isRtl ? 'العودة للمتجر' : 'Retour à la boutique'}</span>

@@ -186,13 +186,13 @@ Merci de confirmer la disponibilité et la livraison.`;
   return (
     <div
       style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      className="fixed inset-0 z-50 overflow-y-auto bg-[#070d1a]/90 backdrop-blur-md shadow-2xl flex items-center justify-center p-4 animate-fade-in"
+      className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/75 backdrop-blur-sm shadow-2xl flex items-center justify-center p-3 sm:p-5"
     >
-      <div className="relative w-full max-w-4xl bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-2xl max-h-[92vh] flex flex-col">
+      <div className="relative w-full max-w-5xl bg-white border border-slate-200 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl max-h-[94vh] flex flex-col">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0 bg-slate-50">
+        <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200 shrink-0 bg-white">
           <div className="flex items-center gap-2">
-            <Compass className="w-5 h-5 text-orange-500 animate-spin-slow" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#104d43]" aria-hidden="true" />
             <span className="text-xs uppercase font-extrabold tracking-widest text-[#0B1528] font-sans">
               {t('brandName')} • {product.category.toUpperCase()}
             </span>
@@ -211,7 +211,7 @@ Merci de confirmer la disponibilité et la livraison.`;
           {/* Left Side: Images Section */}
           <div className="space-y-4">
             {/* Main Stage Image */}
-            <div className="aspect-[4/3] rounded-2xl bg-[#0b1528] overflow-hidden border border-slate-200/80 flex items-center justify-center relative group">
+            <div className="aspect-[4/3] rounded-2xl bg-slate-100 overflow-hidden border border-slate-200 flex items-center justify-center relative group">
               <ProductImage
                 src={selectedImage}
                 fallbackSrc={getFallbackForImage(selectedImage)}
@@ -262,7 +262,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                     onClick={() => setSelectedImage(img)}
                     className={`aspect-square rounded-xl overflow-hidden border-2 transition-all relative ${
                       selectedImage === img
-                        ? 'border-orange-500 shadow-md ring-2 ring-orange-500/10'
+                        ? 'border-[#176b5c] shadow-md ring-2 ring-[#176b5c]/10'
                         : 'border-slate-200/80 hover:border-slate-350'
                     }`}
                   >
@@ -279,7 +279,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                       }}
                     />
                     {selectedImage === img && (
-                      <div className="absolute inset-0 bg-orange-600/5 mix-blend-multiply" />
+                      <div className="absolute inset-0 bg-[#104d43]/5 mix-blend-multiply" />
                     )}
                   </button>
                 ))}
@@ -314,7 +314,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                 ) : isLimited ? (
                   <span className="text-[10px] uppercase font-bold px-2 py-1 bg-amber-100 text-amber-805 border border-amber-200/80 rounded-lg font-sans flex items-center gap-1.5">
                     <span className="relative flex h-1.5 w-1.5 shrink-0">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-25"></span>
                       <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500"></span>
                     </span>
                     <span>{t('stock_limited')}</span>
@@ -326,7 +326,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                   </span>
                 )}
                 {product.bestSeller && (
-                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-orange-600 text-white rounded-md font-sans flex items-center gap-1 shadow-sm">
+                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-[#104d43] text-white rounded-md font-sans flex items-center gap-1 shadow-sm">
                     <Flame className="w-3 h-3 fill-amber-300 text-amber-300" />
                     <span>{t('filterBestSellers')}</span>
                   </span>
@@ -340,7 +340,7 @@ Merci de confirmer la disponibilité et la livraison.`;
 
               {/* Pricing Section (Price + Old Price clearly visible) */}
               <div className="flex items-baseline gap-2.5 my-3 bg-slate-50/70 py-2.5 px-4 rounded-xl border border-slate-100 inline-flex">
-                <span className="text-2xl font-extrabold font-mono text-orange-600">
+                <span className="text-2xl font-bold font-mono text-[#104d43]">
                   {product.price} {t('moroccoCurrency')}
                 </span>
                 {product.originalPrice && (
@@ -352,7 +352,7 @@ Merci de confirmer la disponibilité et la livraison.`;
 
               {/* Delivery and Cash on Delivery Badge */}
               <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-3.5 my-3 flex items-start gap-3">
-                <div className="p-2 rounded-xl bg-orange-100 text-orange-600 shrink-0">
+                <div className="p-2 rounded-xl bg-[#e5efe9] text-[#104d43] shrink-0">
                   <Truck className="w-4 h-4" />
                 </div>
                 <div className="space-y-0.5">
@@ -366,33 +366,33 @@ Merci de confirmer la disponibilité et la livraison.`;
               </div>
 
               {/* Product Characteristics Tabs */}
-              <div className="flex border-b border-slate-100 mb-3.5 mt-5">
+              <div className="flex flex-wrap gap-2 border-b border-slate-200 mb-4 mt-5">
                 <button
                   onClick={() => setActiveTab('info')}
-                  className={`pb-2 text-xs font-black uppercase tracking-wider border-b-2 transition-all mr-4 cursor-pointer font-sans ${
+                  className={`rounded-lg px-3 py-2 text-xs font-semibold transition-all cursor-pointer font-sans ${
                     activeTab === 'info'
-                      ? 'border-orange-500 text-orange-600'
-                      : 'border-transparent text-slate-400 hover:text-slate-800'
+                      ? 'bg-[#eaf2ed] text-[#104d43] ring-1 ring-[#104d43]/10'
+                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
                   }`}
                 >
                   {t('productDetailsTab')}
                 </button>
                 <button
                   onClick={() => setActiveTab('specs')}
-                  className={`pb-2 text-xs font-black uppercase tracking-wider border-b-2 transition-all mr-4 cursor-pointer font-sans ${
+                  className={`rounded-lg px-3 py-2 text-xs font-semibold transition-all cursor-pointer font-sans ${
                     activeTab === 'specs'
-                      ? 'border-orange-500 text-orange-600'
-                      : 'border-transparent text-slate-400 hover:text-slate-800'
+                      ? 'bg-[#eaf2ed] text-[#104d43] ring-1 ring-[#104d43]/10'
+                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
                   }`}
                 >
                   {getLocalText(localTxt.specificationsTitle)}
                 </button>
                 <button
                   onClick={() => setActiveTab('guarantees')}
-                  className={`pb-2 text-xs font-black uppercase tracking-wider border-b-2 transition-all cursor-pointer font-sans ${
+                  className={`rounded-lg px-3 py-2 text-xs font-semibold transition-all cursor-pointer font-sans ${
                     activeTab === 'guarantees'
-                      ? 'border-orange-500 text-orange-600'
-                      : 'border-transparent text-slate-400 hover:text-slate-800'
+                      ? 'bg-[#eaf2ed] text-[#104d43] ring-1 ring-[#104d43]/10'
+                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
                   }`}
                 >
                   {t('productSafetyTab')}
@@ -423,23 +423,23 @@ Merci de confirmer la disponibilité et la livraison.`;
                 {activeTab === 'guarantees' && (
                   <div className="space-y-2.5 text-slate-700">
                     <p className="flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 text-orange-500 shrink-0" />
+                      <ShieldCheck className="w-4 h-4 text-[#176b5c] shrink-0" />
                       <span><strong>{t('trust_cod_title')}</strong> : {t('trust_cod_desc')}</span>
                     </p>
                     <p className="flex items-center gap-2">
-                      <Compass className="w-4 h-4 text-orange-500 shrink-0" />
+                      <Compass className="w-4 h-4 text-[#176b5c] shrink-0" />
                       <span><strong>{t('trust_morocco_delivery_title')}</strong> : {t('trust_morocco_delivery_desc')}</span>
                     </p>
                     <p className="flex items-center gap-2">
-                      <Truck className="w-4 h-4 text-orange-500 shrink-0" />
+                      <Truck className="w-4 h-4 text-[#176b5c] shrink-0" />
                       <span><strong>{t('trust_free_delivery_title')}</strong> : {t('trust_free_delivery_desc')}</span>
                     </p>
                     <p className="flex items-center gap-2">
-                      <MessageSquare className="w-4 h-4 text-orange-500 shrink-0" />
+                      <MessageSquare className="w-4 h-4 text-[#176b5c] shrink-0" />
                       <span><strong>{t('trust_whatsapp_title')}</strong> : {t('trust_whatsapp_desc')}</span>
                     </p>
                     <p className="flex items-center gap-2">
-                      <Star className="w-4 h-4 text-orange-500 shrink-0" />
+                      <Star className="w-4 h-4 text-[#176b5c] shrink-0" />
                       <span><strong>{t('trust_fast_support_title')}</strong> : {t('trust_fast_support_desc')}</span>
                     </p>
                   </div>
@@ -466,7 +466,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                               onClick={() => setSelectedColor(color)}
                               className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                                 selectedColor === color
-                                  ? 'border-orange-500 bg-orange-50 text-orange-600 ring-1 ring-orange-500/25'
+                                  ? 'border-[#176b5c] bg-[#f0f6f2] text-[#104d43] ring-1 ring-[#176b5c]/20'
                                   : 'border-slate-200 bg-white text-slate-700 hover:border-slate-350'
                               }`}
                             >
@@ -496,7 +496,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                             onClick={() => setSelectedSize(size)}
                             className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
                               selectedSize === size
-                                ? 'border-orange-500 bg-orange-50 text-orange-600 ring-1 ring-orange-500/25'
+                                ? 'border-[#176b5c] bg-[#f0f6f2] text-[#104d43] ring-1 ring-[#176b5c]/20'
                                 : 'border-slate-200 bg-white text-slate-700 hover:border-slate-350'
                             }`}
                           >
@@ -536,14 +536,14 @@ Merci de confirmer la disponibilité et la livraison.`;
               {!isOutOfStock && !!getProductSocialProof(product, language) && (
                 <div style={{ direction: isRtl ? 'rtl' : 'ltr' }} className="space-y-1.5 bg-rose-50/40 border border-rose-100/60 rounded-2xl p-3">
                   <div className="text-xs text-rose-900 font-extrabold flex items-start gap-2">
-                    <Flame className="w-4 h-4 text-rose-600 animate-pulse shrink-0 mt-0.5" />
+                    <Flame className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                     <span className="leading-snug">{t('trust_ordered_today')}</span>
                   </div>
                   
                   {getProductSocialProof(product, language) && (
                     <div className="text-[11px] text-indigo-900 font-extrabold flex items-center gap-1.5 pt-1.5 border-t border-indigo-100/30">
                       <span className="flex h-2 w-2 relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                        <span className="absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-25"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
                       </span>
                       <Zap className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
@@ -573,7 +573,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                         onInstantCheckout(product, quantity, selectedSize || undefined, selectedColor || undefined);
                         onClose();
                       }}
-                      className="w-full bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-xs py-4 px-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md shadow-orange-600/10 hover:scale-[1.01]"
+                      className="w-full bg-[#104d43] hover:bg-[#176b5c] text-white font-extrabold text-xs py-4 px-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md shadow-[#104d43]/10 hover:shadow-md"
                     >
                       <ShoppingCart className="w-4 h-4 text-white shrink-0" />
                       <span>{t('btnOrderNow')} - {product.price * quantity} {t('moroccoCurrency')}</span>
@@ -582,7 +582,7 @@ Merci de confirmer la disponibilité et la livraison.`;
                     {/* 2. Direct order via WhatsApp */}
                     <button
                       onClick={handleWhatsAppDirectOrder}
-                      className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs py-4 px-4 rounded-xl transition-all border border-emerald-500/10 cursor-pointer flex items-center justify-center gap-2 shadow-md shadow-emerald-600/10 hover:scale-[1.01]"
+                      className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs py-4 px-4 rounded-xl transition-all border border-emerald-500/10 cursor-pointer flex items-center justify-center gap-2 shadow-md shadow-emerald-600/10 hover:shadow-md"
                     >
                       <WhatsAppIcon className="w-4 h-4 text-white shrink-0" />
                       <span>{t('btnOrderWhatsApp')}</span>
@@ -603,30 +603,60 @@ Merci de confirmer la disponibilité et la livraison.`;
                 </div>
               )}
 
+              {/* Customer reviews block — presentation-ready; review persistence remains server-side work. */}
+              <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" aria-label="Avis clients">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
+                      {language === 'ar' ? 'آراء العملاء' : language === 'en' ? 'Customer reviews' : 'Avis clients'}
+                    </p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <span className="text-lg font-black text-slate-900">{Number(product.rating || 0).toFixed(1)}</span>
+                      <div className="flex items-center gap-0.5" aria-label={`Rating ${product.rating || 0} out of 5`}>
+                        {[1,2,3,4,5].map(star => (
+                          <Star key={star} size={14} className={star <= Math.round(product.rating || 0) ? 'fill-[#176b5c] text-[#176b5c]' : 'text-slate-300'} />
+                        ))}
+                      </div>
+                      <span className="text-[11px] font-semibold text-slate-500">
+                        ({product.reviewsCount || 0})
+                      </span>
+                    </div>
+                  </div>
+                  <div className="rounded-full bg-[#f0f6f2] px-3 py-1.5 text-[10px] font-bold text-[#104d43]">
+                    {language === 'ar' ? 'تقييمات موثوقة' : language === 'en' ? 'Verified ratings' : 'Évaluations'}
+                  </div>
+                </div>
+                <div className="mt-3 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-xs leading-relaxed text-slate-500">
+                  {product.reviewsCount
+                    ? (language === 'ar' ? 'ستظهر آراء العملاء هنا.' : language === 'en' ? 'Customer comments will appear here.' : 'Les commentaires clients apparaîtront ici.')
+                    : (language === 'ar' ? 'لا توجد تعليقات بعد. كن أول من يقيّم هذا المنتج.' : language === 'en' ? 'No reviews yet. Be the first to review this product.' : 'Aucun avis pour le moment. Soyez le premier à évaluer ce produit.')}
+                </div>
+              </section>
+
               {/* Trust badges footer inside modal */}
               <div className="grid grid-cols-2 gap-2 pt-4 mt-2 border-t border-slate-150 text-[10px] text-slate-655 font-bold font-sans">
                 <div className="flex items-center gap-1.5 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                  <ShieldCheck className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#176b5c] shrink-0" />
                   <span>{t('trust_cod_title')}</span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                  <Compass className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                  <Compass className="w-3.5 h-3.5 text-[#176b5c] shrink-0" />
                   <span>{t('trust_morocco_delivery_title')}</span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                  <Truck className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                  <Truck className="w-3.5 h-3.5 text-[#176b5c] shrink-0" />
                   <span>{t('trust_free_delivery_title')}</span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                  <WhatsAppIcon className="w-3.5 h-3.5 text-orange-500 shrink-0 fill-current" />
+                  <WhatsAppIcon className="w-3.5 h-3.5 text-[#176b5c] shrink-0 fill-current" />
                   <span>{t('trust_whatsapp_title')}</span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                  <Phone className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                  <Phone className="w-3.5 h-3.5 text-[#176b5c] shrink-0" />
                   <span>{t('trust_fast_support_title')}</span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                   <Star className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                   <Star className="w-3.5 h-3.5 text-[#176b5c] shrink-0" />
                    <span>{t('trust_verified_products_title')}</span>
                 </div>
               </div>

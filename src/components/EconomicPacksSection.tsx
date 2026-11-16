@@ -30,7 +30,7 @@ export default function EconomicPacksSection({
   return (
     <section 
       style={{ direction: isRtl ? 'rtl' : 'ltr' }}
-      className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-900 to-[#0b162c] text-white my-10 relative overflow-hidden"
+      className="py-16 px-4 sm:px-6 lg:px-8 bg-[#104d43] text-white my-10 relative overflow-hidden"
       id="economic-packs-section"
     >
       {/* Decorative vector overlays */}
@@ -42,7 +42,7 @@ export default function EconomicPacksSection({
           <div>
             <div className="inline-flex items-center gap-1.5 bg-orange-600 text-white text-[10px] font-black px-2.5 py-1.5 rounded-md mb-3 uppercase tracking-wider shadow-md">
               <Percent className="w-3.5 h-3.5 animate-spin" />
-              <span>{isRtl ? "باقات التوفير الكبرى" : "PACKS ÉCONOMIQUES - MAXI COMPLETS"}</span>
+              <span>{isRtl ? "باقات التوفير الكبرى" : "PACKS & ENSEMBLES"}</span>
             </div>
             
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
@@ -50,8 +50,8 @@ export default function EconomicPacksSection({
             </h2>
             <p className="text-xs text-slate-300 mt-1 font-medium font-sans">
               {isRtl 
-                ? "وفر المال واشترِ عتاداً متكاملاً (خيمة، كيس نوم، وموقد) في باقة واحدة مدمجة مع شحن مجاني وسريع لكافة أنحاء المغرب." 
-                : "Équipez-vous au complet en économisant gros ! Nos packs combinés de matériel de camping et bivouac professionnel incluent tout le nécessaire d'outdoor."}
+                ? "اكتشف الباقات المتوفرة في متجرنا، بالأثمنة الموضحة قبل الشراء." 
+                : "Découvrez les lots et ensembles disponibles dans notre catalogue."}
             </p>
           </div>
 
@@ -72,11 +72,11 @@ export default function EconomicPacksSection({
           </div>
           <div className="flex items-center gap-2">
             <Percent className="text-orange-500 w-5 h-5" />
-            <span className="font-semibold">{isRtl ? "توفير يصل حتى 45% مقارنة بالشراء الفردي" : "Jusqu'à 45% d'Économie réelle"}</span>
+            <span className="font-semibold">{isRtl ? "قارن الأثمنة قبل الشراء" : "Comparez les prix affichés"}</span>
           </div>
           <div className="flex items-center gap-2">
             <ShieldCheck className="text-orange-500 w-5 h-5" />
-            <span className="font-semibold">{isRtl ? "شحن مجاني فوري مضمون لجميع المدن" : "Livraison Express 100% Gratuite"}</span>
+            <span className="font-semibold">{isRtl ? "توصيل مجاني ابتداءً من 500 درهم" : "Livraison offerte dès 500 DH"}</span>
           </div>
         </div>
 

@@ -1,4 +1,6 @@
 import { PRODUCTS, CATEGORIES } from '../src/data';
+import { STORE_DEPARTMENTS } from '../src/storefrontDepartments';
+import { DEFAULT_TRACKING_CONFIG, validateTrackingConfig } from '../src/trackingConfig';
 import { isAdmin, handleAdminAuth } from './auth';
 import { quoteOrder } from './orderQuote';
 
@@ -80,14 +82,17 @@ async function categoryList(db:D1Database, includeInactive=false):Promise<Catego
       overrides.set(row.id,{...parsed,isActive:row.active===1}); }
     catch { console.error('Invalid category override',row.id); }
   }
-  const fromDefault=CATEGORIES.map(cat=>({
+  const fromDefault=[...STORE_DEPARTMENTS, ...CATEGORIES.filter(cat=>!STORE_DEPARTMENTS.some(dept=>dept.id===cat.id))].map(cat=>({
     id:cat.id,name:cat.name,image:cat.image,
     description:cat.description||{fr:'',ar:'',en:''},isActive:true
   }));
   const all=fromDefault.map(cat=>overrides.get(cat.id)||cat);
   const ids=new Set(fromDefault.map(cat=>cat.id));
   for(const [id,cat] of overrides) if(!ids.has(id)) all.push(cat);
-  return includeInactive?all:all.filter(cat=>cat.isActive);
+  // Historic camping departments remain available in the admin for data safety,
+  // but are never accidentally made public by the new storefront.
+  const mainIds=new Set(STORE_DEPARTMENTS.map(dept=>dept.id));
+  return includeInactive?all:all.filter(cat=>cat.isActive && mainIds.has(cat.id));
 }
 
 const auth = isAdmin;
@@ -145,12 +150,12 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url), path = url.pathname, method = request.method;
     if (!path.startsWith('/api/')) return env.ASSETS.fetch(request);
-    if (method === 'POST' && (path === '/api/admin/login' || path === '/api/orders')) {
+    if (method === 'POST' && (path === '/api/admin/login' || path === '/api/orders' || path === '/api/track-order')) {
       const limiter = path === '/api/admin/login' ? env.ADMIN_RATE_LIMITER : env.CHECKOUT_RATE_LIMITER;
       // Fail closed for production request endpoints when the anti-abuse binding is missing.
       if (!limiter) return json({error:'Service temporarily unavailable'},503);
       const ip = request.headers.get('cf-connecting-ip') || 'unknown';
-      const result = await limiter.limit({key: ip});
+      const result = await limiter.limit({key: path === '/api/track-order' ? 'tracking:' + ip : ip});
       if (!result.success) return json({error:'Too many requests. Try again later.'},429);
     }
     // Image uploads use a separate 750 KB limit and never go through JSON parsing.
@@ -395,6 +400,32 @@ export default {
         },writeVerified && cleanupVerified ? 200 : 503);
       }
 
+      // Store tracking settings are public IDs (not passwords, tokens or webhooks).
+      // They are persisted in D1 and served to all storefront clients, so the
+      // admin's browser is never used as the source of truth.
+      if ((path === '/api/tracking-config' || path === '/api/admin/tracking-config') &&
+          (method === 'GET' || method === 'PUT')) {
+        if (method === 'PUT' && path !== '/api/admin/tracking-config')
+          return json({error:'Not found'},404);
+        if (path.startsWith('/api/admin/') && !await auth(request,env))
+          return json({error:'Unauthorized'},401);
+        await env.DB.prepare('CREATE TABLE IF NOT EXISTS store_settings (key TEXT PRIMARY KEY, data_json TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run();
+        if (method === 'GET') {
+          const found=await env.DB.prepare("SELECT data_json FROM store_settings WHERE key='tracking-config' LIMIT 1")
+            .first<{data_json:string}>();
+          let config={...DEFAULT_TRACKING_CONFIG};
+          if (found?.data_json) {
+            try {config=validateTrackingConfig(JSON.parse(found.data_json)) || config;}
+            catch {console.error('Invalid tracking settings data in D1');}
+          }
+          return json({config});
+        }
+        const submitted=validateTrackingConfig(await readBody(request));
+        if (!submitted) return json({error:'Invalid tracking IDs. Only public vendor identifiers are accepted.'},400);
+        const stored=await env.DB.prepare("INSERT INTO store_settings (key,data_json) VALUES ('tracking-config',?) ON CONFLICT(key) DO UPDATE SET data_json=excluded.data_json,updated_at=CURRENT_TIMESTAMP")
+          .bind(JSON.stringify(submitted)).run();
+        return stored.success?json({success:true,config:submitted}):json({error:'D1 did not confirm settings update'},503);
+      }
       if (path === '/api/categories' && method === 'GET') {
         const categories=await categoryList(env.DB);
         return json(categories);
@@ -440,6 +471,45 @@ export default {
         if (!await auth(request, env)) return json({ error: 'Unauthorized' }, 401);
         return json(await listProducts(env.DB, true, env.STORE_DEMO_CATALOG === 'true'));
       }
+      // Public self-service tracking requires two independent order identifiers.
+      // Never expose raw order JSON, address, telephone, name or full order listings.
+      // Requests are rate-limited (at the top of fetch) using an IP-scoped Worker limiter.
+      if (path === '/api/track-order' && method === 'POST') {
+        const body = await readBody(request);
+        const reference = typeof body?.reference === 'string' ? body.reference.trim().toUpperCase() : '';
+        const rawPhone = typeof body?.phone === 'string' ? body.phone.trim() : '';
+        if (!/^GB-[A-Z0-9-]{6,36}$/.test(reference) || rawPhone.length > 32)
+          return json({error:'Invalid order reference or phone number'},400);
+        const normalisePhone = (value:string) => {
+          const digits=value.replace(/[^0-9]/g,'');
+          if(digits.startsWith('00212')) return digits.slice(5);
+          if(digits.startsWith('212')) return digits.slice(3);
+          return digits.startsWith('0') ? digits.slice(1) : digits;
+        };
+        const phone = normalisePhone(rawPhone);
+        if(!/^[5-7][0-9]{8}$/.test(phone)) return json({error:'Invalid order reference or phone number'},400);
+        const row=await env.DB.prepare("SELECT data_json FROM orders WHERE UPPER(json_extract(data_json, '$.reference')) = ? LIMIT 1")
+          .bind(reference).first<{data_json:string}>();
+        const order = row ? JSON.parse(row.data_json) : null;
+        // The same response is used for both an unknown reference and a phone mismatch.
+        if(!order || normalisePhone(String(order.phoneNumber || ''))!==phone)
+          return json({error:'Order not found. Verify your reference and telephone.'},404);
+        const status = ['pending','confirmed','processing','shipped','delivered','cancelled'].includes(order.status)
+          ? order.status : 'pending';
+        return json({success:true,tracking:{
+          reference, status,
+          date:typeof order.date==='string' ? order.date : null,
+          total:Number.isFinite(order.total) ? order.total : null,
+          itemCount:Array.isArray(order.items)
+            ? order.items.reduce((sum:number,item:any)=>sum+(Number.isFinite(item.quantity)?item.quantity:0),0)
+            : 0,
+          source:'store',
+          courierTrackingAvailable: Boolean(order.shipping?.carrier && order.shipping?.trackingNumber),
+          ...(order.shipping?.carrier && order.shipping?.trackingNumber
+            ? {carrier:String(order.shipping.carrier).slice(0,100),trackingNumber:String(order.shipping.trackingNumber).slice(0,100)}
+            : {})
+        }});
+      }
       if (path === '/api/orders' && method === 'GET') {
         if (!await auth(request, env)) return json({ error: 'Unauthorized' }, 401);
         const rows = await env.DB.prepare('SELECT data_json FROM orders ORDER BY created_at DESC').all<{ data_json: string }>();
@@ -473,15 +543,38 @@ export default {
         }
         if (!existing) return json({error:'Order not found'},404);
         if (method === 'DELETE') {
-          await env.DB.prepare('DELETE FROM orders WHERE id=?').bind(resolvedId).run();
-          return json({success:true});
+          // Preserve sales history and customer references. Use cancelled status
+          // instead of permanently removing merchant order records from D1.
+          return json({error:'Order deletion disabled. Set status to cancelled instead.'},403);
         }
         const update = await readBody(request);
         const allowed = ['pending','confirmed','processing','shipped','delivered','cancelled'];
-        if (!allowed.includes(update?.status)) return json({error:'Invalid order status'},400);
-        const order = {...JSON.parse(existing.data_json),status:update.status,updatedAt:new Date().toISOString()};
-        await env.DB.prepare('UPDATE orders SET status=?,data_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?')
-          .bind(update.status,JSON.stringify(order),resolvedId).run();
+        if (!update || typeof update!=='object' || Array.isArray(update)) return json({error:'Invalid order update'},400);
+        if (update.status!==undefined && !allowed.includes(update.status)) return json({error:'Invalid order status'},400);
+        if (update.status===undefined && update.shipping===undefined) return json({error:'Nothing to update'},400);
+        const oldOrder=JSON.parse(existing.data_json);
+        const status=update.status===undefined ? oldOrder.status : update.status;
+        const nextShipping={...oldOrder.shipping};
+        if(update.shipping!==undefined){
+          if(!update.shipping || typeof update.shipping!=='object' || Array.isArray(update.shipping))
+            return json({error:'Invalid shipping data'},400);
+          const shipping=update.shipping as Record<string,unknown>;
+          const allowedKeys=new Set(['carrier','trackingNumber','internalNote']);
+          if(Object.keys(shipping).some(key=>!allowedKeys.has(key)))return json({error:'Unexpected shipping field'},400);
+          const allowedText=(value:unknown,max:number)=>typeof value==='string' && value.trim().length<=max && !/[<>\r\n]/.test(value);
+          if(!Object.entries(shipping).every(([key,value])=>allowedText(value,key==='internalNote'?500:100)))
+            return json({error:'Invalid shipping text'},400);
+          if(shipping.trackingNumber!==undefined && shipping.trackingNumber && !/^[A-Za-z0-9][A-Za-z0-9 ._\/-]{0,99}$/.test(String(shipping.trackingNumber)))
+            return json({error:'Invalid tracking reference'},400);
+          for(const [key,value] of Object.entries(shipping))nextShipping[key]=String(value).trim();
+          nextShipping.updatedAt=new Date().toISOString();
+        }
+        const order={...oldOrder,status,
+          ...(update.shipping===undefined?{}:{shipping:nextShipping}),
+          updatedAt:new Date().toISOString()};
+        const write=await env.DB.prepare('UPDATE orders SET status=?,data_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?')
+          .bind(status,JSON.stringify(order),resolvedId).run();
+        if(!write.success || write.meta?.changes!==1)return json({error:'D1 did not confirm update'},503);
         return json({success:true,order});
       }
       if (path === '/api/orders-clear' && method === 'DELETE') {
@@ -556,6 +649,17 @@ export default {
           ? (p.visibilityChanged === true && typeof p.isActive === 'boolean'
             ? p.isActive : previous.active === 1)
           : false;
+        // Provisional sourced products must not be offered for sale unless their
+        // media and supply checks have been explicitly completed by the merchant.
+        // Existing ordinary products and historical orders are unaffected.
+        if(active && id.startsWith('gb_source_')) {
+          const gallery=[p.image,...(Array.isArray(p.images)?p.images:[]),...(Array.isArray(p.additionalImages)?p.additionalImages:[])]
+            .filter((value:unknown)=>typeof value==='string' && /^https:\/\//.test(value as string));
+          if(p.needsSupplierVerification===true || p.imageRightsConfirmed!==true ||
+             p.readyToPublish!==true || new Set(gallery).size<6 || p.inStock!==true) {
+            return json({error:'Publish blocked: verify stock, supplier, image rights and six distinct product photos.'},422);
+          }
+        }
         const row = { ...p, id, isActive: active };
         await env.DB.prepare('INSERT INTO products (id,source_url,supplier,category,name_fr,price_mad,image_url,active,data_json) VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET category=excluded.category,name_fr=excluded.name_fr,price_mad=excluded.price_mad,image_url=excluded.image_url,active=excluded.active,data_json=excluded.data_json,updated_at=CURRENT_TIMESTAMP')
           .bind(id,p.sourceUrl || null,p.supplier || null,p.category || '',p.name.fr,p.price,p.image || '',row.isActive ? 1 : 0,JSON.stringify(row)).run();

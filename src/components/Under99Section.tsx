@@ -22,7 +22,7 @@ export default function Under99Section({
 
   // Filter for products having a price strictly under 99 DH or belonging to the "moins_99" category
   const under99Products = products.filter(
-    (p) => p.price < 99 || p.category === 'moins_99'
+    (p) => p.price < 99 && p.inStock !== false && p.isActive !== false
   ).slice(0, 4);
 
   if (under99Products.length === 0) return null;
@@ -43,18 +43,18 @@ export default function Under99Section({
             </div>
             
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
-              {isRtl ? "مستلزمات الحماية والنجاة بأقل من 99 درهم" : "Le Coin des Bonnes Affaires à moins de 99 DH"}
+              {isRtl ? "منتجات وأكسسوارات بأقل من 99 درهم" : "Le Coin des Bonnes Affaires à moins de 99 DH"}
             </h2>
             <p className="text-xs text-slate-400 mt-1 pb-1 font-medium font-sans">
               {isRtl 
-                ? "أكسسوارات حتمية، أدوات نجاة، ومعدات إضافية بأسعار معقولة ومناسبة لا تزيد عن 99 درهم." 
-                : "Petit budget ? Trouvez l'accessoire de survie ou de camping universel sans vous ruiner. Produits de haute utilité à mini prix."}
+                ? "منتجات مختارة من الكتالوج بثمن أقل من 99 درهم." 
+                : "Découvrez les accessoires et produits disponibles à moins de 99 DH."}
             </p>
           </div>
 
           <div className="flex items-center gap-2 text-[11px] text-green-700 bg-green-50 border border-green-100 rounded-xl px-4 py-2.5 font-bold self-start">
             <Sparkles className="w-4 h-4 text-green-600 animate-spin" />
-            <span>{isRtl ? "جودة مضمونة بأوفر التكاليف" : "Idéal pour compléter votre panier !"}</span>
+            <span>{isRtl ? "اختيارات بثمن مناسب" : "Idéal pour compléter votre panier !"}</span>
           </div>
         </div>
 
