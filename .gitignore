@@ -1,0 +1,18 @@
+﻿node_modules/
+dist/
+.wrangler/
+.env
+.env.*
+!.env.example
+
+# Local database backups and media transfer files
+globabox-backup*.sql
+globabox-orders.sql
+globabox-product-media.sql
+globabox-category-overrides.sql
+globabox-import-log.sql
+globabox-store-settings.sql
+create-product-media.sql
+media-chunks/
+media-parts/
+*.bak
