@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   ArrowDownLeft, ArrowUpRight, BarChart3, ChevronDown, ChevronRight,
-  ClipboardCheck, ClipboardList, Command, ExternalLink, LayoutDashboard,
+  ClipboardCheck, ClipboardList, Command, ExternalLink, LayoutDashboard, Users,
   LogOut, Menu, Package, Plus, Search, Settings2, ShieldCheck, Store,
   Tags, Truck, X
 } from 'lucide-react';
 import '../adminPlatform.css';
 
-type AdminTab='dashboard'|'orders'|'products'|'categories'|'marketing'|'operations';
+type AdminTab='dashboard'|'orders'|'customers'|'products'|'categories'|'marketing'|'operations';
 interface Props{
  activeTab:AdminTab; onTabChange:(tab:AdminTab)=>void;
  onClose:()=>void;onLogout:()=>void;
- ordersCount:number;pendingOrders:number;productsCount:number;categoriesCount:number;
+ ordersCount:number;pendingOrders:number;productsCount:number;categoriesCount:number;customersCount:number;
  databaseReady:boolean|undefined; showProductAction:boolean;
  onNewProduct:()=>void; onPrepareProduct:()=>void;
  onPendingOrders:()=>void;onRefreshOrders:()=>void;isRefreshing:boolean;
@@ -20,6 +20,7 @@ interface Props{
 const navigation=[
  {id:'dashboard' as const,label:'Vue d’ensemble',description:'Activité et indicateurs',icon:LayoutDashboard,group:'VOTRE BOUTIQUE'},
  {id:'orders' as const,label:'Commandes',description:'Suivi et traitement',icon:ClipboardList,group:'VENTES'},
+ {id:'customers' as const,label:'Clients',description:'Historique et fidélité',icon:Users,group:'VENTES'},
  {id:'products' as const,label:'Produits',description:'Catalogue et inventaire',icon:Package,group:'VENTES'},
  {id:'categories' as const,label:'Collections',description:'Rayons et catégories',icon:Tags,group:'VENTES'},
  {id:'marketing' as const,label:'Marketing',description:'Pixels et acquisition',icon:BarChart3,group:'CROISSANCE'},
@@ -28,6 +29,7 @@ const navigation=[
 const subtitles:Record<AdminTab,string>={
  dashboard:'Vue globale de votre activité commerciale',
  orders:'Consultez, confirmez et suivez les commandes clients',
+ customers:'Retrouvez les clients à partir de leurs commandes et de leur historique',
  products:'Gérez vos fiches, vos prix et vos disponibilités',
  categories:'Organisez les rayons et la navigation de la boutique',
  marketing:'Configurez les outils de mesure et de publicité',
@@ -35,7 +37,7 @@ const subtitles:Record<AdminTab,string>={
 };
 export default function AdminWorkspaceLayout({
  activeTab,onTabChange,onClose,onLogout,ordersCount,pendingOrders,productsCount,
- categoriesCount,databaseReady,showProductAction,onNewProduct,onPendingOrders,children
+ categoriesCount,customersCount,databaseReady,showProductAction,onNewProduct,onPendingOrders,children
 }:Props){
  const [mobileOpen,setMobileOpen]=useState(false);
  const [query,setQuery]=useState('');
@@ -45,7 +47,7 @@ export default function AdminWorkspaceLayout({
   (window.location.hostname.startsWith('test.')||window.location.hostname.includes('staging')||window.location.hostname.includes('admin-rebuild'));
  const current=navigation.find(item=>item.id===activeTab)||navigation[0];
  const filtered=useMemo(()=>navigation.filter(item=>(item.label+' '+item.description+' '+item.group).toLowerCase().includes(query.toLowerCase())),[query]);
- const count=(id:AdminTab)=>id==='orders'?ordersCount:id==='products'?productsCount:id==='categories'?categoriesCount:null;
+ const count=(id:AdminTab)=>id==='orders'?ordersCount:id==='customers'?customersCount:id==='products'?productsCount:id==='categories'?categoriesCount:null;
  const select=(id:AdminTab)=>{onTabChange(id);setMobileOpen(false);setSearchOpen(false);setQuery('');};
  useEffect(()=>{
   const content=document.getElementById('gb-admin-content');
