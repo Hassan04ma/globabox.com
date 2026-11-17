@@ -17,7 +17,7 @@ interface Props {
  orderStatusFilter:string; setOrderStatusFilter:(value:string)=>void;
  orderCityFilter:string; setOrderCityFilter:(value:string)=>void;
  selectedOrderIds:Set<string>;
- handleBulkConfirmOrders:()=>void; handleBulkDeleteOrders:()=>void; clearOrderSelection:()=>void;
+ handleBulkConfirmOrders:()=>void; clearOrderSelection:()=>void;
  toggleSelectAllVisibleOrders:()=>void; toggleOrderSelection:(id:string)=>void;
  handleUpdateOrderStatus:(id:string,status:Order['status'])=>Promise<void>;
  handleCancelOrder:(id:string)=>Promise<void>;
@@ -30,7 +30,7 @@ interface Props {
 export default function AdminOrdersWorkspace(p:Props){
  const {language,orders,filteredOrders,totalOrders,pendingOrders,processingOrders,confirmedOrders,shippedOrders,
  orderQuery,setOrderQuery,orderStatusFilter,setOrderStatusFilter,orderCityFilter,setOrderCityFilter,
- selectedOrderIds,handleBulkConfirmOrders,handleBulkDeleteOrders,clearOrderSelection,
+ selectedOrderIds,handleBulkConfirmOrders,clearOrderSelection,
  toggleSelectAllVisibleOrders,toggleOrderSelection,handleUpdateOrderStatus,handleCancelOrder,
  handleRefreshOrders,exportOrdersToCSV,isRefreshing,refreshSuccess,refreshError,databaseReady,
  formatMoroccoDate,setOrders}=p;
@@ -104,10 +104,6 @@ export default function AdminOrdersWorkspace(p:Props){
       <button type="button" onClick={handleBulkConfirmOrders}
         className="min-h-10 rounded-xl bg-[#104d43] px-4 text-xs font-extrabold text-white hover:bg-[#0b3931]">
         Confirmer la sélection
-      </button>
-      <button type="button" onClick={handleBulkDeleteOrders}
-        className="min-h-10 rounded-xl border border-rose-200 bg-white px-4 text-xs font-extrabold text-rose-700 hover:bg-rose-50">
-        Supprimer la sélection
       </button>
       <button type="button" onClick={clearOrderSelection}
         className="min-h-10 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50">
