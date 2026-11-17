@@ -1465,8 +1465,9 @@ export default function AdminPanel({
 
         {activeTab === 'customers' && <AdminCustomersWorkspace orders={orders} language={language} />}
 
-        {activeTab === 'marketing' && <AdminTrackingWorkspace/>}
+        {activeTab === 'marketing' && <AdminTrackingWorkspace language={language}/ >}
         {activeTab === 'operations' && <AdminOperationsWorkspace
+          language={language}
           products={adminProducts} orders={orders} launchStatus={launchStatus}
           onProducts={()=>setActiveTab('products')}
           onOrders={()=>setActiveTab('orders')}
