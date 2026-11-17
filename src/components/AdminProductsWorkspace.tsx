@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Package, ChevronRight, Plus, CheckCircle2, Search, Trash2 } from 'lucide-react';
-import type { Dispatch, SetStateAction } from 'react';
+import { Package, ChevronRight, Plus, CheckCircle2, Search, Trash2, X } from 'lucide-react';
+import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'react';
 import type { Product, Category } from '../types';
 import { STORE_DEPARTMENTS } from '../storefrontDepartments';
 import { getStoreSubcategories } from '../storefrontSubcategories';
@@ -12,13 +12,14 @@ interface Props {
  editingProduct:Product|null; isAddingProduct:boolean; productForm:any; setProductForm:Dispatch<SetStateAction<any>>;
  setEditingProduct:(p:Product|null)=>void; setIsAddingProduct:(v:boolean)=>void;
  mediaUploading:boolean; tagsInput:string; setTagsInput:(v:string)=>void;
- handleSaveProduct:(e:React.FormEvent)=>void; handleStartAddProduct:()=>void;
+ handleSaveProduct:(e:FormEvent)=>void; handleStartAddProduct:()=>void;
  handleStartEditProduct:(p:Product)=>void; handleDeleteProduct:(id:string)=>void;
  handleBulkPublishProducts:()=>void; handleBulkDeleteProducts:()=>void; clearProductSelection:()=>void;
  toggleSelectAllVisibleProducts:()=>void; toggleProductSelection:(id:string)=>void;
  exportProductsToJSON:()=>void; exportProductsToCSV:()=>void;
- importProductsFromJSON:(e:React.ChangeEvent<HTMLInputElement>)=>void;
- importProductsFromCSV:(e:React.ChangeEvent<HTMLInputElement>)=>void;
+ importProductsFromJSON:(e:ChangeEvent<HTMLInputElement>)=>void;
+ importProductsFromCSV:(e:ChangeEvent<HTMLInputElement>)=>void;
+ uploadProductPhotos:(files:FileList|null)=>Promise<void>;
 }
 export default function AdminProductsWorkspace(p:Props){
  const {adminProducts,categories,filteredProductsList,selectedProductIds,productQuery,setProductQuery,
@@ -26,7 +27,7 @@ export default function AdminProductsWorkspace(p:Props){
  setEditingProduct,setIsAddingProduct,mediaUploading,tagsInput,setTagsInput,handleSaveProduct,
  handleStartAddProduct,handleStartEditProduct,handleDeleteProduct,handleBulkPublishProducts,
  handleBulkDeleteProducts,clearProductSelection,toggleSelectAllVisibleProducts,toggleProductSelection,
- exportProductsToJSON,exportProductsToCSV,importProductsFromJSON,importProductsFromCSV}=p;
+ exportProductsToJSON,exportProductsToCSV,importProductsFromJSON,importProductsFromCSV,uploadProductPhotos}=p;
  return (
 <div className="space-y-6">
 
