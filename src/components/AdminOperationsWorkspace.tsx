@@ -2,12 +2,13 @@ import { AlertCircle, CheckCircle2, ClipboardCheck, ExternalLink, Package, Refre
 import type { Order, Product } from '../types';
 
 interface Props {
+  language:'ar'|'fr'|'en';
   products:Product[];
   orders:Order[];
   launchStatus:{databaseReady:boolean;adminConfigured:boolean;checkoutEnabled:boolean;checkoutVerified:boolean}|null;
   onOrders:()=>void;onProducts:()=>void;onReload:()=>void;
 }
-export default function AdminOperationsWorkspace({products,orders,launchStatus,onOrders,onProducts,onReload}:Props){
+export default function AdminOperationsWorkspace({language,products,orders,launchStatus,onOrders,onProducts,onReload}:Props){
  const active=products.filter(p=>p.isActive===true);
  const drafts=products.filter(p=>p.isActive!==true);
  const sourced=products.filter(p=>p.id.startsWith('gb_source_'));
@@ -24,7 +25,7 @@ export default function AdminOperationsWorkspace({products,orders,launchStatus,o
   {name:'Commande client de test',done:false,help:'Un diagnostic technique ne remplace pas une commande COD depuis le navigateur.'},
   {name:'Sauvegarde de production restaurable',done:false,help:'Un opérateur doit confirmer l’export et tester la restauration de globabox-db.'}
  ];
- return <div className="space-y-5">
+ return <div dir={language==='ar'?'rtl':'ltr'} lang={language} className="space-y-5">
    <section className="rounded-2xl border border-[#e0e7e3] bg-white p-5 shadow-sm sm:p-7">
     <p className="text-[11px] font-extrabold uppercase tracking-[.14em] text-[#327960]">GLOBABOX · OPÉRATIONS</p>
     <h2 className="mt-2 text-2xl font-black text-[#1c3832]">Centre de préparation de la boutique</h2>
