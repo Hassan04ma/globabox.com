@@ -58,7 +58,7 @@ export default function AdminWorkspaceLayout({
  descriptions:{dashboard:'Activité et indicateurs',orders:'Suivi et traitement',customers:'Historique et fidélité',products:'Catalogue et inventaire',categories:'Rayons et catégories',marketing:'Pixels et acquisition',operations:'Qualité et préparation'},
  subtitles:{dashboard:'Vue globale de votre activité commerciale',orders:'Consultez, confirmez et suivez les commandes clients',customers:'Retrouvez les clients à partir de leurs commandes et de leur historique',products:'Gérez vos fiches, vos prix et vos disponibilités',categories:'Organisez les rayons et la navigation de la boutique',marketing:'Configurez les outils de mesure et de publicité',operations:'Contrôlez la préparation et la qualité de la boutique'},
  store:'Ma boutique',admin:'COMMERCE ADMIN',quick:'Rechercher une section…',quickTitle:'NAVIGATION RAPIDE',noResults:'Aucun résultat.',db:['Base connectée','Base à vérifier','Base non vérifiée'],view:'Voir la boutique',newProduct:'Nouveau produit',toProcess:'À traiter',secure:'Session sécurisée',administrator:'Administrateur',logout:'Déconnexion',menu:'Ouvrir le menu',closeMenu:'Fermer le menu'
-});
+};
  const localizedNavigation=navigation.map(item=>({...item,label:copy.labels[item.id],description:copy.descriptions[item.id],group:item.group===navigation[0].group?copy.groups[0]:item.group===navigation[1].group?copy.groups[1]:copy.groups[2]}));
  const localizedSubtitles=copy.subtitles;
  const [mobileOpen,setMobileOpen]=useState(false);
