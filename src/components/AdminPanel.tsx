@@ -8,6 +8,7 @@ import AdminOperationsWorkspace from './AdminOperationsWorkspace';
 import ProductImage from './ProductImage';
 import AdminWorkspaceLayout from './AdminWorkspaceLayout';
 import AdminDashboardWorkspace from './AdminDashboardWorkspace';
+import AdminCustomersWorkspace from './AdminCustomersWorkspace';
 import AdminCategoriesWorkspace from './AdminCategoriesWorkspace';
 import { STORE_DEPARTMENTS, isPublicStoreCategory } from '../storefrontDepartments';
 import { getStoreSubcategories } from '../storefrontSubcategories';
@@ -46,7 +47,7 @@ export default function AdminPanel({
     }).format(date);
   };
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'products' | 'categories' | 'marketing' | 'operations'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'customers' | 'products' | 'categories' | 'marketing' | 'operations'>('dashboard');
 
   const [launchStatus, setLaunchStatus] = useState<{databaseReady:boolean;adminConfigured:boolean;checkoutEnabled:boolean;checkoutVerified:boolean}|null>(null);
   const [d1ProbeStatus, setD1ProbeStatus] = useState<'idle'|'running'|'success'|'error'>('idle');
@@ -1347,6 +1348,7 @@ export default function AdminPanel({
       onClose={onClose}
       onLogout={handleLogout}
       ordersCount={orders.length}
+      customersCount={new Set(orders.map(order => String(order.phoneNumber || '').replace(/\\s+/g, '') || 'order:' + order.id)).size}
       pendingOrders={statNewOrders}
       productsCount={adminProducts.length}
       categoriesCount={categories.length}
@@ -1972,6 +1974,8 @@ export default function AdminPanel({
             onCategoriesChange={setCategories}
           />
         )}
+
+        {activeTab === 'customers' && <AdminCustomersWorkspace orders={orders} language={language} />}
 
         {activeTab === 'marketing' && <AdminTrackingWorkspace/>}
         {activeTab === 'operations' && <AdminOperationsWorkspace
