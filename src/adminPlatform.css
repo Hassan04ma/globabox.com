@@ -36,3 +36,71 @@
 @media(prefers-reduced-motion:reduce){
  .gb-admin-platform *{scroll-behavior:auto!important;transition-duration:.01ms!important;}
 }
+
+
+/* Admin workspace refresh — consistent surfaces, typography and responsive rhythm. */
+.gb-admin-platform{
+ --gb-admin-bg:#f4f6f5;
+ --gb-admin-card:#fff;
+ --gb-admin-border:#e3eae5;
+ --gb-admin-text:#19372d;
+ --gb-admin-muted:#718279;
+ background:var(--gb-admin-bg);
+ color:var(--gb-admin-text);
+}
+.gb-admin-platform main{
+ scrollbar-gutter:stable;
+}
+.gb-admin-platform main > div{
+ padding:22px clamp(14px,2.2vw,34px) 42px;
+}
+.gb-admin-platform main > div > .space-y-6 > section,
+.gb-admin-platform main > div > .space-y-5 > section{
+ border-color:var(--gb-admin-border);
+ border-radius:18px;
+ box-shadow:0 2px 8px rgba(22,55,39,.035);
+}
+.gb-admin-platform main h2,
+.gb-admin-platform main h3,
+.gb-admin-platform main h4{
+ letter-spacing:-.025em;
+}
+.gb-admin-platform main input:not([type=checkbox]):not([type=radio]):not([type=file]),
+.gb-admin-platform main textarea,
+.gb-admin-platform main select{
+ border-radius:10px;
+}
+.gb-admin-platform main button{
+ font-weight:650;
+}
+.gb-admin-platform main table{
+ border-collapse:separate;
+ border-spacing:0;
+}
+.gb-admin-platform main table thead th{
+ position:sticky;
+ top:0;
+ z-index:2;
+ background:#f5f8f5;
+}
+.gb-admin-platform main table tbody tr:last-child td:first-child{border-bottom-left-radius:12px;}
+.gb-admin-platform main table tbody tr:last-child td:last-child{border-bottom-right-radius:12px;}
+.gb-admin-platform main section:focus-within{
+ scroll-margin-top:18px;
+}
+.gb-admin-platform aside button,
+.gb-admin-platform header button,
+.gb-admin-platform main button,
+.gb-admin-platform main a{
+ -webkit-tap-highlight-color:transparent;
+}
+@media(min-width:1280px){
+ .gb-admin-platform main > div{padding-top:28px;}
+}
+@media(max-width:767px){
+ .gb-admin-platform main > div{padding:14px 12px 30px;}
+ .gb-admin-platform main .space-y-6{gap:14px;}
+ .gb-admin-platform main table{min-width:720px;}
+ .gb-admin-platform main input:not([type=checkbox]):not([type=radio]):not([type=file]),
+ .gb-admin-platform main select{min-height:44px;}
+}

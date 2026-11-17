@@ -7,6 +7,10 @@ import AdminShippingEditor from './AdminShippingEditor';
 import AdminOperationsWorkspace from './AdminOperationsWorkspace';
 import ProductImage from './ProductImage';
 import AdminWorkspaceLayout from './AdminWorkspaceLayout';
+import AdminDashboardWorkspace from './AdminDashboardWorkspace';
+import AdminCustomersWorkspace from './AdminCustomersWorkspace';
+import AdminOrdersWorkspace from './AdminOrdersWorkspace';
+import AdminProductsWorkspace from './AdminProductsWorkspace';
 import AdminCategoriesWorkspace from './AdminCategoriesWorkspace';
 import { STORE_DEPARTMENTS, isPublicStoreCategory } from '../storefrontDepartments';
 import { getStoreSubcategories } from '../storefrontSubcategories';
@@ -45,7 +49,7 @@ export default function AdminPanel({
     }).format(date);
   };
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'products' | 'categories' | 'marketing' | 'operations'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'customers' | 'products' | 'categories' | 'marketing' | 'operations'>('dashboard');
 
   const [launchStatus, setLaunchStatus] = useState<{databaseReady:boolean;adminConfigured:boolean;checkoutEnabled:boolean;checkoutVerified:boolean}|null>(null);
   const [d1ProbeStatus, setD1ProbeStatus] = useState<'idle'|'running'|'success'|'error'>('idle');
@@ -1274,11 +1278,15 @@ export default function AdminPanel({
 
   // Filters calculation
   const filteredOrders = orders.filter(o => {
-    const matchesQuery = 
-      o.fullName.toLowerCase().includes(orderQuery.toLowerCase()) ||
-      o.phoneNumber.includes(orderQuery) ||
-      o.id.toLowerCase().includes(orderQuery.toLowerCase());
-    
+    // Older/imported orders may not contain every customer field. Keep the
+    // administration workspace navigable even when legacy records are partial.
+    const query = orderQuery.trim().toLocaleLowerCase();
+    const searchable = [
+      o.fullName, o.phoneNumber, o.id, o.reference, o.city,
+      o.deliveryAddress
+    ].map(value => String(value ?? '').toLocaleLowerCase());
+    const matchesQuery = !query || searchable.some(value => value.includes(query));
+
     let matchesStatus = orderStatusFilter === 'all' || o.status === orderStatusFilter;
     if (orderStatusFilter === 'synced') {
       matchesStatus = o.syncStatus === 'synced';
@@ -1334,6 +1342,7 @@ export default function AdminPanel({
 
   return (
     <AdminWorkspaceLayout
+      language={language}
       activeTab={activeTab}
       onTabChange={(tab) => {
         setActiveTab(tab);
@@ -1342,6 +1351,7 @@ export default function AdminPanel({
       onClose={onClose}
       onLogout={handleLogout}
       ordersCount={orders.length}
+      customersCount={new Set(orders.map(order => String(order.phoneNumber || '').replace(/\s+/g, '') || 'order:' + order.id)).size}
       pendingOrders={statNewOrders}
       productsCount={adminProducts.length}
       categoriesCount={categories.length}
@@ -1357,736 +1367,94 @@ export default function AdminPanel({
       {/* Main panel body */}
       <div className={activeTab === 'categories' ? 'min-h-full bg-[#f3f5f7] p-4 sm:p-5 xl:p-7' : 'min-h-full bg-[#f3f5f7] p-4 text-[#213638] sm:p-5 xl:p-7'}>
         
-        {/* VIEW 0: Dashboard, optimized for daily order and catalog management. */}
         {activeTab === 'dashboard' && (
-          <div className="space-y-6">
-
-            <section className="flex flex-col gap-5 rounded-[18px] border border-[#dfe7e4] bg-white px-6 py-6 shadow-[0_2px_10px_rgba(16,43,32,.03)] sm:flex-row sm:items-center sm:justify-between sm:px-7">
-              <div>
-                <p className="text-[11px] font-extrabold tracking-[.13em] text-[#5e9280]">VUE D’ENSEMBLE · AUJOURD’HUI</p>
-                <h2 className="mt-1.5 text-[23px] font-extrabold tracking-tight text-[#233638] sm:text-[28px]">Pilotez votre boutique en un clin d’œil</h2>
-                <p className="mt-2 text-[13px] leading-6 text-[#7a8a8b]">Commandes, catalogue, expédition et activité commerciale dans un seul espace.</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={() => {handleStartAddProduct();setActiveTab('products');}}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-[10px] bg-[#174d40] px-5 text-[12px] font-extrabold text-white shadow-sm hover:bg-[#0e3c32]"><Plus size={17}/>Nouveau produit</button>
-                <button type="button" onClick={() => {setOrderStatusFilter('pending');setActiveTab('orders');}}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-[10px] border border-[#d5e4db] bg-white px-5 text-[12px] font-bold text-[#38584e] hover:bg-[#f4faf6]"><ClipboardList size={17}/>Voir les commandes</button>
-              </div>
-            </section>
-
-            <section aria-label="Indicateurs du magasin" className="grid grid-cols-2 gap-4 lg:grid-cols-3 2xl:grid-cols-4">
-              {[
-                {label:'Commandes totales',value:statTotalOrders,unit:'commandes enregistrées',icon:ClipboardList,tint:'bg-[#ebf3fa]',color:'text-[#487da6]'},
-                {label:'À traiter',value:statNewOrders,unit:'en attente de confirmation',icon:RefreshCw,tint:'bg-[#fff4e4]',color:'text-[#b98538]'},
-                {label:'En préparation',value:statConfirmedOnly+statProcessingOrders,unit:'à préparer manuellement',icon:Package,tint:'bg-[#f0eafa]',color:'text-[#8668ac]'},
-                {label:'Expédiées',value:statShippedOrders,unit:'livraison en cours',icon:Truck,tint:'bg-[#e8f3fa]',color:'text-[#407caa]'},
-                {label:'Livrées',value:statDeliveredOrders,unit:'commandes terminées',icon:CheckCircle2,tint:'bg-[#e8f5ee]',color:'text-[#247b53]'},
-                {label:'Total livré',value:statTotalRevenue.toLocaleString('fr-MA')+' DH',unit:'montant des commandes livrées',icon:BarChart3,tint:'bg-[#e8f5ee]',color:'text-[#247b53]'},
-                {label:'Produits actifs',value:adminProducts.filter(p=>p.isActive===true).length,unit:'visibles sur la boutique',icon:Package,tint:'bg-[#e8f5ee]',color:'text-[#247b53]'},
-                {label:'Brouillons',value:adminProducts.filter(p=>p.isActive!==true).length,unit:'produits non publiés',icon:Edit2,tint:'bg-[#f2f4f5]',color:'text-[#76838a]'}
-              ].map(({label,value,unit,icon:Icon,color,tint})=>(
-                <div key={label} className="min-w-0 rounded-[16px] border border-[#e0e8e6] bg-white p-5 shadow-[0_2px_10px_rgba(16,43,32,.025)]">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-[12px] font-semibold text-[#687b79]">{label}</p>
-                    <span className={'gb-overview-icon shrink-0 '+tint+' '+color}><Icon size={19}/></span>
-                  </div>
-                  <strong className="mt-3 block break-words text-[29px] font-extrabold tracking-tight text-[#213638]">{value}</strong>
-                  <span className="mt-1 block text-[11px] text-[#8a9795]">{unit}</span>
-                </div>
-              ))}
-            </section>
-
-            <section aria-label="Analyses et statistiques commerciales" className="space-y-5 rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div><h3 className="text-xl font-black text-[#193e38]">Performance commerciale</h3><p className="mt-1 text-xs text-slate-500">Données issues des commandes chargées depuis le serveur · DH · {analyticsStart.toLocaleDateString('fr-FR')} – {analyticsNow.toLocaleDateString('fr-FR')}</p></div>
-                <div className="flex flex-wrap gap-2">
-                  {([{id:'7d',label:'7 jours'},{id:'15d',label:'15 jours'},{id:'1m',label:'1 mois glissant'},{id:'4m',label:'4 mois'},{id:'6m',label:'6 mois'},{id:'1y',label:'1 an'}] as const).map(p => <button key={p.id} type="button" onClick={() => setAnalyticsPeriod(p.id)} className={analyticsPeriod===p.id ? 'rounded-lg bg-[#174d40] px-3 py-2 text-xs font-bold text-white' : 'rounded-lg border px-3 py-2 text-xs font-bold text-slate-600'}>{p.label}</button>)}
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Chiffre d’affaires livré</p><strong className="text-2xl">{currentRevenue.toLocaleString('fr-MA')} DH</strong></div>
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Commandes reçues</p><strong className="text-2xl">{currentPeriodOrders.length}</strong></div>
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Panier moyen des commandes livrées</p><strong className="text-2xl">{averageOrderValue.toLocaleString('fr-MA')} DH</strong></div>
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Évolution par rapport à la période précédente</p><strong className="text-2xl">{revenueChange===null?'—':(revenueChange>0?'+':'')+revenueChange.toFixed(1)+'%'}</strong></div>
-              </div>
-              <div className="grid gap-5 lg:grid-cols-2">
-                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Chiffre d’affaires livré · DH</h4><div className="mt-4 flex h-40 items-end gap-1.5">{analyticsBuckets.map((b,i) => <div key={i} title={b.label+' : '+b.revenue.toLocaleString('fr-FR')+' DH'} className="flex h-full min-w-0 flex-1 flex-col justify-end"><div className="w-full rounded-t bg-[#4c9276]" style={{height:b.revenue>0?Math.max(3,b.revenue/maxAnalyticsRevenue*120)+'px':'0px'}}></div><span className="mt-1 h-3 text-center text-[9px] leading-3 text-slate-500">{analyticsBuckets.length>20 ? (i%3===0 ? b.label : '') : b.label}</span></div>)}</div></div>
-                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Répartition des commandes</h4>
-                  {([{label:'En attente',status:'pending'},{label:'Confirmées',status:'confirmed'},{label:'Préparation',status:'processing'},{label:'Expédiées',status:'shipped'},{label:'Livrées',status:'delivered'},{label:'Annulées',status:'cancelled'}] as const).map(row => <div key={row.status} className="mt-3"><div className="flex justify-between text-xs"><span>{row.label}</span><strong>{statusPercent(row.status).toFixed(1)}%</strong></div><div className="mt-1 h-2 rounded bg-slate-100"><div className="h-2 rounded bg-[#4c9276]" style={{width:statusPercent(row.status)+'%'}}></div></div></div>)}
-                </div>
-              </div>
-              <div className="grid gap-4 lg:grid-cols-2">
-                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Nombre de commandes par période</h4><div className="mt-3 flex h-24 items-end gap-1">{analyticsBuckets.map((b,i) => <div key={i} title={b.label+' : '+b.orders+' commande(s)'} className="min-w-0 flex-1 rounded-t bg-[#9ab8d0]" style={{height:b.orders>0?Math.max(3,b.orders/maxAnalyticsOrders*75)+'px':'0px'}}></div>)}</div><div className="mt-1 flex gap-1">{analyticsBuckets.map((b,i)=><span key={i} className="min-w-0 flex-1 truncate text-center text-[9px] leading-3 text-slate-500">{analyticsBuckets.length>20 ? (i%3===0 ? b.label : '') : b.label}</span>)}</div></div>
-                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Meilleures ventes</h4>{topSellingProducts.length ? topSellingProducts.map(([name,qty]) => <div key={name} className="flex justify-between border-b py-2 text-xs"><span>{name}</span><strong>{qty} unité(s)</strong></div>) : <p className="mt-2 text-xs text-slate-500">Aucune vente livrée sur cette période.</p>}</div>
-              </div>
-              <p className="text-xs leading-5 text-slate-500">Le chiffre d’affaires livré ne correspond pas au bénéfice net. Le calcul du bénéfice net nécessite les coûts d’achat, de livraison et d’exploitation.</p>
-            </section>
-
-            <div className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(280px,.8fr)]">
-              <section className="min-w-0 overflow-hidden rounded-[22px] border border-[#dce9e0] bg-white shadow-sm">
-                <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
-                  <div><h3 className="text-base font-black text-[#193e38]">Dernières commandes</h3><p className="mt-1 text-xs text-slate-500">Les commandes enregistrées et récupérées depuis D1</p></div>
-                  <div className="flex items-center gap-2">
-                    <button type="button" onClick={handleRefreshOrders} disabled={isRefreshing} aria-label="Actualiser les commandes" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-[#104d43] hover:bg-[#f1f8f3] disabled:opacity-50"><RefreshCw size={16} className={isRefreshing?'animate-spin':''}/></button>
-                    <button type="button" onClick={()=>setActiveTab('orders')} className="rounded-lg bg-[#eaf5ed] px-3 py-2 text-xs font-extrabold text-[#104d43] hover:bg-[#dceee1]">Toutes les commandes</button>
-                  </div>
-                </header>
-                {refreshError&&<p className="mx-5 mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700" role="alert">{refreshError}</p>}
-                {refreshSuccess&&<p className="mx-5 mt-4 rounded-xl border border-[#bde0ca] bg-[#eff9f2] px-3 py-2 text-xs text-[#147548]" role="status">{refreshSuccess}</p>}
-                <div className="divide-y divide-slate-100">
-                  {orders.slice(0,6).map(order=>(
-                    <div key={order.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 text-xs hover:bg-[#f8fbf9]">
-                      <div className="min-w-0 flex-1">
-                        <p className="font-extrabold text-[#193e38]">{order.fullName||'Client'} <span className="ms-2 font-mono text-[11px] font-semibold text-slate-500">{order.reference}</span></p>
-                        <p className="mt-1 text-slate-500">{order.city} · {formatMoroccoDate(order.createdAt || order.date)}</p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="font-extrabold text-[#193e38]">{Number(order.total||0).toFixed(2)} DH</span>
-                        <span className={'rounded-full px-3 py-1 text-[11px] font-bold '+(order.status==='delivered'?'bg-[#e4f5ea] text-[#147249]':order.status==='cancelled'?'bg-red-50 text-red-700':order.status==='pending'?'bg-amber-50 text-amber-700':'bg-[#ecf2fb] text-[#315d8a]')}>{({pending:'En attente',confirmed:'Confirmée',processing:'Préparation',shipped:'Expédiée',delivered:'Livrée',cancelled:'Annulée'} as Record<string,string>)[order.status]||order.status}</span>
-                      </div>
-                    </div>
-                  ))}
-                  {orders.length===0&&<div className="px-5 py-10 text-center"><ClipboardList size={27} className="mx-auto text-[#8fae9d]"/><p className="mt-3 text-sm font-bold text-[#446257]">Aucune commande à afficher</p><p className="mt-1 text-xs text-slate-500">Les nouvelles commandes enregistrées sur le serveur apparaîtront ici.</p></div>}
-                </div>
-              </section>
-
-              <section className="space-y-4">
-                <div className="rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm">
-                  <div className="flex items-center gap-2 text-sm font-black text-[#193e38]"><Package size={19} className="text-[#104d43]"/>Catalogue produits</div>
-                  <div className="mt-4 grid grid-cols-2 gap-3">
-                    <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Produits enregistrés</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{adminProducts.length}</strong></div>
-                    <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Publiés</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{adminProducts.filter(p=>p.isActive===true).length}</strong></div>
-                    <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Brouillons</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{adminProducts.filter(p=>p.isActive!==true).length}</strong></div>
-                    <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Hors stock</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{adminProducts.filter(p=>!p.inStock||p.stockStatus==='out_of_stock').length}</strong></div>
-                  </div>
-                  <button type="button" onClick={()=>setActiveTab('products')} className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#b9d8c5] bg-[#edf7f0] text-xs font-extrabold text-[#104d43] hover:bg-[#dfefe4]">Gérer les produits <ChevronRight size={16}/></button>
-                </div>
-                <div className="rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm">
-                  <div className="flex items-center gap-2 text-sm font-black text-[#193e38]"><Truck size={19} className="text-[#104d43]"/>Expédition manuelle</div>
-                  <p className="mt-2 text-xs leading-6 text-[#60776c]">Confirmez les coordonnées, préparez le colis, puis mettez à jour le statut de la commande. Aucun envoi automatique à AMEEX.</p>
-                  <button type="button" onClick={()=>{setOrderStatusFilter('confirmed');setActiveTab('orders');}} className="mt-3 inline-flex min-h-10 items-center gap-2 text-xs font-extrabold text-[#104d43] underline underline-offset-4">Voir les commandes confirmées <ChevronRight size={15}/></button>
-                </div>
-              </section>
-            </div>
-
-            <details className="rounded-[22px] border border-[#dce9e0] bg-white shadow-sm">
-              <summary className="cursor-pointer list-none rounded-[22px] p-5 text-sm font-black text-[#193e38] [&::-webkit-details-marker]:hidden">
-                <span className="inline-flex items-center gap-3"><ShieldCheck size={19} className="text-[#104d43]"/>Vérifications techniques et préparation au lancement <ChevronRight size={16} className="text-slate-400"/></span>
-              </summary>
-              <div className="grid gap-4 border-t border-slate-100 p-5 md:grid-cols-2">
-                <div className="rounded-xl bg-[#f6f9f7] p-4"><h4 className="text-sm font-bold text-[#193e38]">Écriture D1 distante</h4><p className="mt-1 text-xs leading-6 text-slate-500">Test technique d'écriture/lecture/nettoyage sans commande client.</p>
-                  <p className="mt-2 text-xs font-bold text-[#426753]">{d1ProbeStatus==='success'?'Test validé':d1ProbeStatus==='error'?'Échec de vérification':'Non testé dans cette session'}</p>
-                  <button type="button" disabled={d1ProbeStatus==='running'} onClick={runD1Probe} className="mt-3 rounded-lg bg-[#104d43] px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50">{d1ProbeStatus==='running'?'Vérification…':'Tester D1'}</button>
-                </div>
-                <div className="rounded-xl bg-[#f6f9f7] p-4"><h4 className="text-sm font-bold text-[#193e38]">Diagnostic paiement à la livraison</h4><p className="mt-1 text-xs leading-6 text-slate-500">Vérifie les calculs et une commande fictive suivie de son nettoyage.</p>
-                  {checkoutDiagnostic&&<p className="mt-2 text-xs font-bold text-[#426753]">{checkoutDiagnostic.error|| (checkoutDiagnostic.success?'Test validé · '+checkoutDiagnostic.total+' DH':'Non validé')}</p>}
-                  <button type="button" disabled={checkoutDiagnosticBusy} onClick={runCheckoutDiagnostic} className="mt-3 rounded-lg bg-[#104d43] px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50">{checkoutDiagnosticBusy?'Test…':'Tester Checkout D1'}</button>
-                </div>
-                <div className="rounded-xl bg-[#f6f9f7] p-4"><h4 className="text-sm font-bold text-[#193e38]">AMEEX Sandbox</h4><p className="mt-1 text-xs leading-6 text-slate-500">Contrôle des clés et de la lecture des villes. La livraison reste manuelle.</p>
-                  <p className="mt-2 text-xs leading-6 text-[#426753]">{ameexStatus}</p>
-                  <button type="button" disabled={ameexBusy} onClick={checkAmeexSandbox} className="mt-3 rounded-lg border border-[#aacdbb] px-4 py-2.5 text-xs font-bold text-[#104d43] disabled:opacity-50">Tester connexion sandbox</button>
-                  <button type="button" disabled={ameexBusy} onClick={runAmeexSandboxParcel} className="mt-3 ms-2 rounded-lg border border-slate-300 px-4 py-2.5 text-xs font-bold text-[#426753] disabled:opacity-50">Tester colis fictif</button>
-                </div>
-                <div className="rounded-xl bg-[#f6f9f7] p-4"><h4 className="text-sm font-bold text-[#193e38]">État du Worker</h4>
-                  <p className="mt-2 text-xs leading-6 text-[#426753]">{launchStatus?.databaseReady===true?'Base D1 accessible':'Connexion D1 non vérifiée'} · {launchStatus?.adminConfigured===true?'Authentification configurée':'Authentification à vérifier'}</p>
-                  <p className="mt-2 text-xs leading-6 text-slate-500">Un test de commande réel sur staging et une sauvegarde D1 restent nécessaires avant le lancement.</p>
-                </div>
-                <button type="button" onClick={exportOrdersToCSV} className="col-span-full flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#b9d8c5] bg-[#edf7f0] px-4 text-sm font-bold text-[#104d43] hover:bg-[#ddefe3]"><ClipboardList size={17}/>Exporter les commandes en CSV</button>
-              </div>
-            </details>
-          </div>
+          <AdminDashboardWorkspace
+            orders={orders}
+            products={adminProducts}
+            language={language}
+            onOrders={() => setActiveTab('orders')}
+            onProducts={() => setActiveTab('products')}
+            onNewProduct={() => { handleStartAddProduct(); setActiveTab('products'); }}
+            onPendingOrders={() => { setOrderStatusFilter('pending'); setActiveTab('orders'); }}
+            onRefresh={handleRefreshOrders}
+            refreshing={isRefreshing}
+          />
         )}
 
-        {/* VIEW 1: Customer orders and manual delivery management */}
+                {/* VIEW 1: Customer orders and manual delivery management */}
         {activeTab === 'orders' && (
-          <div className="space-y-5">
-            <header className="flex flex-col justify-between gap-4 rounded-[16px] border border-[#e0e8e5] bg-white p-5 shadow-[0_2px_10px_rgba(16,43,32,.025)] sm:flex-row sm:items-center sm:p-6">
-              <div>
-                <p className="text-[11px] font-extrabold uppercase tracking-[.13em] text-[#38866e]">GESTION DES VENTES</p>
-                <h3 className="mt-1 flex items-center gap-2 text-xl font-black text-[#193e38]"><ClipboardList size={22} className="text-[#104d43]"/>Toutes les commandes</h3>
-                <p className="mt-2 max-w-2xl text-xs leading-6 text-slate-500">Les commandes sont chargées depuis Cloudflare D1. Validez, préparez et marquez les livraisons manuellement.</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={handleRefreshOrders} disabled={isRefreshing}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#104d43] px-4 text-xs font-bold text-white transition hover:bg-[#0a3d33] disabled:opacity-50">
-                  <RefreshCw size={16} className={isRefreshing?'animate-spin':''}/>{isRefreshing?'Actualisation…':'Actualiser'}
-                </button>
-                <button type="button" onClick={exportOrdersToCSV} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#b8d6c1] bg-white px-4 text-xs font-bold text-[#104d43] hover:bg-[#eff7f1]">
-                  <ClipboardList size={16}/>Exporter CSV
-                </button>
-              </div>
-            </header>
-            {refreshSuccess&&<p role="status" className="rounded-xl border border-[#c1e2cd] bg-[#eef9f2] px-4 py-3 text-xs font-bold text-[#166943]">{refreshSuccess}</p>}
-            {refreshError&&<p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-bold text-rose-700">{refreshError}</p>}
-            {launchStatus?.databaseReady!==true&&<p role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-semibold text-amber-800">L’état de la connexion D1 est à vérifier avant de modifier une commande.</p>}
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-              {[
-                ['Toutes',statTotalOrders,'all'],
-                ['À confirmer',statNewOrders,'pending'],
-                ['En préparation',statProcessingOrders+statConfirmedOnly,'processing'],
-                ['Expédiées',statShippedOrders,'shipped']
-              ].map(([label,value,status])=>
-                <button type="button" key={String(status)} onClick={()=>setOrderStatusFilter(String(status))}
-                  className={'rounded-[14px] border px-4 py-4 text-start shadow-[0_2px_9px_rgba(15,43,31,.02)] transition '+(orderStatusFilter===status?'border-[#9ac7ad] bg-[#eaf5ef]':'border-[#e0e8e5] bg-white hover:border-[#c0d9c9]')}>
-                  <span className="block text-[11px] font-bold text-slate-500">{label}</span>
-                  <strong className="mt-1 block text-2xl font-black text-[#193e38]">{value}</strong>
-                </button>
-              )}
-            </div>
-            <div className="grid gap-3 rounded-[14px] border border-[#e0e8e5] bg-white p-4 shadow-[0_2px_9px_rgba(15,43,31,.02)] md:grid-cols-3">
-              <label className="relative">
-                <Search size={17} className="pointer-events-none absolute start-3 top-3.5 text-slate-400"/>
-                <input type="search" value={orderQuery} onChange={e=>setOrderQuery(e.target.value)}
-                  placeholder="Référence, client ou téléphone…" aria-label="Rechercher une commande"
-                  className="min-h-11 w-full rounded-xl border border-slate-200 bg-[#fafcfa] ps-10 pe-3 text-sm text-[#193e38] outline-none focus:border-[#104d43]"/>
-              </label>
-              <select value={orderStatusFilter} onChange={e=>setOrderStatusFilter(e.target.value)} aria-label="Filtrer par statut"
-                className="min-h-11 w-full rounded-xl border border-slate-200 bg-[#fafcfa] px-3 text-sm font-semibold text-[#193e38] outline-none focus:border-[#104d43]">
-                <option value="all">Tous les statuts</option>
-                <option value="pending">En attente</option>
-                <option value="confirmed">Confirmées</option>
-                <option value="processing">En préparation</option>
-                <option value="shipped">Expédiées</option>
-                <option value="delivered">Livrées</option>
-                <option value="cancelled">Annulées</option>
-              </select>
-              <select value={orderCityFilter} onChange={e=>setOrderCityFilter(e.target.value)} aria-label="Filtrer par ville"
-                className="min-h-11 w-full rounded-xl border border-slate-200 bg-[#fafcfa] px-3 text-sm text-[#193e38] outline-none focus:border-[#104d43]">
-                <option value="all">Toutes les villes</option>
-                {MOROCCAN_CITIES.map(city=><option key={city} value={city}>{city}</option>)}
-              </select>
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-3 px-1 text-xs text-slate-600">
-              <span><strong className="text-[#193e38]">{filteredOrders.length}</strong> commande(s) affichée(s) sur {statTotalOrders}</span>
-              <span>Montant des commandes affichées : <strong className="text-[#104d43]">{filteredOrders.reduce((total,order)=>total+Number(order.total||0),0).toLocaleString('fr-MA')} DH</strong> <span className="text-slate-400">(non encaissé inclus)</span></span>
-            </div>
-            {selectedOrderIds.size > 0 && (
-              <div className="flex flex-wrap items-center gap-2 rounded-[14px] border border-[#dce8df] bg-[#f3f8f4] px-4 py-3">
-                <span className="me-2 text-xs font-extrabold text-[#193e38]">{selectedOrderIds.size} sélectionnée(s)</span>
-                <button type="button" onClick={handleBulkConfirmOrders}
-                  className="min-h-10 rounded-xl bg-[#104d43] px-4 text-xs font-extrabold text-white hover:bg-[#0b3931]">
-                  Confirmer la sélection
-                </button>
-                <button type="button" onClick={handleBulkDeleteOrders}
-                  className="min-h-10 rounded-xl border border-rose-200 bg-white px-4 text-xs font-extrabold text-rose-700 hover:bg-rose-50">
-                  Supprimer la sélection
-                </button>
-                <button type="button" onClick={clearOrderSelection}
-                  className="min-h-10 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50">
-                  Désélectionner
-                </button>
-              </div>
-            )}
-            {filteredOrders.length===0?(
-              <section className="gb-empty-orders flex flex-col items-center justify-center rounded-[16px] border border-[#e0e8e5] bg-white px-5 py-9 text-center shadow-[0_2px_8px_rgba(14,48,37,.02)]">
-                <span className="flex h-[60px] w-[60px] items-center justify-center rounded-[18px] bg-[#edf4f0] text-[#4b8b70]"><ClipboardList size={27}/></span>
-                <h4 className="mt-4 text-[16px] font-extrabold text-[#213a36]">{statTotalOrders===0?'Aucune commande pour le moment':'Aucune commande ne correspond aux filtres'}</h4>
-                <p className="mt-2 max-w-lg text-[12px] leading-6 text-[#718684]">
-                  {statTotalOrders===0?'Lorsqu’un client passe une commande sur la boutique, elle apparaît ici après enregistrement dans Cloudflare D1.':'Modifiez les critères de recherche pour consulter davantage de commandes.'}
-                </p>
-                <div className="mt-5 flex flex-wrap justify-center gap-2">
-                  <button type="button" onClick={()=>{setOrderQuery('');setOrderStatusFilter('all');setOrderCityFilter('all');}}
-                    className="inline-flex min-h-10 items-center gap-2 rounded-[10px] border border-[#d4e5da] bg-[#f1f8f3] px-4 text-xs font-bold text-[#225240] hover:bg-[#e7f2e9]">Effacer les filtres</button>
-                  <button type="button" onClick={handleRefreshOrders} disabled={isRefreshing}
-                    className="inline-flex min-h-10 items-center gap-2 rounded-[10px] border border-[#dce5e1] bg-white px-4 text-xs font-bold text-[#3e5850] hover:bg-slate-50 disabled:opacity-50">
-                    <RefreshCw size={14} className={isRefreshing?'animate-spin':''}/>Actualiser</button>
-                </div>
-              </section>
-            ):(
-              <div className="space-y-3">
-                <div className="overflow-hidden rounded-[14px] border border-[#dfe8e4] bg-white shadow-[0_2px_9px_rgba(15,43,31,.025)]">
-                  <div className="flex items-center gap-3 border-b border-slate-100 bg-[#f5f9f6] px-5 py-3">
-                    <input
-                      type="checkbox"
-                      checked={filteredOrders.length > 0 && filteredOrders.every(o => selectedOrderIds.has(o.id))}
-                      ref={el => { if (el) el.indeterminate = filteredOrders.some(o => selectedOrderIds.has(o.id)) && !filteredOrders.every(o => selectedOrderIds.has(o.id)); }}
-                      onChange={toggleSelectAllVisibleOrders}
-                      aria-label="Sélectionner toutes les commandes visibles"
-                      className="h-4 w-4 accent-[#104d43]"
-                    />
-                    <span className="text-xs font-extrabold text-[#527263]">Sélectionner toutes les commandes affichées</span>
-                  </div>
-                  <div className="divide-y divide-[#e8eee9]">
-                {filteredOrders.map(order=>(
-                  <article key={order.id} className={selectedOrderIds.has(order.id) ? 'gb-order-card overflow-hidden bg-[#f2f8f4]' : 'gb-order-card overflow-hidden bg-white'}>
-                    <div className="flex flex-col gap-4 p-5 xl:flex-row xl:items-center xl:justify-between">
-                      <div className="flex min-w-0 flex-1 items-start gap-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedOrderIds.has(order.id)}
-                          onChange={() => toggleOrderSelection(order.id)}
-                          aria-label={'Sélectionner la commande '+order.reference}
-                          className="mt-3 h-4 w-4 shrink-0 accent-[#104d43]"
-                        />
-                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#edf6ef] text-[#104d43]"><Package size={20}/></span>
-                        <div className="min-w-0">
-                          <p className="font-mono text-sm font-black text-[#193e38]">{order.reference}</p>
-                          <p className="mt-1 text-xs font-semibold text-slate-600">{order.fullName||'Client'} · {order.city}</p>
-                          <p className="mt-1 text-[11px] text-slate-500">{formatMoroccoDate(order.createdAt || order.date)} · {order.items.reduce((sum,item)=>sum+item.quantity,0)} article(s)</p>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className="text-base font-black text-[#104d43]">{Number(order.total||0).toFixed(2)} DH</span>
-                        <select value={order.status} onChange={e=>void handleUpdateOrderStatus(order.id,e.target.value as Order['status'])}
-                          aria-label={'État commande '+order.reference}
-                          className={'min-h-10 rounded-xl border px-3 text-xs font-extrabold outline-none '+(order.status==='delivered'?'border-[#b9e3c7] bg-[#eff9f2] text-[#16744a]':order.status==='cancelled'?'border-red-200 bg-red-50 text-red-700':'border-[#d7e4d9] bg-[#f6f9f7] text-[#193e38]')}>
-                          <option value="pending">En attente</option><option value="confirmed">Confirmée</option>
-                          <option value="processing">En préparation</option><option value="shipped">Expédiée</option>
-                          <option value="delivered">Livrée</option><option value="cancelled">Annulée</option>
-                        </select>
-                      </div>
-                    </div>
-                    <details className="group border-t border-slate-100">
-                      <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-3 text-xs font-bold text-[#104d43] hover:bg-[#f7faf8] [&::-webkit-details-marker]:hidden">
-                        Afficher les détails et les informations de livraison
-                        <ChevronRight size={17} className="transition-transform group-open:rotate-90"/>
-                      </summary>
-                      <div className="grid gap-5 border-t border-slate-100 bg-[#fcfdfc] px-5 py-5 text-sm md:grid-cols-3">
-                        <div>
-                          <h4 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-500">Client</h4>
-                          <p className="font-semibold text-[#193e38]">{order.fullName}</p>
-                          <a href={'tel:'+order.phoneNumber} dir="ltr" className="mt-2 inline-flex items-center gap-2 text-xs font-bold text-[#104d43] hover:underline"><Phone size={16}/>{order.phoneNumber}</a>
-                        </div>
-                        <div>
-                          <h4 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-500">Livraison manuelle</h4>
-                          <p className="flex items-start gap-2 text-xs leading-6 text-[#526b5e]"><MapPin size={16} className="mt-1 shrink-0 text-[#104d43]"/>{order.city}, {order.deliveryAddress}</p>
-                          {order.notes&&<p className="mt-2 rounded-lg bg-[#edf6ef] p-3 text-xs leading-6 text-[#526b5e]">Notes : {order.notes}</p>}
-                        </div>
-                        <div>
-                          <h4 className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-500">Articles de la commande</h4>
-                          <div className="space-y-2">{order.items.map((item,i)=><div key={item.productId+'-'+i} className="flex justify-between gap-2 border-b border-slate-100 pb-2 text-xs text-[#193e38]">
-                            <span className="min-w-0 flex-1">{item.productName} × {item.quantity}</span><span className="shrink-0 font-bold">{item.price} DH</span>
-                          </div>)}</div>
-                          <p className="mt-3 text-xs font-black text-[#104d43]">Total : {order.total} DH</p>
-                        </div>
-                        <AdminShippingEditor order={order} onSaved={saved=>setOrders(current=>current.map(item=>item.id===saved.id?saved:item))}/>
-                        <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-4 md:col-span-3">
-                          <button type="button" onClick={()=>void handleCancelOrder(order.id)} disabled={order.status==='cancelled'} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-rose-200 bg-white px-4 text-xs font-bold text-rose-700 hover:bg-rose-50"><Trash2 size={16}/>Annuler la commande</button>
-                          <p className="self-center text-xs text-slate-500">Les statuts et les informations d'expédition sont sauvegardés dans D1. L'annulation conserve l'historique.</p>
-                        </div>
-                      </div>
-                    </details>
-                  </article>
-                ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          <AdminOrdersWorkspace
+            language={language}
+            orders={orders}
+            filteredOrders={filteredOrders}
+            totalOrders={statTotalOrders}
+            pendingOrders={statNewOrders}
+            processingOrders={statProcessingOrders}
+            confirmedOrders={statConfirmedOnly}
+            shippedOrders={statShippedOrders}
+            orderQuery={orderQuery}
+            setOrderQuery={setOrderQuery}
+            orderStatusFilter={orderStatusFilter}
+            setOrderStatusFilter={setOrderStatusFilter}
+            orderCityFilter={orderCityFilter}
+            setOrderCityFilter={setOrderCityFilter}
+            selectedOrderIds={selectedOrderIds}
+            handleBulkConfirmOrders={handleBulkConfirmOrders}
+            clearOrderSelection={clearOrderSelection}
+            toggleSelectAllVisibleOrders={toggleSelectAllVisibleOrders}
+            toggleOrderSelection={toggleOrderSelection}
+            handleUpdateOrderStatus={handleUpdateOrderStatus}
+            handleCancelOrder={handleCancelOrder}
+            handleRefreshOrders={handleRefreshOrders}
+            exportOrdersToCSV={exportOrdersToCSV}
+            isRefreshing={isRefreshing}
+            refreshSuccess={refreshSuccess}
+            refreshError={refreshError}
+            databaseReady={launchStatus?.databaseReady}
+            formatMoroccoDate={formatMoroccoDate}
+            setOrders={setOrders}
+          />
         )}
 
-        {/* VIEW 2: PRODUCT CATALOG MANAGEMENT */}
+                {/* VIEW 2: PRODUCT CATALOG MANAGEMENT */}
         {activeTab === 'products' && (
-          <div className="space-y-6">
-
-            {/* Operational backup tools stay available without crowding the product form. */}
-            <details className="group overflow-hidden rounded-xl border border-[#dce6df] bg-white shadow-[0_2px_8px_rgba(20,55,39,.02)]">
-              <summary className="flex min-h-[45px] cursor-pointer items-center justify-between gap-3 px-4 py-2.5 text-xs font-bold text-[#31584a] hover:bg-[#f5faf6] sm:px-5">
-                <span className="inline-flex items-center gap-2"><Package size={16} className="text-[#618c75]"/>Outils du catalogue <span className="hidden font-normal text-slate-500 sm:inline">· Importer, exporter et sauvegarder</span></span>
-                <ChevronRight size={16} className="text-slate-500 transition-transform group-open:rotate-90"/>
-              </summary>
-              <div className="flex flex-wrap items-center gap-2 border-t border-[#e7eee9] px-4 py-3 sm:px-5">
-                
-                                <button type="button" onClick={exportProductsToJSON} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-[#31584a] hover:bg-[#f2f8f4]">Exporter JSON</button>
-                <button type="button" onClick={exportProductsToCSV} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-[#31584a] hover:bg-[#f2f8f4]">Exporter CSV</button>
-                <label className="cursor-pointer rounded-lg border border-[#b9d7c2] bg-[#edf7f0] px-3 py-2.5 text-xs font-bold text-[#195c41] hover:bg-[#e0f1e5]">
-                  Importer JSON<input type="file" accept=".json,application/json" onChange={importProductsFromJSON} className="sr-only"/>
-                </label>
-                <label className="cursor-pointer rounded-lg border border-[#b9d7c2] bg-[#edf7f0] px-3 py-2.5 text-xs font-bold text-[#195c41] hover:bg-[#e0f1e5]">
-                  Importer CSV<input type="file" accept=".csv,text/csv" onChange={importProductsFromCSV} className="sr-only"/>
-                </label>
-                <p className="basis-full text-[11px] leading-5 text-[#738a7a]">Les modifications sont sauvegardées dans Cloudflare D1. Les nouveaux produits restent en brouillon jusqu'à publication.</p>
-              </div>
-            </details>
-
-            {/* Shopify-style product editor: essential fields first, advanced options collapsible. */}
-            {(isAddingProduct || editingProduct) && (
-              <section id="gb-product-editor" className="rounded-[18px] border border-[#dce6df] bg-[#f4f7f5] shadow-[0_2px_12px_rgba(18,55,34,.04)]">
-                <header className="flex flex-wrap items-center justify-between gap-3 rounded-t-[18px] border-b border-[#dce9df] bg-white px-5 py-4 sm:px-7">
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-[.15em] text-[#32856e]">GLOBABOX / PRODUITS</p>
-                    <h3 className="mt-1 text-lg font-black text-[#193e38]">{editingProduct?'Modifier le produit':'Ajouter un produit'}</h3>
-                    <p className="mt-1 text-xs text-slate-500">{editingProduct?'Modifiez les informations et enregistrez vos changements.':'Votre nouveau produit sera d’abord enregistré en brouillon.'}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={'rounded-full px-3 py-1.5 text-xs font-extrabold '+(editingProduct&&productForm.isActive?'bg-[#e6f6eb] text-[#166b45]':'bg-amber-50 text-amber-700')}>{editingProduct&&productForm.isActive?'Publié':'Brouillon'}</span>
-                    <button type="button" onClick={()=>{setEditingProduct(null);setIsAddingProduct(false);}} className="min-h-10 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50">Fermer</button>
-                  </div>
-                </header>
-                <form onSubmit={handleSaveProduct} className="grid items-start gap-4 p-4 sm:p-5 xl:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
-                  <div className="min-w-0 space-y-5">
-                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
-                      <h4 className="mb-4 text-base font-black text-[#193e38]">Informations du produit</h4>
-                      <label htmlFor="gb-product-title" className="mb-1.5 block text-xs font-extrabold text-[#385647]">Nom du produit *</label>
-                      <input id="gb-product-title" required maxLength={220} value={productForm.nameFr}
-                        onChange={e=>setProductForm({...productForm,nameFr:e.target.value})}
-                        placeholder="Ex. Organisateur de cuisine multifonction" className="mb-4 min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-semibold text-[#193e38] outline-none focus:border-[#104d43]"/>
-                    </section>
-                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
-                      <div className="mb-4 flex items-start justify-between gap-3">
-                        <div><h4 className="text-base font-black text-[#193e38]">Photos et galerie</h4>
-                          <p className="mt-1 text-xs text-slate-500">JPG, PNG ou WebP · 750 Ko par image · 8 images par sélection.</p></div>
-                      </div>
-                      <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[#bad7c5] bg-[#f6fbf7] p-4 text-center text-xs font-bold text-[#104d43] hover:bg-[#edf7f0]">
-                        <Plus size={24}/>{mediaUploading?'Téléversement des images…':'Ajouter des images depuis votre ordinateur'}
-                        <input type="file" multiple accept="image/webp,image/jpeg,image/png" className="sr-only"
-                          disabled={mediaUploading} onChange={e=>{void uploadProductPhotos(e.target.files);e.target.value='';}}/>
-                      </label>
-                      <div className="mt-4 flex flex-wrap gap-3">
-                        {productForm.image&&<div className="group relative h-24 w-24 overflow-hidden rounded-xl border-2 border-[#93c2a6] bg-white">
-                          <img src={productForm.image} alt="Image principale" className="h-full w-full object-contain"/>
-                          <span className="absolute bottom-0 inset-x-0 bg-[#104d43] py-1 text-center text-[10px] font-bold text-white">Principale</span>
-                        </div>}
-                        {productForm.additionalImages.map((image,i)=><div key={image+'-'+i} className="relative h-24 w-24 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                          <img src={image} alt={'Galerie '+(i+1)} className="h-full w-full object-contain"/>
-                          <button type="button" onClick={()=>setProductForm({...productForm,image,additionalImages:[productForm.image,...productForm.additionalImages.filter((_,j)=>j!==i)].filter(Boolean)})}
-                            className="absolute bottom-0 start-0 bg-[#104d43] px-2 py-1 text-[10px] text-white" title="Définir comme principale">1ère</button>
-                          <button type="button" onClick={()=>setProductForm({...productForm,additionalImages:productForm.additionalImages.filter((_,j)=>j!==i)})}
-                            className="absolute end-1 top-1 rounded-full bg-white p-1 text-red-700 shadow" aria-label="Retirer image"><X size={13}/></button>
-                        </div>)}
-                      </div>
-                      <details className="mt-4 rounded-xl bg-[#f5f8f6] p-3">
-                        <summary className="cursor-pointer text-xs font-bold text-[#104d43]">Ajouter une image par lien URL</summary>
-                        <label className="mt-3 block text-xs text-slate-500">Image principale</label>
-                        <input value={productForm.image} onChange={e=>setProductForm({...productForm,image:e.target.value})}
-                          placeholder="https://..." className="mt-1 min-h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs text-[#193e38]"/>
-                        <label className="mt-3 block text-xs text-slate-500">Autres photos (une URL par ligne)</label>
-                        <textarea rows={3} value={productForm.additionalImages.join('\n')}
-                          onChange={e=>setProductForm({...productForm,additionalImages:e.target.value.split(/\n/).map(v=>v.trim()).filter(Boolean)})}
-                          className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-[#193e38]"/>
-                      </details>
-                    </section>
-                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
-                      <h4 className="mb-4 text-base font-black text-[#193e38]">Description détaillée</h4>
-                      <label htmlFor="gb-product-description" className="mb-1.5 block text-xs font-extrabold text-[#385647]">Description du produit</label>
-                      <textarea id="gb-product-description" rows={5} maxLength={6000} value={productForm.descFr}
-                        onChange={e=>setProductForm({...productForm,descFr:e.target.value})}
-                        placeholder="Expliquez les avantages, les caractéristiques, les dimensions, le contenu du colis et l'utilisation réelle du produit."
-                        className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 text-sm leading-7 text-[#193e38] outline-none focus:border-[#104d43]"/>
-                      <p className="mt-2 text-[11px] text-slate-500">Décrivez uniquement les caractéristiques vérifiées. Pas de promesses non confirmées.</p>
-                    </section>
-                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
-                      <h4 className="mb-4 text-base font-black text-[#193e38]">Prix et disponibilité</h4>
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <label className="text-xs font-bold text-[#385647]">Prix de vente (DH) *
-                          <input type="number" min="0.01" step="0.01" required value={productForm.price||''}
-                            onChange={e=>setProductForm({...productForm,price:Number(e.target.value)})}
-                            className="mt-2 min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm font-bold text-[#193e38] outline-none focus:border-[#104d43]"/>
-                        </label>
-                        <label className="text-xs font-bold text-[#385647]">Prix barré (facultatif)
-                          <input type="number" min="0" step="0.01" value={productForm.originalPrice||''}
-                            onChange={e=>setProductForm({...productForm,originalPrice:Number(e.target.value)})}
-                            className="mt-2 min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm text-[#193e38] outline-none focus:border-[#104d43]"/>
-                        </label>
-                      </div>
-                      <p className="mt-3 text-xs text-slate-500">La livraison est calculée au passage de commande (35 DH en dessous de 500 DH).</p>
-                    </section>
-                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
-                      <h4 className="mb-4 text-base font-black text-[#193e38]">Tags et mots-clés</h4>
-                      <label htmlFor="gb-product-tags" className="mb-2 block text-xs font-bold text-[#385647]">Étiquettes produit</label>
-                      <input id="gb-product-tags" type="text" value={tagsInput}
-                        onChange={e=>setTagsInput(e.target.value)}
-                        placeholder="Ex. rangement, cuisine, maison, organisation"
-                        className="min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm text-[#193e38] outline-none focus:border-[#104d43]"/>
-                      <p className="mt-2 text-xs text-slate-500">Séparez les mots-clés par une virgule. Ils servent à la recherche interne et à l'organisation du catalogue.</p>
-                      {tagsInput.split(',').some(tag=>tag.trim())&&<div className="mt-3 flex flex-wrap gap-2">{tagsInput.split(',').map(tag=>tag.trim()).filter(Boolean).map((tag,i)=><span key={tag+i} className="rounded-full bg-[#e9f5ee] px-3 py-1 text-[11px] font-bold text-[#104d43]">{tag}</span>)}</div>}
-                    </section>
-                    <details className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
-                      <summary className="cursor-pointer text-base font-black text-[#193e38]">Référencement Google (SEO) · facultatif</summary>
-                      <div className="mt-4 space-y-4">
-                        <label className="block text-xs font-bold text-[#385647]">Titre SEO
-                          <input maxLength={100} value={productForm.seoTitle} onChange={e=>setProductForm({...productForm,seoTitle:e.target.value})}
-                            placeholder={productForm.nameFr||'Titre affiché dans Google'} className="mt-2 min-h-12 w-full rounded-xl border border-slate-200 px-4 text-sm text-[#193e38]"/>
-                        </label>
-                        <label className="block text-xs font-bold text-[#385647]">Meta description
-                          <textarea rows={3} maxLength={320} value={productForm.seoDescription} onChange={e=>setProductForm({...productForm,seoDescription:e.target.value})}
-                            placeholder="Résumé court et précis de votre produit." className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm leading-6 text-[#193e38]"/>
-                        </label>
-                        <div className="rounded-xl border border-slate-200 bg-[#f8faf8] p-4">
-                          <p className="truncate text-[15px] font-bold text-[#225fba]">{productForm.seoTitle||productForm.nameFr||'Nom du produit'}</p>
-                          <p className="mt-1 text-xs text-[#2e8056]">globabox.com/?product={encodeURIComponent(productForm.id||'produit')}</p>
-                          <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{productForm.seoDescription||productForm.descFr||'Aperçu du produit dans les moteurs de recherche.'}</p>
-                        </div>
-                        <p className="text-xs leading-6 text-slate-500">L’aperçu SEO est indicatif. L’indexation réelle dépend du rendu et de la configuration technique du site.</p>
-                      </div>
-                    </details>
-                    <details className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
-                      <summary className="cursor-pointer text-base font-black text-[#193e38]">Traductions & caractéristiques · facultatif</summary>
-                      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                        <label className="text-xs font-bold text-[#385647]">Nom en arabe
-                          <input dir="rtl" value={productForm.nameAr} onChange={e=>setProductForm({...productForm,nameAr:e.target.value})}
-                            className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm text-[#193e38]"/>
-                        </label>
-                        <label className="text-xs font-bold text-[#385647]">Nom en anglais
-                          <input value={productForm.nameEn} onChange={e=>setProductForm({...productForm,nameEn:e.target.value})}
-                            className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm text-[#193e38]"/>
-                        </label>
-                        <label className="text-xs font-bold text-[#385647]">Description en arabe
-                          <textarea dir="rtl" rows={4} value={productForm.descAr} onChange={e=>setProductForm({...productForm,descAr:e.target.value})}
-                            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 text-sm text-[#193e38]"/>
-                        </label>
-                        <label className="text-xs font-bold text-[#385647]">Description en anglais
-                          <textarea rows={4} value={productForm.descEn} onChange={e=>setProductForm({...productForm,descEn:e.target.value})}
-                            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 text-sm text-[#193e38]"/>
-                        </label>
-                        {(['fr','ar','en'] as const).map(lang=>{
-                          const prop=lang==='fr'?'featuresFr':lang==='ar'?'featuresAr':'featuresEn';
-                          return <label key={lang} className="text-xs font-bold text-[#385647]">Caractéristiques {lang.toUpperCase()} (une par ligne)
-                            <textarea rows={4} dir={lang==='ar'?'rtl':'ltr'} value={productForm[prop].join('\n')}
-                              onChange={e=>setProductForm({...productForm,[prop]:e.target.value.split('\n').map(x=>x.trim()).filter(Boolean)})}
-                              className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-3 text-sm text-[#193e38]"/>
-                          </label>;
-                        })}
-                      </div>
-                    </details>
-                  </div>
-                  <aside className="min-w-0 space-y-4 xl:sticky xl:top-5 xl:self-start">
-                    <section className="overflow-hidden rounded-2xl border border-[#dfe9e2] bg-white shadow-sm">
-                      <header className="flex items-center justify-between border-b border-slate-100 px-5 py-3.5">
-                        <h4 className="text-sm font-black text-[#193e38]">Aperçu du produit</h4>
-                        <span className="text-[10px] font-bold text-[#6c8476]">Temps réel</span>
-                      </header>
-                      <div className="p-4">
-                        <div className="flex min-h-[155px] items-center justify-center overflow-hidden rounded-xl border border-[#e4ede7] bg-[#f4f7f5]">
-                          {productForm.image?<img src={productForm.image} alt="Aperçu de la photo principale" className="h-[170px] w-full object-contain p-2"/>:
-                            <div className="flex flex-col items-center gap-2 text-[#86a092]"><Package size={36} strokeWidth={1.5}/><span className="text-xs">Votre photo principale</span></div>}
-                        </div>
-                        <p className="mt-3 line-clamp-2 min-h-[22px] text-sm font-extrabold leading-6 text-[#193e38]">{productForm.nameFr.trim()||'Nom du produit'}</p>
-                        <p className="mt-1 text-lg font-black text-[#104d43]">{productForm.price>0?productForm.price.toLocaleString('fr-MA',{minimumFractionDigits:2,maximumFractionDigits:2})+' DH':'— DH'}</p>
-                        <div className="mt-3 flex flex-wrap items-center gap-2">
-                          <span className="rounded-full bg-[#edf6f0] px-2.5 py-1 text-[10px] font-bold text-[#315f4c]">{categories.find(c=>c.id===productForm.category)?.name.fr||STORE_DEPARTMENTS.find(c=>c.id===productForm.category)?.name.fr||'Sans catégorie'}</span>
-                          <span className={'rounded-full px-2.5 py-1 text-[10px] font-bold '+(editingProduct&&productForm.isActive?'bg-[#e4f7eb] text-[#17734b]':'bg-amber-50 text-amber-800')}>{editingProduct&&productForm.isActive?'Publié':'Brouillon'}</span>
-                        </div>
-                        <p className="mt-3 text-[11px] leading-5 text-slate-500">Aperçu indicatif. Enregistrez puis vérifiez le produit sur la boutique.</p>
-                      </div>
-                    </section>
-
-                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm">
-                      <h4 className="mb-4 text-base font-black text-[#193e38]">Statut de vente</h4>
-                      {editingProduct?<label className="flex items-center justify-between gap-4 rounded-xl bg-[#f5f9f6] p-3 text-xs font-bold text-[#193e38]">
-                        {productForm.isActive?'Publié sur le site':'Brouillon · Non visible'}
-                        <input type="checkbox" checked={productForm.isActive} onChange={e=>setProductForm({...productForm,isActive:e.target.checked})} className="h-5 w-5 accent-[#104d43]"/>
-                      </label>:<p className="rounded-xl bg-amber-50 p-3 text-xs leading-6 text-amber-900">Le nouveau produit sera enregistré en brouillon. Vous pourrez le publier après validation des photos, du prix et du stock.</p>}
-                      {editingProduct?.id.startsWith('gb_source_') && <div className="mt-4 rounded-xl border border-[#e7d5a9] bg-[#fffaf0] p-4">
-                        <h5 className="text-xs font-black text-[#674d1d]">Contrôle de publication · Produit sourcé</h5>
-                        <p className="mt-1 text-[11px] leading-5 text-[#745f39]">Les six photos doivent montrer exactement l'article vendu et être autorisées. Vérifiez fournisseur, stock et prix avant publication.</p>
-                        <label className="mt-3 block text-[11px] font-bold text-[#6f5d3b]">Fournisseur validé
-                          <input value={productForm.supplier} onChange={e=>setProductForm({...productForm,supplier:e.target.value})} placeholder="Nom réel du fournisseur"
-                            className="mt-1 min-h-10 w-full rounded-lg border border-[#dbcba6] bg-white px-3 text-xs text-[#193e38]"/>
-                        </label>
-                        <label className="mt-3 block text-[11px] font-bold text-[#6f5d3b]">Lien de référence
-                          <input value={productForm.sourceUrl} onChange={e=>setProductForm({...productForm,sourceUrl:e.target.value})}
-                            className="mt-1 min-h-10 w-full rounded-lg border border-[#dbcba6] bg-white px-3 text-xs text-[#193e38]"/>
-                        </label>
-                        <label className="mt-3 flex items-start gap-2 text-[11px] font-bold leading-5 text-[#674d1d]">
-                          <input type="checkbox" checked={!productForm.needsSupplierVerification} onChange={e=>setProductForm({...productForm,needsSupplierVerification:!e.target.checked})} className="mt-1 accent-[#104d43]"/>
-                          J'ai vérifié le fournisseur, le modèle, le stock et le prix.
-                        </label>
-                        <label className="mt-2 flex items-start gap-2 text-[11px] font-bold leading-5 text-[#674d1d]">
-                          <input type="checkbox" checked={productForm.imageRightsConfirmed} onChange={e=>setProductForm({...productForm,imageRightsConfirmed:e.target.checked})} className="mt-1 accent-[#104d43]"/>
-                          Je possède ou j'ai le droit d'utiliser les 6 photos de ce modèle précis.
-                        </label>
-                        <label className="mt-2 flex items-start gap-2 text-[11px] font-bold leading-5 text-[#674d1d]">
-                          <input type="checkbox" checked={productForm.readyToPublish} onChange={e=>setProductForm({...productForm,readyToPublish:e.target.checked})} className="mt-1 accent-[#104d43]"/>
-                          La description et la disponibilité sont vérifiées ; la fiche est prête.
-                        </label>
-                      </div>}
-                      <label className="mt-4 block text-xs font-bold text-[#385647]">Disponibilité
-                        <select value={productForm.stockStatus} onChange={e=>setProductForm({...productForm,stockStatus:e.target.value as typeof productForm.stockStatus})}
-                          className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-[#193e38]">
-                          <option value="in_stock">En stock</option><option value="limited">Stock limité</option><option value="out_of_stock">Rupture de stock</option>
-                        </select>
-                      </label>
-                      <div className="mt-4 space-y-3 border-t border-slate-100 pt-4">
-                        {([['bestSeller','Meilleure vente'],['newArrival','Nouveauté'],['featured','Mis en avant']] as const).map(([field,label])=>
-                          <label key={field} className="flex items-center justify-between text-xs font-bold text-[#385647]">{label}
-                            <input type="checkbox" checked={productForm[field]} onChange={e=>setProductForm({...productForm,[field]:e.target.checked})} className="h-4 w-4 accent-[#104d43]"/>
-                          </label>)}
-                      </div>
-                    </section>
-                    <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm">
-                      <h4 className="mb-4 text-base font-black text-[#193e38]">Organisation</h4>
-                      <label className="block text-xs font-bold text-[#385647]">Catégorie principale *
-                        <select value={productForm.category} onChange={e=>setProductForm({...productForm,category:e.target.value,subcategory:''})}
-                          className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-[#193e38]">
-                          <optgroup label="Rayons de la boutique">
-                            {STORE_DEPARTMENTS.map(category=><option key={category.id} value={category.id}>{categories.find(c=>c.id===category.id)?.name.fr||category.name.fr}</option>)}
-                          </optgroup>
-                          {categories.some(c=>c.id===productForm.category&&!STORE_DEPARTMENTS.some(dept=>dept.id===c.id))&&<optgroup label="Catégorie historique"><option value={productForm.category}>{productForm.category}</option></optgroup>}
-                        </select>
-                      </label>
-                      <label className="mt-4 block text-xs font-bold text-[#385647]">Sous-catégorie
-                        <select value={productForm.subcategory} onChange={e=>setProductForm({...productForm,subcategory:e.target.value})}
-                          className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-[#193e38]">
-                          <option value="">Aucune</option>
-                          {getStoreSubcategories(productForm.category).map(sub=><option key={sub.id} value={sub.id}>{sub.name.fr}</option>)}
-                        </select>
-                      </label>
-                    </section>
-                    <details className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm">
-                      <summary className="cursor-pointer text-base font-black text-[#193e38]">Inventaire & références</summary>
-                      <div className="mt-4 space-y-4">
-                        <label className="block text-xs font-bold text-[#385647]">SKU (référence interne)
-                          <input value={productForm.sku} maxLength={80} onChange={e=>setProductForm({...productForm,sku:e.target.value})}
-                            placeholder="Ex. GB-CUI-001" className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm text-[#193e38]"/>
-                        </label>
-                        <label className="block text-xs font-bold text-[#385647]">Code-barres (facultatif)
-                          <input value={productForm.barcode} maxLength={80} onChange={e=>setProductForm({...productForm,barcode:e.target.value})}
-                            className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm text-[#193e38]"/>
-                        </label>
-                        <label className="block text-xs font-bold text-[#385647]">Identifiant technique
-                          <input disabled={Boolean(editingProduct)} value={productForm.id}
-                            onChange={e=>setProductForm({...productForm,id:e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g,'-')})}
-                            className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-[#f7faf8] px-3 font-mono text-xs text-[#193e38]"/>
-                        </label>
-                      </div>
-                    </details>
-
-                  </aside>
-                  <footer className="sticky bottom-0 z-20 col-span-full flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#c9e1d1] bg-white/95 px-4 py-3 shadow-[0_-5px_25px_rgba(22,60,40,.08)] backdrop-blur sm:px-5">
-                    <p className="flex min-w-0 items-center gap-2 text-[11px] leading-5 text-[#667f70]"><CheckCircle2 size={16} className="shrink-0 text-[#237953]"/>{editingProduct?'Enregistrement des modifications dans D1':'Création en brouillon dans Cloudflare D1'}</p>
-                    <div className="flex flex-1 justify-end gap-2 sm:flex-none">
-                      <button type="button" onClick={()=>{setEditingProduct(null);setIsAddingProduct(false);}} className="min-h-11 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-[#486658] hover:bg-[#f2f7f4]">Annuler</button>
-                      <button type="submit" disabled={mediaUploading} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#104d43] px-5 text-xs font-extrabold text-white hover:bg-[#0b3931] disabled:cursor-wait disabled:opacity-50"><CheckCircle2 size={17}/>{editingProduct?'Enregistrer':'Enregistrer le brouillon'}</button>
-                    </div>
-                  </footer>
-                </form>
-              </section>
-            )}
-
-            {/* Shopify-style listing: search, status, images and clear actions. */}
-            {!isAddingProduct && !editingProduct && (
-            <section className="overflow-hidden rounded-[22px] border border-[#d9e7df] bg-white shadow-sm">
-              <header className="flex flex-col justify-between gap-4 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:p-6">
-                <div>
-                  <h3 className="text-lg font-black text-[#193e38]">Liste des produits</h3>
-                  <p className="mt-1 text-xs text-slate-500">Recherchez, modifiez et organisez votre catalogue depuis un seul endroit.</p>
-                </div>
-                <button type="button" onClick={handleStartAddProduct}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#104d43] px-5 text-xs font-extrabold text-white hover:bg-[#0b3931]">
-                  <Plus size={17}/>Ajouter un produit
-                </button>
-              </header>
-              <div className="grid gap-3 border-b border-slate-100 p-4 sm:grid-cols-[minmax(0,1fr)_210px] sm:p-5">
-                <label className="relative">
-                  <Search size={19} className="pointer-events-none absolute start-4 top-3.5 text-slate-400"/>
-                  <input type="search" value={productQuery} onChange={e=>setProductQuery(e.target.value)}
-                    placeholder="Rechercher par nom, référence, catégorie ou tag…" aria-label="Rechercher un produit"
-                    className="min-h-12 w-full rounded-xl border border-slate-200 bg-[#fcfdfc] ps-12 pe-4 text-sm text-[#193e38] outline-none focus:border-[#104d43]"/>
-                </label>
-                <select value={productStatusFilter} onChange={e=>setProductStatusFilter(e.target.value as typeof productStatusFilter)}
-                  aria-label="Filtrer par statut"
-                  className="min-h-12 w-full rounded-xl border border-slate-200 bg-[#fcfdfc] px-4 text-xs font-bold text-[#193e38] outline-none focus:border-[#104d43]">
-                  <option value="all">Tous les produits ({adminProducts.length})</option>
-                  <option value="published">Publiés ({adminProducts.filter(p=>p.isActive===true).length})</option>
-                  <option value="draft">Brouillons ({adminProducts.filter(p=>p.isActive!==true).length})</option>
-                  <option value="outofstock">Rupture de stock ({adminProducts.filter(p=>!p.inStock||p.stockStatus==='out_of_stock').length})</option>
-                </select>
-              </div>
-              <p className="border-b border-slate-100 px-5 py-3 text-xs font-semibold text-[#64796c]">{filteredProductsList.length} produit(s) correspondant à la recherche · Données du catalogue D1</p>
-              {selectedProductIds.size > 0 && (
-                <div className="flex flex-wrap items-center gap-2 border-b border-[#dce8df] bg-[#f3f8f4] px-4 py-3 sm:px-5">
-                  <span className="me-2 text-xs font-extrabold text-[#193e38]">{selectedProductIds.size} sélectionné(s)</span>
-                  <button type="button" onClick={handleBulkPublishProducts}
-                    className="min-h-10 rounded-xl bg-[#104d43] px-4 text-xs font-extrabold text-white hover:bg-[#0b3931]">
-                    Confirmer / publier
-                  </button>
-                  <button type="button" onClick={handleBulkDeleteProducts}
-                    className="min-h-10 rounded-xl border border-rose-200 bg-white px-4 text-xs font-extrabold text-rose-700 hover:bg-rose-50">
-                    Supprimer la sélection
-                  </button>
-                  <button type="button" onClick={clearProductSelection}
-                    className="min-h-10 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50">
-                    Désélectionner
-                  </button>
-                </div>
-              )}
-              <div className="w-full overflow-x-auto">
-                <table className="w-full min-w-[850px] border-collapse text-start text-xs">
-                  <thead className="bg-[#f5f9f6] text-[11px] font-extrabold text-[#527263]">
-                    <tr>
-                      <th className="w-12 px-4 py-4 text-center">
-                        <input
-                          type="checkbox"
-                          checked={filteredProductsList.length > 0 && filteredProductsList.every(p => selectedProductIds.has(p.id))}
-                          ref={el => { if (el) el.indeterminate = filteredProductsList.some(p => selectedProductIds.has(p.id)) && !filteredProductsList.every(p => selectedProductIds.has(p.id)); }}
-                          onChange={toggleSelectAllVisibleProducts}
-                          aria-label="Sélectionner tous les produits visibles"
-                          className="h-4 w-4 accent-[#104d43]"
-                        />
-                      </th>
-                      <th className="px-5 py-4 text-start">Produit</th>
-                      <th className="px-4 py-4 text-start">Catégorie</th>
-                      <th className="px-4 py-4 text-start">Statut</th>
-                      <th className="px-4 py-4 text-start">Stock</th>
-                      <th className="px-4 py-4 text-end">Prix</th>
-                      <th className="px-5 py-4 text-end">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#e8eee9]">
-                    {filteredProductsList.map(prod=><tr key={prod.id} className={selectedProductIds.has(prod.id) ? 'bg-[#f2f8f4] hover:bg-[#edf6f0]' : 'hover:bg-[#f9fcfa]'}>
-                      <td className="w-12 px-4 py-4 text-center">
-                        <input
-                          type="checkbox"
-                          checked={selectedProductIds.has(prod.id)}
-                          onChange={() => toggleProductSelection(prod.id)}
-                          aria-label={'Sélectionner '+(prod.name?.fr||prod.id)}
-                          className="h-4 w-4 accent-[#104d43]"
-                        />
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="flex min-w-0 items-center gap-3">
-                          <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#e2ece5] bg-[#f3f7f4]">
-                            {prod.image?<img src={prod.image} loading="lazy" alt="" className="h-full w-full object-contain"/>:<Package size={23} className="text-[#91aa9b]"/>}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="max-w-[330px] truncate text-sm font-extrabold text-[#193e38]">{prod.name?.fr||prod.id}</p>
-                            <p className="mt-1 font-mono text-[11px] text-slate-500">{prod.sku||prod.id}</p>
-                            {Boolean(prod.tags?.length)&&<p className="mt-1 max-w-[300px] truncate text-[11px] text-[#658274]">{prod.tags?.slice(0,3).join(' · ')}</p>}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className="block text-xs font-semibold text-[#193e38]">{categories.find(cat=>cat.id===prod.category)?.name.fr||STORE_DEPARTMENTS.find(cat=>cat.id===prod.category)?.name.fr||prod.category}</span>
-                        {prod.subcategory&&<span className="mt-1 block text-[11px] text-slate-500">{getStoreSubcategories(prod.category).find(sub=>sub.id===prod.subcategory)?.name.fr||prod.subcategory}</span>}
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className={'inline-flex rounded-full px-3 py-1.5 text-[11px] font-extrabold '+(prod.isActive===true?'bg-[#e7f6ec] text-[#176b45]':'bg-amber-50 text-amber-700')}>{prod.isActive===true?'Publié':'Brouillon'}</span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className={'text-[11px] font-bold '+(!prod.inStock||prod.stockStatus==='out_of_stock'?'text-red-700':prod.stockStatus==='limited'?'text-amber-700':'text-[#17714c]')}>
-                          {!prod.inStock||prod.stockStatus==='out_of_stock'?'Rupture':prod.stockStatus==='limited'?'Stock limité':'En stock'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 text-end">
-                        <strong className="whitespace-nowrap text-sm text-[#193e38]">{prod.price.toFixed(2)} DH</strong>
-                        {prod.originalPrice&&prod.originalPrice>prod.price&&<span className="mt-1 block text-[11px] text-slate-400 line-through">{prod.originalPrice.toFixed(2)} DH</span>}
-                      </td>
-                      <td className="px-5 py-4 text-end">
-                        <div className="flex items-center justify-end gap-2">
-                          <button type="button" onClick={()=>handleStartEditProduct(prod)} className="min-h-10 rounded-xl border border-[#bed9c8] bg-[#f0f8f2] px-4 text-xs font-extrabold text-[#104d43] hover:bg-[#e0f0e5]">Modifier</button>
-                          <button type="button" onClick={()=>handleDeleteProduct(prod.id)} aria-label={'Retirer '+(prod.name?.fr||prod.id)} title="Retirer du catalogue"
-                            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-red-600 hover:bg-red-50"><Trash2 size={16}/></button>
-                        </div>
-                      </td>
-                    </tr>)}
-                    {filteredProductsList.length===0&&<tr><td colSpan={7} className="px-5 py-16 text-center">
-                      <Package size={33} className="mx-auto text-[#9db5a3]"/>
-                      <h4 className="mt-4 text-base font-black text-[#193e38]">Aucun produit trouvé</h4>
-                      <p className="mt-2 text-xs text-slate-500">{adminProducts.length===0?'Commencez par ajouter votre premier produit.':'Essayez un autre filtre ou une autre recherche.'}</p>
-                      <button type="button" onClick={()=>{setProductQuery('');setProductStatusFilter('all');}} className="mt-4 rounded-xl border border-[#b8d8c4] px-4 py-2.5 text-xs font-bold text-[#104d43]">Effacer les filtres</button>
-                    </td></tr>}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-            )}
-
-          </div>
+          <AdminProductsWorkspace
+            language={language}
+            adminProducts={adminProducts}
+            categories={categories}
+            filteredProductsList={filteredProductsList}
+            selectedProductIds={selectedProductIds}
+            productQuery={productQuery}
+            setProductQuery={setProductQuery}
+            productStatusFilter={productStatusFilter}
+            setProductStatusFilter={setProductStatusFilter}
+            editingProduct={editingProduct}
+            isAddingProduct={isAddingProduct}
+            productForm={productForm}
+            setProductForm={setProductForm}
+            setEditingProduct={setEditingProduct}
+            setIsAddingProduct={setIsAddingProduct}
+            mediaUploading={mediaUploading}
+            tagsInput={tagsInput}
+            setTagsInput={setTagsInput}
+            handleSaveProduct={handleSaveProduct}
+            handleStartAddProduct={handleStartAddProduct}
+            handleStartEditProduct={handleStartEditProduct}
+            handleDeleteProduct={handleDeleteProduct}
+            handleBulkPublishProducts={handleBulkPublishProducts}
+            handleBulkDeleteProducts={handleBulkDeleteProducts}
+            clearProductSelection={clearProductSelection}
+            toggleSelectAllVisibleProducts={toggleSelectAllVisibleProducts}
+            toggleProductSelection={toggleProductSelection}
+            exportProductsToJSON={exportProductsToJSON}
+            exportProductsToCSV={exportProductsToCSV}
+            importProductsFromJSON={importProductsFromJSON}
+            importProductsFromCSV={importProductsFromCSV}
+            uploadProductPhotos={uploadProductPhotos}
+          />
         )}
 
-        {/* Category CRUD, search, image and D1 persistence. */}
+                {/* Category CRUD, search, image and D1 persistence. */}
         {activeTab === 'categories' && (
           <AdminCategoriesWorkspace
             categories={categories}
@@ -2095,8 +1463,11 @@ export default function AdminPanel({
           />
         )}
 
-        {activeTab === 'marketing' && <AdminTrackingWorkspace/>}
+        {activeTab === 'customers' && <AdminCustomersWorkspace orders={orders} language={language} />}
+
+        {activeTab === 'marketing' && <AdminTrackingWorkspace language={language} />}
         {activeTab === 'operations' && <AdminOperationsWorkspace
+          language={language}
           products={adminProducts} orders={orders} launchStatus={launchStatus}
           onProducts={()=>setActiveTab('products')}
           onOrders={()=>setActiveTab('orders')}
