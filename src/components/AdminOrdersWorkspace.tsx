@@ -33,6 +33,8 @@ export default function AdminOrdersWorkspace(p:Props){
  toggleSelectAllVisibleOrders,toggleOrderSelection,handleUpdateOrderStatus,handleCancelOrder,
  handleRefreshOrders,exportOrdersToCSV,isRefreshing,refreshSuccess,refreshError,databaseReady,
  formatMoroccoDate,setOrders}=p;
+ const statTotalOrders=totalOrders, statNewOrders=pendingOrders, statProcessingOrders=processingOrders, statConfirmedOnly=confirmedOrders, statShippedOrders=shippedOrders;
+ const launchStatus={databaseReady};
  return (
 <div className="space-y-5">
   <header className="flex flex-col justify-between gap-4 rounded-[16px] border border-[#e0e8e5] bg-white p-5 shadow-[0_2px_10px_rgba(16,43,32,.025)] sm:flex-row sm:items-center sm:p-6">
