@@ -5,6 +5,7 @@ import { MOROCCAN_CITIES } from '../data';
 import AdminShippingEditor from './AdminShippingEditor';
 
 interface Props {
+ language:'ar'|'fr'|'en';
  orders:Order[];
  filteredOrders:Order[];
  totalOrders:number;
@@ -27,7 +28,7 @@ interface Props {
  setOrders:Dispatch<SetStateAction<Order[]>>;
 }
 export default function AdminOrdersWorkspace(p:Props){
- const {orders,filteredOrders,totalOrders,pendingOrders,processingOrders,confirmedOrders,shippedOrders,
+ const {language,orders,filteredOrders,totalOrders,pendingOrders,processingOrders,confirmedOrders,shippedOrders,
  orderQuery,setOrderQuery,orderStatusFilter,setOrderStatusFilter,orderCityFilter,setOrderCityFilter,
  selectedOrderIds,handleBulkConfirmOrders,handleBulkDeleteOrders,clearOrderSelection,
  toggleSelectAllVisibleOrders,toggleOrderSelection,handleUpdateOrderStatus,handleCancelOrder,
@@ -36,7 +37,7 @@ export default function AdminOrdersWorkspace(p:Props){
  const statTotalOrders=totalOrders, statNewOrders=pendingOrders, statProcessingOrders=processingOrders, statConfirmedOnly=confirmedOrders, statShippedOrders=shippedOrders;
  const launchStatus={databaseReady};
  return (
-<div className="space-y-5">
+<div dir={language==='ar'?'rtl':'ltr'} lang={language} className="space-y-5">
   <header className="flex flex-col justify-between gap-4 rounded-[16px] border border-[#e0e8e5] bg-white p-5 shadow-[0_2px_10px_rgba(16,43,32,.025)] sm:flex-row sm:items-center sm:p-6">
     <div>
       <p className="text-[11px] font-extrabold uppercase tracking-[.13em] text-[#38866e]">GESTION DES VENTES</p>
