@@ -6,6 +6,7 @@ import { STORE_DEPARTMENTS } from '../storefrontDepartments';
 import { getStoreSubcategories } from '../storefrontSubcategories';
 
 interface Props {
+ language:'ar'|'fr'|'en';
  adminProducts:Product[]; categories:Category[]; filteredProductsList:Product[];
  selectedProductIds:Set<string>; productQuery:string; setProductQuery:(v:string)=>void;
  productStatusFilter:'all'|'published'|'draft'|'outofstock'; setProductStatusFilter:(v:'all'|'published'|'draft'|'outofstock')=>void;
@@ -22,14 +23,14 @@ interface Props {
  uploadProductPhotos:(files:FileList|null)=>Promise<void>;
 }
 export default function AdminProductsWorkspace(p:Props){
- const {adminProducts,categories,filteredProductsList,selectedProductIds,productQuery,setProductQuery,
+ const {language,adminProducts,categories,filteredProductsList,selectedProductIds,productQuery,setProductQuery,
  productStatusFilter,setProductStatusFilter,editingProduct,isAddingProduct,productForm,setProductForm,
  setEditingProduct,setIsAddingProduct,mediaUploading,tagsInput,setTagsInput,handleSaveProduct,
  handleStartAddProduct,handleStartEditProduct,handleDeleteProduct,handleBulkPublishProducts,
  handleBulkDeleteProducts,clearProductSelection,toggleSelectAllVisibleProducts,toggleProductSelection,
  exportProductsToJSON,exportProductsToCSV,importProductsFromJSON,importProductsFromCSV,uploadProductPhotos}=p;
  return (
-<div className="space-y-6">
+<div dir={language==='ar'?'rtl':'ltr'} lang={language} className="space-y-6">
 
   {/* Operational backup tools stay available without crowding the product form. */}
   <details className="group overflow-hidden rounded-xl border border-[#dce6df] bg-white shadow-[0_2px_8px_rgba(20,55,39,.02)]">
