@@ -1383,6 +1383,7 @@ export default function AdminPanel({
                 {/* VIEW 1: Customer orders and manual delivery management */}
         {activeTab === 'orders' && (
           <AdminOrdersWorkspace
+            language={language}
             orders={orders}
             filteredOrders={filteredOrders}
             totalOrders={statTotalOrders}
@@ -1418,6 +1419,7 @@ export default function AdminPanel({
                 {/* VIEW 2: PRODUCT CATALOG MANAGEMENT */}
         {activeTab === 'products' && (
           <AdminProductsWorkspace
+            language={language}
             adminProducts={adminProducts}
             categories={categories}
             filteredProductsList={filteredProductsList}
