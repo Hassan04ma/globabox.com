@@ -1448,6 +1448,7 @@ export default function AdminPanel({
             exportProductsToCSV={exportProductsToCSV}
             importProductsFromJSON={importProductsFromJSON}
             importProductsFromCSV={importProductsFromCSV}
+            uploadProductPhotos={uploadProductPhotos}
           />
         )}
 
