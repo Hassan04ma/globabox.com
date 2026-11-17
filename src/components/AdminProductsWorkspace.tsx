@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Package, ChevronRight, Plus, CheckCircle2, Search, Trash2, X } from 'lucide-react';
 import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'react';
 import type { Product, Category } from '../types';
