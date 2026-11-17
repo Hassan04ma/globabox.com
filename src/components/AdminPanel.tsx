@@ -7,6 +7,7 @@ import AdminShippingEditor from './AdminShippingEditor';
 import AdminOperationsWorkspace from './AdminOperationsWorkspace';
 import ProductImage from './ProductImage';
 import AdminWorkspaceLayout from './AdminWorkspaceLayout';
+import AdminDashboardWorkspace from './AdminDashboardWorkspace';
 import AdminCategoriesWorkspace from './AdminCategoriesWorkspace';
 import { STORE_DEPARTMENTS, isPublicStoreCategory } from '../storefrontDepartments';
 import { getStoreSubcategories } from '../storefrontSubcategories';
@@ -1357,145 +1358,31 @@ export default function AdminPanel({
       {/* Main panel body */}
       <div className={activeTab === 'categories' ? 'min-h-full bg-[#f3f5f7] p-4 sm:p-5 xl:p-7' : 'min-h-full bg-[#f3f5f7] p-4 text-[#213638] sm:p-5 xl:p-7'}>
         
-        {/* VIEW 0: Dashboard, optimized for daily order and catalog management. */}
         {activeTab === 'dashboard' && (
-          <div className="space-y-6">
-
-            <section className="flex flex-col gap-5 rounded-[18px] border border-[#dfe7e4] bg-white px-6 py-6 shadow-[0_2px_10px_rgba(16,43,32,.03)] sm:flex-row sm:items-center sm:justify-between sm:px-7">
-              <div>
-                <p className="text-[11px] font-extrabold tracking-[.13em] text-[#5e9280]">VUE D’ENSEMBLE · AUJOURD’HUI</p>
-                <h2 className="mt-1.5 text-[23px] font-extrabold tracking-tight text-[#233638] sm:text-[28px]">Pilotez votre boutique en un clin d’œil</h2>
-                <p className="mt-2 text-[13px] leading-6 text-[#7a8a8b]">Commandes, catalogue, expédition et activité commerciale dans un seul espace.</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={() => {handleStartAddProduct();setActiveTab('products');}}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-[10px] bg-[#174d40] px-5 text-[12px] font-extrabold text-white shadow-sm hover:bg-[#0e3c32]"><Plus size={17}/>Nouveau produit</button>
-                <button type="button" onClick={() => {setOrderStatusFilter('pending');setActiveTab('orders');}}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-[10px] border border-[#d5e4db] bg-white px-5 text-[12px] font-bold text-[#38584e] hover:bg-[#f4faf6]"><ClipboardList size={17}/>Voir les commandes</button>
-              </div>
-            </section>
-
-            <section aria-label="Indicateurs du magasin" className="grid grid-cols-2 gap-4 lg:grid-cols-3 2xl:grid-cols-4">
-              {[
-                {label:'Commandes totales',value:statTotalOrders,unit:'commandes enregistrées',icon:ClipboardList,tint:'bg-[#ebf3fa]',color:'text-[#487da6]'},
-                {label:'À traiter',value:statNewOrders,unit:'en attente de confirmation',icon:RefreshCw,tint:'bg-[#fff4e4]',color:'text-[#b98538]'},
-                {label:'En préparation',value:statConfirmedOnly+statProcessingOrders,unit:'à préparer manuellement',icon:Package,tint:'bg-[#f0eafa]',color:'text-[#8668ac]'},
-                {label:'Expédiées',value:statShippedOrders,unit:'livraison en cours',icon:Truck,tint:'bg-[#e8f3fa]',color:'text-[#407caa]'},
-                {label:'Livrées',value:statDeliveredOrders,unit:'commandes terminées',icon:CheckCircle2,tint:'bg-[#e8f5ee]',color:'text-[#247b53]'},
-                {label:'Total livré',value:statTotalRevenue.toLocaleString('fr-MA')+' DH',unit:'montant des commandes livrées',icon:BarChart3,tint:'bg-[#e8f5ee]',color:'text-[#247b53]'},
-                {label:'Produits actifs',value:adminProducts.filter(p=>p.isActive===true).length,unit:'visibles sur la boutique',icon:Package,tint:'bg-[#e8f5ee]',color:'text-[#247b53]'},
-                {label:'Brouillons',value:adminProducts.filter(p=>p.isActive!==true).length,unit:'produits non publiés',icon:Edit2,tint:'bg-[#f2f4f5]',color:'text-[#76838a]'}
-              ].map(({label,value,unit,icon:Icon,color,tint})=>(
-                <div key={label} className="min-w-0 rounded-[16px] border border-[#e0e8e6] bg-white p-5 shadow-[0_2px_10px_rgba(16,43,32,.025)]">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-[12px] font-semibold text-[#687b79]">{label}</p>
-                    <span className={'gb-overview-icon shrink-0 '+tint+' '+color}><Icon size={19}/></span>
-                  </div>
-                  <strong className="mt-3 block break-words text-[29px] font-extrabold tracking-tight text-[#213638]">{value}</strong>
-                  <span className="mt-1 block text-[11px] text-[#8a9795]">{unit}</span>
-                </div>
-              ))}
-            </section>
-
-            <section aria-label="Analyses et statistiques commerciales" className="space-y-5 rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div><h3 className="text-xl font-black text-[#193e38]">Performance commerciale</h3><p className="mt-1 text-xs text-slate-500">Données issues des commandes chargées depuis le serveur · DH · {analyticsStart.toLocaleDateString('fr-FR')} – {analyticsNow.toLocaleDateString('fr-FR')}</p></div>
-                <div className="flex flex-wrap gap-2">
-                  {([{id:'7d',label:'7 jours'},{id:'15d',label:'15 jours'},{id:'1m',label:'1 mois glissant'},{id:'4m',label:'4 mois'},{id:'6m',label:'6 mois'},{id:'1y',label:'1 an'}] as const).map(p => <button key={p.id} type="button" onClick={() => setAnalyticsPeriod(p.id)} className={analyticsPeriod===p.id ? 'rounded-lg bg-[#174d40] px-3 py-2 text-xs font-bold text-white' : 'rounded-lg border px-3 py-2 text-xs font-bold text-slate-600'}>{p.label}</button>)}
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Chiffre d’affaires livré</p><strong className="text-2xl">{currentRevenue.toLocaleString('fr-MA')} DH</strong></div>
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Commandes reçues</p><strong className="text-2xl">{currentPeriodOrders.length}</strong></div>
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Panier moyen des commandes livrées</p><strong className="text-2xl">{averageOrderValue.toLocaleString('fr-MA')} DH</strong></div>
-                <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-xs text-slate-500">Évolution par rapport à la période précédente</p><strong className="text-2xl">{revenueChange===null?'—':(revenueChange>0?'+':'')+revenueChange.toFixed(1)+'%'}</strong></div>
-              </div>
-              <div className="grid gap-5 lg:grid-cols-2">
-                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Chiffre d’affaires livré · DH</h4><div className="mt-4 flex h-40 items-end gap-1.5">{analyticsBuckets.map((b,i) => <div key={i} title={b.label+' : '+b.revenue.toLocaleString('fr-FR')+' DH'} className="flex h-full min-w-0 flex-1 flex-col justify-end"><div className="w-full rounded-t bg-[#4c9276]" style={{height:b.revenue>0?Math.max(3,b.revenue/maxAnalyticsRevenue*120)+'px':'0px'}}></div><span className="mt-1 h-3 text-center text-[9px] leading-3 text-slate-500">{analyticsBuckets.length>20 ? (i%3===0 ? b.label : '') : b.label}</span></div>)}</div></div>
-                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Répartition des commandes</h4>
-                  {([{label:'En attente',status:'pending'},{label:'Confirmées',status:'confirmed'},{label:'Préparation',status:'processing'},{label:'Expédiées',status:'shipped'},{label:'Livrées',status:'delivered'},{label:'Annulées',status:'cancelled'}] as const).map(row => <div key={row.status} className="mt-3"><div className="flex justify-between text-xs"><span>{row.label}</span><strong>{statusPercent(row.status).toFixed(1)}%</strong></div><div className="mt-1 h-2 rounded bg-slate-100"><div className="h-2 rounded bg-[#4c9276]" style={{width:statusPercent(row.status)+'%'}}></div></div></div>)}
-                </div>
-              </div>
-              <div className="grid gap-4 lg:grid-cols-2">
-                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Nombre de commandes par période</h4><div className="mt-3 flex h-24 items-end gap-1">{analyticsBuckets.map((b,i) => <div key={i} title={b.label+' : '+b.orders+' commande(s)'} className="min-w-0 flex-1 rounded-t bg-[#9ab8d0]" style={{height:b.orders>0?Math.max(3,b.orders/maxAnalyticsOrders*75)+'px':'0px'}}></div>)}</div><div className="mt-1 flex gap-1">{analyticsBuckets.map((b,i)=><span key={i} className="min-w-0 flex-1 truncate text-center text-[9px] leading-3 text-slate-500">{analyticsBuckets.length>20 ? (i%3===0 ? b.label : '') : b.label}</span>)}</div></div>
-                <div className="rounded-xl border p-4"><h4 className="text-sm font-bold">Meilleures ventes</h4>{topSellingProducts.length ? topSellingProducts.map(([name,qty]) => <div key={name} className="flex justify-between border-b py-2 text-xs"><span>{name}</span><strong>{qty} unité(s)</strong></div>) : <p className="mt-2 text-xs text-slate-500">Aucune vente livrée sur cette période.</p>}</div>
-              </div>
-              <p className="text-xs leading-5 text-slate-500">Le chiffre d’affaires livré ne correspond pas au bénéfice net. Le calcul du bénéfice net nécessite les coûts d’achat, de livraison et d’exploitation.</p>
-            </section>
-
-            <div className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(280px,.8fr)]">
-              <section className="min-w-0 overflow-hidden rounded-[22px] border border-[#dce9e0] bg-white shadow-sm">
-                <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
-                  <div><h3 className="text-base font-black text-[#193e38]">Dernières commandes</h3><p className="mt-1 text-xs text-slate-500">Les commandes enregistrées et récupérées depuis D1</p></div>
-                  <div className="flex items-center gap-2">
-                    <button type="button" onClick={handleRefreshOrders} disabled={isRefreshing} aria-label="Actualiser les commandes" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-[#104d43] hover:bg-[#f1f8f3] disabled:opacity-50"><RefreshCw size={16} className={isRefreshing?'animate-spin':''}/></button>
-                    <button type="button" onClick={()=>setActiveTab('orders')} className="rounded-lg bg-[#eaf5ed] px-3 py-2 text-xs font-extrabold text-[#104d43] hover:bg-[#dceee1]">Toutes les commandes</button>
-                  </div>
-                </header>
-                {refreshError&&<p className="mx-5 mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700" role="alert">{refreshError}</p>}
-                {refreshSuccess&&<p className="mx-5 mt-4 rounded-xl border border-[#bde0ca] bg-[#eff9f2] px-3 py-2 text-xs text-[#147548]" role="status">{refreshSuccess}</p>}
-                <div className="divide-y divide-slate-100">
-                  {orders.slice(0,6).map(order=>(
-                    <div key={order.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 text-xs hover:bg-[#f8fbf9]">
-                      <div className="min-w-0 flex-1">
-                        <p className="font-extrabold text-[#193e38]">{order.fullName||'Client'} <span className="ms-2 font-mono text-[11px] font-semibold text-slate-500">{order.reference}</span></p>
-                        <p className="mt-1 text-slate-500">{order.city} · {formatMoroccoDate(order.createdAt || order.date)}</p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="font-extrabold text-[#193e38]">{Number(order.total||0).toFixed(2)} DH</span>
-                        <span className={'rounded-full px-3 py-1 text-[11px] font-bold '+(order.status==='delivered'?'bg-[#e4f5ea] text-[#147249]':order.status==='cancelled'?'bg-red-50 text-red-700':order.status==='pending'?'bg-amber-50 text-amber-700':'bg-[#ecf2fb] text-[#315d8a]')}>{({pending:'En attente',confirmed:'Confirmée',processing:'Préparation',shipped:'Expédiée',delivered:'Livrée',cancelled:'Annulée'} as Record<string,string>)[order.status]||order.status}</span>
-                      </div>
-                    </div>
-                  ))}
-                  {orders.length===0&&<div className="px-5 py-10 text-center"><ClipboardList size={27} className="mx-auto text-[#8fae9d]"/><p className="mt-3 text-sm font-bold text-[#446257]">Aucune commande à afficher</p><p className="mt-1 text-xs text-slate-500">Les nouvelles commandes enregistrées sur le serveur apparaîtront ici.</p></div>}
-                </div>
-              </section>
-
-              <section className="space-y-4">
-                <div className="rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm">
-                  <div className="flex items-center gap-2 text-sm font-black text-[#193e38]"><Package size={19} className="text-[#104d43]"/>Catalogue produits</div>
-                  <div className="mt-4 grid grid-cols-2 gap-3">
-                    <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Produits enregistrés</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{adminProducts.length}</strong></div>
-                    <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Publiés</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{adminProducts.filter(p=>p.isActive===true).length}</strong></div>
-                    <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Brouillons</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{adminProducts.filter(p=>p.isActive!==true).length}</strong></div>
-                    <div className="rounded-xl bg-[#f3f7f4] p-4"><p className="text-[11px] text-slate-500">Hors stock</p><strong className="mt-1 block text-2xl font-black text-[#193e38]">{adminProducts.filter(p=>!p.inStock||p.stockStatus==='out_of_stock').length}</strong></div>
-                  </div>
-                  <button type="button" onClick={()=>setActiveTab('products')} className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#b9d8c5] bg-[#edf7f0] text-xs font-extrabold text-[#104d43] hover:bg-[#dfefe4]">Gérer les produits <ChevronRight size={16}/></button>
-                </div>
-                <div className="rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm">
-                  <div className="flex items-center gap-2 text-sm font-black text-[#193e38]"><Truck size={19} className="text-[#104d43]"/>Expédition manuelle</div>
-                  <p className="mt-2 text-xs leading-6 text-[#60776c]">Confirmez les coordonnées, préparez le colis, puis mettez à jour le statut de la commande. Aucun envoi automatique à AMEEX.</p>
-                  <button type="button" onClick={()=>{setOrderStatusFilter('confirmed');setActiveTab('orders');}} className="mt-3 inline-flex min-h-10 items-center gap-2 text-xs font-extrabold text-[#104d43] underline underline-offset-4">Voir les commandes confirmées <ChevronRight size={15}/></button>
-                </div>
-              </section>
-            </div>
-
-            <details className="rounded-[22px] border border-[#dce9e0] bg-white shadow-sm">
-              <summary className="cursor-pointer list-none rounded-[22px] p-5 text-sm font-black text-[#193e38] [&::-webkit-details-marker]:hidden">
-                <span className="inline-flex items-center gap-3"><ShieldCheck size={19} className="text-[#104d43]"/>Vérifications techniques et préparation au lancement <ChevronRight size={16} className="text-slate-400"/></span>
-              </summary>
-              <div className="grid gap-4 border-t border-slate-100 p-5 md:grid-cols-2">
-                <div className="rounded-xl bg-[#f6f9f7] p-4"><h4 className="text-sm font-bold text-[#193e38]">Écriture D1 distante</h4><p className="mt-1 text-xs leading-6 text-slate-500">Test technique d'écriture/lecture/nettoyage sans commande client.</p>
-                  <p className="mt-2 text-xs font-bold text-[#426753]">{d1ProbeStatus==='success'?'Test validé':d1ProbeStatus==='error'?'Échec de vérification':'Non testé dans cette session'}</p>
-                  <button type="button" disabled={d1ProbeStatus==='running'} onClick={runD1Probe} className="mt-3 rounded-lg bg-[#104d43] px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50">{d1ProbeStatus==='running'?'Vérification…':'Tester D1'}</button>
-                </div>
-                <div className="rounded-xl bg-[#f6f9f7] p-4"><h4 className="text-sm font-bold text-[#193e38]">Diagnostic paiement à la livraison</h4><p className="mt-1 text-xs leading-6 text-slate-500">Vérifie les calculs et une commande fictive suivie de son nettoyage.</p>
-                  {checkoutDiagnostic&&<p className="mt-2 text-xs font-bold text-[#426753]">{checkoutDiagnostic.error|| (checkoutDiagnostic.success?'Test validé · '+checkoutDiagnostic.total+' DH':'Non validé')}</p>}
-                  <button type="button" disabled={checkoutDiagnosticBusy} onClick={runCheckoutDiagnostic} className="mt-3 rounded-lg bg-[#104d43] px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50">{checkoutDiagnosticBusy?'Test…':'Tester Checkout D1'}</button>
-                </div>
-                <div className="rounded-xl bg-[#f6f9f7] p-4"><h4 className="text-sm font-bold text-[#193e38]">AMEEX Sandbox</h4><p className="mt-1 text-xs leading-6 text-slate-500">Contrôle des clés et de la lecture des villes. La livraison reste manuelle.</p>
-                  <p className="mt-2 text-xs leading-6 text-[#426753]">{ameexStatus}</p>
-                  <button type="button" disabled={ameexBusy} onClick={checkAmeexSandbox} className="mt-3 rounded-lg border border-[#aacdbb] px-4 py-2.5 text-xs font-bold text-[#104d43] disabled:opacity-50">Tester connexion sandbox</button>
-                  <button type="button" disabled={ameexBusy} onClick={runAmeexSandboxParcel} className="mt-3 ms-2 rounded-lg border border-slate-300 px-4 py-2.5 text-xs font-bold text-[#426753] disabled:opacity-50">Tester colis fictif</button>
-                </div>
-                <div className="rounded-xl bg-[#f6f9f7] p-4"><h4 className="text-sm font-bold text-[#193e38]">État du Worker</h4>
-                  <p className="mt-2 text-xs leading-6 text-[#426753]">{launchStatus?.databaseReady===true?'Base D1 accessible':'Connexion D1 non vérifiée'} · {launchStatus?.adminConfigured===true?'Authentification configurée':'Authentification à vérifier'}</p>
-                  <p className="mt-2 text-xs leading-6 text-slate-500">Un test de commande réel sur staging et une sauvegarde D1 restent nécessaires avant le lancement.</p>
-                </div>
-                <button type="button" onClick={exportOrdersToCSV} className="col-span-full flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#b9d8c5] bg-[#edf7f0] px-4 text-sm font-bold text-[#104d43] hover:bg-[#ddefe3]"><ClipboardList size={17}/>Exporter les commandes en CSV</button>
-              </div>
-            </details>
-          </div>
+          <AdminDashboardWorkspace
+            orders={orders}
+            products={adminProducts}
+            totalOrders={statTotalOrders}
+            pendingOrders={statNewOrders}
+            preparingOrders={statConfirmedOnly+statProcessingOrders}
+            shippedOrders={statShippedOrders}
+            deliveredOrders={statDeliveredOrders}
+            deliveredRevenue={statTotalRevenue}
+            currentRevenue={currentRevenue}
+            currentOrders={currentPeriodOrders.length}
+            averageOrderValue={averageOrderValue}
+            revenueChange={revenueChange}
+            periodLabel={analyticsStart.toLocaleDateString('fr-FR')+' – '+analyticsNow.toLocaleDateString('fr-FR')}
+            buckets={analyticsBuckets}
+            topProducts={topSellingProducts}
+            isRefreshing={isRefreshing}
+            refreshError={refreshError}
+            refreshSuccess={refreshSuccess}
+            onRefresh={handleRefreshOrders}
+            onNewProduct={()=>{handleStartAddProduct();setActiveTab('products');}}
+            onOrders={()=>setActiveTab('orders')}
+            onProducts={()=>setActiveTab('products')}
+          />
         )}
 
         {/* VIEW 1: Customer orders and manual delivery management */}
