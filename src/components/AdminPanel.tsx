@@ -1342,6 +1342,7 @@ export default function AdminPanel({
 
   return (
     <AdminWorkspaceLayout
+      language={language}
       activeTab={activeTab}
       onTabChange={(tab) => {
         setActiveTab(tab);
