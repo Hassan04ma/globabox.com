@@ -3,7 +3,7 @@ import { BarChart3, CheckCircle2, Info, RefreshCw, Save, ShieldCheck, XCircle } 
 import { DEFAULT_TRACKING_CONFIG, TRACKING_FIELDS, validateTrackingConfig, type TrackingConfig } from '../trackingConfig';
 
 type Status='idle'|'loading'|'saving'|'error'|'saved';
-export default function AdminTrackingWorkspace(){
+export default function AdminTrackingWorkspace({language}:{language:'ar'|'fr'|'en'}){
  const [form,setForm]=useState<TrackingConfig>({...DEFAULT_TRACKING_CONFIG});
  const [status,setStatus]=useState<Status>('idle');
  const [error,setError]=useState('');
@@ -36,7 +36,7 @@ export default function AdminTrackingWorkspace(){
  };
  const count=TRACKING_FIELDS.filter(field=>field.key!=='googleAdsConversionLabel'&&form[field.key]).length;
  const fieldClass='min-h-12 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-mono text-sm text-[#193e38] placeholder:text-slate-400 focus:border-[#104d43] focus:outline-none focus:ring-2 focus:ring-[#104d43]/10';
- return <div className="space-y-6">
+ return <div dir={language==='ar'?'rtl':'ltr'} lang={language} className="space-y-6">
     <header className="rounded-[22px] border border-[#dce9e0] bg-white p-5 shadow-sm sm:p-7">
       <div className="flex flex-wrap items-start justify-between gap-3">
        <div><p className="text-[11px] font-black uppercase tracking-[.14em] text-[#30836e]">GLOBABOX · MARKETING</p>
