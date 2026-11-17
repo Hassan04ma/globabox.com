@@ -37,6 +37,14 @@ export default function AdminWorkspaceLayout({
  const current=tabs.find(t=>t.id===activeTab)||tabs[0];
  const count=(id:AdminTab)=>id==='orders'?ordersCount:id==='products'?productsCount:id==='categories'?categoriesCount:null;
  const select=(id:AdminTab)=>{onTabChange(id);setMobileOpen(false);setSearchFocused(false);setQuickSearch('');};
+ useEffect(()=>{
+  // Every admin section is a real workspace. Reset the shared scroll container
+  // when navigation changes so Products/Orders never open at the previous page's
+  // scroll position (which can make the new section look like it did not open).
+  const content=document.getElementById('gb-admin-content');
+  if(content) content.scrollTo({top:0,left:0,behavior:'auto'});
+  requestAnimationFrame(()=>content?.focus({preventScroll:true}));
+ },[activeTab]);
  const matches=tabs.filter(tab=>(tab.label+' '+tab.sub+' '+tab.group).toLowerCase().includes(quickSearch.toLowerCase()));
  useEffect(()=>{
   const listener=(e:KeyboardEvent)=>{
@@ -146,7 +154,7 @@ export default function AdminWorkspaceLayout({
            {activeTab==='orders'&&<button type="button" onClick={onPendingOrders} className="inline-flex min-h-11 items-center gap-2 rounded-[10px] border border-[#d6e2db] bg-white px-4 text-xs font-bold text-[#315448] hover:bg-[#f1f8f4]"><ClipboardList size={16}/>À traiter {pendingOrders>0?'('+pendingOrders+')':''}</button>}
          </div>
        </section>
-       <main id="gb-admin-content" className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain bg-[#f3f5f7]">
+       <main id="gb-admin-content" tabIndex={-1} aria-label="Contenu de l’administration" className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain bg-[#f3f5f7] focus:outline-none">
          <div className="mx-auto w-full max-w-[1580px]">{children}</div>
        </main>
      </div>
