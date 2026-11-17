@@ -1274,11 +1274,15 @@ export default function AdminPanel({
 
   // Filters calculation
   const filteredOrders = orders.filter(o => {
-    const matchesQuery = 
-      o.fullName.toLowerCase().includes(orderQuery.toLowerCase()) ||
-      o.phoneNumber.includes(orderQuery) ||
-      o.id.toLowerCase().includes(orderQuery.toLowerCase());
-    
+    // Older/imported orders may not contain every customer field. Keep the
+    // administration workspace navigable even when legacy records are partial.
+    const query = orderQuery.trim().toLocaleLowerCase();
+    const searchable = [
+      o.fullName, o.phoneNumber, o.id, o.reference, o.city,
+      o.deliveryAddress
+    ].map(value => String(value ?? '').toLocaleLowerCase());
+    const matchesQuery = !query || searchable.some(value => value.includes(query));
+
     let matchesStatus = orderStatusFilter === 'all' || o.status === orderStatusFilter;
     if (orderStatusFilter === 'synced') {
       matchesStatus = o.syncStatus === 'synced';
