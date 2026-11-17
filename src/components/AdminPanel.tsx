@@ -1348,7 +1348,7 @@ export default function AdminPanel({
       onClose={onClose}
       onLogout={handleLogout}
       ordersCount={orders.length}
-      customersCount={new Set(orders.map(order => String(order.phoneNumber || '').replace(/\\s+/g, '') || 'order:' + order.id)).size}
+      customersCount={new Set(orders.map(order => String(order.phoneNumber || '').replace(/\s+/g, '') || 'order:' + order.id)).size}
       pendingOrders={statNewOrders}
       productsCount={adminProducts.length}
       categoriesCount={categories.length}
