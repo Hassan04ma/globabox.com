@@ -1399,7 +1399,6 @@ export default function AdminPanel({
             setOrderCityFilter={setOrderCityFilter}
             selectedOrderIds={selectedOrderIds}
             handleBulkConfirmOrders={handleBulkConfirmOrders}
-            handleBulkDeleteOrders={handleBulkDeleteOrders}
             clearOrderSelection={clearOrderSelection}
             toggleSelectAllVisibleOrders={toggleSelectAllVisibleOrders}
             toggleOrderSelection={toggleOrderSelection}
