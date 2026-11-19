@@ -1,0 +1,134 @@
+[
+  {
+    "id": "vivosee_home_oil_sprayer_set",
+    "sku": "GB-VIV-HOME-001",
+    "name": {
+      "fr": "Lot de 3 vaporisateurs d’huile alimentaire",
+      "ar": "طقم من 3 بخاخات للزيت الغذائي",
+      "en": "Set of 3 Cooking Oil Sprayers"
+    },
+    "description": {
+      "fr": "Lot de trois vaporisateurs destinés à répartir l’huile alimentaire pendant la préparation des repas. Un accessoire pratique pour la cuisine et l’assaisonnement.",
+      "ar": "طقم من ثلاثة بخاخات مخصصة لتوزيع الزيت الغذائي أثناء تحضير الوجبات. أداة عملية للاستعمال اليومي في المطبخ وتحضير السلطات.",
+      "en": "A set of three sprayers designed to help distribute cooking oil while preparing meals. A practical accessory for everyday kitchen use and dressing salads."
+    },
+    "features": {
+      "fr": ["Lot de 3 vaporisateurs", "Pour huile alimentaire", "Utilisation en cuisine"],
+      "ar": ["طقم مكون من 3 بخاخات", "مخصص للزيت الغذائي", "للاستخدام في المطبخ"],
+      "en": ["Set of 3 sprayers", "For cooking oil", "Kitchen use"]
+    },
+    "category": "cuisine",
+    "subcategory": "ustensiles",
+    "price": 0,
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": ["cuisine", "vaporisateur", "huile", "source-vivosee", "brouillon"],
+    "seoTitle": "Lot de 3 vaporisateurs d’huile alimentaire | GLOBABOX",
+    "seoDescription": "Lot de trois vaporisateurs pour répartir l’huile alimentaire pendant la préparation des repas.",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
+    "sourceMarketplace": "Vivosee",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "readyToPublish": false,
+    "importNotice": "BROUILLON. Prix et images laissés vides (prix technique 0 pour le schéma). Disponibilité fournisseur, modèle exact et droits photo à confirmer avant publication."
+  },
+  {
+    "id": "vivosee_home_glass_oil_dispenser_pair",
+    "sku": "GB-VIV-HOME-002",
+    "name": {
+      "fr": "Lot de 2 distributeurs d’huile en verre",
+      "ar": "طقم من موزعين زجاجيين للزيت",
+      "en": "Set of 2 Glass Oil Dispensers"
+    },
+    "description": {
+      "fr": "Ensemble de deux distributeurs en verre conçu pour conserver et verser l’huile plus facilement pendant la préparation et le service des repas.",
+      "ar": "طقم من موزعين زجاجيين مخصصين لحفظ الزيت وصبه بسهولة أثناء تحضير الطعام وتقديم الوجبات.",
+      "en": "A set of two glass dispensers designed for storing and pouring oil more conveniently during food preparation and serving."
+    },
+    "features": {
+      "fr": ["Lot de 2 pièces", "Corps en verre selon le titre source", "Pour huile alimentaire"],
+      "ar": ["طقم مكون من قطعتين", "هيكل زجاجي حسب عنوان المصدر", "مخصص للزيت الغذائي"],
+      "en": ["Set of 2 pieces", "Glass body as stated in source title", "For cooking oil"]
+    },
+    "category": "cuisine",
+    "subcategory": "ustensiles",
+    "price": 0,
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": ["cuisine", "distributeur", "huile", "verre", "source-vivosee", "brouillon"],
+    "seoTitle": "Lot de 2 distributeurs d’huile en verre | GLOBABOX",
+    "seoDescription": "Deux distributeurs en verre pour conserver et verser l’huile plus facilement en cuisine.",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
+    "sourceMarketplace": "Vivosee",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "readyToPublish": false,
+    "importNotice": "BROUILLON. Prix et images laissés vides (prix technique 0 pour le schéma). Vérifier le modèle, les caractéristiques, la disponibilité fournisseur et les droits photo avant publication."
+  },
+  {
+    "id": "vivosee_home_two_tier_dish_drying_rack",
+    "sku": "GB-VIV-HOME-003",
+    "name": {
+      "fr": "Égouttoir à vaisselle de comptoir à 2 niveaux",
+      "ar": "مصفاة صحون للمطبخ بطابقين",
+      "en": "2-Tier Countertop Dish Drying Rack"
+    },
+    "description": {
+      "fr": "Égouttoir à vaisselle à deux niveaux destiné à organiser le séchage des assiettes et des accessoires de cuisine sur le plan de travail.",
+      "ar": "مصفاة صحون بطابقين لتنظيم تجفيف الأطباق وأدوات المطبخ فوق سطح العمل وتوفير مساحة الاستعمال.",
+      "en": "A two-tier dish rack designed to organize the drying of plates and kitchen accessories on a countertop."
+    },
+    "features": {
+      "fr": ["Structure à 2 niveaux", "Installation sur plan de travail", "Pour vaisselle et accessoires de cuisine"],
+      "ar": ["تصميم بطابقين", "يوضع فوق سطح المطبخ", "لتجفيف الصحون وأدوات المطبخ"],
+      "en": ["2-tier structure", "Countertop placement", "For dishes and kitchen accessories"]
+    },
+    "category": "cuisine",
+    "subcategory": "rangement",
+    "price": 0,
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": ["cuisine", "egouttoir", "vaisselle", "rangement", "source-vivosee", "brouillon"],
+    "seoTitle": "Égouttoir à vaisselle de comptoir à 2 niveaux | GLOBABOX",
+    "seoDescription": "Égouttoir à deux niveaux pour organiser le séchage de la vaisselle sur le plan de travail.",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
+    "sourceMarketplace": "Vivosee",
+    "supplier": "Non confirmé",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "readyToPublish": false,
+    "importNotice": "BROUILLON. Prix et images laissés vides (prix technique 0 pour le schéma). Vérifier dimensions, matériau, disponibilité fournisseur et droits photo avant publication."
+  }
+]
