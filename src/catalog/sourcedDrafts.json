@@ -1078,5 +1078,370 @@
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false
     }
+  },
+  {
+    "id": "gb_vivo_oil_sprayer_3",
+    "sku": "GB-VIVO-CUISINE-001",
+    "name": {
+      "fr": "Lot de 3 vaporisateurs d’huile alimentaire",
+      "ar": "طقم من 3 رشاشات للزيت الغذائي",
+      "en": "Set of 3 Food Oil Sprayers"
+    },
+    "description": {
+      "fr": "Ensemble de trois vaporisateurs conçus pour répartir l’huile alimentaire pendant la préparation des repas. Vérifier le contenu exact du lot auprès du fournisseur avant publication.",
+      "ar": "طقم من ثلاثة رشاشات لتوزيع الزيت الغذائي أثناء تحضير الوجبات. يجب تأكيد محتويات الطقم مع المورد قبل النشر.",
+      "en": "A set of three sprayers designed to distribute cooking oil during meal preparation. Confirm the exact set contents with the supplier before publishing."
+    },
+    "features": {
+      "fr": [
+        "Lot de 3 vaporisateurs",
+        "Pour huile alimentaire",
+        "Accessoire de cuisine"
+      ],
+      "ar": [
+        "طقم من 3 رشاشات",
+        "مخصص للزيت الغذائي",
+        "إكسسوار للمطبخ"
+      ],
+      "en": [
+        "Set of 3 sprayers",
+        "For food oil",
+        "Kitchen accessory"
+      ]
+    },
+    "category": "cuisine",
+    "subcategory": "ustensiles",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
+    "price": 0,
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "vivosee",
+      "brouillon",
+      "approvisionnement à vérifier"
+    ],
+    "seoTitle": "Lot de 3 vaporisateurs d’huile alimentaire | GLOBABOX Maroc",
+    "seoDescription": "Ensemble de trois vaporisateurs conçus pour répartir l’huile alimentaire pendant la préparation des repas. Vérifier le contenu exact du lot auprès du fourn",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Images et prix laissés vides (prix technique 0 DH). Ne pas publier avant confirmation du produit exact, du fournisseur, du stock et des droits photo.",
+    "sourceMarketplace": "Vivosee (catalogue public)",
+    "sourceGalleryPage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
+    "sourceGalleryImagesReported": 0,
+    "sourcePageVerification": "listing_observed_in_public_collection_page",
+    "priceReferenceVerification": "price_intentionally_not_imported",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-19",
+      "currency": "MAD",
+      "sourceType": "Moroccan online retailer catalogue",
+      "status": "listing_observed_stock_label_sale_at_research_time",
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
+  },
+  {
+    "id": "gb_vivo_oil_dispenser_glass_2",
+    "sku": "GB-VIVO-CUISINE-002",
+    "name": {
+      "fr": "Lot de 2 distributeurs d’huile en verre",
+      "ar": "طقم من موزعين زجاجيين للزيت – قطعتان",
+      "en": "Set of 2 Glass Oil Dispensers"
+    },
+    "description": {
+      "fr": "Deux distributeurs en verre destinés au service et au dosage de l’huile en cuisine. Vérifier la capacité et les accessoires inclus auprès du fournisseur.",
+      "ar": "طقم يضم موزعين من الزجاج لاستعمال الزيت وتقديمه في المطبخ. ينبغي التأكد من السعة والملحقات المرفقة مع المورد.",
+      "en": "Two glass dispensers intended for serving and dispensing oil in the kitchen. Confirm capacity and included accessories with the supplier."
+    },
+    "features": {
+      "fr": [
+        "Lot de 2 pièces",
+        "Corps en verre selon l’intitulé source",
+        "Pour la cuisine"
+      ],
+      "ar": [
+        "طقم من قطعتين",
+        "هيكل زجاجي حسب تسمية المنتج",
+        "للاستخدام في المطبخ"
+      ],
+      "en": [
+        "Set of 2 pieces",
+        "Glass body as stated in source listing",
+        "For kitchen use"
+      ]
+    },
+    "category": "cuisine",
+    "subcategory": "ustensiles",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
+    "price": 0,
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "vivosee",
+      "brouillon",
+      "approvisionnement à vérifier"
+    ],
+    "seoTitle": "Lot de 2 distributeurs d’huile en verre | GLOBABOX Maroc",
+    "seoDescription": "Deux distributeurs en verre destinés au service et au dosage de l’huile en cuisine. Vérifier la capacité et les accessoires inclus auprès du fournisseur.",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Images et prix laissés vides (prix technique 0 DH). Ne pas publier avant confirmation du produit exact, du fournisseur, du stock et des droits photo.",
+    "sourceMarketplace": "Vivosee (catalogue public)",
+    "sourceGalleryPage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
+    "sourceGalleryImagesReported": 0,
+    "sourcePageVerification": "listing_observed_in_public_collection_page",
+    "priceReferenceVerification": "price_intentionally_not_imported",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-19",
+      "currency": "MAD",
+      "sourceType": "Moroccan online retailer catalogue",
+      "status": "listing_observed_stock_label_sale_at_research_time",
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
+  },
+  {
+    "id": "gb_vivo_dish_rack_2tier",
+    "sku": "GB-VIVO-CUISINE-003",
+    "name": {
+      "fr": "Égouttoir à vaisselle de comptoir à 2 niveaux",
+      "ar": "مصفاة صحون للمطبخ بطابقين",
+      "en": "2-Tier Countertop Dish Drying Rack"
+    },
+    "description": {
+      "fr": "Égouttoir à vaisselle à deux niveaux conçu pour organiser le séchage de la vaisselle sur le plan de travail. Dimensions et matériaux à confirmer auprès du fournisseur.",
+      "ar": "مصفاة صحون بطابقين لتنظيم تجفيف الأواني فوق سطح المطبخ. يجب التأكد من الأبعاد والمواد مع المورد.",
+      "en": "A two-tier dish rack designed to organize dish drying on a kitchen countertop. Confirm dimensions and materials with the supplier."
+    },
+    "features": {
+      "fr": [
+        "Deux niveaux",
+        "Installation sur comptoir",
+        "Rangement de vaisselle"
+      ],
+      "ar": [
+        "طابقان",
+        "يوضع فوق سطح المطبخ",
+        "تنظيم وتجفيف الأواني"
+      ],
+      "en": [
+        "Two tiers",
+        "Countertop placement",
+        "Dish organization and drying"
+      ]
+    },
+    "category": "cuisine",
+    "subcategory": "rangement-cuisine",
+    "sourceUrl": "https://vivosee.com/collections/rangements-de-cuisine",
+    "price": 0,
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "vivosee",
+      "brouillon",
+      "approvisionnement à vérifier"
+    ],
+    "seoTitle": "Égouttoir à vaisselle de comptoir à 2 niveaux | GLOBABOX Maroc",
+    "seoDescription": "Égouttoir à vaisselle à deux niveaux conçu pour organiser le séchage de la vaisselle sur le plan de travail. Dimensions et matériaux à confirmer auprès du ",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Images et prix laissés vides (prix technique 0 DH). Ne pas publier avant confirmation du produit exact, du fournisseur, du stock et des droits photo.",
+    "sourceMarketplace": "Vivosee (catalogue public)",
+    "sourceGalleryPage": "https://vivosee.com/collections/rangements-de-cuisine",
+    "sourceGalleryImagesReported": 0,
+    "sourcePageVerification": "listing_observed_in_public_collection_page",
+    "priceReferenceVerification": "price_intentionally_not_imported",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-19",
+      "currency": "MAD",
+      "sourceType": "Moroccan online retailer catalogue",
+      "status": "listing_observed_stock_label_sale_at_research_time",
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
+  },
+  {
+    "id": "gb_vivo_glass_bamboo_jars_6",
+    "sku": "GB-VIVO-CUISINE-004",
+    "name": {
+      "fr": "Lot de 6 bocaux en verre avec couvercles en bambou",
+      "ar": "طقم من 6 علب زجاجية بأغطية من الخيزران",
+      "en": "Set of 6 Glass Jars with Bamboo Lids"
+    },
+    "description": {
+      "fr": "Ensemble de six bocaux en verre avec couvercles en bambou, présenté pour le rangement des ingrédients et des produits secs. Vérifier les dimensions et l’étanchéité auprès du fournisseur.",
+      "ar": "طقم من ست علب زجاجية بأغطية من الخيزران لحفظ المكونات والمواد الجافة. يجب التأكد من الأبعاد ومدى إحكام الإغلاق مع المورد.",
+      "en": "A set of six glass jars with bamboo lids, presented for storing ingredients and dry goods. Confirm dimensions and airtightness with the supplier."
+    },
+    "features": {
+      "fr": [
+        "6 bocaux",
+        "Corps en verre",
+        "Couvercles en bambou"
+      ],
+      "ar": [
+        "6 علب",
+        "هيكل زجاجي",
+        "أغطية من الخيزران"
+      ],
+      "en": [
+        "6 jars",
+        "Glass body",
+        "Bamboo lids"
+      ]
+    },
+    "category": "cuisine",
+    "subcategory": "conservation",
+    "sourceUrl": "https://vivosee.com/collections/rangements-de-cuisine",
+    "price": 0,
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "vivosee",
+      "brouillon",
+      "approvisionnement à vérifier"
+    ],
+    "seoTitle": "Lot de 6 bocaux en verre avec couvercles en bambou | GLOBABOX Maroc",
+    "seoDescription": "Ensemble de six bocaux en verre avec couvercles en bambou, présenté pour le rangement des ingrédients et des produits secs. Vérifier les dimensions et l’ét",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Images et prix laissés vides (prix technique 0 DH). Ne pas publier avant confirmation du produit exact, du fournisseur, du stock et des droits photo.",
+    "sourceMarketplace": "Vivosee (catalogue public)",
+    "sourceGalleryPage": "https://vivosee.com/collections/rangements-de-cuisine",
+    "sourceGalleryImagesReported": 0,
+    "sourcePageVerification": "listing_observed_in_public_collection_page",
+    "priceReferenceVerification": "price_intentionally_not_imported",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-19",
+      "currency": "MAD",
+      "sourceType": "Moroccan online retailer catalogue",
+      "status": "listing_observed_stock_label_sale_at_research_time",
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
+  },
+  {
+    "id": "gb_vivo_rotating_tray",
+    "sku": "GB-VIVO-MAISON-001",
+    "name": {
+      "fr": "Plateau de rangement rotatif",
+      "ar": "صينية تخزين دوارة",
+      "en": "Rotating Storage Tray"
+    },
+    "description": {
+      "fr": "Plateau de rangement rotatif destiné à faciliter l’accès aux objets disposés dessus. Confirmer le diamètre, les matériaux et le mécanisme auprès du fournisseur.",
+      "ar": "صينية تخزين دوارة تساعد على الوصول إلى الأغراض الموضوعة فوقها بسهولة. يجب تأكيد القطر والمواد وآلية الدوران مع المورد.",
+      "en": "A rotating storage tray designed to make items placed on it easier to access. Confirm diameter, materials and rotation mechanism with the supplier."
+    },
+    "features": {
+      "fr": [
+        "Plateau rotatif",
+        "Rangement et organisation",
+        "Dimensions à confirmer"
+      ],
+      "ar": [
+        "صينية دوارة",
+        "للتخزين والتنظيم",
+        "الأبعاد تحتاج إلى التأكيد"
+      ],
+      "en": [
+        "Rotating tray",
+        "Storage and organization",
+        "Dimensions to be confirmed"
+      ]
+    },
+    "category": "rangement",
+    "subcategory": "organisation",
+    "sourceUrl": "https://vivosee.com/collections/rangements-de-cuisine",
+    "price": 0,
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "vivosee",
+      "brouillon",
+      "approvisionnement à vérifier"
+    ],
+    "seoTitle": "Plateau de rangement rotatif | GLOBABOX Maroc",
+    "seoDescription": "Plateau de rangement rotatif destiné à faciliter l’accès aux objets disposés dessus. Confirmer le diamètre, les matériaux et le mécanisme auprès du fournis",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Images et prix laissés vides (prix technique 0 DH). Ne pas publier avant confirmation du produit exact, du fournisseur, du stock et des droits photo.",
+    "sourceMarketplace": "Vivosee (catalogue public)",
+    "sourceGalleryPage": "https://vivosee.com/collections/rangements-de-cuisine",
+    "sourceGalleryImagesReported": 0,
+    "sourcePageVerification": "listing_observed_in_public_collection_page",
+    "priceReferenceVerification": "price_intentionally_not_imported",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-19",
+      "currency": "MAD",
+      "sourceType": "Moroccan online retailer catalogue",
+      "status": "listing_observed_stock_label_sale_at_research_time",
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   }
 ]
