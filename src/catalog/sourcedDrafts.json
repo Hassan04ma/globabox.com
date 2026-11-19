@@ -2190,5 +2190,313 @@
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false
     }
+  },
+  {
+    "id": "gb_vivo_polypropylene_luggage_set",
+    "sku": "GB-VIVO-MODE-001",
+    "name": {
+      "fr": "Ensemble de 4 valises en polypropylène",
+      "ar": "طقم من أربع حقائب سفر من البولي بروبيلين",
+      "en": "Set of 4 Polypropylene Suitcases"
+    },
+    "description": {
+      "fr": "Ensemble de quatre valises de voyage légères proposé en plusieurs tailles et coloris. La fiche Vivosee présente des formats XS, S, M et L ainsi que des options de couleur. Les dimensions et caractéristiques exactes restent à confirmer avant publication.",
+      "ar": "طقم سفر مكوّن من أربع حقائب خفيفة بأحجام مختلفة. تعرض صفحة Vivosee مقاسات XS وS وM وL وخيارات متعددة للألوان. يجب تأكيد الأبعاد والمواصفات الدقيقة قبل النشر.",
+      "en": "A set of four lightweight travel suitcases offered in several sizes and colors. The Vivosee listing shows XS, S, M and L options. Confirm exact dimensions and specifications before publishing."
+    },
+    "features": {
+      "fr": [
+        "Ensemble de 4 valises",
+        "Tailles XS, S, M et L indiquées",
+        "Plusieurs coloris proposés",
+        "Caractéristiques à confirmer"
+      ],
+      "ar": [
+        "طقم من 4 حقائب",
+        "المقاسات المعروضة XS وS وM وL",
+        "ألوان متعددة حسب الصفحة",
+        "تأكيد المواصفات قبل النشر"
+      ],
+      "en": [
+        "Set of four suitcases",
+        "XS, S, M and L sizes listed",
+        "Multiple colors shown",
+        "Specifications require confirmation"
+      ]
+    },
+    "category": "mode",
+    "subcategory": "valises",
+    "sourceUrl": "https://vivosee.com/products/ensemble-de-valises",
+    "price": 0,
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "vivosee",
+      "brouillon",
+      "approvisionnement à vérifier",
+      "mode"
+    ],
+    "seoTitle": "Ensemble de 4 valises en polypropylène | GLOBABOX Maroc",
+    "seoDescription": "Ensemble de quatre valises de voyage en polypropylène, avec plusieurs tailles et coloris proposés. Dimensions et disponibilité à confirmer.",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Images et prix laissés vides (prix technique 0 DH). Ne pas publier avant confirmation du produit exact, du fournisseur, du stock et des droits photo.",
+    "sourceMarketplace": "Vivosee (catalogue public)",
+    "sourceGalleryPage": "https://vivosee.com/collections/valises",
+    "sourceGalleryImagesReported": 0,
+    "sourcePageVerification": "product_page_observed_publicly",
+    "priceReferenceVerification": "price_intentionally_not_imported",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-19",
+      "currency": "MAD",
+      "sourceType": "Moroccan online retailer catalogue",
+      "status": "product_page_observed_stock_and_details_not_supplier_confirmation",
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
+  },
+  {
+    "id": "gb_vivo_backpack_city",
+    "sku": "GB-VIVO-MODE-002",
+    "name": {
+      "fr": "Sac à dos urbain BACKPACK CITY",
+      "ar": "حقيبة ظهر حضرية BACKPACK CITY",
+      "en": "BACKPACK CITY Urban Backpack"
+    },
+    "description": {
+      "fr": "Sac à dos polyvalent destiné aux déplacements quotidiens et aux sorties. La fiche produit indique des dimensions de 45 × 30 × 15 cm. Les détails des compartiments et des matériaux doivent être confirmés sur le produit réel.",
+      "ar": "حقيبة ظهر متعددة الاستعمالات للتنقل اليومي والخروج. تذكر صفحة المنتج أبعاداً قدرها 45 × 30 × 15 سم. يجب تأكيد تفاصيل الجيوب والمواد على المنتج الفعلي.",
+      "en": "A versatile backpack for everyday commuting and outings. The product page lists dimensions of 45 × 30 × 15 cm. Confirm pocket and material details on the actual item."
+    },
+    "features": {
+      "fr": [
+        "Dimensions indiquées : 45 × 30 × 15 cm",
+        "Pour déplacements quotidiens",
+        "Format sac à dos",
+        "Matières et détails à confirmer"
+      ],
+      "ar": [
+        "الأبعاد المذكورة: 45 × 30 × 15 سم",
+        "للتنقل اليومي",
+        "تصميم حقيبة ظهر",
+        "تأكيد المواد والتفاصيل"
+      ],
+      "en": [
+        "Listed dimensions: 45 × 30 × 15 cm",
+        "For everyday commuting",
+        "Backpack format",
+        "Materials and details to be confirmed"
+      ]
+    },
+    "category": "mode",
+    "subcategory": "sacs-a-dos",
+    "sourceUrl": "https://vivosee.com/products/backpack-city",
+    "price": 0,
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "vivosee",
+      "brouillon",
+      "approvisionnement à vérifier",
+      "mode"
+    ],
+    "seoTitle": "Sac à dos urbain BACKPACK CITY | GLOBABOX Maroc",
+    "seoDescription": "Sac à dos BACKPACK CITY pour les déplacements quotidiens, dimensions indiquées 45 × 30 × 15 cm. Détails et disponibilité à confirmer.",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Images et prix laissés vides (prix technique 0 DH). Ne pas publier avant confirmation du produit exact, du fournisseur, du stock et des droits photo.",
+    "sourceMarketplace": "Vivosee (catalogue public)",
+    "sourceGalleryPage": "https://vivosee.com/collections/sacs-a-dos",
+    "sourceGalleryImagesReported": 0,
+    "sourcePageVerification": "product_page_observed_publicly",
+    "priceReferenceVerification": "price_intentionally_not_imported",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-19",
+      "currency": "MAD",
+      "sourceType": "Moroccan online retailer catalogue",
+      "status": "product_page_observed_stock_and_details_not_supplier_confirmation",
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
+  },
+  {
+    "id": "gb_vivo_leather_backpack",
+    "sku": "GB-VIVO-MODE-003",
+    "name": {
+      "fr": "Sac à dos en cuir – style urbain",
+      "ar": "حقيبة ظهر جلدية بتصميم حضري",
+      "en": "Urban Leather Backpack"
+    },
+    "description": {
+      "fr": "Sac à dos au style sobre, présenté comme adapté à un usage personnel ou professionnel. La page source montre des variantes marron, noir et camel, et évoque le transport d’un ordinateur portable. La matière exacte et les dimensions sont à confirmer.",
+      "ar": "حقيبة ظهر بتصميم أنيق للاستعمال الشخصي أو المهني. تعرض صفحة المصدر ألوان البني والأسود والجملي، وتشير إلى إمكانية حمل حاسوب محمول. يجب تأكيد نوع الجلد والأبعاد.",
+      "en": "A simple-styled backpack presented for personal or professional use. The source page shows brown, black and camel variants and mentions carrying a laptop. Confirm the exact material and dimensions."
+    },
+    "features": {
+      "fr": [
+        "Variantes marron, noir et camel",
+        "Usage personnel ou professionnel",
+        "Transport d’un ordinateur mentionné",
+        "Matière et dimensions à confirmer"
+      ],
+      "ar": [
+        "ألوان البني والأسود والجملي",
+        "للاستعمال الشخصي أو المهني",
+        "مذكور أنه مناسب لحمل حاسوب",
+        "تأكيد نوع المادة والأبعاد"
+      ],
+      "en": [
+        "Brown, black and camel variants",
+        "Personal or professional use",
+        "Laptop carrying mentioned",
+        "Material and dimensions to confirm"
+      ]
+    },
+    "category": "mode",
+    "subcategory": "sacs-a-dos",
+    "sourceUrl": "https://vivosee.com/products/sac-1",
+    "price": 0,
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "vivosee",
+      "brouillon",
+      "approvisionnement à vérifier",
+      "mode"
+    ],
+    "seoTitle": "Sac à dos en cuir – style urbain | GLOBABOX Maroc",
+    "seoDescription": "Sac à dos au style urbain, proposé en marron, noir et camel. Usage quotidien ou professionnel ; matière et dimensions à confirmer.",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Images et prix laissés vides (prix technique 0 DH). Ne pas publier avant confirmation du produit exact, du fournisseur, du stock et des droits photo.",
+    "sourceMarketplace": "Vivosee (catalogue public)",
+    "sourceGalleryPage": "https://vivosee.com/collections/sacs-a-dos",
+    "sourceGalleryImagesReported": 0,
+    "sourcePageVerification": "product_page_observed_publicly",
+    "priceReferenceVerification": "price_intentionally_not_imported",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-19",
+      "currency": "MAD",
+      "sourceType": "Moroccan online retailer catalogue",
+      "status": "product_page_observed_stock_and_details_not_supplier_confirmation",
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
+  },
+  {
+    "id": "gb_vivo_backpack_180",
+    "sku": "GB-VIVO-MODE-004",
+    "name": {
+      "fr": "Sac à dos de voyage extensible 180°",
+      "ar": "حقيبة ظهر للسفر قابلة للفتح بزاوية 180 درجة",
+      "en": "180-Degree Travel Backpack"
+    },
+    "description": {
+      "fr": "Sac à dos de voyage avec bretelles réglables, dos rembourré et plusieurs compartiments. La fiche indique des dimensions de 46 × 30 × 18–28 cm et un compartiment compatible avec un ordinateur de 17 pouces. Vérifier ces mesures sur le modèle livré.",
+      "ar": "حقيبة ظهر للسفر بأحزمة قابلة للتعديل وظهر مبطن وعدة أقسام. تذكر صفحة المنتج أبعاداً 46 × 30 × 18–28 سم وحجيرة لحاسوب بحجم 17 بوصة. يجب التحقق من القياسات في النسخة الفعلية.",
+      "en": "A travel backpack with adjustable shoulder straps, a padded back and multiple compartments. The listing gives dimensions of 46 × 30 × 18–28 cm and a compartment for a 17-inch laptop. Verify measurements on the delivered model."
+    },
+    "features": {
+      "fr": [
+        "Dimensions indiquées : 46 × 30 × 18–28 cm",
+        "Compartiment ordinateur 17 pouces annoncé",
+        "Bretelles réglables",
+        "Dos rembourré et compartiments multiples"
+      ],
+      "ar": [
+        "الأبعاد المذكورة: 46 × 30 × 18–28 سم",
+        "حجيرة لحاسوب 17 بوصة حسب الصفحة",
+        "أحزمة كتف قابلة للتعديل",
+        "ظهر مبطن وأقسام متعددة"
+      ],
+      "en": [
+        "Listed dimensions: 46 × 30 × 18–28 cm",
+        "17-inch laptop compartment listed",
+        "Adjustable shoulder straps",
+        "Padded back and multiple compartments"
+      ]
+    },
+    "category": "mode",
+    "subcategory": "sacs-a-dos",
+    "sourceUrl": "https://vivosee.com/products/backpack-voyage-180",
+    "price": 0,
+    "image": "",
+    "images": [],
+    "additionalImages": [],
+    "tags": [
+      "vivosee",
+      "brouillon",
+      "approvisionnement à vérifier",
+      "mode"
+    ],
+    "seoTitle": "Sac à dos de voyage extensible 180° | GLOBABOX Maroc",
+    "seoDescription": "Sac à dos de voyage avec compartiments multiples et espace ordinateur 17 pouces annoncé. Dimensions indiquées 46 × 30 × 18–28 cm, à vérifier.",
+    "rating": 0,
+    "reviewsCount": 0,
+    "inStock": false,
+    "stockStatus": "out_of_stock",
+    "bestSeller": false,
+    "newArrival": false,
+    "featured": false,
+    "isActive": false,
+    "visibilityChanged": false,
+    "supplier": "Non confirmé / aucun fournisseur contractuel",
+    "needsSupplierVerification": true,
+    "imageRightsConfirmed": false,
+    "galleryPhotosUploaded": 0,
+    "importNotice": "BROUILLON UNIQUEMENT. Images et prix laissés vides (prix technique 0 DH). Ne pas publier avant confirmation du produit exact, du fournisseur, du stock et des droits photo.",
+    "sourceMarketplace": "Vivosee (catalogue public)",
+    "sourceGalleryPage": "https://vivosee.com/collections/sacs-a-dos",
+    "sourceGalleryImagesReported": 0,
+    "sourcePageVerification": "product_page_observed_publicly",
+    "priceReferenceVerification": "price_intentionally_not_imported",
+    "readyToPublish": false,
+    "marketResearch": {
+      "date": "2026-11-19",
+      "currency": "MAD",
+      "sourceType": "Moroccan online retailer catalogue",
+      "status": "product_page_observed_stock_and_details_not_supplier_confirmation",
+      "retailPriceForStoreIsApproved": false,
+      "photoRightsVerified": false
+    }
   }
 ]
