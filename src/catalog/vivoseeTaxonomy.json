@@ -1,0 +1,277 @@
+{
+  "source": "https://vivosee.com/collections",
+  "updatedAt": "2026-11-19",
+  "note": "Mapping of Vivosee public collections into GLOBABOX's existing top-level category IDs. This is a catalog taxonomy draft, not proof of supplier stock or resale rights.",
+  "categories": [
+    {
+      "id": "rangement",
+      "name": {
+        "fr": "Maison & Rangement",
+        "ar": "المنزل والتنظيم",
+        "en": "Home & Storage"
+      },
+      "subcategories": [
+        {
+          "id": "rangement-organisation",
+          "source": "Rangement et Organisation",
+          "name": {
+            "fr": "Rangement et Organisation",
+            "ar": "التخزين والتنظيم",
+            "en": "Storage & Organization"
+          },
+          "url": "https://vivosee.com/collections/rangement-et-organisation"
+        },
+        {
+          "id": "armoires-buanderie",
+          "source": "Armoires et Rangements de buanderie",
+          "name": {
+            "fr": "Armoires et Rangements de buanderie",
+            "ar": "خزائن وتنظيم غرفة الغسيل",
+            "en": "Laundry Cabinets & Storage"
+          },
+          "url": "https://vivosee.com/collections/armoires-et-rangements-de-buanderie"
+        },
+        {
+          "id": "decoration-interieure",
+          "source": "Décoration intérieure",
+          "name": {
+            "fr": "Décoration intérieure",
+            "ar": "ديكور المنزل",
+            "en": "Home Decoration"
+          },
+          "url": "https://vivosee.com/collections/decoration-interieure"
+        },
+        {
+          "id": "douches-baignoires",
+          "source": "Douches et Baignoires",
+          "name": {
+            "fr": "Douches et Baignoires",
+            "ar": "الدش وأحواض الاستحمام",
+            "en": "Showers & Bathtubs"
+          },
+          "url": "https://vivosee.com/collections/douches-et-baignoires"
+        },
+        {
+          "id": "nettoyage",
+          "source": "Produits de nettoyage",
+          "name": {
+            "fr": "Produits de nettoyage",
+            "ar": "منتجات التنظيف",
+            "en": "Cleaning Products"
+          },
+          "url": "https://vivosee.com/collections/produits-de-nettoyage"
+        }
+      ]
+    },
+    {
+      "id": "cuisine",
+      "name": {
+        "fr": "Cuisine & Repas",
+        "ar": "المطبخ والأواني",
+        "en": "Kitchen & Dining"
+      },
+      "subcategories": [
+        {
+          "id": "rangement-cuisine",
+          "source": "Rangements de cuisine",
+          "name": {
+            "fr": "Rangements de cuisine",
+            "ar": "تنظيم وتخزين المطبخ",
+            "en": "Kitchen Storage"
+          },
+          "url": "https://vivosee.com/collections/rangements-de-cuisine"
+        },
+        {
+          "id": "ustensiles",
+          "source": "Ustensiles et Objets de cuisine",
+          "name": {
+            "fr": "Ustensiles et Objets de cuisine",
+            "ar": "أدوات وإكسسوارات المطبخ",
+            "en": "Kitchen Utensils & Accessories"
+          },
+          "url": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine"
+        },
+        {
+          "id": "verrerie",
+          "source": "Verrerie et Verres à boire",
+          "name": {
+            "fr": "Verrerie et Verres à boire",
+            "ar": "الأواني الزجاجية وأكواب الشرب",
+            "en": "Glassware & Drinkware"
+          },
+          "url": "https://vivosee.com/collections/verrerie-et-verres-a-boire"
+        },
+        {
+          "id": "verres-the-marocain",
+          "source": "Verres de thé marocain",
+          "name": {
+            "fr": "Verres de thé marocain",
+            "ar": "كؤوس الشاي المغربي",
+            "en": "Moroccan Tea Glasses"
+          },
+          "url": "https://vivosee.com/collections/verres-de-the-marocain"
+        },
+        {
+          "id": "moules-patisserie",
+          "source": "Moules à pâtisserie",
+          "name": {
+            "fr": "Moules à pâtisserie",
+            "ar": "قوالب الحلويات والخبز",
+            "en": "Baking Molds"
+          },
+          "url": "https://vivosee.com/collections/moules-a-patisserie"
+        }
+      ]
+    },
+    {
+      "id": "technologie",
+      "name": {
+        "fr": "Électronique & Tech",
+        "ar": "الإلكترونيات والتكنولوجيا",
+        "en": "Electronics & Tech"
+      },
+      "subcategories": [
+        {
+          "id": "electromenager",
+          "source": "Électroménagers et Accessoires",
+          "name": {
+            "fr": "Électroménagers et Accessoires",
+            "ar": "الأجهزة المنزلية وملحقاتها",
+            "en": "Home Appliances & Accessories"
+          },
+          "url": "https://vivosee.com/collections/electromenagers-et-accessoires"
+        },
+        {
+          "id": "eclairage",
+          "source": "Éclairage et Accessoires",
+          "name": {
+            "fr": "Éclairage et Accessoires",
+            "ar": "الإضاءة وملحقاتها",
+            "en": "Lighting & Accessories"
+          },
+          "url": "https://vivosee.com/collections/eclairage-et-accessoires"
+        },
+        {
+          "id": "qualite-air",
+          "source": "Qualité de l'air",
+          "name": {
+            "fr": "Qualité de l'air",
+            "ar": "جودة الهواء",
+            "en": "Air Quality"
+          },
+          "url": "https://vivosee.com/collections/qualite-de-l-air"
+        },
+        {
+          "id": "ventilateurs",
+          "source": "Ventilateurs",
+          "name": {
+            "fr": "Ventilateurs",
+            "ar": "المراوح",
+            "en": "Fans"
+          },
+          "url": "https://vivosee.com/collections/ventilateurs"
+        }
+      ]
+    },
+    {
+      "id": "mode",
+      "name": {
+        "fr": "Mode & Accessoires",
+        "ar": "الموضة والإكسسوارات",
+        "en": "Fashion & Accessories"
+      },
+      "subcategories": [
+        {
+          "id": "bijoux-accessoires",
+          "source": "Bijoux et Accessoires",
+          "name": {
+            "fr": "Bijoux et Accessoires",
+            "ar": "المجوهرات والإكسسوارات",
+            "en": "Jewelry & Accessories"
+          },
+          "url": "https://vivosee.com/collections/bijoux-et-accessoires"
+        },
+        {
+          "id": "cartables",
+          "source": "CARTABLE D'ECOLE",
+          "name": {
+            "fr": "Cartables d'école",
+            "ar": "حقائب مدرسية",
+            "en": "School Bags"
+          },
+          "url": "https://vivosee.com/collections/cartable-d-ecole"
+        }
+      ]
+    },
+    {
+      "id": "mode",
+      "name": {
+        "fr": "Mode & Accessoires",
+        "ar": "الموضة والإكسسوارات",
+        "en": "Fashion & Accessories"
+      },
+      "subcategories": [
+        {
+          "id": "valises",
+          "source": "Valises",
+          "name": {
+            "fr": "Valises",
+            "ar": "حقائب السفر",
+            "en": "Suitcases"
+          },
+          "url": "https://vivosee.com/collections/valises"
+        },
+        {
+          "id": "sacs-a-dos",
+          "source": "Sacs à Dos",
+          "name": {
+            "fr": "Sacs à Dos",
+            "ar": "حقائب الظهر",
+            "en": "Backpacks"
+          },
+          "url": "https://vivosee.com/collections/sacs-a-dos"
+        },
+        {
+          "id": "sacs-main",
+          "source": "Sacs à main",
+          "name": {
+            "fr": "Sacs à main",
+            "ar": "حقائب اليد",
+            "en": "Handbags"
+          },
+          "url": "https://vivosee.com/collections/sacs-a-main"
+        },
+        {
+          "id": "sacs-roulette",
+          "source": "Sacs à roulette",
+          "name": {
+            "fr": "Sacs à roulette",
+            "ar": "حقائب بعجلات",
+            "en": "Rolling Bags"
+          },
+          "url": "https://vivosee.com/collections/sacs-a-roulette"
+        },
+        {
+          "id": "portefeuille",
+          "source": "Portefeuille",
+          "name": {
+            "fr": "Portefeuilles",
+            "ar": "محافظ",
+            "en": "Wallets"
+          },
+          "url": "https://vivosee.com/collections/portefeuille"
+        },
+        {
+          "id": "pochettes-laptop",
+          "source": "Pochette Laptop",
+          "name": {
+            "fr": "Pochettes pour ordinateur",
+            "ar": "حقائب وحافظات الحاسوب",
+            "en": "Laptop Sleeves"
+          },
+          "url": "https://vivosee.com/collections/pouchet-laptop"
+        }
+      ]
+    }
+  ]
+}
