@@ -60,6 +60,24 @@
             "en": "Cleaning Products"
           },
           "url": "https://vivosee.com/collections/produits-de-nettoyage"
+        },
+        {
+          "id": "organisation",
+          "source": "Rangement et Organisation",
+          "name": {
+            "fr": "Organisation de la maison",
+            "ar": "تنظيم المنزل",
+            "en": "Home Organization"
+          }
+        },
+        {
+          "id": "rangement",
+          "source": "Rangement et Organisation",
+          "name": {
+            "fr": "Boîtes et paniers de rangement",
+            "ar": "علب وسلال التخزين",
+            "en": "Storage Boxes & Baskets"
+          }
         }
       ]
     },
@@ -120,6 +138,33 @@
             "en": "Baking Molds"
           },
           "url": "https://vivosee.com/collections/moules-a-patisserie"
+        },
+        {
+          "id": "conservation",
+          "source": "Vivosee food storage products",
+          "name": {
+            "fr": "Conservation des aliments",
+            "ar": "حفظ وتخزين الأغذية",
+            "en": "Food Storage"
+          }
+        },
+        {
+          "id": "vaisselle",
+          "source": "Vivosee tableware products",
+          "name": {
+            "fr": "Vaisselle et service",
+            "ar": "الأواني وتقديم الطعام",
+            "en": "Tableware & Serving"
+          }
+        },
+        {
+          "id": "accessoires-cuisine",
+          "source": "Vivosee kitchen accessories",
+          "name": {
+            "fr": "Accessoires d'évier et de cuisine",
+            "ar": "إكسسوارات الحوض والمطبخ",
+            "en": "Sink & Kitchen Accessories"
+          }
         }
       ]
     },
@@ -200,17 +245,7 @@
             "en": "School Bags"
           },
           "url": "https://vivosee.com/collections/cartable-d-ecole"
-        }
-      ]
-    },
-    {
-      "id": "mode",
-      "name": {
-        "fr": "Mode & Accessoires",
-        "ar": "الموضة والإكسسوارات",
-        "en": "Fashion & Accessories"
-      },
-      "subcategories": [
+        },
         {
           "id": "valises",
           "source": "Valises",
