@@ -370,6 +370,8 @@ export default function AdminPanel({
     seoKeywords: string[];
     pricingStatus: 'preliminary' | 'verified';
     pricingNote: string;
+    sourceMarketplace: string;
+    priceReferenceNote: string;
     needsSupplierVerification: boolean;
     imageRightsConfirmed: boolean;
     readyToPublish: boolean;
@@ -400,7 +402,7 @@ export default function AdminPanel({
     featuresFr: [],
     featuresAr: [],
     featuresEn: [],
-    tags: [],sku: '',barcode: '',seoTitle: '',seoDescription: '',seoKeywords:[],pricingStatus:'preliminary',pricingNote:'',
+    tags: [],sku: '',barcode: '',seoTitle: '',seoDescription: '',seoKeywords:[],pricingStatus:'preliminary',pricingNote:'',sourceMarketplace:'',priceReferenceNote:'',
     needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
   });
 
@@ -914,7 +916,7 @@ export default function AdminPanel({
       featuresFr: [],
       featuresAr: [],
       featuresEn: [],
-      tags: [],sku:'',barcode:'',seoTitle:'',seoDescription:'',seoKeywords:[],pricingStatus:'preliminary',pricingNote:'',
+      tags: [],sku:'',barcode:'',seoTitle:'',seoDescription:'',seoKeywords:[],pricingStatus:'preliminary',pricingNote:'',sourceMarketplace:'',priceReferenceNote:'',
       needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
     });
     setIsAddingProduct(true);
@@ -950,7 +952,7 @@ export default function AdminPanel({
       featuresAr: prod.features?.ar || [],
       featuresEn: prod.features?.en || [],
       tags:prod.tags || [],sku:prod.sku || '',barcode:prod.barcode || '',
-      seoTitle:prod.seoTitle || '',seoDescription:prod.seoDescription || '',seoKeywords:prod.seoKeywords || [],pricingStatus:prod.pricingStatus || 'preliminary',pricingNote:prod.pricingNote || '',
+      seoTitle:prod.seoTitle || '',seoDescription:prod.seoDescription || '',seoKeywords:prod.seoKeywords || [],pricingStatus:prod.pricingStatus || 'preliminary',pricingNote:prod.pricingNote || '',sourceMarketplace:prod.sourceMarketplace || '',priceReferenceNote:prod.priceReferenceNote || '',
       needsSupplierVerification:prod.needsSupplierVerification === true,
       imageRightsConfirmed:prod.imageRightsConfirmed === true,
       readyToPublish:prod.readyToPublish === true,
@@ -1023,6 +1025,8 @@ export default function AdminPanel({
       seoKeywords:Array.from(new Set(productForm.seoKeywords || [])).map(x=>String(x).trim()).filter(Boolean).slice(0,15),
       pricingStatus:productForm.pricingStatus,
       pricingNote:productForm.pricingNote.trim() || undefined,
+      sourceMarketplace:productForm.sourceMarketplace.trim() || undefined,
+      priceReferenceNote:productForm.priceReferenceNote.trim() || undefined,
       needsSupplierVerification:productForm.needsSupplierVerification,
       imageRightsConfirmed:productForm.imageRightsConfirmed,
       readyToPublish:productForm.readyToPublish,
