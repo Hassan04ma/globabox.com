@@ -243,4 +243,34 @@ const draft = await worker.fetch(new Request('https://preview.example.test/api/p
 assert.equal(draft.status,200);
 const draftPayload = await draft.json() as any;
 assert.equal(draftPayload.product.isActive,false,'New admin products cannot auto-publish');
+
+const sourceGuardDb = {
+  prepare(sql:string) {
+    return {
+      bind:(...params:unknown[]) => ({
+        first:async()=>sql.includes('SELECT active FROM products')?{active:0}:null,
+        run:async()=>({success:true,meta:{changes:1}}),
+        all:async()=>({results:[]})
+      }),
+      first:async()=>null,
+      run:async()=>({success:true,meta:{changes:1}}),
+      all:async()=>({results:[]})
+    };
+  }
+} as any;
+const sourcePublishAttempt = await worker.fetch(new Request('https://preview.example.test/api/products/gb_vivosee_guard_test',{
+  method:'PUT',headers:adminHeaders,
+  body:JSON.stringify({
+    id:'gb_vivosee_guard_test',name:{fr:'Produit source'},price:250,category:'maison',
+    image:'https://images.example.test/1.jpg',
+    images:Array.from({length:6},(_,i)=>'https://images.example.test/'+(i+1)+'.jpg'),
+    additionalImages:Array.from({length:5},(_,i)=>'https://images.example.test/'+(i+2)+'.jpg'),
+    supplier:'Fournisseur à vérifier',sourceMarketplace:'Vivosee',
+    needsSupplierVerification:false,imageRightsConfirmed:true,readyToPublish:true,
+    pricingStatus:'preliminary',priceReferenceNote:'Prix public observé',
+    inStock:true,stockStatus:'in_stock',isActive:true,visibilityChanged:true
+  })
+}),{...adminEnv,DB:sourceGuardDb});
+assert.equal(sourcePublishAttempt.status,422,
+  'Imported marketplace products must remain blocked until their supplier price is verified');
 console.log('Worker API smoke tests passed: admin protection, tampering, persisted checkout, free delivery and draft creation, privacy-safe customer tracking');
