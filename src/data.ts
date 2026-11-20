@@ -32,6 +32,24 @@ export interface Product {
   /** Preliminary selling price metadata; requires supplier/cost verification before publication. */
   pricingStatus?: 'preliminary' | 'verified';
   pricingNote?: string;
+  /** Marketplace provenance for sourced draft products; not a supplier endorsement. */
+  sourceMarketplace?: string;
+  sourcePageVerification?: string;
+  priceReferenceMAD?: number;
+  priceReferenceNote?: string;
+  marketResearch?: {
+    date?: string;
+    currency?: string;
+    sourceType?: string;
+    status?: string;
+    referencePage?: string;
+    observedReferenceMAD?: number;
+    retailPriceForStoreIsApproved?: boolean;
+    photoRightsVerified?: boolean;
+    supplierStockVerified?: boolean;
+    preliminarySellingPriceMAD?: number;
+    pricingMethod?: string;
+  };
   /** For source-referenced stock: verified only after supplier confirmation. */
   needsSupplierVerification?: boolean;
   imageRightsConfirmed?: boolean;
