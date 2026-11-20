@@ -7,7 +7,7 @@
       "ar": "Set de Couverts en Acier Inoxydable Premium avec Boîte de Rangement Chic",
       "en": "Set de Couverts en Acier Inoxydable Premium avec Boîte de Rangement Chic"
     },
-    "price": 0,
+    "price": 310,
     "description": {
       "fr": "Set de couverts en acier inoxydable avec rangement pratique pour organiser les repas au quotidien.",
       "ar": "طقم أنيق من أدوات المائدة المصنوعة من الفولاذ المقاوم للصدأ مع علبة للتخزين والتنظيم.",
@@ -61,7 +61,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -77,12 +77,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 229,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 310,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "couverts inox",
+      "ustensiles cuisine",
+      "table",
+      "organisation cuisine",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_002",
@@ -92,7 +105,7 @@
       "ar": "Couscoussier Royal Song Inox",
       "en": "Couscoussier Royal Song Inox"
     },
-    "price": 0,
+    "price": 540,
     "description": {
       "fr": "Couscoussier en inox pensé pour la préparation du couscous et des plats cuisinés à la vapeur. Vérification des dimensions et de la finition requise.",
       "ar": "كسكاس من الفولاذ المقاوم للصدأ لتحضير الكسكس والأطباق المطهوة على البخار. يجب تأكيد المقاسات والتشطيب قبل البيع.",
@@ -146,7 +159,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -162,12 +175,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 399,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 540,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "couscoussier",
+      "inox",
+      "cuisine marocaine",
+      "cuisson",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_003",
@@ -177,7 +203,7 @@
       "ar": "Plaque de grill pour des dîners conviviaux en famille et entre amis",
       "en": "Plaque de grill pour des dîners conviviaux en famille et entre amis"
     },
-    "price": 0,
+    "price": 875,
     "description": {
       "fr": "Plaque de cuisson de type grill destinée aux repas conviviaux et à la préparation de viandes ou légumes grillés.",
       "ar": "لوح شواء عملي لتحضير اللحوم والخضر المشوية للوجبات العائلية.",
@@ -231,7 +257,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -247,12 +273,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 649,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 875,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "grill",
+      "plaque cuisson",
+      "barbecue maison",
+      "cuisine",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_004",
@@ -262,7 +301,7 @@
       "ar": "6 Tasses à Café en Verre à Double Paroi",
       "en": "6 Tasses à Café en Verre à Double Paroi"
     },
-    "price": 0,
+    "price": 270,
     "description": {
       "fr": "Ensemble de six tasses en verre à double paroi pour servir café et boissons chaudes avec une présentation élégante.",
       "ar": "طقم من ستة أكواب زجاجية مزدوجة الجدار لتقديم القهوة والمشروبات الساخنة بشكل أنيق.",
@@ -316,7 +355,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -332,12 +371,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 199,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 270,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "tasses verre",
+      "double paroi",
+      "café",
+      "verrerie",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_005",
@@ -347,7 +399,7 @@
       "ar": "Plateau de Rangement Rotatif",
       "en": "Plateau de Rangement Rotatif"
     },
-    "price": 0,
+    "price": 130,
     "description": {
       "fr": "Plateau rotatif pratique pour regrouper et garder les petits objets accessibles dans la cuisine, la salle de bain ou le bureau.",
       "ar": "صينية تخزين دوارة لتنظيم الأشياء الصغيرة وجعلها سهلة الوصول في المطبخ أو الحمام أو المكتب.",
@@ -401,7 +453,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/rangement-et-organisation",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -417,12 +469,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/rangement-et-organisation",
       "observedReferenceMAD": 98,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 130,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "plateau rotatif",
+      "rangement",
+      "organisateur",
+      "maison",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_006",
@@ -432,7 +497,7 @@
       "ar": "Valise Haute Résistance en Polypropylène",
       "en": "Valise Haute Résistance en Polypropylène"
     },
-    "price": 0,
+    "price": 375,
     "description": {
       "fr": "Valise rigide en polypropylène conçue pour les déplacements et le rangement des affaires de voyage. Caractéristiques à confirmer sur le modèle réel.",
       "ar": "حقيبة سفر صلبة من البولي بروبيلين للرحلات وتنظيم الأمتعة. يجب تأكيد المواصفات على المنتج الفعلي.",
@@ -486,7 +551,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -502,12 +567,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 279,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 375,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "valise",
+      "voyage",
+      "polypropylène",
+      "bagage",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_007",
@@ -517,7 +595,7 @@
       "ar": "Oreiller Cervical pour Appui-Tête de Voiture",
       "en": "Oreiller Cervical pour Appui-Tête de Voiture"
     },
-    "price": 0,
+    "price": 240,
     "description": {
       "fr": "Coussin cervical destiné à améliorer le confort pendant les trajets en voiture. Vérifier dimensions et matériau avant publication.",
       "ar": "وسادة داعمة للرقبة لتحسين الراحة أثناء السفر بالسيارة. يجب تأكيد المقاسات والخامة.",
@@ -571,7 +649,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/auto-et-accessoires",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -587,12 +665,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/auto-et-accessoires",
       "observedReferenceMAD": 179,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 240,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "oreiller voiture",
+      "support cervical",
+      "confort auto",
+      "accessoires voiture",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_008",
@@ -602,7 +693,7 @@
       "ar": "Étagère de Salle de Bain en Bambou avec Panier à Linge",
       "en": "Étagère de Salle de Bain en Bambou avec Panier à Linge"
     },
-    "price": 0,
+    "price": 810,
     "description": {
       "fr": "Meuble d'organisation pour salle de bain associant rangement vertical et espace pour le linge. Dimensions à confirmer.",
       "ar": "رف حمام من الخيزران يجمع بين التخزين العمودي ومساحة للملابس. يجب تأكيد المقاسات.",
@@ -656,7 +747,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/rangement-et-organisation",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -672,12 +763,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/rangement-et-organisation",
       "observedReferenceMAD": 599,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 810,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "étagère salle de bain",
+      "bambou",
+      "rangement",
+      "linge",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_009",
@@ -687,7 +791,7 @@
       "ar": "Tiroir à Capsules Nespresso & Dolce Gusto",
       "en": "Tiroir à Capsules Nespresso & Dolce Gusto"
     },
-    "price": 0,
+    "price": 375,
     "description": {
       "fr": "Tiroir de rangement pour capsules de café destiné à garder les capsules ordonnées et facilement accessibles.",
       "ar": "درج لتخزين كبسولات القهوة وترتيبها بشكل عملي وسهل الوصول.",
@@ -741,7 +845,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -757,12 +861,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 279,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 375,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "capsules café",
+      "Nespresso",
+      "Dolce Gusto",
+      "rangement cuisine",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_010",
@@ -772,7 +889,7 @@
       "ar": "Organisateur de 40 Capsules Nespresso",
       "en": "Organisateur de 40 Capsules Nespresso"
     },
-    "price": 0,
+    "price": 375,
     "description": {
       "fr": "Organisateur compact pour ranger les capsules de café et garder le plan de travail plus ordonné.",
       "ar": "منظم لتخزين ما يصل إلى 40 كبسولة قهوة والحفاظ على ترتيب سطح المطبخ.",
@@ -826,7 +943,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -842,12 +959,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 279,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 375,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "organisateur capsules",
+      "Nespresso",
+      "rangement cuisine",
+      "café",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_011",
@@ -857,7 +987,7 @@
       "ar": "Tiroir de Rangement pour 36 Capsules de Café",
       "en": "Tiroir de Rangement pour 36 Capsules de Café"
     },
-    "price": 0,
+    "price": 470,
     "description": {
       "fr": "Solution de rangement pour capsules de café avec accès rapide et présentation ordonnée.",
       "ar": "حل عملي لتخزين كبسولات القهوة مع سهولة الوصول إليها وترتيبها.",
@@ -911,7 +1041,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -927,12 +1057,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 349,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 470,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "capsules café",
+      "tiroir rangement",
+      "cuisine",
+      "organisateur",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_012",
@@ -942,7 +1085,7 @@
       "ar": "Horloge Murale Moderne en Métal",
       "en": "Horloge Murale Moderne en Métal"
     },
-    "price": 0,
+    "price": 780,
     "description": {
       "fr": "Horloge murale décorative au style contemporain destinée à habiller un mur tout en donnant une lecture claire de l'heure.",
       "ar": "ساعة حائط معدنية بتصميم عصري لإضافة لمسة ديكور عملية إلى المنزل.",
@@ -996,7 +1139,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/rangement-et-organisation",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -1012,12 +1155,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/rangement-et-organisation",
       "observedReferenceMAD": 579,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 780,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "horloge murale",
+      "décoration",
+      "métal",
+      "maison",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_013",
@@ -1027,7 +1183,7 @@
       "ar": "3 Valises Rigides Premium",
       "en": "3 Valises Rigides Premium"
     },
-    "price": 0,
+    "price": 2970,
     "description": {
       "fr": "Ensemble de trois valises rigides pour organiser les bagages lors des voyages. Matières et dimensions à confirmer.",
       "ar": "طقم من ثلاث حقائب سفر صلبة لتنظيم الأمتعة أثناء الرحلات. يجب تأكيد الخامات والمقاسات.",
@@ -1081,7 +1237,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -1097,12 +1253,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 2199,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 2970,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "valises",
+      "bagages",
+      "voyage",
+      "set valises",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_014",
@@ -1112,7 +1281,7 @@
       "ar": "Valises Business X2",
       "en": "Valises Business X2"
     },
-    "price": 0,
+    "price": 1215,
     "description": {
       "fr": "Ensemble de deux valises orientées voyage et déplacements professionnels. Vérifier les dimensions et accessoires inclus.",
       "ar": "طقم حقيبتي سفر مناسب للتنقل والرحلات المهنية. يجب تأكيد المقاسات والملحقات.",
@@ -1166,7 +1335,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -1182,12 +1351,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 899,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 1215,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "valise business",
+      "voyage",
+      "bagage",
+      "set",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_015",
@@ -1197,7 +1379,7 @@
       "ar": "Ensemble de Sacs de Rangement pour Vêtements – 8 Pièces",
       "en": "Ensemble de Sacs de Rangement pour Vêtements – 8 Pièces"
     },
-    "price": 0,
+    "price": 240,
     "description": {
       "fr": "Lot de sacs de rangement pour protéger et organiser les vêtements dans les placards ou pendant un déménagement.",
       "ar": "طقم من 8 أكياس لتنظيم وحفظ الملابس داخل الخزانة أو أثناء الانتقال.",
@@ -1251,7 +1433,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/rangement-et-organisation",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -1267,12 +1449,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/rangement-et-organisation",
       "observedReferenceMAD": 179,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 240,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sacs rangement",
+      "vêtements",
+      "organisation",
+      "maison",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_016",
@@ -1282,7 +1477,7 @@
       "ar": "Chaise de Pêche Pliable avec Auvent",
       "en": "Chaise de Pêche Pliable avec Auvent"
     },
-    "price": 0,
+    "price": 335,
     "description": {
       "fr": "Chaise pliante compacte avec auvent pour les activités extérieures et les pauses prolongées. Usage et dimensions à confirmer.",
       "ar": "كرسي قابل للطي مع مظلة للأنشطة الخارجية والراحة أثناء الرحلات. يجب تأكيد المقاسات.",
@@ -1336,7 +1531,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sport-et-loisirs",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -1352,12 +1547,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sport-et-loisirs",
       "observedReferenceMAD": 249,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 335,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "chaise pliante",
+      "extérieur",
+      "pêche",
+      "loisirs",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_017",
@@ -1367,7 +1575,7 @@
       "ar": "Chaise Moon Pliable",
       "en": "Chaise Moon Pliable"
     },
-    "price": 0,
+    "price": 200,
     "description": {
       "fr": "Chaise pliable légère destinée aux sorties, au camping et aux activités de plein air.",
       "ar": "كرسي Moon قابل للطي وخفيف للرحلات والأنشطة الخارجية.",
@@ -1421,7 +1629,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sport-et-loisirs",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -1437,12 +1645,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sport-et-loisirs",
       "observedReferenceMAD": 149,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 200,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "chaise pliable",
+      "plein air",
+      "loisirs",
+      "camping",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_018",
@@ -1452,7 +1673,7 @@
       "ar": "Égouttoir à Vaisselle à 2 Niveaux",
       "en": "Égouttoir à Vaisselle à 2 Niveaux"
     },
-    "price": 0,
+    "price": 445,
     "description": {
       "fr": "Égouttoir à deux niveaux pour organiser la vaisselle et optimiser l'espace près de l'évier.",
       "ar": "مجفف أطباق بطابقين لتنظيم الأواني واستغلال المساحة قرب الحوض.",
@@ -1506,7 +1727,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -1522,12 +1743,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 329,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 445,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "égouttoir",
+      "vaisselle",
+      "rangement cuisine",
+      "évier",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_019",
@@ -1537,7 +1771,7 @@
       "ar": "Chaise Pliante de Camping Ultralégère",
       "en": "Chaise Pliante de Camping Ultralégère"
     },
-    "price": 0,
+    "price": 335,
     "description": {
       "fr": "Chaise pliante légère et compacte pour les sorties, les pique-niques et les activités extérieures.",
       "ar": "كرسي تخييم خفيف وقابل للطي للنزهات والأنشطة الخارجية.",
@@ -1591,7 +1825,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sport-et-loisirs",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -1607,12 +1841,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sport-et-loisirs",
       "observedReferenceMAD": 249,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 335,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "chaise camping",
+      "pliable",
+      "extérieur",
+      "loisirs",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_020",
@@ -1622,7 +1869,7 @@
       "ar": "6 Tasses Double Paroi 350 ml",
       "en": "6 Tasses Double Paroi 350 ml"
     },
-    "price": 0,
+    "price": 270,
     "description": {
       "fr": "Lot de six tasses à double paroi de 350 ml pour servir boissons chaudes ou froides avec une présentation moderne.",
       "ar": "طقم من 6 أكواب مزدوجة الجدار بسعة 350 مل للمشروبات الساخنة أو الباردة.",
@@ -1676,7 +1923,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -1692,12 +1939,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 199,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 270,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "tasses",
+      "double paroi",
+      "350ml",
+      "verrerie",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_021",
@@ -1707,7 +1967,7 @@
       "ar": "Tapis de Porte en Fibre de Coco",
       "en": "Tapis de Porte en Fibre de Coco"
     },
-    "price": 0,
+    "price": 130,
     "description": {
       "fr": "Paillasson en fibre de coco destiné à l'entrée de la maison pour retenir les saletés avant de rentrer.",
       "ar": "حصيرة باب من ألياف جوز الهند للمساعدة على إبقاء مدخل المنزل نظيفاً.",
@@ -1761,7 +2021,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/rangement-et-organisation",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -1777,12 +2037,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/rangement-et-organisation",
       "observedReferenceMAD": 98,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 130,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "paillasson",
+      "fibre coco",
+      "entrée",
+      "maison",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_022",
@@ -1792,7 +2065,7 @@
       "ar": "Bol à Soupe Transparent 1,5 L",
       "en": "Bol à Soupe Transparent 1,5 L"
     },
-    "price": 0,
+    "price": 200,
     "description": {
       "fr": "Bol transparent de grande capacité pour servir ou préparer des soupes et plats liquides. Vérifier la matière exacte.",
       "ar": "وعاء شفاف بسعة 1.5 لتر لتقديم أو تحضير الشوربات والأطباق السائلة.",
@@ -1846,7 +2119,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -1862,12 +2135,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 149,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 200,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "bol soupe",
+      "1.5L",
+      "cuisine",
+      "vaisselle",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_023",
@@ -1877,7 +2163,7 @@
       "ar": "Cocotte en Verre avec Couvercle",
       "en": "Cocotte en Verre avec Couvercle"
     },
-    "price": 0,
+    "price": 200,
     "description": {
       "fr": "Cocotte en verre avec couvercle pour la préparation et la présentation des plats. Vérifier la résistance thermique du modèle réel.",
       "ar": "قدر زجاجي مع غطاء لتحضير وتقديم الأطباق. يجب التأكد من مقاومة الحرارة.",
@@ -1931,7 +2217,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -1947,12 +2233,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 149,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 200,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "cocotte verre",
+      "cuisine",
+      "cuisson",
+      "vaisselle",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_024",
@@ -1962,7 +2261,7 @@
       "ar": "3 Armoires Pliantes en Tissu",
       "en": "3 Armoires Pliantes en Tissu"
     },
-    "price": 0,
+    "price": 200,
     "description": {
       "fr": "Ensemble de trois solutions de rangement textile pliables pour organiser vêtements et accessoires dans les espaces réduits.",
       "ar": "طقم من ثلاث خزائن قماشية قابلة للطي لتنظيم الملابس والإكسسوارات.",
@@ -2016,7 +2315,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/rangement-et-organisation",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -2032,12 +2331,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/rangement-et-organisation",
       "observedReferenceMAD": 149,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 200,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "armoire tissu",
+      "rangement",
+      "pliable",
+      "organisation",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_025",
@@ -2047,7 +2359,7 @@
       "ar": "Sacoche Bandoulière Compacte & Élégante",
       "en": "Sacoche Bandoulière Compacte & Élégante"
     },
-    "price": 0,
+    "price": 375,
     "description": {
       "fr": "Sacoche compacte à porter en bandoulière pour transporter les essentiels du quotidien.",
       "ar": "حقيبة كتف صغيرة وأنيقة لحمل الأغراض اليومية.",
@@ -2101,7 +2413,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -2117,12 +2429,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 279,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 375,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sacoche",
+      "bandoulière",
+      "mode",
+      "accessoires",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_026",
@@ -2132,7 +2457,7 @@
       "ar": "Sac à Dos Photo Professionnel & Voyage",
       "en": "Sac à Dos Photo Professionnel & Voyage"
     },
-    "price": 0,
+    "price": 1080,
     "description": {
       "fr": "Sac à dos conçu pour transporter du matériel photo et des effets personnels pendant les déplacements. Compartiments à confirmer.",
       "ar": "حقيبة ظهر للكاميرا والسفر لتنظيم المعدات والأغراض الشخصية. يجب تأكيد التقسيم الداخلي.",
@@ -2186,7 +2511,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -2202,12 +2527,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 799,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 1080,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sac photo",
+      "sac à dos",
+      "voyage",
+      "appareil photo",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_027",
@@ -2217,7 +2555,7 @@
       "ar": "Sacoche Bandoulière Noir Mat pour Homme",
       "en": "Sacoche Bandoulière Noir Mat pour Homme"
     },
-    "price": 0,
+    "price": 375,
     "description": {
       "fr": "Sacoche homme au design sobre pour organiser téléphone, portefeuille et petits accessoires.",
       "ar": "حقيبة كتف رجالية بتصميم بسيط لتنظيم الهاتف والمحفظة والأغراض الصغيرة.",
@@ -2271,7 +2609,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -2287,12 +2625,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 279,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 375,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sacoche homme",
+      "bandoulière",
+      "mode homme",
+      "accessoires",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_028",
@@ -2302,7 +2653,7 @@
       "ar": "Sacoche Bandoulière Horizontale pour Homme",
       "en": "Sacoche Bandoulière Horizontale pour Homme"
     },
-    "price": 0,
+    "price": 375,
     "description": {
       "fr": "Sacoche horizontale pour homme pensée pour transporter les essentiels du quotidien avec un format compact.",
       "ar": "حقيبة كتف أفقية للرجال لحمل الأساسيات اليومية في حجم عملي.",
@@ -2356,7 +2707,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -2372,12 +2723,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 279,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 375,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sacoche homme",
+      "bandoulière",
+      "compact",
+      "mode",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_029",
@@ -2387,7 +2751,7 @@
       "ar": "Sac à Dos Ordinateur Portable Ultra-Mince & Business",
       "en": "Sac à Dos Ordinateur Portable Ultra-Mince & Business"
     },
-    "price": 0,
+    "price": 675,
     "description": {
       "fr": "Sac à dos professionnel au format fin pour ordinateur portable et accessoires de travail. Taille compatible à confirmer.",
       "ar": "حقيبة ظهر رفيعة للكمبيوتر المحمول والعمل. يجب تأكيد مقاس الحاسوب المتوافق.",
@@ -2441,7 +2805,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -2457,12 +2821,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 499,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 675,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sac ordinateur",
+      "laptop",
+      "business",
+      "voyage",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_030",
@@ -2472,7 +2849,7 @@
       "ar": "Sac à Dos Ordinateur Portable Business & Voyage",
       "en": "Sac à Dos Ordinateur Portable Business & Voyage"
     },
-    "price": 0,
+    "price": 675,
     "description": {
       "fr": "Sac à dos polyvalent pour ordinateur portable, travail et déplacements. Dimensions et capacité à confirmer.",
       "ar": "حقيبة ظهر متعددة الاستخدامات للكمبيوتر والعمل والسفر. يجب تأكيد السعة والمقاسات.",
@@ -2526,7 +2903,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -2542,12 +2919,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 499,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 675,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sac laptop",
+      "business",
+      "voyage",
+      "ordinateur",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_031",
@@ -2557,7 +2947,7 @@
       "ar": "Sac à Dos Antivol Antichoc Rigide avec Cadenas TSA",
       "en": "Sac à Dos Antivol Antichoc Rigide avec Cadenas TSA"
     },
-    "price": 0,
+    "price": 810,
     "description": {
       "fr": "Sac à dos rigide orienté protection du matériel et déplacements. La présence et le type de serrure TSA doivent être vérifiés.",
       "ar": "حقيبة ظهر صلبة مضادة للسرقة والصدمات. يجب تأكيد وجود قفل TSA ونوعه.",
@@ -2611,7 +3001,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -2627,12 +3017,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 599,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 810,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sac antivol",
+      "TSA",
+      "ordinateur",
+      "voyage",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_032",
@@ -2642,7 +3045,7 @@
       "ar": "Sacoche Bandoulière Polyvalente",
       "en": "Sacoche Bandoulière Polyvalente"
     },
-    "price": 0,
+    "price": 405,
     "description": {
       "fr": "Sacoche compacte et polyvalente pour organiser les objets personnels lors des déplacements.",
       "ar": "حقيبة كتف عملية ومتعددة الاستخدامات لتنظيم الأغراض الشخصية أثناء التنقل.",
@@ -2696,7 +3099,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -2712,12 +3115,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 299,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 405,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sacoche",
+      "bandoulière",
+      "polyvalent",
+      "mode",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_033",
@@ -2727,7 +3143,7 @@
       "ar": "Sac à Dos Ordinateur Portable Business & Organisation",
       "en": "Sac à Dos Ordinateur Portable Business & Organisation"
     },
-    "price": 0,
+    "price": 675,
     "description": {
       "fr": "Sac à dos professionnel avec espaces d'organisation pour ordinateur et accessoires. Configuration à confirmer.",
       "ar": "حقيبة ظهر مهنية مع مساحات لتنظيم الكمبيوتر والملحقات. يجب تأكيد التقسيم.",
@@ -2781,7 +3197,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -2797,12 +3213,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 499,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 675,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sac ordinateur",
+      "organisation",
+      "business",
+      "laptop",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_034",
@@ -2812,7 +3241,7 @@
       "ar": "Sac à Dos Ordinateur Portable Premium & Voyage",
       "en": "Sac à Dos Ordinateur Portable Premium & Voyage"
     },
-    "price": 0,
+    "price": 810,
     "description": {
       "fr": "Sac à dos premium destiné au travail et aux voyages avec rangement pour ordinateur et effets personnels.",
       "ar": "حقيبة ظهر مميزة للعمل والسفر مع مساحة للكمبيوتر والأغراض الشخصية.",
@@ -2866,7 +3295,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -2882,12 +3311,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 599,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 810,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sac premium",
+      "laptop",
+      "voyage",
+      "business",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_035",
@@ -2897,7 +3339,7 @@
       "ar": "Sac à Dos Business Multifonctionnel pour Ordinateur Portable",
       "en": "Sac à Dos Business Multifonctionnel pour Ordinateur Portable"
     },
-    "price": 0,
+    "price": 810,
     "description": {
       "fr": "Sac à dos multifonctionnel pour ordinateur portable et accessoires professionnels. Dimensions à vérifier.",
       "ar": "حقيبة ظهر مهنية متعددة الوظائف للكمبيوتر والملحقات. يجب تأكيد المقاسات.",
@@ -2951,7 +3393,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -2967,12 +3409,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 599,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 810,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sac business",
+      "ordinateur",
+      "multifonction",
+      "voyage",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_036",
@@ -2982,7 +3437,7 @@
       "ar": "Sacoche Bandoulière Compacte Homme",
       "en": "Sacoche Bandoulière Compacte Homme"
     },
-    "price": 0,
+    "price": 470,
     "description": {
       "fr": "Sacoche compacte pour homme destinée aux essentiels du quotidien.",
       "ar": "حقيبة كتف رجالية صغيرة للأغراض الأساسية اليومية.",
@@ -3036,7 +3491,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -3052,12 +3507,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 349,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 470,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sacoche homme",
+      "bandoulière",
+      "mode",
+      "accessoires",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_037",
@@ -3067,7 +3535,7 @@
       "ar": "Sac à Dos Business Antivol & Minimaliste",
       "en": "Sac à Dos Business Antivol & Minimaliste"
     },
-    "price": 0,
+    "price": 645,
     "description": {
       "fr": "Sac à dos business au design minimaliste avec orientation antivol. Détails de sécurité à confirmer.",
       "ar": "حقيبة ظهر للعمل بتصميم بسيط ومزايا مضادة للسرقة. يجب تأكيد تفاصيل الحماية.",
@@ -3121,7 +3589,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -3137,12 +3605,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 479,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 645,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sac antivol",
+      "business",
+      "minimaliste",
+      "laptop",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_038",
@@ -3152,7 +3633,7 @@
       "ar": "Mallette Business & Sacoche Ordinateur Portable",
       "en": "Mallette Business & Sacoche Ordinateur Portable"
     },
-    "price": 0,
+    "price": 540,
     "description": {
       "fr": "Mallette professionnelle pour ordinateur portable et documents, adaptée aux déplacements de travail.",
       "ar": "حقيبة عمل للكمبيوتر والوثائق مناسبة للتنقلات المهنية.",
@@ -3206,7 +3687,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -3222,12 +3703,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 399,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 540,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "mallette",
+      "ordinateur",
+      "business",
+      "documents",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_039",
@@ -3237,7 +3731,7 @@
       "ar": "Sac de Sport et de Voyage avec Compartiment Chaussures",
       "en": "Sac de Sport et de Voyage avec Compartiment Chaussures"
     },
-    "price": 0,
+    "price": 675,
     "description": {
       "fr": "Sac de sport et de voyage avec espace séparé pour les chaussures. Capacité et dimensions à confirmer.",
       "ar": "حقيبة رياضية وسفر مع قسم منفصل للأحذية. يجب تأكيد السعة والمقاسات.",
@@ -3291,7 +3785,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sport-et-loisirs",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -3307,12 +3801,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sport-et-loisirs",
       "observedReferenceMAD": 499,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 675,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sac sport",
+      "voyage",
+      "chaussures",
+      "fitness",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_040",
@@ -3322,7 +3829,7 @@
       "ar": "Sacoche Bandoulière Organisée pour Homme",
       "en": "Sacoche Bandoulière Organisée pour Homme"
     },
-    "price": 0,
+    "price": 405,
     "description": {
       "fr": "Sacoche homme avec organisation intérieure pensée pour les petits accessoires du quotidien.",
       "ar": "حقيبة كتف رجالية بتنظيم داخلي للأغراض اليومية الصغيرة.",
@@ -3376,7 +3883,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/sacs-a-dos",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -3392,12 +3899,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/sacs-a-dos",
       "observedReferenceMAD": 299,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 405,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "sacoche homme",
+      "organisation",
+      "bandoulière",
+      "mode",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_041",
@@ -3407,7 +3927,7 @@
       "ar": "Lampe de Table Design en Plumes",
       "en": "Lampe de Table Design en Plumes"
     },
-    "price": 0,
+    "price": 810,
     "description": {
       "fr": "Lampe de table décorative au style plume destinée à créer une ambiance douce. Type de matériau à confirmer.",
       "ar": "مصباح طاولة ديكوري بتصميم الريش لإضاءة أجواء ناعمة. يجب تأكيد الخامة.",
@@ -3461,7 +3981,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/eclairage-et-accessoires",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -3477,12 +3997,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/eclairage-et-accessoires",
       "observedReferenceMAD": 599,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 810,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "lampe table",
+      "éclairage",
+      "décoration",
+      "ambiance",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_042",
@@ -3492,7 +4025,7 @@
       "ar": "Set de Tables Basses Gigognes en Rotin & Verre",
       "en": "Set de Tables Basses Gigognes en Rotin & Verre"
     },
-    "price": 0,
+    "price": 1485,
     "description": {
       "fr": "Ensemble de tables basses gigognes associant rotin et verre pour un aménagement chaleureux du salon.",
       "ar": "طقم طاولات منخفضة متداخلة من الروطان والزجاج لديكور دافئ في غرفة الجلوس.",
@@ -3546,7 +4079,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/rangement-et-organisation",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -3562,12 +4095,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/rangement-et-organisation",
       "observedReferenceMAD": 1099,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 1485,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "tables basses",
+      "rotin",
+      "verre",
+      "salon",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_043",
@@ -3577,7 +4123,7 @@
       "ar": "Set de 3 Tables Basses Gigognes Design Tressé",
       "en": "Set de 3 Tables Basses Gigognes Design Tressé"
     },
-    "price": 0,
+    "price": 1755,
     "description": {
       "fr": "Ensemble de trois tables basses gigognes au design tressé pour une composition modulable du salon.",
       "ar": "طقم من ثلاث طاولات منخفضة متداخلة بتصميم منسوج للصالون.",
@@ -3631,7 +4177,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/rangement-et-organisation",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -3647,12 +4193,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/rangement-et-organisation",
       "observedReferenceMAD": 1299,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 1755,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "tables basses",
+      "design",
+      "rotin",
+      "salon",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_044",
@@ -3662,7 +4221,7 @@
       "ar": "3 Boîtes de Rangement Alimentaire Hermétiques",
       "en": "3 Boîtes de Rangement Alimentaire Hermétiques"
     },
-    "price": 0,
+    "price": 295,
     "description": {
       "fr": "Ensemble de trois boîtes hermétiques empilables pour conserver et organiser les aliments secs ou préparés.",
       "ar": "طقم من 3 علب غذائية محكمة وقابلة للتكديس لحفظ وتنظيم الأطعمة.",
@@ -3716,7 +4275,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -3732,12 +4291,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 219,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 295,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "boîtes alimentaires",
+      "hermétique",
+      "conservation",
+      "cuisine",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_045",
@@ -3747,7 +4319,7 @@
       "ar": "Assiette de Snacks en Verre avec Couvercle",
       "en": "Assiette de Snacks en Verre avec Couvercle"
     },
-    "price": 0,
+    "price": 270,
     "description": {
       "fr": "Assiette de présentation en verre avec couvercle pour servir et protéger les snacks et petites préparations.",
       "ar": "طبق تقديم زجاجي مع غطاء لحماية وتقديم الوجبات الخفيفة.",
@@ -3801,7 +4373,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -3817,12 +4389,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 199,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 270,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "assiette verre",
+      "snacks",
+      "couvercle",
+      "vaisselle",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_046",
@@ -3832,7 +4417,7 @@
       "ar": "Poubelle de Porte d'Armoire de Cuisine avec Couvercle",
       "en": "Poubelle de Porte d'Armoire de Cuisine avec Couvercle"
     },
-    "price": 0,
+    "price": 175,
     "description": {
       "fr": "Petite poubelle à fixer sur la porte d'une armoire de cuisine pour garder les déchets à portée de main.",
       "ar": "سلة صغيرة تثبت على باب خزانة المطبخ لتسهيل جمع النفايات.",
@@ -3886,7 +4471,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/produits-de-nettoyage",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -3902,12 +4487,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/produits-de-nettoyage",
       "observedReferenceMAD": 129,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 175,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "poubelle cuisine",
+      "déchets",
+      "rangement",
+      "nettoyage",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_047",
@@ -3917,7 +4515,7 @@
       "ar": "4 Boîtes de Rangement Pliables pour Lingerie",
       "en": "4 Boîtes de Rangement Pliables pour Lingerie"
     },
-    "price": 0,
+    "price": 240,
     "description": {
       "fr": "Lot de quatre boîtes pliables pour organiser lingerie, vêtements et accessoires dans les tiroirs ou placards.",
       "ar": "طقم من 4 علب قابلة للطي لتنظيم الملابس الداخلية والأغراض داخل الخزائن والأدراج.",
@@ -3971,7 +4569,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/rangement-et-organisation",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -3987,12 +4585,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/rangement-et-organisation",
       "observedReferenceMAD": 179,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 240,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "boîtes rangement",
+      "lingerie",
+      "organisation",
+      "maison",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_048",
@@ -4002,7 +4613,7 @@
       "ar": "Ensemble de Bocaux de Conservation en Verre avec Couvercles en Bambou",
       "en": "Ensemble de Bocaux de Conservation en Verre avec Couvercles en Bambou"
     },
-    "price": 0,
+    "price": 200,
     "description": {
       "fr": "Bocaux en verre avec couvercles en bambou pour conserver et organiser les aliments secs.",
       "ar": "قنينات زجاجية بأغطية خيزران لحفظ وتنظيم المواد الغذائية الجافة.",
@@ -4056,7 +4667,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -4072,12 +4683,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 149,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 200,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "bocaux verre",
+      "bambou",
+      "conservation",
+      "cuisine",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_049",
@@ -4087,7 +4711,7 @@
       "ar": "Distributeur Rond 3-en-1 en Bambou",
       "en": "Distributeur Rond 3-en-1 en Bambou"
     },
-    "price": 0,
+    "price": 200,
     "description": {
       "fr": "Distributeur de comptoir en bambou conçu pour organiser film alimentaire, papier et aluminium.",
       "ar": "موزع دائري من الخيزران لتنظيم ورق التغليف والألمنيوم والورق.",
@@ -4141,7 +4765,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -4157,12 +4781,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 149,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 200,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "distributeur cuisine",
+      "bambou",
+      "film alimentaire",
+      "organisation",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_050",
@@ -4172,7 +4809,7 @@
       "ar": "Ensemble de 10 Bocaux en Verre avec Support Rotatif en Bambou",
       "en": "Ensemble de 10 Bocaux en Verre avec Support Rotatif en Bambou"
     },
-    "price": 0,
+    "price": 350,
     "description": {
       "fr": "Ensemble de dix bocaux avec support rotatif pour ranger les épices et ingrédients secs tout en gardant l'ensemble accessible.",
       "ar": "طقم من 10 قنينات زجاجية مع حامل دوار لتنظيم التوابل والمواد الجافة.",
@@ -4226,7 +4863,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -4242,12 +4879,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 259,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 350,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "bocaux épices",
+      "bambou",
+      "support rotatif",
+      "cuisine",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_051",
@@ -4257,7 +4907,7 @@
       "ar": "Pot à Miel en Verre avec Couvercle en Bois",
       "en": "Pot à Miel en Verre avec Couvercle en Bois"
     },
-    "price": 0,
+    "price": 105,
     "description": {
       "fr": "Pot en verre avec couvercle en bois pour servir et conserver le miel avec une présentation soignée.",
       "ar": "مرطبان زجاجي للعسل مع غطاء خشبي لتقديم وحفظ العسل بشكل أنيق.",
@@ -4311,7 +4961,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -4327,12 +4977,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 79,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 105,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "pot miel",
+      "verre",
+      "bois",
+      "cuisine",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_052",
@@ -4342,7 +5005,7 @@
       "ar": "2 Distributeurs d'Huile en Verre",
       "en": "2 Distributeurs d'Huile en Verre"
     },
-    "price": 0,
+    "price": 200,
     "description": {
       "fr": "Lot de deux distributeurs en verre pour doser et servir l'huile plus facilement en cuisine.",
       "ar": "طقم من موزعين زجاجيين للزيت لتسهيل التقديم والتحكم في الكمية.",
@@ -4396,7 +5059,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -4412,12 +5075,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 149,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 200,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "distributeur huile",
+      "verre",
+      "cuisine",
+      "bouteille huile",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_053",
@@ -4427,7 +5103,7 @@
       "ar": "6 Mugs 500 ml avec Motifs",
       "en": "6 Mugs 500 ml avec Motifs"
     },
-    "price": 0,
+    "price": 240,
     "description": {
       "fr": "Lot de six mugs de grande capacité pour boissons chaudes ou froides. Motifs et finition à confirmer.",
       "ar": "طقم من 6 أكواب كبيرة بسعة 500 مل للمشروبات الساخنة أو الباردة. يجب تأكيد التصميم.",
@@ -4481,7 +5157,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -4497,12 +5173,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 179,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 240,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "mugs",
+      "500ml",
+      "tasses",
+      "boissons",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_054",
@@ -4512,7 +5201,7 @@
       "ar": "3 Bocaux en Verre 750 ml avec Couvercles, Pailles et Brosse",
       "en": "3 Bocaux en Verre 750 ml avec Couvercles, Pailles et Brosse"
     },
-    "price": 0,
+    "price": 200,
     "description": {
       "fr": "Lot de trois bocaux de 750 ml avec couvercles, pailles et brosse de nettoyage pour boissons et conservation.",
       "ar": "طقم من 3 قنينات زجاجية بسعة 750 مل مع أغطية ومصاصات وفرشاة تنظيف.",
@@ -4566,7 +5255,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -4582,12 +5271,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 149,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 200,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "bocaux 750ml",
+      "verre",
+      "pailles",
+      "boissons",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_055",
@@ -4597,7 +5299,7 @@
       "ar": "6 Tasses à Café Double Paroi 80 ml",
       "en": "6 Tasses à Café Double Paroi 80 ml"
     },
-    "price": 0,
+    "price": 240,
     "description": {
       "fr": "Lot de six petites tasses en verre à double paroi de 80 ml pour espresso et petites boissons chaudes.",
       "ar": "طقم من 6 أكواب زجاجية مزدوجة الجدار بسعة 80 مل للإسبريسو والمشروبات الصغيرة.",
@@ -4651,7 +5353,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -4667,12 +5369,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 179,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 240,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "espresso",
+      "tasses 80ml",
+      "double paroi",
+      "café",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_056",
@@ -4682,7 +5397,7 @@
       "ar": "Lot de 6 Verres Double Paroi 80 ml avec Sous-tasses",
       "en": "Lot de 6 Verres Double Paroi 80 ml avec Sous-tasses"
     },
-    "price": 0,
+    "price": 200,
     "description": {
       "fr": "Ensemble de six verres double paroi avec sous-tasses assorties pour une présentation élégante des boissons.",
       "ar": "طقم من 6 أكواب مزدوجة الجدار مع صحون صغيرة لتقديم المشروبات بشكل أنيق.",
@@ -4736,7 +5451,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -4752,12 +5467,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 149,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 200,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "verres 80ml",
+      "sous-tasses",
+      "double paroi",
+      "café",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_057",
@@ -4767,7 +5495,7 @@
       "ar": "6 Tasses Japonaises 180 ml",
       "en": "6 Tasses Japonaises 180 ml"
     },
-    "price": 0,
+    "price": 160,
     "description": {
       "fr": "Ensemble de six petites tasses de 180 ml au style inspiré de paysages hivernaux. Design exact à confirmer.",
       "ar": "طقم من 6 أكواب يابانية بسعة 180 مل بتصميم مستوحى من المناظر الشتوية. يجب تأكيد الشكل.",
@@ -4821,7 +5549,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -4837,12 +5565,25 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 119,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 160,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "tasses japonaises",
+      "180ml",
+      "verrerie",
+      "café",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   },
   {
     "id": "gb_vivosee_058",
@@ -4852,7 +5593,7 @@
       "ar": "3 Verres à Cocktail avec Paille 190 ml",
       "en": "3 Verres à Cocktail avec Paille 190 ml"
     },
-    "price": 0,
+    "price": 200,
     "description": {
       "fr": "Lot de trois verres à cocktail de 190 ml avec pailles pour servir boissons et préparations froides.",
       "ar": "طقم من 3 أكواب كوكتيل بسعة 190 مل مع مصاصات لتقديم المشروبات الباردة.",
@@ -4906,7 +5647,7 @@
     "featured": false,
     "isActive": false,
     "visibilityChanged": false,
-    "sourceUrl": "https://vivosee.com/",
+    "sourceUrl": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
     "supplier": "Non confirmé — Vivosee est uniquement une source de recherche",
     "needsSupplierVerification": true,
     "imageRightsConfirmed": false,
@@ -4922,11 +5663,24 @@
       "currency": "MAD",
       "sourceType": "Moroccan ecommerce storefront",
       "status": "source_listing_observed",
-      "referencePage": "https://vivosee.com/",
+      "referencePage": "https://vivosee.com/collections/ustensiles-et-objets-de-cuisine",
       "observedReferenceMAD": 149,
       "retailPriceForStoreIsApproved": false,
       "photoRightsVerified": false,
-      "supplierStockVerified": false
-    }
+      "supplierStockVerified": false,
+      "preliminarySellingPriceMAD": 200,
+      "pricingMethod": "observed_source_price_x1.35_rounded_to_5"
+    },
+    "pricingStatus": "preliminary",
+    "pricingNote": "Prix de vente préliminaire calculé à partir d'un prix public observé sur Vivosee. À recalculer après confirmation du coût fournisseur, de la livraison et de la marge réelle.",
+    "seoKeywords": [
+      "verres cocktail",
+      "190ml",
+      "paille",
+      "boissons",
+      "achat Maroc",
+      "livraison Maroc",
+      "GLOBABOX"
+    ]
   }
 ]
