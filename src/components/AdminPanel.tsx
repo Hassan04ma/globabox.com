@@ -367,6 +367,9 @@ export default function AdminPanel({
     barcode: string;
     seoTitle: string;
     seoDescription: string;
+    seoKeywords: string[];
+    pricingStatus: 'preliminary' | 'verified';
+    pricingNote: string;
     needsSupplierVerification: boolean;
     imageRightsConfirmed: boolean;
     readyToPublish: boolean;
@@ -397,7 +400,7 @@ export default function AdminPanel({
     featuresFr: [],
     featuresAr: [],
     featuresEn: [],
-    tags: [],sku: '',barcode: '',seoTitle: '',seoDescription: '',
+    tags: [],sku: '',barcode: '',seoTitle: '',seoDescription: '',seoKeywords:[],pricingStatus:'preliminary',pricingNote:'',
     needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
   });
 
@@ -911,7 +914,7 @@ export default function AdminPanel({
       featuresFr: [],
       featuresAr: [],
       featuresEn: [],
-      tags: [],sku:'',barcode:'',seoTitle:'',seoDescription:'',
+      tags: [],sku:'',barcode:'',seoTitle:'',seoDescription:'',seoKeywords:[],pricingStatus:'preliminary',pricingNote:'',
       needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
     });
     setIsAddingProduct(true);
@@ -947,7 +950,7 @@ export default function AdminPanel({
       featuresAr: prod.features?.ar || [],
       featuresEn: prod.features?.en || [],
       tags:prod.tags || [],sku:prod.sku || '',barcode:prod.barcode || '',
-      seoTitle:prod.seoTitle || '',seoDescription:prod.seoDescription || '',
+      seoTitle:prod.seoTitle || '',seoDescription:prod.seoDescription || '',seoKeywords:prod.seoKeywords || [],pricingStatus:prod.pricingStatus || 'preliminary',pricingNote:prod.pricingNote || '',
       needsSupplierVerification:prod.needsSupplierVerification === true,
       imageRightsConfirmed:prod.imageRightsConfirmed === true,
       readyToPublish:prod.readyToPublish === true,
@@ -1017,6 +1020,9 @@ export default function AdminPanel({
       barcode:productForm.barcode.trim() || undefined,
       seoTitle:productForm.seoTitle.trim() || undefined,
       seoDescription:productForm.seoDescription.trim() || undefined,
+      seoKeywords:Array.from(new Set(productForm.seoKeywords || [])).map(x=>String(x).trim()).filter(Boolean).slice(0,15),
+      pricingStatus:productForm.pricingStatus,
+      pricingNote:productForm.pricingNote.trim() || undefined,
       needsSupplierVerification:productForm.needsSupplierVerification,
       imageRightsConfirmed:productForm.imageRightsConfirmed,
       readyToPublish:productForm.readyToPublish,
