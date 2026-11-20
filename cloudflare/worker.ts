@@ -659,6 +659,7 @@ export default {
             .filter((value:unknown)=>typeof value==='string' && /^https:\/\//.test(value as string));
           if(p.needsSupplierVerification===true || p.imageRightsConfirmed!==true ||
              p.readyToPublish!==true || p.pricingStatus!=='verified' ||
+             typeof p.priceReferenceNote!=='string' || !p.priceReferenceNote.trim() ||
              typeof p.supplier!=='string' || !p.supplier.trim() ||
              new Set(gallery).size<6 || p.inStock!==true || p.stockStatus==='out_of_stock') {
             return json({error:'Publish blocked: verify supplier, price, stock, image rights and six distinct product photos.'},422);
