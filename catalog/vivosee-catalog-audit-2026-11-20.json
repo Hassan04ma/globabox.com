@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-20",
+  "source": "https://vivosee.com/",
+  "candidateCount": 58,
+  "acceptedDraftCount": 55,
+  "rejectedDuplicates": [
+    {
+      "id": "gb_vivosee_016",
+      "name": "Chaise de Pêche Pliable avec Auvent | GLOBABOX",
+      "reason": "similar product already present in GLOBABOX catalog"
+    },
+    {
+      "id": "gb_vivosee_019",
+      "name": "Chaise Pliante de Camping Ultralégère | GLOBABOX",
+      "reason": "similar product already present in GLOBABOX catalog"
+    },
+    {
+      "id": "gb_vivosee_039",
+      "name": "Sac de Sport et de Voyage avec Compartiment Chaussures | GLOBABOX",
+      "reason": "similar product already present in GLOBABOX catalog"
+    }
+  ],
+  "images": {
+    "usableLicensed": 0,
+    "missingOrUnverified": 55
+  },
+  "publication": {
+    "isActive": false,
+    "inStock": false,
+    "readyToPublish": false
+  },
+  "pricing": {
+    "status": "preliminary",
+    "method": "source reference × 1.35 rounded to nearest 5 MAD",
+    "min": 105,
+    "max": 2970
+  }
+}
