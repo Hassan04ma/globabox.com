@@ -986,10 +986,11 @@ export default function AdminPanel({
       alert("L'image principale est obligatoire pour publier une fiche ou créer un produit classique. Les produits sourcés peuvent rester en brouillon sans photo.");
       return;
     }
-    if (editingProduct?.id.startsWith('gb_source_') && productForm.isActive) {
+    if ((editingProduct?.id.startsWith('gb_source_') || editingProduct?.id.startsWith('gb_vivosee_') || !!productForm.sourceMarketplace?.trim() || productForm.needsSupplierVerification) && productForm.isActive) {
       const gallery=new Set([productForm.image,...productForm.additionalImages].filter(url=>/^https:\/\//.test(url)));
       if(productForm.needsSupplierVerification || !productForm.imageRightsConfirmed ||
-        !productForm.readyToPublish || !productForm.supplier.trim() ||
+        !productForm.readyToPublish || productForm.pricingStatus!=='verified' ||
+        !productForm.supplier.trim() || !productForm.priceReferenceNote.trim() ||
         productForm.stockStatus==='out_of_stock' || gallery.size < 6){
         alert('Publication impossible : fournisseur, stock, prix, droits des images et 6 photos distinctes doivent être confirmés.');
         return;
