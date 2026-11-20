@@ -652,12 +652,16 @@ export default {
         // Provisional sourced products must not be offered for sale unless their
         // media and supply checks have been explicitly completed by the merchant.
         // Existing ordinary products and historical orders are unaffected.
-        if(active && id.startsWith('gb_source_')) {
+        const isSourcedProduct = id.startsWith('gb_source_') || id.startsWith('gb_vivosee_') ||
+          typeof p.sourceMarketplace === 'string' || p.needsSupplierVerification === true;
+        if(active && isSourcedProduct) {
           const gallery=[p.image,...(Array.isArray(p.images)?p.images:[]),...(Array.isArray(p.additionalImages)?p.additionalImages:[])]
             .filter((value:unknown)=>typeof value==='string' && /^https:\/\//.test(value as string));
           if(p.needsSupplierVerification===true || p.imageRightsConfirmed!==true ||
-             p.readyToPublish!==true || new Set(gallery).size<6 || p.inStock!==true) {
-            return json({error:'Publish blocked: verify stock, supplier, image rights and six distinct product photos.'},422);
+             p.readyToPublish!==true || p.pricingStatus!=='verified' ||
+             typeof p.supplier!=='string' || !p.supplier.trim() ||
+             new Set(gallery).size<6 || p.inStock!==true || p.stockStatus==='out_of_stock') {
+            return json({error:'Publish blocked: verify supplier, price, stock, image rights and six distinct product photos.'},422);
           }
         }
         const row = { ...p, id, isActive: active };
