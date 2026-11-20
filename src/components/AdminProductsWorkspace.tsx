@@ -154,6 +154,22 @@ export default function AdminProductsWorkspace(p:Props){
                 <textarea rows={3} maxLength={320} value={productForm.seoDescription} onChange={e=>setProductForm({...productForm,seoDescription:e.target.value})}
                   placeholder="Résumé court et précis de votre produit." className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm leading-6 text-[#193e38]"/>
               </label>
+              <label className="block text-xs font-bold text-[#385647]">Mots-clés SEO
+                <input value={(productForm.seoKeywords || []).join(', ')} onChange={e=>setProductForm({...productForm,seoKeywords:e.target.value.split(',').map(x=>x.trim()).filter(Boolean)})}
+                  placeholder="ex. rangement cuisine, organisation maison, Maroc" className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-4 text-sm text-[#193e38]"/>
+              </label>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="block text-xs font-bold text-[#385647]">Statut du prix
+                  <select value={productForm.pricingStatus || 'preliminary'} onChange={e=>setProductForm({...productForm,pricingStatus:e.target.value as 'preliminary'|'verified'})}
+                    className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-[#193e38]">
+                    <option value="preliminary">Préliminaire · à vérifier</option><option value="verified">Vérifié</option>
+                  </select>
+                </label>
+                <label className="block text-xs font-bold text-[#385647]">Note prix
+                  <input value={productForm.pricingNote || ''} onChange={e=>setProductForm({...productForm,pricingNote:e.target.value})}
+                    placeholder="Source et méthode du prix" className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm text-[#193e38]"/>
+                </label>
+              </div>
               <div className="rounded-xl border border-slate-200 bg-[#f8faf8] p-4">
                 <p className="truncate text-[15px] font-bold text-[#225fba]">{productForm.seoTitle||productForm.nameFr||'Nom du produit'}</p>
                 <p className="mt-1 text-xs text-[#2e8056]">globabox.com/?product={encodeURIComponent(productForm.id||'produit')}</p>
