@@ -607,6 +607,73 @@ export default {
           .bind('Atwache',created.length,skipped.length).run();
         return json({status:'draft',created,skipped,rejected});
       }
+      const reviewMatch = path.match(/^\/api\/products\/([^/]+)\/reviews$/);
+      if (reviewMatch && method === 'GET') {
+        const productId = decodeURIComponent(reviewMatch[1]);
+        const productRows = await env.DB.prepare('SELECT data_json,active FROM products WHERE id=? LIMIT 1').bind(productId).all<{data_json:string,active:number}>();
+        if (!productRows.results[0] || productRows.results[0].active !== 1) return json({error:'Product not found'},404);
+        await env.DB.prepare(`CREATE TABLE IF NOT EXISTS product_reviews (
+          id TEXT PRIMARY KEY,
+          product_id TEXT NOT NULL,
+          name TEXT NOT NULL DEFAULT '',
+          rating INTEGER NOT NULL,
+          comment TEXT NOT NULL,
+          verified INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )`).run();
+        const rows = await env.DB.prepare('SELECT id,name,rating,comment,verified,created_at FROM product_reviews WHERE product_id=? ORDER BY created_at DESC LIMIT 50').bind(productId).all<any>();
+        return json({reviews: rows.results.map(row => ({id:String(row.id),name:String(row.name||''),rating:Number(row.rating),comment:String(row.comment),verified:Number(row.verified)===1,createdAt:String(row.created_at)}))});
+      }
+      if (reviewMatch && method === 'POST') {
+        const productId = decodeURIComponent(reviewMatch[1]);
+        const productRows = await env.DB.prepare('SELECT data_json,active FROM products WHERE id=? LIMIT 1').bind(productId).all<{data_json:string,active:number}>();
+        if (!productRows.results[0] || productRows.results[0].active !== 1) return json({error:'Product not found'},404);
+        await env.DB.prepare(`CREATE TABLE IF NOT EXISTS product_reviews (
+          id TEXT PRIMARY KEY,
+          product_id TEXT NOT NULL,
+          name TEXT NOT NULL DEFAULT '',
+          rating INTEGER NOT NULL,
+          comment TEXT NOT NULL,
+          verified INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )`).run();
+        const body = await readBody(request);
+        const rating = Number(body?.rating);
+        const name = typeof body?.name === 'string' ? body.name.trim().slice(0,80) : '';
+        const comment = typeof body?.comment === 'string' ? body.comment.trim().slice(0,1000) : '';
+        const reference = typeof body?.orderReference === 'string' ? body.orderReference.trim().toUpperCase() : '';
+        const rawPhone = typeof body?.phone === 'string' ? body.phone.trim() : '';
+        if (!Number.isInteger(rating) || rating < 1 || rating > 5 || !comment) return json({error:'Invalid review'},400);
+        if (rawPhone.length > 32 || reference.length > 50) return json({error:'Invalid verification data'},400);
+        let verified = 0;
+        if (reference && rawPhone) {
+          const normalisePhone = (value:string) => {
+            const digits=value.replace(/[^0-9]/g,'');
+            if(digits.startsWith('00212')) return digits.slice(5);
+            if(digits.startsWith('212')) return digits.slice(3);
+            return digits.startsWith('0') ? digits.slice(1) : digits;
+          };
+          const phone = normalisePhone(rawPhone);
+          if (/^GB-[A-Z0-9-]{6,36}$/.test(reference) && /^[5-7][0-9]{8}$/.test(phone)) {
+            const orderRow = await env.DB.prepare("SELECT data_json FROM orders WHERE UPPER(json_extract(data_json, '$.reference')) = ? LIMIT 1").bind(reference).first<{data_json:string}>();
+            if (orderRow) {
+              const order = JSON.parse(orderRow.data_json);
+              const phoneMatches = normalisePhone(String(order.phoneNumber || '')) === phone;
+              const productMatches = Array.isArray(order.items) && order.items.some((item:any) => String(item.productId || '') === productId);
+              if (phoneMatches && productMatches && order.status !== 'cancelled') verified = 1;
+            }
+          }
+        }
+        const id = `rev_${crypto.randomUUID()}`;
+        const inserted = await env.DB.prepare('INSERT INTO product_reviews (id,product_id,name,rating,comment,verified) VALUES (?,?,?,?,?,?)').bind(id,productId,name,rating,comment,verified).run();
+        if (!inserted.success || inserted.meta?.changes !== 1) return json({error:'Review was not saved'},503);
+        const aggregate = await env.DB.prepare('SELECT AVG(rating) AS average, COUNT(*) AS count FROM product_reviews WHERE product_id=?').bind(productId).first<{average:number,count:number}>();
+        const stored = productRows.results[0].data_json ? JSON.parse(productRows.results[0].data_json) : {};
+        const nextProduct = {...stored,rating:Number(aggregate?.average || 0),reviewsCount:Number(aggregate?.count || 0)};
+        const updated = await env.DB.prepare('UPDATE products SET data_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(JSON.stringify(nextProduct),productId).run();
+        if (!updated.success || updated.meta?.changes !== 1) return json({error:'Review aggregate update was not confirmed'},503);
+        return json({success:true,verified:Boolean(verified),rating:nextProduct.rating,reviewsCount:nextProduct.reviewsCount},201);
+      }
       const productMatch = path.match(/^\/api\/products\/([^/]+)$/);
       if ((path === '/api/products' && method === 'POST') || (productMatch && ['PUT','DELETE'].includes(method))) {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
