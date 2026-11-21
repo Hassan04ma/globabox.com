@@ -656,7 +656,7 @@ function ProductReviews({ productId, product, language }: { productId: string; p
   const loadReviews = () => {
     fetch(`/api/products/${encodeURIComponent(productId)}/reviews`)
       .then(r => r.ok ? r.json() : Promise.reject(new Error('reviews load failed')))
-      .then(data => { if (Array.isArray(data?.reviews)) setReviews(data.reviews); })
+      .then((data: any) => { if (Array.isArray(data?.reviews)) setReviews(data.reviews); })
       .catch(() => setReviews([]));
   };
 
@@ -675,7 +675,7 @@ function ProductReviews({ productId, product, language }: { productId: string; p
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({rating,name:name.trim(),comment:comment.trim(),orderReference:orderReference.trim(),phone:phone.trim()})
       });
-      const data = await response.json().catch(() => ({}));
+      const data: any = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data?.error || 'Review submission failed');
       setMessage(language === 'ar' ? 'تم إرسال تقييمك بنجاح.' : language === 'en' ? 'Your review was submitted.' : 'Votre avis a été envoyé.');
       setComment('');
