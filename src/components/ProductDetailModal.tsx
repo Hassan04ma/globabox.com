@@ -603,35 +603,8 @@ Merci de confirmer la disponibilité et la livraison.`;
                 </div>
               )}
 
-              {/* Customer reviews block — presentation-ready; review persistence remains server-side work. */}
-              <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" aria-label="Avis clients">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
-                      {language === 'ar' ? 'آراء العملاء' : language === 'en' ? 'Customer reviews' : 'Avis clients'}
-                    </p>
-                    <div className="mt-1 flex items-center gap-2">
-                      <span className="text-lg font-black text-slate-900">{Number(product.rating || 0).toFixed(1)}</span>
-                      <div className="flex items-center gap-0.5" aria-label={`Rating ${product.rating || 0} out of 5`}>
-                        {[1,2,3,4,5].map(star => (
-                          <Star key={star} size={14} className={star <= Math.round(product.rating || 0) ? 'fill-[#176b5c] text-[#176b5c]' : 'text-slate-300'} />
-                        ))}
-                      </div>
-                      <span className="text-[11px] font-semibold text-slate-500">
-                        ({product.reviewsCount || 0})
-                      </span>
-                    </div>
-                  </div>
-                  <div className="rounded-full bg-[#f0f6f2] px-3 py-1.5 text-[10px] font-bold text-[#104d43]">
-                    {language === 'ar' ? 'تقييمات موثوقة' : language === 'en' ? 'Verified ratings' : 'Évaluations'}
-                  </div>
-                </div>
-                <div className="mt-3 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-xs leading-relaxed text-slate-500">
-                  {product.reviewsCount
-                    ? (language === 'ar' ? 'ستظهر آراء العملاء هنا.' : language === 'en' ? 'Customer comments will appear here.' : 'Les commentaires clients apparaîtront ici.')
-                    : (language === 'ar' ? 'لا توجد تعليقات بعد. كن أول من يقيّم هذا المنتج.' : language === 'en' ? 'No reviews yet. Be the first to review this product.' : 'Aucun avis pour le moment. Soyez le premier à évaluer ce produit.')}
-                </div>
-              </section>
+              {/* Live customer reviews: ratings are stored per product in D1. */}
+              <ProductReviews productId={product.id} product={product} language={language} />
 
               {/* Trust badges footer inside modal */}
               <div className="grid grid-cols-2 gap-2 pt-4 mt-2 border-t border-slate-150 text-[10px] text-slate-655 font-bold font-sans">
@@ -668,4 +641,128 @@ Merci de confirmer la disponibilité et la livraison.`;
       </div>
     </div>
   );
+
+function ProductReviews({ productId, product, language }: { productId: string; product: Product; language: Language }) {
+  const [reviews, setReviews] = useState<Array<{id:string; name:string; rating:number; comment:string; createdAt:string; verified:boolean}>>([]);
+  const [rating, setRating] = useState(5);
+  const [name, setName] = useState('');
+  const [comment, setComment] = useState('');
+  const [orderReference, setOrderReference] = useState('');
+  const [phone, setPhone] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const loadReviews = () => {
+    fetch(`/api/products/${encodeURIComponent(productId)}/reviews`)
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('reviews load failed')))
+      .then((data: any) => { if (Array.isArray(data?.reviews)) setReviews(data.reviews); })
+      .catch(() => setReviews([]));
+  };
+
+  useEffect(() => { loadReviews(); }, [productId]);
+
+  const submitReview = async () => {
+    if (!comment.trim()) {
+      setMessage(language === 'ar' ? 'كتب تعليقك أولاً.' : language === 'en' ? 'Please write a comment first.' : 'Écrivez votre commentaire.');
+      return;
+    }
+    setSaving(true);
+    setMessage('');
+    try {
+      const response = await fetch(`/api/products/${encodeURIComponent(productId)}/reviews`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({rating,name:name.trim(),comment:comment.trim(),orderReference:orderReference.trim(),phone:phone.trim()})
+      });
+      const data: any = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data?.error || 'Review submission failed');
+      setMessage(language === 'ar' ? 'تم إرسال تقييمك بنجاح.' : language === 'en' ? 'Your review was submitted.' : 'Votre avis a été envoyé.');
+      setComment('');
+      setOrderReference('');
+      setPhone('');
+      setShowForm(false);
+      loadReviews();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Review submission failed');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const avg = reviews.length ? reviews.reduce((sum, item) => sum + item.rating, 0) / reviews.length : Number(product.rating || 0);
+  const count = reviews.length || Number(product.reviewsCount || 0);
+
+  return (
+    <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" aria-label={language === 'ar' ? 'آراء العملاء' : language === 'en' ? 'Customer reviews' : 'Avis clients'}>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
+            {language === 'ar' ? 'آراء العملاء' : language === 'en' ? 'Customer reviews' : 'Avis clients'}
+          </p>
+          <div className="mt-1 flex items-center gap-2">
+            <span className="text-lg font-black text-slate-900">{avg.toFixed(1)}</span>
+            <div className="flex items-center gap-0.5" aria-label={`Rating ${avg.toFixed(1)} out of 5`}>
+              {[1,2,3,4,5].map(star => (
+                <Star key={star} size={14} className={star <= Math.round(avg) ? 'fill-[#176b5c] text-[#176b5c]' : 'text-slate-300'} />
+              ))}
+            </div>
+            <span className="text-[11px] font-semibold text-slate-500">({count})</span>
+          </div>
+        </div>
+        <button type="button" onClick={() => setShowForm(v => !v)} className="rounded-full bg-[#f0f6f2] px-3 py-1.5 text-[10px] font-bold text-[#104d43] hover:bg-[#e4efe9]">
+          {language === 'ar' ? 'قيّم المنتج' : language === 'en' ? 'Rate this product' : 'Évaluer le produit'}
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-3">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-1">{language === 'ar' ? 'النجوم' : language === 'en' ? 'Stars' : 'Étoiles'}</p>
+            <div className="flex items-center gap-1">
+              {[1,2,3,4,5].map(star => (
+                <button key={star} type="button" onClick={() => setRating(star)} aria-label={`${star} out of 5`} className="p-1">
+                  <Star size={21} className={star <= rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300'} />
+                </button>
+              ))}
+            </div>
+          </div>
+          <input value={name} onChange={e => setName(e.target.value)} maxLength={80} placeholder={language === 'ar' ? 'الاسم (اختياري)' : language === 'en' ? 'Name (optional)' : 'Nom (optionnel)'} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-[#176b5c]/20" />
+          <textarea value={comment} onChange={e => setComment(e.target.value)} maxLength={1000} rows={3} placeholder={language === 'ar' ? 'اكتب رأيك في المنتوج...' : language === 'en' ? 'Write your review...' : 'Écrivez votre avis...'} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-[#176b5c]/20" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input value={orderReference} onChange={e => setOrderReference(e.target.value)} maxLength={50} placeholder={language === 'ar' ? 'مرجع الطلب للتأكيد (اختياري)' : language === 'en' ? 'Order reference for verification (optional)' : 'Référence de commande (optionnel)'} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none" />
+            <input value={phone} onChange={e => setPhone(e.target.value)} maxLength={20} inputMode="tel" placeholder={language === 'ar' ? 'الهاتف للتأكيد (اختياري)' : language === 'en' ? 'Phone for verification (optional)' : 'Téléphone pour vérification (optionnel)'} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none" />
+          </div>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] text-slate-500">{message}</span>
+            <button type="button" disabled={saving} onClick={submitReview} className="rounded-lg bg-[#104d43] px-4 py-2 text-xs font-extrabold text-white disabled:opacity-60">
+              {saving ? (language === 'ar' ? 'جاري الإرسال...' : language === 'en' ? 'Sending...' : 'Envoi...') : (language === 'ar' ? 'إرسال التقييم' : language === 'en' ? 'Submit review' : 'Envoyer l’avis')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-3 space-y-2">
+        {reviews.length ? reviews.slice(0, 5).map(review => (
+          <div key={review.id} className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-800">{review.name || (language === 'ar' ? 'زبون' : 'Customer')}</span>
+                {review.verified && <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold text-emerald-700">{language === 'ar' ? 'مشتري مؤكد' : language === 'en' ? 'Verified purchase' : 'Achat vérifié'}</span>}
+              </div>
+              <div className="flex gap-0.5">
+                {[1,2,3,4,5].map(star => <Star key={star} size={12} className={star <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300'} />)}
+              </div>
+            </div>
+            <p className="mt-1 text-[11px] leading-relaxed text-slate-600">{review.comment}</p>
+          </div>
+        )) : (
+          <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-xs leading-relaxed text-slate-500">
+            {language === 'ar' ? 'لا توجد تقييمات بعد. كن أول من يقيّم هذا المنتج.' : language === 'en' ? 'No reviews yet. Be the first to review this product.' : 'Aucun avis pour le moment. Soyez le premier à évaluer ce produit.'}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
 }

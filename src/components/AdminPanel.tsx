@@ -367,6 +367,11 @@ export default function AdminPanel({
     barcode: string;
     seoTitle: string;
     seoDescription: string;
+    seoKeywords: string[];
+    pricingStatus: 'preliminary' | 'verified';
+    pricingNote: string;
+    sourceMarketplace: string;
+    priceReferenceNote: string;
     needsSupplierVerification: boolean;
     imageRightsConfirmed: boolean;
     readyToPublish: boolean;
@@ -397,7 +402,7 @@ export default function AdminPanel({
     featuresFr: [],
     featuresAr: [],
     featuresEn: [],
-    tags: [],sku: '',barcode: '',seoTitle: '',seoDescription: '',
+    tags: [],sku: '',barcode: '',seoTitle: '',seoDescription: '',seoKeywords:[],pricingStatus:'preliminary',pricingNote:'',sourceMarketplace:'',priceReferenceNote:'',
     needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
   });
 
@@ -911,7 +916,7 @@ export default function AdminPanel({
       featuresFr: [],
       featuresAr: [],
       featuresEn: [],
-      tags: [],sku:'',barcode:'',seoTitle:'',seoDescription:'',
+      tags: [],sku:'',barcode:'',seoTitle:'',seoDescription:'',seoKeywords:[],pricingStatus:'preliminary',pricingNote:'',sourceMarketplace:'',priceReferenceNote:'',
       needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
     });
     setIsAddingProduct(true);
@@ -947,7 +952,7 @@ export default function AdminPanel({
       featuresAr: prod.features?.ar || [],
       featuresEn: prod.features?.en || [],
       tags:prod.tags || [],sku:prod.sku || '',barcode:prod.barcode || '',
-      seoTitle:prod.seoTitle || '',seoDescription:prod.seoDescription || '',
+      seoTitle:prod.seoTitle || '',seoDescription:prod.seoDescription || '',seoKeywords:prod.seoKeywords || [],pricingStatus:prod.pricingStatus || 'preliminary',pricingNote:prod.pricingNote || '',sourceMarketplace:prod.sourceMarketplace || '',priceReferenceNote:prod.priceReferenceNote || '',
       needsSupplierVerification:prod.needsSupplierVerification === true,
       imageRightsConfirmed:prod.imageRightsConfirmed === true,
       readyToPublish:prod.readyToPublish === true,
@@ -981,10 +986,11 @@ export default function AdminPanel({
       alert("L'image principale est obligatoire pour publier une fiche ou créer un produit classique. Les produits sourcés peuvent rester en brouillon sans photo.");
       return;
     }
-    if (editingProduct?.id.startsWith('gb_source_') && productForm.isActive) {
+    if ((editingProduct?.id.startsWith('gb_source_') || editingProduct?.id.startsWith('gb_vivosee_') || !!productForm.sourceMarketplace?.trim() || productForm.needsSupplierVerification) && productForm.isActive) {
       const gallery=new Set([productForm.image,...productForm.additionalImages].filter(url=>/^https:\/\//.test(url)));
       if(productForm.needsSupplierVerification || !productForm.imageRightsConfirmed ||
-        !productForm.readyToPublish || !productForm.supplier.trim() ||
+        !productForm.readyToPublish || productForm.pricingStatus!=='verified' ||
+        !productForm.supplier.trim() || !productForm.priceReferenceNote.trim() ||
         productForm.stockStatus==='out_of_stock' || gallery.size < 6){
         alert('Publication impossible : fournisseur, stock, prix, droits des images et 6 photos distinctes doivent être confirmés.');
         return;
@@ -1017,6 +1023,14 @@ export default function AdminPanel({
       barcode:productForm.barcode.trim() || undefined,
       seoTitle:productForm.seoTitle.trim() || undefined,
       seoDescription:productForm.seoDescription.trim() || undefined,
+      seoKeywords:Array.from(new Set(productForm.seoKeywords || [])).map(x=>String(x).trim()).filter(Boolean).slice(0,15),
+      pricingStatus:productForm.pricingStatus,
+      pricingNote:productForm.pricingNote.trim() || undefined,
+      sourceMarketplace:productForm.sourceMarketplace.trim() || undefined,
+      priceReferenceNote:productForm.priceReferenceNote.trim() || undefined,
+      sourcePageVerification:editingProduct?.sourcePageVerification,
+      priceReferenceMAD:editingProduct?.priceReferenceMAD,
+      marketResearch:editingProduct?.marketResearch,
       needsSupplierVerification:productForm.needsSupplierVerification,
       imageRightsConfirmed:productForm.imageRightsConfirmed,
       readyToPublish:productForm.readyToPublish,
