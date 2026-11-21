@@ -37,7 +37,6 @@ export interface Product {
   sourcePageVerification?: string;
   priceReferenceMAD?: number;
   priceReferenceNote?: string;
-  priceReferenceNote?: string;
   marketResearch?: {
     date?: string;
     currency?: string;
