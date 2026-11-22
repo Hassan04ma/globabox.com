@@ -104,3 +104,126 @@
  .gb-admin-platform main input:not([type=checkbox]):not([type=radio]):not([type=file]),
  .gb-admin-platform main select{min-height:44px;}
 }
+
+
+/* Premium merchant workspace — visual-only layer, scoped to the admin console. */
+.gb-admin-platform{
+  --gb-admin-forest:#123b30;
+  --gb-admin-forest-2:#1d5946;
+  --gb-admin-gold:#c6a15b;
+  --gb-admin-canvas:#f3f6f3;
+  --gb-admin-stroke:#e4ebe5;
+  --gb-admin-ink:#18382e;
+  --gb-admin-subtle:#718279;
+  background:var(--gb-admin-canvas);
+  color:var(--gb-admin-ink);
+}
+.gb-admin-platform > aside{
+  box-shadow:8px 0 28px rgba(18,59,48,.055);
+  position:relative;
+  z-index:20;
+}
+.gb-admin-platform > aside > div,
+.gb-admin-platform [role="dialog"] > div{
+  background:linear-gradient(180deg,#123b30 0%,#102e27 100%);
+}
+.gb-admin-platform > div > header{
+  min-height:72px;
+  box-shadow:0 1px 0 rgba(18,59,48,.025);
+}
+.gb-admin-platform main{
+  background:
+    radial-gradient(ellipse at 92% 0%,rgba(198,161,91,.055),transparent 32rem),
+    var(--gb-admin-canvas);
+}
+.gb-admin-platform main > div{
+  max-width:1720px;
+  padding:clamp(16px,2.2vw,32px) clamp(14px,2.4vw,38px) 48px;
+}
+.gb-admin-platform main h1,
+.gb-admin-platform main h2,
+.gb-admin-platform main h3{
+  color:var(--gb-admin-ink);
+  letter-spacing:-.035em;
+}
+.gb-admin-platform main article,
+.gb-admin-platform main section > article,
+.gb-admin-platform main [class*="rounded-"][class*="border"]{
+  border-color:var(--gb-admin-stroke);
+}
+.gb-admin-platform main article{
+  box-shadow:0 3px 14px rgba(23,55,39,.035);
+  transition:box-shadow .18s ease,border-color .18s ease,transform .18s ease;
+}
+.gb-admin-platform main article:hover{
+  border-color:#d6e3d9;
+}
+.gb-admin-platform main button:not([aria-label=""]),
+.gb-admin-platform main a{
+  border-radius:10px;
+}
+.gb-admin-platform main input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.gb-admin-platform main textarea,
+.gb-admin-platform main select{
+  border-color:#dfe8e1;
+  background-color:#fff;
+  color:#1b3b30;
+  box-shadow:0 1px 2px rgba(20,50,35,.025);
+}
+.gb-admin-platform main input:focus,
+.gb-admin-platform main textarea:focus,
+.gb-admin-platform main select:focus{
+  border-color:#83b396;
+  box-shadow:0 0 0 3px rgba(91,157,117,.12);
+  outline:none;
+}
+.gb-admin-platform main table{
+  border-color:var(--gb-admin-stroke);
+}
+.gb-admin-platform main table thead th{
+  background:#f5f8f5;
+  color:#64776b;
+  font-size:11px;
+  font-weight:800;
+}
+.gb-admin-platform main table tbody td{
+  border-color:#edf1ed;
+}
+.gb-admin-platform main table tbody tr:hover td{
+  background:#f7faf7;
+}
+.gb-admin-platform main [role="alert"]{
+  border:1px solid #f4d8d4;
+  border-radius:12px;
+}
+.gb-admin-platform main [role="status"]{
+  border-radius:12px;
+}
+.gb-admin-platform aside nav button[aria-current="page"]{
+  box-shadow:inset 3px 0 0 var(--gb-admin-gold),0 5px 16px rgba(0,0,0,.08);
+}
+.gb-admin-platform kbd{
+  font-family:inherit;
+}
+.gb-admin-platform ::selection{
+  background:#d8eadc;
+  color:#123b30;
+}
+@media(max-width:1023px){
+  .gb-admin-platform > aside{box-shadow:none;}
+}
+@media(max-width:767px){
+  .gb-admin-platform main > div{
+    padding:14px 12px 30px;
+  }
+  .gb-admin-platform main article{
+    border-radius:16px;
+  }
+  .gb-admin-platform > div > header{
+    min-height:62px;
+    padding-inline:12px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .gb-admin-platform main article{transition:none;}
+}
