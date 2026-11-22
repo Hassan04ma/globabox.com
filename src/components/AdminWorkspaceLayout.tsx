@@ -86,18 +86,18 @@ export default function AdminWorkspaceLayout({
  },[]);
  const sidebar=<div className="flex h-full min-h-0 flex-col bg-[#102b27] text-white">
   <div className="flex h-[78px] shrink-0 items-center justify-between border-b border-white/[.09] px-5">
-   <button type="button" onClick={onClose} className="flex min-w-0 items-center gap-3 rounded-xl text-start" aria-label={copy.view}>
-    <img src="/brand/globabox-mark.svg" alt="" className="h-10 w-10 rounded-xl bg-white p-1"/>
+   <div className="flex min-w-0 items-center gap-3 select-none" aria-label="GLOBABOX Store Admin">
+    <img src="/brand/globabox-mark.svg" alt="GLOBABOX" className="h-10 w-10 rounded-xl bg-white p-1"/>
     <span className="min-w-0"><span className="block text-[18px] font-black tracking-[-.04em]">GLOBA<span className="text-[#e9bd61]">BOX</span></span><span className="mt-0.5 block text-[9px] font-bold tracking-[.19em] text-[#9bb8ad]">{copy.admin}</span></span>
-   </button>
+   </div>
    <button type="button" onClick={()=>setMobileOpen(false)} className="rounded-lg p-2 text-white/60 hover:bg-white/10 lg:hidden" aria-label={copy.closeMenu}><X size={18}/></button>
   </div>
   <div className="border-b border-white/[.09] p-4">
-   <button type="button" onClick={()=>select('dashboard')} className="flex w-full items-center gap-3 rounded-xl border border-white/[.12] bg-white/[.06] p-3 text-start hover:bg-white/[.1]">
+   <div className="flex w-full items-center gap-3 rounded-xl border border-white/[.12] bg-white/[.045] p-3" aria-label="Boutique active">
     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#d9eee2] text-[#164b3d]"><Store size={18}/></span>
     <span className="min-w-0 flex-1"><span className="block truncate text-xs font-bold">{copy.store}</span><span className="mt-0.5 block text-[10px] text-[#9bb8ad]">GLOBABOX · Maroc</span></span>
-    <ChevronDown size={15} className="text-[#9bb8ad]"/>
-   </button>
+    <span className="h-2 w-2 rounded-full bg-[#65c18c]" aria-label="Administration active"/>
+   </div>
   </div>
   <nav aria-label={copy.quickTitle} className="min-h-0 flex-1 overflow-y-auto px-3 py-5">
    {copy.groups.map(group=><section key={group} className="mb-6">
