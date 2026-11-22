@@ -659,7 +659,22 @@ export default {
             if (orderRow) {
               const order = JSON.parse(orderRow.data_json);
               const phoneMatches = normalisePhone(String(order.phoneNumber || '')) === phone;
-              const productMatch = path.match(/^\/api\/products\/([^/]+)$/);
+              const productMatches = Array.isArray(order.items) && order.items.some((item:any) => String(item.productId || '') === productId);
+              if (phoneMatches && productMatches && order.status !== 'cancelled') verified = 1;
+            }
+          }
+        }
+        const id = `rev_${crypto.randomUUID()}`;
+        const inserted = await env.DB.prepare('INSERT INTO product_reviews (id,product_id,name,rating,comment,verified) VALUES (?,?,?,?,?,?)').bind(id,productId,name,rating,comment,verified).run();
+        if (!inserted.success || inserted.meta?.changes !== 1) return json({error:'Review was not saved'},503);
+        const aggregate = await env.DB.prepare('SELECT AVG(rating) AS average, COUNT(*) AS count FROM product_reviews WHERE product_id=?').bind(productId).first<{average:number,count:number}>();
+        const stored = productRows.results[0].data_json ? JSON.parse(productRows.results[0].data_json) : {};
+        const nextProduct = {...stored,rating:Number(aggregate?.average || 0),reviewsCount:Number(aggregate?.count || 0)};
+        const updated = await env.DB.prepare('UPDATE products SET data_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(JSON.stringify(nextProduct),productId).run();
+        if (!updated.success || updated.meta?.changes !== 1) return json({error:'Review aggregate update was not confirmed'},503);
+        return json({success:true,verified:Boolean(verified),rating:nextProduct.rating,reviewsCount:nextProduct.reviewsCount},201);
+      }
+      const productMatch = path.match(/^\/api\/products\/([^/]+)$/);
       if ((path === '/api/products' && method === 'POST') || (productMatch && ['PUT','DELETE'].includes(method))) {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
         const payload = method === 'DELETE' ? null : await readBody(request);
