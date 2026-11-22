@@ -337,6 +337,15 @@ Merci de confirmer la disponibilité et la livraison.`;
               <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight leading-snug">
                 {product.name[language]}
               </h2>
+              <button
+                type="button"
+                onClick={() => document.getElementById('product-reviews')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-[#176b5c] hover:text-[#104d43] underline underline-offset-2"
+                aria-label={language === 'ar' ? 'انتقل إلى تقييمات المنتج' : language === 'en' ? 'Jump to product reviews' : 'Aller aux avis clients'}
+              >
+                <Star size={13} className="fill-current" />
+                {language === 'ar' ? 'قيّم هذا المنتج' : language === 'en' ? 'Write a review' : 'Écrire un avis'}
+              </button>
 
               {/* Pricing Section (Price + Old Price clearly visible) */}
               <div className="flex items-baseline gap-2.5 my-3 bg-slate-50/70 py-2.5 px-4 rounded-xl border border-slate-100 inline-flex">
@@ -693,7 +702,7 @@ function ProductReviews({ productId, product, language }: { productId: string; p
   const count = reviews.length || Number(product.reviewsCount || 0);
 
   return (
-    <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" aria-label={language === 'ar' ? 'آراء العملاء' : language === 'en' ? 'Customer reviews' : 'Avis clients'}>
+    <section id="product-reviews" className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" aria-label={language === 'ar' ? 'آراء العملاء' : language === 'en' ? 'Customer reviews' : 'Avis clients'}>
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-slate-500">
