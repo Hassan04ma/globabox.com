@@ -104,3 +104,140 @@
  .gb-admin-platform main input:not([type=checkbox]):not([type=radio]):not([type=file]),
  .gb-admin-platform main select{min-height:44px;}
 }
+
+
+/* GLOBABOX Admin — premium, calm merchant workspace system */
+.gb-admin-platform{
+  --gb-forest:#123b30;
+  --gb-forest-deep:#0d2b25;
+  --gb-mint:#e4f1e8;
+  --gb-canvas:#f5f7f5;
+  --gb-paper:#fff;
+  --gb-border:#e5ebe6;
+  --gb-ink:#18382e;
+  --gb-muted:#75867c;
+  --gb-gold:#d4b36f;
+  background:var(--gb-canvas);
+  color:var(--gb-ink);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+.gb-admin-platform > aside,
+.gb-admin-platform [role="dialog"] aside{
+  box-shadow:5px 0 28px rgba(13,43,37,.07);
+}
+.gb-admin-platform > aside > div,
+.gb-admin-platform [role="dialog"] aside > div{
+  background:linear-gradient(165deg,#143d32 0%,#102f28 55%,#0d2924 100%);
+}
+.gb-admin-platform > div{background:var(--gb-canvas);}
+.gb-admin-platform > div > header{
+  min-height:70px;
+  border-color:var(--gb-border);
+  box-shadow:0 2px 10px rgba(21,52,37,.025);
+}
+.gb-admin-platform main{
+  background:
+    radial-gradient(ellipse at 88% 0%,rgba(212,179,111,.07),transparent 34rem),
+    var(--gb-canvas);
+}
+.gb-admin-platform main > div{
+  width:100%;
+  max-width:1760px;
+  padding:clamp(16px,2.2vw,34px) clamp(14px,2.5vw,40px) 52px;
+}
+.gb-admin-platform main h1,
+.gb-admin-platform main h2,
+.gb-admin-platform main h3,
+.gb-admin-platform main h4{
+  color:#18382e;
+  letter-spacing:-.035em;
+}
+.gb-admin-platform main section,
+.gb-admin-platform main article{
+  scroll-margin-top:20px;
+}
+.gb-admin-platform main article{
+  border-color:var(--gb-border);
+  border-radius:17px;
+  box-shadow:0 2px 9px rgba(20,53,37,.035);
+}
+.gb-admin-platform main article:hover{
+  border-color:#d6e3d9;
+  box-shadow:0 5px 18px rgba(20,53,37,.055);
+}
+.gb-admin-platform main input:not([type=checkbox]):not([type=radio]):not([type=file]),
+.gb-admin-platform main textarea,
+.gb-admin-platform main select{
+  min-height:40px;
+  border:1px solid #dfe8e1;
+  border-radius:10px;
+  background:#fff;
+  color:#193b30;
+}
+.gb-admin-platform main input:focus,
+.gb-admin-platform main textarea:focus,
+.gb-admin-platform main select:focus{
+  border-color:#82b294;
+  outline:0;
+  box-shadow:0 0 0 3px rgba(83,151,108,.13);
+}
+.gb-admin-platform main button:focus-visible,
+.gb-admin-platform main a:focus-visible,
+.gb-admin-platform aside button:focus-visible,
+.gb-admin-platform header button:focus-visible{
+  outline:3px solid rgba(132,185,149,.65);
+  outline-offset:2px;
+}
+.gb-admin-platform main table{
+  border-collapse:separate;
+  border-spacing:0;
+}
+.gb-admin-platform main table thead th{
+  background:#f4f8f4;
+  color:#61766a;
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.gb-admin-platform main table tbody td{
+  border-color:#edf1ed;
+}
+.gb-admin-platform main table tbody tr:hover td{
+  background:#f8fbf8;
+}
+.gb-admin-platform aside nav button[aria-current=page]{
+  box-shadow:inset 3px 0 0 var(--gb-gold),0 5px 15px rgba(0,0,0,.07);
+}
+.gb-admin-platform aside nav button{
+  min-height:50px;
+}
+.gb-admin-platform aside nav button span{
+  line-height:1.35;
+}
+.gb-admin-platform ::selection{
+  color:#123b30;
+  background:#dcecdf;
+}
+.gb-admin-platform button,
+.gb-admin-platform a{
+  -webkit-tap-highlight-color:transparent;
+}
+.gb-admin-platform kbd{font-family:inherit;}
+@media(min-width:1500px){
+  .gb-admin-platform > aside{width:286px;}
+  .gb-admin-platform main > div{padding-top:34px;}
+}
+@media(max-width:1023px){
+  .gb-admin-platform > aside{box-shadow:none;}
+}
+@media(max-width:767px){
+  .gb-admin-platform main > div{padding:14px 12px 30px;}
+  .gb-admin-platform > div > header{min-height:62px;padding-inline:12px;}
+  .gb-admin-platform main article{border-radius:14px;}
+  .gb-admin-platform main table{min-width:680px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .gb-admin-platform *,
+  .gb-admin-platform *::before,
+  .gb-admin-platform *::after{scroll-behavior:auto!important;transition-duration:.01ms!important;}
+}
