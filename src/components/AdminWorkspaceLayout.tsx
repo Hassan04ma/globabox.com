@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
-  ArrowDownLeft, ArrowUpRight, BarChart3, ChevronDown, ChevronRight,
+  ArrowUpRight, BarChart3, ChevronRight,
   ClipboardCheck, ClipboardList, Command, ExternalLink, LayoutDashboard, Users,
-  LogOut, Menu, Package, Plus, Search, Settings2, ShieldCheck, Store,
-  Tags, Truck, X
+  LogOut, Menu, Package, Plus, Search, Store,
+  Tags, Truck
 } from 'lucide-react';
 import '../adminPlatform.css';
 
@@ -84,55 +84,58 @@ export default function AdminWorkspaceLayout({
   window.addEventListener('keydown',listener);
   return()=>window.removeEventListener('keydown',listener);
  },[]);
- const sidebar=<div className="flex h-full min-h-0 flex-col bg-[#102b27] text-white">
-  <div className="flex h-[78px] shrink-0 items-center justify-between border-b border-white/[.09] px-5">
-   <button type="button" onClick={onClose} className="flex min-w-0 items-center gap-3 rounded-xl text-start" aria-label={copy.view}>
-    <img src="/brand/globabox-mark.svg" alt="" className="h-10 w-10 rounded-xl bg-white p-1"/>
-    <span className="min-w-0"><span className="block text-[18px] font-black tracking-[-.04em]">GLOBA<span className="text-[#e9bd61]">BOX</span></span><span className="mt-0.5 block text-[9px] font-bold tracking-[.19em] text-[#9bb8ad]">{copy.admin}</span></span>
-   </button>
-   <button type="button" onClick={()=>setMobileOpen(false)} className="rounded-lg p-2 text-white/60 hover:bg-white/10 lg:hidden" aria-label={copy.closeMenu}><X size={18}/></button>
-  </div>
-  <div className="border-b border-white/[.09] p-4">
-   <button type="button" onClick={()=>select('dashboard')} className="flex w-full items-center gap-3 rounded-xl border border-white/[.12] bg-white/[.06] p-3 text-start hover:bg-white/[.1]">
-    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#d9eee2] text-[#164b3d]"><Store size={18}/></span>
-    <span className="min-w-0 flex-1"><span className="block truncate text-xs font-bold">{copy.store}</span><span className="mt-0.5 block text-[10px] text-[#9bb8ad]">GLOBABOX · Maroc</span></span>
-    <ChevronDown size={15} className="text-[#9bb8ad]"/>
-   </button>
-  </div>
-  <nav aria-label={copy.quickTitle} className="min-h-0 flex-1 overflow-y-auto px-3 py-5">
-   {copy.groups.map(group=><section key={group} className="mb-6">
-    <p className="mb-2 px-3 text-[9px] font-extrabold tracking-[.2em] text-[#77968a]">{group}</p>
-    <div className="space-y-1">{localizedNavigation.filter(item=>item.group===group).map(item=>{
-     const Icon=item.icon,active=activeTab===item.id,n=count(item.id);
-     return <button key={item.id} type="button" onClick={()=>select(item.id)} aria-current={active?'page':undefined}
-      className={'group flex min-h-[48px] w-full items-center gap-3 rounded-xl px-3 text-start transition '+(active?'bg-[#dff0e5] text-[#174c3c] shadow-sm':'text-[#c2d3cc] hover:bg-white/[.07] hover:text-white')}>
-      <span className={'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg '+(active?'bg-[#c5e4d1] text-[#174c3c]':'text-[#9bb8ad] group-hover:text-white')}><Icon size={17}/></span>
-      <span className="min-w-0 flex-1"><span className="block text-[12px] font-bold">{item.label}</span><span className={'mt-0.5 block text-[10px] '+(active?'text-[#527465]':'text-[#86a197]')}>{item.description}</span></span>
-      {n!==null&&<span className={'min-w-6 rounded-md px-1.5 py-1 text-center text-[10px] font-extrabold '+(active?'bg-[#174c3c] text-white':'bg-white/[.09] text-[#c5d6ce]')}>{n}</span>}
-     </button>;
-    })}</div>
-   </section>)}
-   <div className="mx-1 mt-7 rounded-xl border border-[#31554a] bg-[#183a32] p-4">
-    <div className="flex items-center gap-2 text-[11px] font-extrabold text-[#d8eee1]"><Truck size={16}/>{copy.shipping}</div>
-    <p className="mt-2 text-[11px] leading-5 text-[#a9c2b7]">{pendingOrders===0?copy.nonePending:pendingOrders+' '+copy.attention}</p>
-    <button type="button" onClick={()=>{onPendingOrders();setMobileOpen(false);}} className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-white underline decoration-[#8fc7a8] underline-offset-4" >{copy.openOrders} <ArrowUpRight size={13}/></button>
+ const sidebar=<div className="flex h-full min-h-0 bg-white text-[#30445a]">
+  <div className="flex w-[72px] shrink-0 flex-col items-center gap-2 bg-[#ed6b2f] py-4 text-white">
+   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-white/40 bg-white text-[#ed6b2f]"><img src="/brand/globabox-mark.svg" alt="GLOBABOX" className="h-7 w-7 object-contain"/></div>
+   {localizedNavigation.map(item=>{const Icon=item.icon;const active=activeTab===item.id;return <button key={item.id} type="button" onClick={()=>select(item.id)} aria-label={item.label} title={item.label} aria-current={active?'page':undefined} className={'flex h-11 w-11 items-center justify-center rounded-xl transition '+(active?'bg-white text-[#ed6b2f] shadow-md':'text-white/90 hover:bg-white/20')}><Icon size={19}/></button>;})}
+   <div className="mt-auto flex flex-col gap-2">
+    <button type="button" onClick={onLogout} aria-label={copy.logout} title={copy.logout} className="flex h-11 w-11 items-center justify-center rounded-xl text-white/90 hover:bg-white/20"><LogOut size={19}/></button>
    </div>
-  </nav>
-  <div className="shrink-0 border-t border-white/[.09] p-4">
-   <div className="flex items-center gap-3 rounded-xl px-2 py-1">
-    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#315c4d] text-[11px] font-black text-[#e4f4e9]">GB</span>
-    <span className="min-w-0 flex-1"><span className="block text-[11px] font-bold" >{copy.administrator}</span><span className="mt-0.5 block text-[10px] text-[#8fa99f]" >{copy.secure}</span></span>
-    <button type="button" onClick={onLogout} aria-label={copy.logout} title={copy.logout} className="rounded-lg p-2 text-[#a9c0b7] hover:bg-white/10 hover:text-white"><LogOut size={17}/></button>
+  </div>
+  <div className="flex min-w-0 flex-1 flex-col">
+   <div className="flex h-[72px] shrink-0 items-center gap-3 border-b border-[#e5eaf0] px-4">
+    <img src="/brand/globabox-logo.svg" alt="GLOBABOX" className="h-9 max-w-[145px] object-contain"/>
+    <span className="ms-auto rounded-full bg-[#fff2eb] px-2.5 py-1 text-[9px] font-extrabold tracking-wide text-[#d85d25]">{copy.admin}</span>
+   </div>
+   <div className="border-b border-[#e9edf2] px-3 py-3">
+    <div className="flex items-center gap-3 rounded-lg bg-[#f7f8fa] px-3 py-3">
+     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#fff0e8] text-[#e66b32]"><Store size={18}/></span>
+     <span className="min-w-0"><span className="block truncate text-xs font-bold text-[#263b52]">{copy.store}</span><span className="mt-0.5 block text-[10px] text-[#8291a2]">GLOBABOX · Maroc</span></span>
+    </div>
+   </div>
+   <nav aria-label={copy.quickTitle} className="min-h-0 flex-1 overflow-y-auto px-3 py-5">
+    {copy.groups.map(group=><section key={group} className="mb-5">
+     <p className="mb-2 px-3 text-[9px] font-extrabold tracking-[.16em] text-[#9aa7b5]">{group}</p>
+     <div className="space-y-1">{localizedNavigation.filter(item=>item.group===group).map(item=>{
+      const Icon=item.icon,active=activeTab===item.id,n=count(item.id);
+      return <button key={item.id} type="button" onClick={()=>select(item.id)} aria-current={active?'page':undefined} className={'group flex min-h-[43px] w-full items-center gap-3 rounded-lg px-3 text-start transition '+(active?'bg-[#fff0e8] text-[#dc642d] font-bold':'text-[#607187] hover:bg-[#f5f7f9] hover:text-[#263b52]')}>
+       <Icon size={17}/><span className="min-w-0 flex-1 text-[12px] font-semibold">{item.label}</span>
+       {n!==null&&<span className={'min-w-6 rounded-md px-1.5 py-1 text-center text-[10px] font-extrabold '+(active?'bg-[#ed6b2f] text-white':'bg-[#eef1f5] text-[#718096]')}>{n}</span>}
+      </button>;
+     })}</div>
+    </section>)}
+    <div className="mx-1 mt-5 rounded-lg border border-[#f4d4c4] bg-[#fff8f4] p-3">
+     <div className="flex items-center gap-2 text-[11px] font-extrabold text-[#c95c2b]"><Truck size={15}/>{copy.shipping}</div>
+     <p className="mt-2 text-[10px] leading-5 text-[#7d8794]">{pendingOrders===0?copy.nonePending:pendingOrders+' '+copy.attention}</p>
+     <button type="button" onClick={()=>{onPendingOrders();setMobileOpen(false);}} className="mt-2 text-[10px] font-bold text-[#d65f2b] underline underline-offset-4">{copy.openOrders}</button>
+    </div>
+   </nav>
+   <div className="shrink-0 border-t border-[#e9edf2] p-3">
+    <div className="flex items-center gap-3 rounded-lg px-2 py-1">
+     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#fff0e8] text-[11px] font-black text-[#dc642d]">GB</span>
+     <span className="min-w-0 flex-1"><span className="block text-[11px] font-bold text-[#34465b]">{copy.administrator}</span><span className="mt-0.5 block text-[10px] text-[#93a0ae]">{copy.secure}</span></span>
+     <button type="button" onClick={onLogout} aria-label={copy.logout} title={copy.logout} className="rounded-lg p-2 text-[#8190a0] hover:bg-[#fff0e8] hover:text-[#d65f2b]"><LogOut size={17}/></button>
+    </div>
    </div>
   </div>
  </div>;
- return <div dir={language==='ar'?'rtl':'ltr'} lang={language} className="gb-admin-platform fixed inset-0 z-[80] flex h-[100dvh] min-h-0 overflow-hidden bg-[#f4f6f5] text-[#1d302b]">
-  <aside className="hidden h-full w-[258px] shrink-0 lg:block xl:w-[274px]">{sidebar}</aside>
+ return <div dir={language==='ar'?'rtl':'ltr'} lang={language} className="gb-admin-platform fixed inset-0 z-[80] flex h-[100dvh] min-h-0 overflow-hidden bg-[#f3f5f8] text-[#263b52]">
+  <aside className="hidden h-full w-[344px] shrink-0 lg:block">{sidebar}</aside>
   {mobileOpen&&<div className="fixed inset-0 z-[110] bg-[#0b1c18]/65 backdrop-blur-[2px] lg:hidden" onMouseDown={()=>setMobileOpen(false)}>
-   <aside role="dialog" aria-modal="true" aria-label="القائمة الرئيسية" className="h-full w-[min(88vw,310px)] shadow-2xl" onMouseDown={event=>event.stopPropagation()}>{sidebar}</aside>
+   <aside role="dialog" aria-modal="true" aria-label="القائمة الرئيسية" className="h-full w-[min(94vw,360px)] shadow-2xl" onMouseDown={event=>event.stopPropagation()}>{sidebar}</aside>
   </div>}
   <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-   <header className="z-30 flex min-h-[68px] shrink-0 items-center justify-between gap-3 border-b border-[#e4eae6] bg-white px-4 sm:px-6 xl:px-8">
+   <header className="z-30 flex min-h-[72px] shrink-0 items-center justify-between gap-3 border-b border-[#e4eae6] bg-white px-4 sm:px-6 xl:px-8">
     <div className="flex min-w-0 items-center gap-3">
      <button type="button" onClick={()=>setMobileOpen(true)} aria-label={copy.menu} className="rounded-xl border border-[#e1e9e3] p-2 text-[#315c4b] hover:bg-[#f0f6f1] lg:hidden"><Menu size={19}/></button>
      <div className="min-w-0"><div className="flex items-center gap-2 text-[11px] text-[#82918a]"><span className="hidden sm:inline">{copy.merchant}</span><ChevronRight size={13} className="hidden sm:inline"/><span className="truncate font-bold text-[#375b4b]">{current.label}</span></div></div>
@@ -147,7 +150,7 @@ export default function AdminWorkspaceLayout({
      </div>
      <span className={'hidden items-center gap-2 rounded-lg px-3 py-2 text-[10px] font-bold lg:inline-flex '+(databaseReady===true?'bg-[#eaf6ed] text-[#26734c]':databaseReady===false?'bg-amber-50 text-amber-800':'bg-[#f0f3f1] text-[#77857d]')}><span className={'h-1.5 w-1.5 rounded-full '+(databaseReady===true?'bg-[#35a36b]':databaseReady===false?'bg-amber-500':'bg-[#a5b1aa]')}/>{databaseReady===true?copy.db[0]:databaseReady===false?copy.db[1]:copy.db[2]}</span>
      <a href="/" target="_blank" rel="noopener noreferrer" className="flex h-10 items-center gap-2 rounded-xl border border-[#e2e9e4] px-3 text-[11px] font-bold text-[#315b49] hover:bg-[#f2f7f3]"><ExternalLink size={15}/><span className="hidden xl:inline">{copy.view}</span></a>
-     <button type="button" onClick={onClose} aria-label="Fermer l’administration" className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#e2e9e4] text-[#73867a] hover:bg-[#f3f6f3]"><X size={17}/></button>
+     
     </div>
    </header>
    <div className="flex min-h-0 min-w-0 flex-1 flex-col">

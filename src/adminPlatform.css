@@ -104,3 +104,133 @@
  .gb-admin-platform main input:not([type=checkbox]):not([type=radio]):not([type=file]),
  .gb-admin-platform main select{min-height:44px;}
 }
+
+
+/* AMEEX-inspired commerce workspace: consistent visual language across every admin tab. */
+.gb-admin-platform{
+ --gb-green:#ed6b2f;
+ --gb-ink:#263b52;
+ --gb-surface:#fff;
+ --gb-line:#dfe5ec;
+ --gb-admin-bg:#f3f5f8;
+ --gb-admin-card:#fff;
+ --gb-admin-border:#dfe5ec;
+ --gb-admin-text:#263b52;
+ --gb-admin-muted:#78879a;
+ background:#f3f5f8;
+ color:#263b52;
+ font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+}
+.gb-admin-platform main{background:#f3f5f8!important;}
+.gb-admin-platform main > div{padding:20px clamp(14px,2vw,30px) 40px;}
+.gb-admin-platform main [class*="rounded-"][class*="border"]{
+ border-color:#dfe5ec;
+}
+.gb-admin-platform main [class*="shadow-"]{box-shadow:0 2px 8px rgba(38,59,82,.045);}
+.gb-admin-platform main h1,.gb-admin-platform main h2,.gb-admin-platform main h3,.gb-admin-platform main h4{
+ color:#263b52;
+ letter-spacing:-.025em;
+}
+.gb-admin-platform main button[class*="bg-[#104d43]"],
+.gb-admin-platform main button[class*="bg-[#174d3d]"],
+.gb-admin-platform main button[class*="bg-[#195c41]"],
+.gb-admin-platform main button[class*="bg-[#104d43]"]:hover{
+ background-color:#ed6b2f;
+ color:#fff;
+}
+.gb-admin-platform main button[class*="text-[#104d43]"],
+.gb-admin-platform main button[class*="text-[#31584a]"],
+.gb-admin-platform main a[class*="text-[#104d43]"]{color:#d95f27;}
+.gb-admin-platform main input:not([type=checkbox]):not([type=radio]):not([type=file]),
+.gb-admin-platform main textarea,.gb-admin-platform main select{
+ border-color:#d8e0e9;
+ border-radius:9px;
+ background-color:#fff;
+ color:#263b52;
+}
+.gb-admin-platform main input:focus,.gb-admin-platform main textarea:focus,.gb-admin-platform main select:focus{
+ border-color:#ed9b73;
+ outline-color:#f4c3a9;
+}
+.gb-admin-platform main table{border-collapse:separate;border-spacing:0;}
+.gb-admin-platform main table thead th{
+ position:sticky;top:0;z-index:2;
+ background:#f5f7fa;color:#607187;
+ border-bottom:1px solid #dfe5ec;
+}
+.gb-admin-platform main table tbody tr:hover td{background:#fff8f4;}
+.gb-admin-platform main [class*="bg-[#104d43]"],
+.gb-admin-platform main [class*="bg-[#174d3d]"]{background-color:#ed6b2f;}
+.gb-admin-platform main [class*="text-[#193e38]"],
+.gb-admin-platform main [class*="text-[#1c3832]"]{color:#263b52;}
+.gb-admin-platform main [class*="border-[#e0e8e5]"],
+.gb-admin-platform main [class*="border-[#e0e7e3]"],
+.gb-admin-platform main [class*="border-[#dce6df]"]{border-color:#dfe5ec;}
+.gb-admin-platform main [class*="bg-[#eaf5ef]"],
+.gb-admin-platform main [class*="bg-[#eff7f1]"]{background-color:#fff1e9;}
+.gb-admin-platform main [class*="text-[#327960]"],
+.gb-admin-platform main [class*="text-[#38866e]"]{color:#d95f27;}
+.gb-admin-platform main button:focus-visible,
+.gb-admin-platform main a:focus-visible,
+.gb-admin-platform header button:focus-visible,
+.gb-admin-platform aside button:focus-visible{outline:3px solid #f4b18e;outline-offset:2px;}
+@media(max-width:767px){
+ .gb-admin-platform main > div{padding:14px 12px 28px;}
+ .gb-admin-platform main table{min-width:680px;}
+ .gb-admin-platform main input:not([type=checkbox]):not([type=radio]):not([type=file]),
+ .gb-admin-platform main select{min-height:42px;}
+}
+
+
+/* Final AMEEX dashboard alignment: orange icon rail, white navigation,
+   navy typography, pale workspace and clean white data surfaces. */
+.gb-admin-platform{
+ --gb-green:#ed6b2f;
+ --gb-ink:#263b52;
+ --gb-surface:#fff;
+ --gb-line:#dfe5ec;
+ --gb-admin-bg:#f3f5f8;
+ --gb-admin-card:#fff;
+ --gb-admin-border:#dfe5ec;
+ --gb-admin-text:#263b52;
+ --gb-admin-muted:#78879a;
+ background:#f3f5f8!important;
+ color:#263b52!important;
+}
+.gb-admin-platform > aside{border-right:1px solid #dfe5ec;background:#fff;}
+.gb-admin-platform header{min-height:72px;border-color:#dfe5ec;background:#fff;}
+.gb-admin-platform main{background:#f3f5f8!important;}
+.gb-admin-platform main > div{padding:20px clamp(14px,2vw,30px) 40px;}
+.gb-admin-platform main [class*="bg-[#104d43]"],
+.gb-admin-platform main [class*="bg-[#174d3d]"],
+.gb-admin-platform main [class*="bg-[#195c41]"],
+.gb-admin-platform main [class*="bg-[#174d40]"]{
+ background-color:#ed6b2f!important;color:#fff!important;
+}
+.gb-admin-platform main [class*="text-[#104d43]"],
+.gb-admin-platform main [class*="text-[#174d3d]"],
+.gb-admin-platform main [class*="text-[#315b49]"],
+.gb-admin-platform main [class*="text-[#31584a]"],
+.gb-admin-platform main [class*="text-[#193e38]"],
+.gb-admin-platform main [class*="text-[#1c3832]"]{color:#263b52!important;}
+.gb-admin-platform main [class*="bg-[#eaf5ef]"],
+.gb-admin-platform main [class*="bg-[#eff7f1]"],
+.gb-admin-platform main [class*="bg-[#eaf6ed]"]{background-color:#fff1e9!important;}
+.gb-admin-platform main [class*="border-[#e0e8e5]"],
+.gb-admin-platform main [class*="border-[#e0e7e3]"],
+.gb-admin-platform main [class*="border-[#dce6df]"]{border-color:#dfe5ec!important;}
+.gb-admin-platform main [class*="rounded-"][class*="border"]{border-color:#dfe5ec;}
+.gb-admin-platform main [class*="shadow-"]{box-shadow:0 2px 8px rgba(38,59,82,.045);}
+.gb-admin-platform main table thead th{background:#f5f7fa;color:#607187;border-color:#dfe5ec;}
+.gb-admin-platform main table tbody tr:hover td{background:#fff8f4;}
+.gb-admin-platform main input:not([type=checkbox]):not([type=radio]):not([type=file]),
+.gb-admin-platform main textarea,.gb-admin-platform main select{
+ border-color:#d8e0e9;border-radius:9px;background:#fff;color:#263b52;
+}
+.gb-admin-platform main button:focus-visible,
+.gb-admin-platform main a:focus-visible,
+.gb-admin-platform header button:focus-visible,
+.gb-admin-platform aside button:focus-visible{outline:3px solid #f4b18e;outline-offset:2px;}
+@media(max-width:1023px){
+ .gb-admin-platform > aside{display:none;}
+}
