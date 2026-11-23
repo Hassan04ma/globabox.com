@@ -85,7 +85,7 @@ export default function AdminWorkspaceLayout({
   return()=>window.removeEventListener('keydown',listener);
  },[]);
  const sidebar=<div className="flex h-full min-h-0 bg-white text-[#30445a]">
-  <div className="flex w-[64px] shrink-0 flex-col items-center gap-2 bg-[#ed6b2f] py-4 text-white">
+  <div className="flex w-[72px] shrink-0 flex-col items-center gap-2 bg-[#ed6b2f] py-4 text-white">
    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-white/40 bg-white text-[#ed6b2f]"><img src="/brand/globabox-mark.svg" alt="GLOBABOX" className="h-7 w-7 object-contain"/></div>
    {localizedNavigation.map(item=>{const Icon=item.icon;const active=activeTab===item.id;return <button key={item.id} type="button" onClick={()=>select(item.id)} aria-label={item.label} title={item.label} aria-current={active?'page':undefined} className={'flex h-11 w-11 items-center justify-center rounded-xl transition '+(active?'bg-white text-[#ed6b2f] shadow-md':'text-white/90 hover:bg-white/20')}><Icon size={19}/></button>;})}
    <div className="mt-auto flex flex-col gap-2">
@@ -129,13 +129,13 @@ export default function AdminWorkspaceLayout({
    </div>
   </div>
  </div>;
- return <div dir={language==='ar'?'rtl':'ltr'} lang={language} className="gb-admin-platform fixed inset-0 z-[80] flex h-[100dvh] min-h-0 overflow-hidden bg-[#f4f6f5] text-[#1d302b]">
-  <aside className="hidden h-full w-[324px] shrink-0 lg:block">{sidebar}</aside>
+ return <div dir={language==='ar'?'rtl':'ltr'} lang={language} className="gb-admin-platform fixed inset-0 z-[80] flex h-[100dvh] min-h-0 overflow-hidden bg-[#f3f5f8] text-[#263b52]">
+  <aside className="hidden h-full w-[344px] shrink-0 lg:block">{sidebar}</aside>
   {mobileOpen&&<div className="fixed inset-0 z-[110] bg-[#0b1c18]/65 backdrop-blur-[2px] lg:hidden" onMouseDown={()=>setMobileOpen(false)}>
    <aside role="dialog" aria-modal="true" aria-label="القائمة الرئيسية" className="h-full w-[min(94vw,360px)] shadow-2xl" onMouseDown={event=>event.stopPropagation()}>{sidebar}</aside>
   </div>}
   <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-   <header className="z-30 flex min-h-[68px] shrink-0 items-center justify-between gap-3 border-b border-[#e4eae6] bg-white px-4 sm:px-6 xl:px-8">
+   <header className="z-30 flex min-h-[72px] shrink-0 items-center justify-between gap-3 border-b border-[#e4eae6] bg-white px-4 sm:px-6 xl:px-8">
     <div className="flex min-w-0 items-center gap-3">
      <button type="button" onClick={()=>setMobileOpen(true)} aria-label={copy.menu} className="rounded-xl border border-[#e1e9e3] p-2 text-[#315c4b] hover:bg-[#f0f6f1] lg:hidden"><Menu size={19}/></button>
      <div className="min-w-0"><div className="flex items-center gap-2 text-[11px] text-[#82918a]"><span className="hidden sm:inline">{copy.merchant}</span><ChevronRight size={13} className="hidden sm:inline"/><span className="truncate font-bold text-[#375b4b]">{current.label}</span></div></div>
