@@ -681,22 +681,22 @@ export default {
         const id = productMatch?.[1] || (typeof payload?.id === 'string' ? payload.id.trim() : '');
         if (!id || id.length > 100 || !/^[a-zA-Z0-9_-]+$/.test(id)) return json({error:'Invalid product ID'},400);
         if (method === 'DELETE') {
-          // Keep a disabled row rather than deleting it: a hard delete would
-          // reveal a bundled fallback product with the same ID again.
-          const stored = await env.DB.prepare('SELECT data_json FROM products WHERE id=?')
-            .bind(id).first<{data_json:string}>();
-          const oldProduct = stored ? JSON.parse(stored.data_json) : PRODUCTS.find(p => p.id === id);
-          if (!oldProduct) return json({error:'Product not found'},404);
-          const hidden = {...oldProduct,id,isActive:false};
+          // Permanent catalog removal: do not leave an inactive/archive row.
+          // Historical order line items are immutable snapshots and remain intact.
+          const stored = await env.DB.prepare('SELECT id FROM products WHERE id=?')
+            .bind(id).first<{id:string}>();
+          const bundled = PRODUCTS.some(product => product.id === id);
+          if (!stored && !bundled) return json({error:'Product not found'},404);
+          const reviews = await env.DB.prepare('DELETE FROM product_reviews WHERE product_id=?')
+            .bind(id).run();
+          if (!reviews.success) return json({error:'Product reviews could not be deleted'},503);
           if (stored) {
-            await env.DB.prepare('UPDATE products SET active=0,data_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?')
-              .bind(JSON.stringify(hidden),id).run();
-          } else {
-            await env.DB.prepare('INSERT INTO products (id,source_url,supplier,category,name_fr,price_mad,image_url,active,data_json) VALUES (?,?,?,?,?,?,?,?,?)')
-              .bind(id,null,null,oldProduct.category || '',oldProduct.name?.fr || id,
-                oldProduct.price,oldProduct.image || '',0,JSON.stringify(hidden)).run();
+            const removed = await env.DB.prepare('DELETE FROM products WHERE id=?')
+              .bind(id).run();
+            if (!removed.success || removed.meta?.changes !== 1)
+              return json({error:'Product deletion was not confirmed'},503);
           }
-          return json({success:true,product:hidden});
+          return json({success:true,deleted:true,id});
         }
         const p = payload;
         if (!p || typeof p.name?.fr !== 'string' || !Number.isFinite(p.price) || p.price <= 0) return json({error:'Invalid product'},400);
