@@ -110,7 +110,11 @@ async function importAuthorized(request: Request, env: Env): Promise<boolean> {
   for (let i = 0; i < left.length; i++) diff |= left[i] ^ right[i];
   return diff === 0;
 }
+async function ensureDeletedProductsTable(db: D1Database) {
+  await db.prepare('CREATE TABLE IF NOT EXISTS deleted_products (id TEXT PRIMARY KEY, deleted_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run();
+}
 async function listProducts(db: D1Database, includeDrafts: boolean, allowDemoCatalog = false) {
+  await ensureDeletedProductsTable(db);
   const rows = await db.prepare(includeDrafts ? 'SELECT data_json FROM products ORDER BY created_at DESC' : 'SELECT data_json FROM products WHERE active = 1 ORDER BY created_at DESC').all<{ data_json: string }>();
   const databaseProducts = rows.results.map(x => JSON.parse(x.data_json));
   // Never sell bundled sample products in production just because D1 has no
@@ -118,8 +122,10 @@ async function listProducts(db: D1Database, includeDrafts: boolean, allowDemoCat
   if (!allowDemoCatalog) return databaseProducts.filter(p => includeDrafts || publicProduct(p));
   const ids = await db.prepare('SELECT id FROM products').all<{id:string}>();
   const storedIds = new Set(ids.results.map(p => p.id));
+  const deletedRows = await db.prepare('SELECT id FROM deleted_products').all<{id:string}>();
+  const deletedIds = new Set(deletedRows.results.map(p => p.id));
   return [...databaseProducts.filter(p => includeDrafts || publicProduct(p)),
-    ...PRODUCTS.filter(p => (includeDrafts || publicProduct(p)) && !storedIds.has(p.id))];
+    ...PRODUCTS.filter(p => (includeDrafts || publicProduct(p)) && !storedIds.has(p.id) && !deletedIds.has(p.id))];
 }
 // Used by both public COD checkout and the admin's isolated diagnostic.
 // Never acknowledge a customer order until D1 confirms the write and readback.
@@ -681,21 +687,29 @@ export default {
         const id = productMatch?.[1] || (typeof payload?.id === 'string' ? payload.id.trim() : '');
         if (!id || id.length > 100 || !/^[a-zA-Z0-9_-]+$/.test(id)) return json({error:'Invalid product ID'},400);
         if (method === 'DELETE') {
-          // Permanent catalog removal: do not leave an inactive/archive row.
-          // Historical order line items are immutable snapshots and remain intact.
+          // Remove the catalog row and its reviews, while retaining immutable
+          // order snapshots. A tombstone prevents bundled demo data reappearing.
           const stored = await env.DB.prepare('SELECT id FROM products WHERE id=?')
             .bind(id).first<{id:string}>();
           const bundled = PRODUCTS.some(product => product.id === id);
           if (!stored && !bundled) return json({error:'Product not found'},404);
-          const reviews = await env.DB.prepare('DELETE FROM product_reviews WHERE product_id=?')
-            .bind(id).run();
-          if (!reviews.success) return json({error:'Product reviews could not be deleted'},503);
-          if (stored) {
-            const removed = await env.DB.prepare('DELETE FROM products WHERE id=?')
-              .bind(id).run();
-            if (!removed.success || removed.meta?.changes !== 1)
-              return json({error:'Product deletion was not confirmed'},503);
-          }
+          await ensureDeletedProductsTable(env.DB);
+          await env.DB.prepare(`CREATE TABLE IF NOT EXISTS product_reviews (
+            id TEXT PRIMARY KEY, product_id TEXT NOT NULL, name TEXT NOT NULL DEFAULT '',
+            rating INTEGER NOT NULL, comment TEXT NOT NULL, verified INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+          )`).run();
+          const results = await env.DB.batch([
+            env.DB.prepare('DELETE FROM product_reviews WHERE product_id=?').bind(id),
+            env.DB.prepare('DELETE FROM products WHERE id=?').bind(id),
+            env.DB.prepare('INSERT INTO deleted_products (id) VALUES (?) ON CONFLICT(id) DO UPDATE SET deleted_at=CURRENT_TIMESTAMP').bind(id)
+          ]);
+          if (results.length !== 3 || results.some(result => !result.success))
+            return json({error:'Product deletion was not confirmed'},503);
+          if (stored && results[1].meta?.changes !== 1)
+            return json({error:'Product deletion was not confirmed'},503);
+          if (results[2].meta?.changes !== 1)
+            return json({error:'Permanent deletion marker was not saved'},503);
           return json({success:true,deleted:true,id});
         }
         const p = payload;
@@ -703,6 +717,9 @@ export default {
         if (method === 'POST') {
           const already = await env.DB.prepare('SELECT id FROM products WHERE id=?').bind(id).first();
           if (already) return json({error:'Product ID already exists'},409);
+        } else {
+          const deleted = await env.DB.prepare('SELECT id FROM deleted_products WHERE id=?').bind(id).first();
+          if (deleted) return json({error:'Product was permanently deleted. Create it again with POST.'},404);
         }
         // Preserve the stored visibility on edits, unless the caller explicitly supplies a boolean.
         const previous = method === 'PUT'
@@ -728,8 +745,13 @@ export default {
           }
         }
         const row = { ...p, id, isActive: active };
-        await env.DB.prepare('INSERT INTO products (id,source_url,supplier,category,name_fr,price_mad,image_url,active,data_json) VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET category=excluded.category,name_fr=excluded.name_fr,price_mad=excluded.price_mad,image_url=excluded.image_url,active=excluded.active,data_json=excluded.data_json,updated_at=CURRENT_TIMESTAMP')
+        const saved = await env.DB.prepare('INSERT INTO products (id,source_url,supplier,category,name_fr,price_mad,image_url,active,data_json) VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET category=excluded.category,name_fr=excluded.name_fr,price_mad=excluded.price_mad,image_url=excluded.image_url,active=excluded.active,data_json=excluded.data_json,updated_at=CURRENT_TIMESTAMP')
           .bind(id,p.sourceUrl || null,p.supplier || null,p.category || '',p.name.fr,p.price,p.image || '',row.isActive ? 1 : 0,JSON.stringify(row)).run();
+        if (!saved.success || saved.meta?.changes !== 1) return json({error:'Product was not saved'},503);
+        if (method === 'POST') {
+          await ensureDeletedProductsTable(env.DB);
+          await env.DB.prepare('DELETE FROM deleted_products WHERE id=?').bind(id).run();
+        }
         return json({success:true,product:row});
       }
       return json({error:'Not found'},404);
