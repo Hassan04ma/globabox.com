@@ -1118,7 +1118,7 @@ export default function AdminPanel({
   const handleBulkDeleteOrders = async () => {
     const ids: string[] = Array.from(selectedOrderIds);
     if (!ids.length) return;
-    if (!window.confirm(`Supprimer définitivement ${ids.length} commande(s) sélectionnée(s) ? Cette action supprime les commandes du stockage local et ne peut pas être annulée.`)) return;
+    if (!window.confirm(`Masquer ${ids.length} commande(s) sélectionnée(s) de l’Admin ? Les commandes resteront conservées dans D1 et pourront être récupérées.`)) return;
 
     let deleted = 0, failed = 0;
     for (const id of ids) {
@@ -1137,7 +1137,7 @@ export default function AdminPanel({
     setOrders(current => current.filter(order => !ids.includes(order.id)));
     setSelectedOrderIds(new Set());
     setRefreshSuccess(`Masquage terminé : ${deleted} commande(s) retirée(s) de l’Admin, ${failed} échec(s).`);
-    if (failed) setRefreshError(`${failed} commande(s) n'ont pas pu être supprimée(s).`);
+    if (failed) setRefreshError(`${failed} commande(s) n'ont pas pu être masquées.`);
   };
 
   // Delete product
