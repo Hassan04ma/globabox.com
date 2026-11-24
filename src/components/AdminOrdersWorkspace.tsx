@@ -196,7 +196,8 @@ export default function AdminOrdersWorkspace(p:Props){
               <AdminShippingEditor order={order} onSaved={saved=>setOrders(current=>current.map(item=>item.id===saved.id?saved:item))}/>
               <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-4 md:col-span-3">
                 <button type="button" onClick={()=>void handleCancelOrder(order.id)} disabled={order.status==='cancelled'} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-rose-200 bg-white px-4 text-xs font-bold text-rose-700 hover:bg-rose-50"><Trash2 size={16}/>Annuler la commande</button>
-                <p className="self-center text-xs text-slate-500">Les statuts et les informations d'expédition sont sauvegardés dans D1. L'annulation conserve l'historique.</p>
+                <button type="button" onClick={async()=>{if(!window.confirm('Masquer cette commande de l’Admin ? Elle restera conservée dans D1 et ne sera plus affichée après Actualiser.'))return; try{const response=await fetch('/api/orders/'+encodeURIComponent(order.id),{method:'DELETE',credentials:'same-origin'}); if(!response.ok)throw new Error('Archive failed'); setOrders(current=>current.filter(item=>item.id!==order.id));}catch{alert('La commande n’a pas pu être masquée. Actualisez puis réessayez.');}}} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 hover:bg-slate-50"><Trash2 size={16}/>Masquer de l’Admin</button>
+                <p className="self-center text-xs text-slate-500">Annuler = statut conservé. Masquer = retiré de la vue Admin uniquement, jamais supprimé de D1.</p>
               </div>
             </div>
           </details>
