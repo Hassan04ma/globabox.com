@@ -457,7 +457,7 @@ export default function AdminPanel({
         ? order.freeShipping
         : order.total >= 500;
       return [
-        order.id, order.reference, order.createdAt || order.date, order.updatedAt || '',
+        order.id, order.reference, order.createdAt || order.date, order.shipping?.updatedAt || '',
         order.status, order.fullName, order.phoneNumber, order.city, order.deliveryAddress,
         order.notes, items, subtotal, shippingCost, freeShipping ? 'Oui' : 'Non',
         order.finalTotal ?? order.total, order.paymentMethod || '',
