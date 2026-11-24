@@ -512,7 +512,7 @@ export default {
       }
       if (path === '/api/orders' && method === 'GET') {
         if (!await auth(request, env)) return json({ error: 'Unauthorized' }, 401);
-        const rows = await env.DB.prepare('SELECT data_json FROM orders ORDER BY created_at DESC').all<{ data_json: string }>();
+        const rows = await env.DB.prepare("SELECT data_json FROM orders WHERE COALESCE(json_extract(data_json, '$.adminDeletedAt'), '') = '' ORDER BY created_at DESC").all<{ data_json: string }>();
         return json(rows.results.map(row => JSON.parse(row.data_json)));
       }
       if (path === '/api/orders' && method === 'POST') {
@@ -543,9 +543,21 @@ export default {
         }
         if (!existing) return json({error:'Order not found'},404);
         if (method === 'DELETE') {
-          // Preserve sales history and customer references. Use cancelled status
-          // instead of permanently removing merchant order records from D1.
-          return json({error:'Order deletion disabled. Set status to cancelled instead.'},403);
+          // Soft-delete from the Admin UI only. The order remains in D1 for history,
+          // reporting and recovery, but the normal Admin list will not return it after refresh.
+          const oldOrder = JSON.parse(existing.data_json);
+          const hiddenOrder = {
+            ...oldOrder,
+            adminDeletedAt: new Date().toISOString(),
+            adminDeleted: true,
+            updatedAt: new Date().toISOString()
+          };
+          const write = await env.DB.prepare(
+            'UPDATE orders SET data_json=?, updated_at=CURRENT_TIMESTAMP WHERE id=?'
+          ).bind(JSON.stringify(hiddenOrder), resolvedId).run();
+          if (!write.success || write.meta?.changes !== 1)
+            return json({error:'D1 did not confirm order archive'},503);
+          return json({success:true, archived:true, orderId:resolvedId});
         }
         const update = await readBody(request);
         const allowed = ['pending','confirmed','processing','shipped','delivered','cancelled'];
