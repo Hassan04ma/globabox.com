@@ -1168,7 +1168,7 @@ export default function AdminPanel({
 
     setOrders(current => current.filter(order => !ids.includes(order.id)));
     setSelectedOrderIds(new Set());
-    setRefreshSuccess(`Suppression terminée : ${deleted} commande(s) supprimée(s), ${failed} échec(s).`);
+    setRefreshSuccess(`Masquage terminé : ${deleted} commande(s) retirée(s) de l’Admin, ${failed} échec(s).`);
     if (failed) setRefreshError(`${failed} commande(s) n'ont pas pu être supprimée(s).`);
   };
 
@@ -1220,7 +1220,7 @@ export default function AdminPanel({
   const handleBulkDeleteProducts = async () => {
     const ids = Array.from(selectedProductIds);
     if (!ids.length) return;
-    if (!window.confirm(`Supprimer définitivement ${ids.length} produit(s) sélectionné(s) du catalogue D1 ? Cette action ne peut pas être annulée.`)) return;
+    if (!window.confirm(`Masquer ${ids.length} produit(s) sélectionné(s) de l’Admin ? Ils restent conservés dans D1 et ne seront plus affichés après actualisation.`)) return;
 
     let deleted = 0, failed = 0;
     for (const id of ids) {
@@ -1236,7 +1236,7 @@ export default function AdminPanel({
     setAdminProducts(current => current.filter(p => !ids.includes(p.id)));
     setProducts(current => current.filter(p => !ids.includes(p.id)));
     setSelectedProductIds(new Set());
-    alert(`Suppression terminée : ${deleted} produit(s) supprimé(s), ${failed} échec(s).`);
+    alert(`Masquage terminé : ${deleted} produit(s) retiré(s) de l’Admin, ${failed} échec(s).`);
   };
 
   const handleBulkPublishProducts = async () => {
