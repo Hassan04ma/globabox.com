@@ -810,6 +810,15 @@ export default function AdminPanel({
     e.target.value = ''; // Reset input
   };
 
+  const downloadProductsExcelTemplate = () => {
+    const headers = ['ID','Nom FR','Nom AR','Nom EN','Prix','Ancien Prix','Categorie','Image Principale','Images Galerie','Etat Stock','Meilleure Vente','Nouveaute','En Vedette','Description FR','Description AR','Description EN','SKU','Code-barres'];
+    const sheet = XLSX.utils.aoa_to_sheet([headers]);
+    sheet['!cols'] = headers.map(() => ({ wch: 22 }));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, sheet, 'Produits');
+    XLSX.writeFile(workbook, 'modele_import_produits_globabox.xlsx');
+  };
+
   // Import Excel workbook directly into Cloudflare D1 as unpublished drafts.
   const importProductsFromExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1479,6 +1488,7 @@ export default function AdminPanel({
             importProductsFromJSON={importProductsFromJSON}
             importProductsFromCSV={importProductsFromCSV}
             importProductsFromExcel={importProductsFromExcel}
+            downloadProductsExcelTemplate={downloadProductsExcelTemplate}
             uploadProductPhotos={uploadProductPhotos}
           />
         )}
