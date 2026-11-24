@@ -34,6 +34,11 @@ const db = {
           if(i>=0)savedOrders.splice(i,1);
           return {success:true,meta:{changes:i>=0?1:0}};
         }
+        if (sql.startsWith('UPDATE orders SET data_json=')) {
+          const i=savedOrders.findIndex(o=>o.id===params[1]);
+          if(i>=0)savedOrders[i]=JSON.parse(params[0] as string);
+          return {success:true,meta:{changes:i>=0?1:0}};
+        }
         if(sql.startsWith('UPDATE orders SET status=')){
           const i=savedOrders.findIndex(o=>o.id===params[2]);
           if(i>=0)savedOrders[i]=JSON.parse(params[1] as string);
