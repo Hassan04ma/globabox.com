@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import * as XLSX from 'xlsx';
 import { Package, ClipboardList, Settings, Plus, Trash2, Edit2, CheckCircle2, RefreshCw, X, Search, ChevronRight, Ban, Truck, ShieldCheck, CornerDownRight, BarChart3, MapPin, Phone, ShoppingCart, BadgeCheck, Compass } from 'lucide-react';
 import { Product, Category, Order, Language } from '../types';
 import { MOROCCAN_CITIES, ORDER_SUPPORT_NUMBER, WHATSAPP_NUMBER } from '../data';
@@ -500,6 +501,47 @@ export default function AdminPanel({
     }
     result.push(cell);
     return result;
+  };
+
+  // Export the current admin product catalogue to a real Excel workbook.
+  const exportProductsToExcel = () => {
+    if (adminProducts.length === 0) {
+      alert("Aucun produit à exporter.");
+      return;
+    }
+    const rows = adminProducts.map(p => ({
+      "ID": p.id,
+      "Nom FR": p.name?.fr || "",
+      "Nom AR": p.name?.ar || "",
+      "Nom EN": p.name?.en || "",
+      "Prix": p.price ?? "",
+      "Ancien Prix": p.originalPrice ?? "",
+      "Categorie": p.category || "",
+      "Sous-categorie": p.subcategory || "",
+      "Image Principale": p.image || "",
+      "Images Galerie": (p.additionalImages || []).join(";"),
+      "Etat Stock": p.stockStatus || (p.inStock ? "in_stock" : "out_of_stock"),
+      "Meilleure Vente": p.bestSeller ? "TRUE" : "FALSE",
+      "Nouveaute": p.newArrival ? "TRUE" : "FALSE",
+      "En Vedette": p.featured ? "TRUE" : "FALSE",
+      "Publie": p.isActive === true ? "TRUE" : "FALSE",
+      "SKU": p.sku || "",
+      "Code-barres": p.barcode || "",
+      "Tags": (p.tags || []).join(";"),
+      "Description FR": p.description?.fr || "",
+      "Description AR": p.description?.ar || "",
+      "Description EN": p.description?.en || "",
+      "Caracteristiques FR": (p.features?.fr || []).join(";"),
+      "Caracteristiques AR": (p.features?.ar || []).join(";"),
+      "Caracteristiques EN": (p.features?.en || []).join(";"),
+      "SEO Titre": p.seoTitle || "",
+      "SEO Description": p.seoDescription || ""
+    }));
+    const sheet = XLSX.utils.json_to_sheet(rows);
+    sheet["!cols"] = Object.keys(rows[0]).map(key => ({ wch: Math.min(38, Math.max(14, key.length + 3)) }));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, sheet, "Produits");
+    XLSX.writeFile(workbook, `globabox_produits_${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
   // Export products as JSON backup
@@ -1416,6 +1458,7 @@ export default function AdminPanel({
             toggleProductSelection={toggleProductSelection}
             exportProductsToJSON={exportProductsToJSON}
             exportProductsToCSV={exportProductsToCSV}
+            exportProductsToExcel={exportProductsToExcel}
             importProductsFromJSON={importProductsFromJSON}
             importProductsFromCSV={importProductsFromCSV}
             uploadProductPhotos={uploadProductPhotos}
