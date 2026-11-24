@@ -19,6 +19,7 @@ interface Props {
  exportProductsToJSON:()=>void; exportProductsToCSV:()=>void;
  importProductsFromJSON:(e:ChangeEvent<HTMLInputElement>)=>void;
  importProductsFromCSV:(e:ChangeEvent<HTMLInputElement>)=>void;
+ importProductsFromExcel:(e:ChangeEvent<HTMLInputElement>)=>void;
  uploadProductPhotos:(files:FileList|null)=>Promise<void>;
 }
 export default function AdminProductsWorkspace(p:Props){
@@ -27,7 +28,7 @@ export default function AdminProductsWorkspace(p:Props){
  setEditingProduct,setIsAddingProduct,mediaUploading,tagsInput,setTagsInput,handleSaveProduct,
  handleStartAddProduct,handleStartEditProduct,handleDeleteProduct,handleBulkPublishProducts,
  handleBulkDeleteProducts,clearProductSelection,toggleSelectAllVisibleProducts,toggleProductSelection,
- exportProductsToJSON,exportProductsToCSV,importProductsFromJSON,importProductsFromCSV,uploadProductPhotos}=p;
+ exportProductsToJSON,exportProductsToCSV,importProductsFromJSON,importProductsFromCSV,importProductsFromExcel,uploadProductPhotos}=p;
  return (
 <div dir={language==='ar'?'rtl':'ltr'} lang={language} className="space-y-6">
 
@@ -46,6 +47,9 @@ export default function AdminProductsWorkspace(p:Props){
       </label>
       <label className="cursor-pointer rounded-lg border border-[#b9d7c2] bg-[#edf7f0] px-3 py-2.5 text-xs font-bold text-[#195c41] hover:bg-[#e0f1e5]">
         Importer CSV<input type="file" accept=".csv,text/csv" onChange={importProductsFromCSV} className="sr-only"/>
+      </label>
+      <label className="cursor-pointer rounded-lg border border-[#9fcbb0] bg-[#e5f4e9] px-4 py-2.5 text-xs font-extrabold text-[#145b3d] hover:bg-[#d8eddf]">
+        Importer Excel (.xlsx)<input type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" onChange={importProductsFromExcel} className="sr-only"/>
       </label>
       <p className="basis-full text-[11px] leading-5 text-[#738a7a]">Les modifications sont sauvegardées dans Cloudflare D1. Les nouveaux produits restent en brouillon jusqu'à publication.</p>
     </div>
