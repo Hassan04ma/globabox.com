@@ -85,21 +85,17 @@ export default function AdminWorkspaceLayout({
   return()=>window.removeEventListener('keydown',listener);
  },[]);
  const sidebar=<div className="flex h-full min-h-0 bg-white text-[#30445a]">
-  <div className="flex w-[72px] shrink-0 flex-col items-center gap-2 bg-[#ed6b2f] py-4 text-white">
-   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-white/40 bg-white text-[#ed6b2f]"><img src="/brand/globabox-mark.svg" alt="GLOBABOX" className="h-7 w-7 object-contain"/></div>
-   {localizedNavigation.map(item=>{const Icon=item.icon;const active=activeTab===item.id;return <button key={item.id} type="button" onClick={()=>select(item.id)} aria-label={item.label} title={item.label} aria-current={active?'page':undefined} className={'flex h-11 w-11 items-center justify-center rounded-xl transition '+(active?'bg-white text-[#ed6b2f] shadow-md':'text-white/90 hover:bg-white/20')}><Icon size={19}/></button>;})}
+  <div className="flex w-[72px] shrink-0 flex-col items-center gap-2 bg-[#104d43] py-4 text-white">
+   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-white/40 bg-white text-[#104d43]"><img src="/brand/globabox-mark.svg" alt="GLOBABOX" className="h-7 w-7 object-contain"/></div>
+   {localizedNavigation.map(item=>{const Icon=item.icon;const active=activeTab===item.id;return <button key={item.id} type="button" onClick={()=>select(item.id)} aria-label={item.label} title={item.label} aria-current={active?'page':undefined} className={'flex h-11 w-11 items-center justify-center rounded-xl transition '+(active?'bg-white text-[#104d43] shadow-md':'text-white/90 hover:bg-white/20')}><Icon size={19}/></button>;})}
    <div className="mt-auto flex flex-col gap-2">
     <button type="button" onClick={onLogout} aria-label={copy.logout} title={copy.logout} className="flex h-11 w-11 items-center justify-center rounded-xl text-white/90 hover:bg-white/20"><LogOut size={19}/></button>
    </div>
   </div>
   <div className="flex min-w-0 flex-1 flex-col">
-   <div className="flex h-[72px] shrink-0 items-center gap-3 border-b border-[#e5eaf0] px-4">
-    <img src="/brand/globabox-logo.svg" alt="GLOBABOX" className="h-9 max-w-[145px] object-contain"/>
-    <span className="ms-auto rounded-full bg-[#fff2eb] px-2.5 py-1 text-[9px] font-extrabold tracking-wide text-[#d85d25]">{copy.admin}</span>
-   </div>
    <div className="border-b border-[#e9edf2] px-3 py-3">
     <div className="flex items-center gap-3 rounded-lg bg-[#f7f8fa] px-3 py-3">
-     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#fff0e8] text-[#e66b32]"><Store size={18}/></span>
+     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#edf6f0] text-[#104d43]"><Store size={18}/></span>
      <span className="min-w-0"><span className="block truncate text-xs font-bold text-[#263b52]">{copy.store}</span><span className="mt-0.5 block text-[10px] text-[#8291a2]">GLOBABOX · Maroc</span></span>
     </div>
    </div>
@@ -108,23 +104,23 @@ export default function AdminWorkspaceLayout({
      <p className="mb-2 px-3 text-[9px] font-extrabold tracking-[.16em] text-[#9aa7b5]">{group}</p>
      <div className="space-y-1">{localizedNavigation.filter(item=>item.group===group).map(item=>{
       const Icon=item.icon,active=activeTab===item.id,n=count(item.id);
-      return <button key={item.id} type="button" onClick={()=>select(item.id)} aria-current={active?'page':undefined} className={'group flex min-h-[43px] w-full items-center gap-3 rounded-lg px-3 text-start transition '+(active?'bg-[#fff0e8] text-[#dc642d] font-bold':'text-[#607187] hover:bg-[#f5f7f9] hover:text-[#263b52]')}>
+      return <button key={item.id} type="button" onClick={()=>select(item.id)} aria-current={active?'page':undefined} className={'group flex min-h-[43px] w-full items-center gap-3 rounded-lg px-3 text-start transition '+(active?'bg-[#edf6f0] text-[#104d43] font-bold':'text-[#607187] hover:bg-[#f5f7f9] hover:text-[#263b52]')}>
        <Icon size={17}/><span className="min-w-0 flex-1 text-[12px] font-semibold">{item.label}</span>
-       {n!==null&&<span className={'min-w-6 rounded-md px-1.5 py-1 text-center text-[10px] font-extrabold '+(active?'bg-[#ed6b2f] text-white':'bg-[#eef1f5] text-[#718096]')}>{n}</span>}
+       {n!==null&&<span className={'min-w-6 rounded-md px-1.5 py-1 text-center text-[10px] font-extrabold '+(active?'bg-[#104d43] text-white':'bg-[#eef1f5] text-[#718096]')}>{n}</span>}
       </button>;
      })}</div>
     </section>)}
-    <div className="mx-1 mt-5 rounded-lg border border-[#f4d4c4] bg-[#fff8f4] p-3">
-     <div className="flex items-center gap-2 text-[11px] font-extrabold text-[#c95c2b]"><Truck size={15}/>{copy.shipping}</div>
+    <div className="mx-1 mt-5 rounded-lg border border-[#d7e6dc] bg-[#f3f8f4] p-3">
+     <div className="flex items-center gap-2 text-[11px] font-extrabold text-[#104d43]"><Truck size={15}/>{copy.shipping}</div>
      <p className="mt-2 text-[10px] leading-5 text-[#7d8794]">{pendingOrders===0?copy.nonePending:pendingOrders+' '+copy.attention}</p>
-     <button type="button" onClick={()=>{onPendingOrders();setMobileOpen(false);}} className="mt-2 text-[10px] font-bold text-[#d65f2b] underline underline-offset-4">{copy.openOrders}</button>
+     <button type="button" onClick={()=>{onPendingOrders();setMobileOpen(false);}} className="mt-2 text-[10px] font-bold text-[#104d43] underline underline-offset-4">{copy.openOrders}</button>
     </div>
    </nav>
    <div className="shrink-0 border-t border-[#e9edf2] p-3">
     <div className="flex items-center gap-3 rounded-lg px-2 py-1">
-     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#fff0e8] text-[11px] font-black text-[#dc642d]">GB</span>
+     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#edf6f0] text-[11px] font-black text-[#104d43]">GB</span>
      <span className="min-w-0 flex-1"><span className="block text-[11px] font-bold text-[#34465b]">{copy.administrator}</span><span className="mt-0.5 block text-[10px] text-[#93a0ae]">{copy.secure}</span></span>
-     <button type="button" onClick={onLogout} aria-label={copy.logout} title={copy.logout} className="rounded-lg p-2 text-[#8190a0] hover:bg-[#fff0e8] hover:text-[#d65f2b]"><LogOut size={17}/></button>
+     <button type="button" onClick={onLogout} aria-label={copy.logout} title={copy.logout} className="rounded-lg p-2 text-[#8190a0] hover:bg-[#edf6f0] hover:text-[#104d43]"><LogOut size={17}/></button>
     </div>
    </div>
   </div>
