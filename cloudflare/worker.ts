@@ -469,7 +469,7 @@ export default {
       if (path === '/api/products' && method === 'GET') return json(await listProducts(env.DB, false, env.STORE_DEMO_CATALOG === 'true'));
       if (path === '/api/admin/products' && method === 'GET') {
         if (!await auth(request, env)) return json({ error: 'Unauthorized' }, 401);
-        return json(await listProducts(env.DB, true, env.STORE_DEMO_CATALOG === 'true'));
+        return json((await listProducts(env.DB, true, env.STORE_DEMO_CATALOG === 'true')).filter(publicProduct));
       }
       // Public self-service tracking requires two independent order identifiers.
       // Never expose raw order JSON, address, telephone, name or full order listings.
