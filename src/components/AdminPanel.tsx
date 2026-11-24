@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import * as XLSX from 'xlsx';
 import { Package, ClipboardList, Settings, Plus, Trash2, Edit2, CheckCircle2, RefreshCw, X, Search, ChevronRight, Ban, Truck, ShieldCheck, CornerDownRight, BarChart3, MapPin, Phone, ShoppingCart, BadgeCheck, Compass } from 'lucide-react';
 import { Product, Category, Order, Language } from '../types';
 import { MOROCCAN_CITIES, ORDER_SUPPORT_NUMBER, WHATSAPP_NUMBER } from '../data';
@@ -809,6 +810,65 @@ export default function AdminPanel({
     e.target.value = ''; // Reset input
   };
 
+  // Import Excel workbook directly into Cloudflare D1 as unpublished drafts.
+  const importProductsFromExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    if (!/\.xlsx?$/i.test(file.name)) { alert('Choisissez un fichier Excel .xlsx ou .xls.'); return; }
+    const reader = new FileReader();
+    reader.onload = async event => {
+      try {
+        const workbook = XLSX.read(event.target?.result, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        if (!sheet) { alert('Le fichier Excel ne contient aucune feuille.'); return; }
+        const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: '', raw: false });
+        if (!rows.length || rows.length > 200) { alert('Le fichier doit contenir entre 1 et 200 produits.'); return; }
+        const value = (row: Record<string, unknown>, key: string) => String(row[key] ?? '').trim();
+        const parsed: Product[] = [];
+        let invalid = 0;
+        for (const row of rows) {
+          const id=value(row,'ID'), nameFr=value(row,'Nom FR'), priceText=value(row,'Prix').replace(',', '.');
+          const category=value(row,'Categorie'), image=value(row,'Image Principale');
+          const price=Number(priceText);
+          if (!/^[a-zA-Z0-9_-]{1,100}$/.test(id) || !nameFr || !Number.isFinite(price) || price<=0 || !category ||
+              (image && !/^https:\/\//i.test(image))) { invalid++; continue; }
+          const gallery=value(row,'Images Galerie').split(';').map(v=>v.trim()).filter(v=>/^https:\/\//i.test(v));
+          const stockStatus=(value(row,'Etat Stock') || 'in_stock') as Product['stockStatus'];
+          const descFr=value(row,'Description FR'), descAr=value(row,'Description AR'), descEn=value(row,'Description EN');
+          parsed.push({
+            id, name:{fr:nameFr,ar:value(row,'Nom AR')||nameFr,en:value(row,'Nom EN')||nameFr},
+            price, originalPrice:Number(value(row,'Ancien Prix'))||undefined, category, image,
+            images:[image,...gallery].filter(Boolean), additionalImages:gallery,
+            inStock:stockStatus!=='out_of_stock', stockStatus,
+            bestSeller:/^(true|1|oui|yes)$/i.test(value(row,'Meilleure Vente')),
+            newArrival:/^(true|1|oui|yes)$/i.test(value(row,'Nouveaute')),
+            featured:/^(true|1|oui|yes)$/i.test(value(row,'En Vedette')),
+            description:{fr:descFr,ar:descAr||descFr,en:descEn||descFr},
+            features:{fr:[],ar:[],en:[]},rating:0,reviewsCount:0,
+            isActive:false, sku:value(row,'SKU'), barcode:value(row,'Code-barres')
+          } as Product);
+        }
+        if (!parsed.length) { alert('Aucune ligne valide. Vérifiez les colonnes ID, Nom FR, Prix et Categorie.'); return; }
+        let created=0, failed=0;
+        for (const product of parsed) {
+          try {
+            const response=await fetch('/api/products',{method:'POST',credentials:'same-origin',
+              headers:{'Content-Type':'application/json'},body:JSON.stringify({...product,isActive:false,visibilityChanged:false})});
+            if(response.ok) created++; else failed++;
+          } catch { failed++; }
+        }
+        const refreshed=await fetch('/api/admin/products',{credentials:'same-origin',cache:'no-store'});
+        if(refreshed.ok){const latest=await refreshed.json();if(Array.isArray(latest))setAdminProducts(latest);}
+        alert('Import Excel terminé : '+created+' brouillon(s) enregistré(s), '+(failed+invalid)+' ligne(s) ignorée(s) ou rejetée(s). Aucun produit n’a été publié.');
+      } catch (error) {
+        console.error('[GLOBABOX] Excel import failed',error);
+        alert('Impossible de lire le fichier Excel. Utilisez le modèle de colonnes GLOBABOX.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
   const [mediaUploading,setMediaUploading]=useState(false);
   const fillCamelDraft=()=>{
     setEditingProduct(null);
@@ -1418,6 +1478,7 @@ export default function AdminPanel({
             exportProductsToCSV={exportProductsToCSV}
             importProductsFromJSON={importProductsFromJSON}
             importProductsFromCSV={importProductsFromCSV}
+            importProductsFromExcel={importProductsFromExcel}
             uploadProductPhotos={uploadProductPhotos}
           />
         )}
