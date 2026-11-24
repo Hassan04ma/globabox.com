@@ -417,7 +417,7 @@ export default function AdminProductsWorkspace(p:Props){
             <td className="px-5 py-4 text-end">
               <div className="flex items-center justify-end gap-2">
                 <button type="button" onClick={()=>handleStartEditProduct(prod)} className="min-h-10 rounded-xl border border-[#bed9c8] bg-[#f0f8f2] px-4 text-xs font-extrabold text-[#104d43] hover:bg-[#e0f0e5]">Modifier</button>
-                <button type="button" onClick={()=>handleDeleteProduct(prod.id)} aria-label={'Retirer '+(prod.name?.fr||prod.id)} title="Retirer du catalogue"
+                <button type="button" onClick={()=>handleDeleteProduct(prod.id)} aria-label={'Désactiver '+(prod.name?.fr||prod.id)+' du catalogue'} title="Désactiver du catalogue"
                   className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-red-600 hover:bg-red-50"><Trash2 size={16}/></button>
               </div>
             </td>

@@ -22,7 +22,7 @@ const db = {
       async all() {
         if (sql.includes('FROM category_overrides')) return { results: [] };
         if (sql.includes('FROM products')) return { results: [] };
-        if (sql.includes('FROM orders')) return { results: savedOrders.map(order => ({data_json: JSON.stringify(order)})) };
+        if (sql.includes('FROM orders')) return { results: savedOrders.filter(order => !order.adminDeletedAt).map(order => ({data_json: JSON.stringify(order)})) };
         throw new Error('Unexpected all(): ' + sql);
       },
       async run() {
@@ -32,6 +32,11 @@ const db = {
         if (sql.startsWith('DELETE FROM orders')) {
           const i=savedOrders.findIndex(o=>o.id===params[0]);
           if(i>=0)savedOrders.splice(i,1);
+          return {success:true,meta:{changes:i>=0?1:0}};
+        }
+        if (sql.startsWith('UPDATE orders SET data_json=')) {
+          const i=savedOrders.findIndex(o=>o.id===params[1]);
+          if(i>=0)savedOrders[i]=JSON.parse(params[0] as string);
           return {success:true,meta:{changes:i>=0?1:0}};
         }
         if(sql.startsWith('UPDATE orders SET status=')){
@@ -222,8 +227,11 @@ const preserved=await worker.fetch(new Request(
  'https://preview.example.test/api/orders/'+encodeURIComponent(data.order.id),{
  method:'DELETE',headers:{'x-admin-api-key':'ci_dummy_admin_api_key_very_long_not_a_secret_00001'}
 }),adminEnv);
-assert.equal(preserved.status,403,'Even administrators cannot erase order history');
-assert.equal(savedOrders.some(o=>o.id===data.order.id),true,'Existing order must survive forbidden deletion');
+assert.equal(preserved.status,200,'Authorized admin can archive an order from the Admin view');
+assert.deepEqual(await preserved.json(),{success:true,archived:true,orderId:data.order.id});
+assert.equal(savedOrders.some(o=>o.id===data.order.id),true,'Archived order must remain stored in D1');
+assert.equal(savedOrders.find(o=>o.id===data.order.id)?.adminDeleted,true,'Archive marker is persisted');
+assert.equal(savedOrders.filter(o=>!o.adminDeletedAt).some(o=>o.id===data.order.id),false,'Archived order is hidden from the normal Admin list');
 const savedShipping=await changeShipping({carrier:'Livraison interne',trackingNumber:'GB-TRACK-0001',internalNote:'Internal call note'});
 assert.equal(savedShipping.status,200,'Authorized admin can save manual shipment metadata');
 assert.equal(savedOrders.find(o=>o.id===data.order.id)?.shipping?.trackingNumber,'GB-TRACK-0001');

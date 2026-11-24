@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   ArrowUpRight, BarChart3, ChevronRight,
-  ClipboardCheck, ClipboardList, Command, ExternalLink, LayoutDashboard, Users,
+  ClipboardList, Command, ExternalLink, LayoutDashboard, Users,
   LogOut, Menu, Package, Plus, Search, Store,
   Tags, Truck
 } from 'lucide-react';
 import '../adminPlatform.css';
 
-type AdminTab='dashboard'|'orders'|'customers'|'products'|'categories'|'marketing'|'operations';
+type AdminTab='dashboard'|'orders'|'customers'|'products'|'categories'|'marketing';
 interface Props{
  language:'ar'|'fr'|'en';
  activeTab:AdminTab; onTabChange:(tab:AdminTab)=>void;
@@ -24,8 +24,7 @@ const navigation=[
  {id:'customers' as const,label:'Clients',description:'Historique et fidélité',icon:Users,group:'VENTES'},
  {id:'products' as const,label:'Produits',description:'Catalogue et inventaire',icon:Package,group:'VENTES'},
  {id:'categories' as const,label:'Collections',description:'Rayons et catégories',icon:Tags,group:'VENTES'},
- {id:'marketing' as const,label:'Marketing',description:'Pixels et acquisition',icon:BarChart3,group:'CROISSANCE'},
- {id:'operations' as const,label:'Opérations',description:'Qualité et préparation',icon:ClipboardCheck,group:'CROISSANCE'}
+ {id:'marketing' as const,label:'Marketing',description:'Pixels et acquisition',icon:BarChart3,group:'CROISSANCE'}
 ];
 const subtitles:Record<AdminTab,string>={
  dashboard:'Vue globale de votre activité commerciale',
@@ -33,8 +32,7 @@ const subtitles:Record<AdminTab,string>={
  customers:'Retrouvez les clients à partir de leurs commandes et de leur historique',
  products:'Gérez vos fiches, vos prix et vos disponibilités',
  categories:'Organisez les rayons et la navigation de la boutique',
- marketing:'Configurez les outils de mesure et de publicité',
- operations:'Contrôlez la préparation et la qualité de la boutique'
+ marketing:'Configurez les outils de mesure et de publicité'
 };
 export default function AdminWorkspaceLayout({
  language,activeTab,onTabChange,onClose,onLogout,ordersCount,pendingOrders,productsCount,
@@ -42,21 +40,21 @@ export default function AdminWorkspaceLayout({
 }:Props){
  const copy=language==='ar'?{
  groups:['متجرك','المبيعات','النمو'],
- labels:{dashboard:'نظرة عامة',orders:'الطلبات',customers:'العملاء',products:'المنتجات',categories:'التصنيفات',marketing:'التسويق',operations:'العمليات'},
- descriptions:{dashboard:'نشاط المتجر والمؤشرات',orders:'تتبع ومعالجة الطلبات',customers:'سجل العملاء والوفاء',products:'الكتالوج والمخزون',categories:'الأقسام والتصنيفات',marketing:'القياس والإعلانات',operations:'الجودة وتجهيز الطلبات'},
- subtitles:{dashboard:'نظرة شاملة على نشاطك التجاري',orders:'راجع طلبات العملاء وأكدها وتابع توصيلها',customers:'بيانات العملاء المستخرجة من الطلبات',products:'أدر المنتجات والأسعار والتوفر',categories:'نظم أقسام المتجر وتصفحه',marketing:'إعداد أدوات القياس والإعلانات',operations:'راقب جودة المتجر وتجهيز الطلبات'},
+ labels:{dashboard:'نظرة عامة',orders:'الطلبات',customers:'العملاء',products:'المنتجات',categories:'التصنيفات',marketing:'التسويق'},
+ descriptions:{dashboard:'نشاط المتجر والمؤشرات',orders:'تتبع ومعالجة الطلبات',customers:'سجل العملاء والوفاء',products:'الكتالوج والمخزون',categories:'الأقسام والتصنيفات',marketing:'القياس والإعلانات'},
+ subtitles:{dashboard:'نظرة شاملة على نشاطك التجاري',orders:'راجع طلبات العملاء وأكدها وتابع توصيلها',customers:'بيانات العملاء المستخرجة من الطلبات',products:'أدر المنتجات والأسعار والتوفر',categories:'نظم أقسام المتجر وتصفحه',marketing:'إعداد أدوات القياس والإعلانات'},
  store:'متجري',admin:'إدارة المتجر',quick:'بحث سريع في الأقسام…',quickTitle:'التنقل السريع',noResults:'لا توجد نتائج',db:['قاعدة البيانات متصلة','يجب التحقق من قاعدة البيانات','لم يتم التحقق من القاعدة'],view:'عرض المتجر',newProduct:'منتج جديد',toProcess:'طلبات قيد المعالجة',secure:'جلسة آمنة',administrator:'المسؤول',logout:'تسجيل الخروج',shipping:'التوصيل اليدوي',nonePending:'لا توجد طلبات تنتظر المعالجة',attention:'طلب يحتاج إلى متابعة',openOrders:'فتح الطلبات',merchant:'مساحة التاجر',menu:'فتح القائمة',closeMenu:'إغلاق القائمة'
 }:language==='en'?{
  groups:['YOUR STORE','SALES','GROWTH'],
- labels:{dashboard:'Overview',orders:'Orders',customers:'Customers',products:'Products',categories:'Collections',marketing:'Marketing',operations:'Operations'},
- descriptions:{dashboard:'Store activity and metrics',orders:'Track and process orders',customers:'Customer history and loyalty',products:'Catalog and inventory',categories:'Store departments and navigation',marketing:'Analytics and advertising',operations:'Quality and fulfillment'},
- subtitles:{dashboard:'A complete view of your store activity',orders:'Review, confirm and track customer orders',customers:'Customer records derived from orders',products:'Manage product listings, prices and availability',categories:'Organize your store departments',marketing:'Configure analytics and advertising tools',operations:'Monitor store quality and fulfillment'},
+ labels:{dashboard:'Overview',orders:'Orders',customers:'Customers',products:'Products',categories:'Collections',marketing:'Marketing'},
+ descriptions:{dashboard:'Store activity and metrics',orders:'Track and process orders',customers:'Customer history and loyalty',products:'Catalog and inventory',categories:'Store departments and navigation',marketing:'Analytics and advertising'},
+ subtitles:{dashboard:'A complete view of your store activity',orders:'Review, confirm and track customer orders',customers:'Customer records derived from orders',products:'Manage product listings, prices and availability',categories:'Organize your store departments',marketing:'Configure analytics and advertising tools'},
  store:'My store',admin:'STORE ADMIN',quick:'Search sections…',quickTitle:'QUICK NAVIGATION',noResults:'No results found',db:['Database connected','Database needs checking','Database not verified'],view:'View store',newProduct:'New product',toProcess:'Orders to process',secure:'Secure session',administrator:'Administrator',logout:'Log out',shipping:'Manual shipping',nonePending:'No orders need attention.',attention:'order(s) need attention.',openOrders:'Open orders',merchant:'Merchant workspace',menu:'Open menu',closeMenu:'Close menu'
 }:{
  groups:['VOTRE BOUTIQUE','VENTES','CROISSANCE'],
- labels:{dashboard:'Vue d’ensemble',orders:'Commandes',customers:'Clients',products:'Produits',categories:'Collections',marketing:'Marketing',operations:'Opérations'},
- descriptions:{dashboard:'Activité et indicateurs',orders:'Suivi et traitement',customers:'Historique et fidélité',products:'Catalogue et inventaire',categories:'Rayons et catégories',marketing:'Pixels et acquisition',operations:'Qualité et préparation'},
- subtitles:{dashboard:'Vue globale de votre activité commerciale',orders:'Consultez, confirmez et suivez les commandes clients',customers:'Retrouvez les clients à partir de leurs commandes et de leur historique',products:'Gérez vos fiches, vos prix et vos disponibilités',categories:'Organisez les rayons et la navigation de la boutique',marketing:'Configurez les outils de mesure et de publicité',operations:'Contrôlez la préparation et la qualité de la boutique'},
+ labels:{dashboard:'Vue d’ensemble',orders:'Commandes',customers:'Clients',products:'Produits',categories:'Collections',marketing:'Marketing'},
+ descriptions:{dashboard:'Activité et indicateurs',orders:'Suivi et traitement',customers:'Historique et fidélité',products:'Catalogue et inventaire',categories:'Rayons et catégories',marketing:'Pixels et acquisition'},
+ subtitles:{dashboard:'Vue globale de votre activité commerciale',orders:'Consultez, confirmez et suivez les commandes clients',customers:'Retrouvez les clients à partir de leurs commandes et de leur historique',products:'Gérez vos fiches, vos prix et vos disponibilités',categories:'Organisez les rayons et la navigation de la boutique',marketing:'Configurez les outils de mesure et de publicité'},
  store:'Ma boutique',admin:'COMMERCE ADMIN',quick:'Rechercher une section…',quickTitle:'NAVIGATION RAPIDE',noResults:'Aucun résultat.',db:['Base connectée','Base à vérifier','Base non vérifiée'],view:'Voir la boutique',newProduct:'Nouveau produit',toProcess:'À traiter',secure:'Session sécurisée',administrator:'Administrateur',logout:'Déconnexion',shipping:'Expédition manuelle',nonePending:'Aucune commande à traiter.',attention:'commande(s) nécessitent votre attention.',openOrders:'Ouvrir les commandes',merchant:'Espace marchand',menu:'Ouvrir le menu',closeMenu:'Fermer le menu'
 };
  const localizedNavigation=navigation.map(item=>({...item,label:copy.labels[item.id],description:copy.descriptions[item.id],group:item.group===navigation[0].group?copy.groups[0]:item.group===navigation[1].group?copy.groups[1]:copy.groups[2]}));
@@ -85,21 +83,17 @@ export default function AdminWorkspaceLayout({
   return()=>window.removeEventListener('keydown',listener);
  },[]);
  const sidebar=<div className="flex h-full min-h-0 bg-white text-[#30445a]">
-  <div className="flex w-[72px] shrink-0 flex-col items-center gap-2 bg-[#ed6b2f] py-4 text-white">
-   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-white/40 bg-white text-[#ed6b2f]"><img src="/brand/globabox-mark.svg" alt="GLOBABOX" className="h-7 w-7 object-contain"/></div>
-   {localizedNavigation.map(item=>{const Icon=item.icon;const active=activeTab===item.id;return <button key={item.id} type="button" onClick={()=>select(item.id)} aria-label={item.label} title={item.label} aria-current={active?'page':undefined} className={'flex h-11 w-11 items-center justify-center rounded-xl transition '+(active?'bg-white text-[#ed6b2f] shadow-md':'text-white/90 hover:bg-white/20')}><Icon size={19}/></button>;})}
+  <div className="flex w-[72px] shrink-0 flex-col items-center gap-2 bg-[#104d43] py-4 text-white">
+   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-white/40 bg-white text-[#104d43]"><img src="/brand/globabox-mark.svg" alt="GLOBABOX" className="h-7 w-7 object-contain"/></div>
+   {localizedNavigation.map(item=>{const Icon=item.icon;const active=activeTab===item.id;return <button key={item.id} type="button" onClick={()=>select(item.id)} aria-label={item.label} title={item.label} aria-current={active?'page':undefined} className={'flex h-11 w-11 items-center justify-center rounded-xl transition '+(active?'bg-white text-[#104d43] shadow-md':'text-white/90 hover:bg-white/20')}><Icon size={19}/></button>;})}
    <div className="mt-auto flex flex-col gap-2">
     <button type="button" onClick={onLogout} aria-label={copy.logout} title={copy.logout} className="flex h-11 w-11 items-center justify-center rounded-xl text-white/90 hover:bg-white/20"><LogOut size={19}/></button>
    </div>
   </div>
   <div className="flex min-w-0 flex-1 flex-col">
-   <div className="flex h-[72px] shrink-0 items-center gap-3 border-b border-[#e5eaf0] px-4">
-    <img src="/brand/globabox-logo.svg" alt="GLOBABOX" className="h-9 max-w-[145px] object-contain"/>
-    <span className="ms-auto rounded-full bg-[#fff2eb] px-2.5 py-1 text-[9px] font-extrabold tracking-wide text-[#d85d25]">{copy.admin}</span>
-   </div>
    <div className="border-b border-[#e9edf2] px-3 py-3">
     <div className="flex items-center gap-3 rounded-lg bg-[#f7f8fa] px-3 py-3">
-     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#fff0e8] text-[#e66b32]"><Store size={18}/></span>
+     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#edf6f0] text-[#104d43]"><Store size={18}/></span>
      <span className="min-w-0"><span className="block truncate text-xs font-bold text-[#263b52]">{copy.store}</span><span className="mt-0.5 block text-[10px] text-[#8291a2]">GLOBABOX · Maroc</span></span>
     </div>
    </div>
@@ -108,23 +102,23 @@ export default function AdminWorkspaceLayout({
      <p className="mb-2 px-3 text-[9px] font-extrabold tracking-[.16em] text-[#9aa7b5]">{group}</p>
      <div className="space-y-1">{localizedNavigation.filter(item=>item.group===group).map(item=>{
       const Icon=item.icon,active=activeTab===item.id,n=count(item.id);
-      return <button key={item.id} type="button" onClick={()=>select(item.id)} aria-current={active?'page':undefined} className={'group flex min-h-[43px] w-full items-center gap-3 rounded-lg px-3 text-start transition '+(active?'bg-[#fff0e8] text-[#dc642d] font-bold':'text-[#607187] hover:bg-[#f5f7f9] hover:text-[#263b52]')}>
+      return <button key={item.id} type="button" onClick={()=>select(item.id)} aria-current={active?'page':undefined} className={'group flex min-h-[43px] w-full items-center gap-3 rounded-lg px-3 text-start transition '+(active?'bg-[#edf6f0] text-[#104d43] font-bold':'text-[#607187] hover:bg-[#f5f7f9] hover:text-[#263b52]')}>
        <Icon size={17}/><span className="min-w-0 flex-1 text-[12px] font-semibold">{item.label}</span>
-       {n!==null&&<span className={'min-w-6 rounded-md px-1.5 py-1 text-center text-[10px] font-extrabold '+(active?'bg-[#ed6b2f] text-white':'bg-[#eef1f5] text-[#718096]')}>{n}</span>}
+       {n!==null&&<span className={'min-w-6 rounded-md px-1.5 py-1 text-center text-[10px] font-extrabold '+(active?'bg-[#104d43] text-white':'bg-[#eef1f5] text-[#718096]')}>{n}</span>}
       </button>;
      })}</div>
     </section>)}
-    <div className="mx-1 mt-5 rounded-lg border border-[#f4d4c4] bg-[#fff8f4] p-3">
-     <div className="flex items-center gap-2 text-[11px] font-extrabold text-[#c95c2b]"><Truck size={15}/>{copy.shipping}</div>
+    <div className="mx-1 mt-5 rounded-lg border border-[#d7e6dc] bg-[#f3f8f4] p-3">
+     <div className="flex items-center gap-2 text-[11px] font-extrabold text-[#104d43]"><Truck size={15}/>{copy.shipping}</div>
      <p className="mt-2 text-[10px] leading-5 text-[#7d8794]">{pendingOrders===0?copy.nonePending:pendingOrders+' '+copy.attention}</p>
-     <button type="button" onClick={()=>{onPendingOrders();setMobileOpen(false);}} className="mt-2 text-[10px] font-bold text-[#d65f2b] underline underline-offset-4">{copy.openOrders}</button>
+     <button type="button" onClick={()=>{onPendingOrders();setMobileOpen(false);}} className="mt-2 text-[10px] font-bold text-[#104d43] underline underline-offset-4">{copy.openOrders}</button>
     </div>
    </nav>
    <div className="shrink-0 border-t border-[#e9edf2] p-3">
     <div className="flex items-center gap-3 rounded-lg px-2 py-1">
-     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#fff0e8] text-[11px] font-black text-[#dc642d]">GB</span>
+     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#edf6f0] text-[11px] font-black text-[#104d43]">GB</span>
      <span className="min-w-0 flex-1"><span className="block text-[11px] font-bold text-[#34465b]">{copy.administrator}</span><span className="mt-0.5 block text-[10px] text-[#93a0ae]">{copy.secure}</span></span>
-     <button type="button" onClick={onLogout} aria-label={copy.logout} title={copy.logout} className="rounded-lg p-2 text-[#8190a0] hover:bg-[#fff0e8] hover:text-[#d65f2b]"><LogOut size={17}/></button>
+     <button type="button" onClick={onLogout} aria-label={copy.logout} title={copy.logout} className="rounded-lg p-2 text-[#8190a0] hover:bg-[#edf6f0] hover:text-[#104d43]"><LogOut size={17}/></button>
     </div>
    </div>
   </div>

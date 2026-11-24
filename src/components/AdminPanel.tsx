@@ -4,7 +4,6 @@ import { Product, Category, Order, Language } from '../types';
 import { MOROCCAN_CITIES, ORDER_SUPPORT_NUMBER, WHATSAPP_NUMBER } from '../data';
 import AdminTrackingWorkspace from './AdminTrackingWorkspace';
 import AdminShippingEditor from './AdminShippingEditor';
-import AdminOperationsWorkspace from './AdminOperationsWorkspace';
 import ProductImage from './ProductImage';
 import AdminWorkspaceLayout from './AdminWorkspaceLayout';
 import AdminDashboardWorkspace from './AdminDashboardWorkspace';
@@ -49,7 +48,7 @@ export default function AdminPanel({
     }).format(date);
   };
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'customers' | 'products' | 'categories' | 'marketing' | 'operations'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'customers' | 'products' | 'categories' | 'marketing'>('dashboard');
 
   const [launchStatus, setLaunchStatus] = useState<{databaseReady:boolean;adminConfigured:boolean;checkoutEnabled:boolean;checkoutVerified:boolean}|null>(null);
   const [d1ProbeStatus, setD1ProbeStatus] = useState<'idle'|'running'|'success'|'error'>('idle');
@@ -428,85 +427,54 @@ export default function AdminPanel({
     await handleUpdateOrderStatus(orderId,'cancelled');
   };
 
-  // Export Orders to CSV helper
+  // Export complete order records for spreadsheet use (Excel-compatible CSV).
   const exportOrdersToCSV = () => {
     if (orders.length === 0) {
-      alert("Aucune de vos commandes Globabox n'est disponible pour l'export.");
+      alert("Aucune commande visible dans l’Admin à exporter.");
       return;
     }
-
-    // Prepare headers
     const headers = [
-      "ID Commande",
-      "Reference",
-      "Date",
-      "Statut",
-      "Nom Complet",
-      "Telephone",
-      "Ville",
-      "Adresse",
-      "Notes",
-      "Produits Commandes",
-      "Sous-total (DH)",
-      "Livraison (DH)",
-      "Livraison Gratuite",
-      "Total Final (DH)"
+      "ID Commande", "Référence", "Date commande", "Dernière mise à jour", "Statut",
+      "Nom complet", "Téléphone", "Ville", "Adresse", "Notes client",
+      "Produits commandés", "Sous-total (DH)", "Livraison (DH)", "Livraison gratuite",
+      "Total final (DH)", "Mode de paiement", "Transporteur", "Numéro de suivi", "Note livraison"
     ];
-
-    // Build the rows
+    const csvCell = (value: unknown) => {
+      const text = value === null || value === undefined ? '' : String(value);
+      return '"' + text.replace(/"/g, '""') + '"';
+    };
     const rows = orders.map(order => {
-      const itemsListStr = order.items
-        .map(it => `${it.productName} (x${it.quantity})`)
-        .join(' + ');
-
-      // Clean string values from double quotes to avoid CSV formatting corruption
-      const cleanName = (order.fullName || '').replace(/"/g, '""');
-      const cleanPhone = (order.phoneNumber || '').replace(/"/g, '""');
-      const cleanCity = (order.city || '').replace(/"/g, '""');
-      const cleanAddress = (order.deliveryAddress || '').replace(/"/g, '""');
-      const cleanNotes = (order.notes || '').replace(/"/g, '""');
-      const cleanItems = itemsListStr.replace(/"/g, '""');
-
-      const subtotalVal = order.subtotal !== undefined 
-        ? order.subtotal 
+      const items = Array.isArray(order.items)
+        ? order.items.map(item => `${item.productName} (x${item.quantity})`).join(' + ')
+        : '';
+      const subtotal = order.subtotal !== undefined
+        ? order.subtotal
         : (order.total >= 500 ? order.total : Math.max(0, order.total - 35));
-      const shippingCostVal = order.shippingCost !== undefined 
-        ? order.shippingCost 
+      const shippingCost = order.shippingCost !== undefined
+        ? order.shippingCost
         : (order.total >= 500 ? 0 : 35);
-      const isFreeStr = order.freeShipping !== undefined 
-        ? (order.freeShipping ? "Oui" : "Non") 
-        : (order.total >= 500 ? "Oui" : "Non");
-
+      const freeShipping = order.freeShipping !== undefined
+        ? order.freeShipping
+        : order.total >= 500;
       return [
-        `"${order.id}"`,
-        `"${order.reference}"`,
-        `"${order.date}"`,
-        `"${order.status}"`,
-        `"${cleanName}"`,
-        `"${cleanPhone}"`,
-        `"${cleanCity}"`,
-        `"${cleanAddress}"`,
-        `"${cleanNotes}"`,
-        `"${cleanItems}"`,
-        subtotalVal,
-        shippingCostVal,
-        `"${isFreeStr}"`,
-        order.total
-      ];
+        order.id, order.reference, order.createdAt || order.date, order.shipping?.updatedAt || '',
+        order.status, order.fullName, order.phoneNumber, order.city, order.deliveryAddress,
+        order.notes, items, subtotal, shippingCost, freeShipping ? 'Oui' : 'Non',
+        order.finalTotal ?? order.total, order.paymentMethod || '',
+        order.shipping?.carrier || '', order.shipping?.trackingNumber || '',
+        order.shipping?.internalNote || ''
+      ].map(csvCell);
     });
-
-    // Concatenate headers and lines with BOM header for accurate Excel encoding compatibility
-    const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(line => line.join(','))].join('\n');
-
-    // Trigger file download
+    const csvContent = "\uFEFF" + [headers.map(csvCell).join(','), ...rows.map(row => row.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
-    link.setAttribute("download", `globabox_orders_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.download = `globabox_commandes_completes_${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // Helper to parse complex CSV cells keeping quotes / commas separated correctly
@@ -1150,7 +1118,7 @@ export default function AdminPanel({
   const handleBulkDeleteOrders = async () => {
     const ids: string[] = Array.from(selectedOrderIds);
     if (!ids.length) return;
-    if (!window.confirm(`Supprimer définitivement ${ids.length} commande(s) sélectionnée(s) ? Cette action supprime les commandes du stockage local et ne peut pas être annulée.`)) return;
+    if (!window.confirm(`Masquer ${ids.length} commande(s) sélectionnée(s) de l’Admin ? Les commandes resteront conservées dans D1 et pourront être récupérées.`)) return;
 
     let deleted = 0, failed = 0;
     for (const id of ids) {
@@ -1168,8 +1136,8 @@ export default function AdminPanel({
 
     setOrders(current => current.filter(order => !ids.includes(order.id)));
     setSelectedOrderIds(new Set());
-    setRefreshSuccess(`Suppression terminée : ${deleted} commande(s) supprimée(s), ${failed} échec(s).`);
-    if (failed) setRefreshError(`${failed} commande(s) n'ont pas pu être supprimée(s).`);
+    setRefreshSuccess(`Masquage terminé : ${deleted} commande(s) retirée(s) de l’Admin, ${failed} échec(s).`);
+    if (failed) setRefreshError(`${failed} commande(s) n'ont pas pu être masquées.`);
   };
 
   // Delete product
@@ -1220,7 +1188,7 @@ export default function AdminPanel({
   const handleBulkDeleteProducts = async () => {
     const ids = Array.from(selectedProductIds);
     if (!ids.length) return;
-    if (!window.confirm(`Supprimer définitivement ${ids.length} produit(s) sélectionné(s) du catalogue D1 ? Cette action ne peut pas être annulée.`)) return;
+    if (!window.confirm(`Masquer ${ids.length} produit(s) sélectionné(s) de l’Admin ? Ils restent conservés dans D1 et ne seront plus affichés après actualisation.`)) return;
 
     let deleted = 0, failed = 0;
     for (const id of ids) {
@@ -1236,7 +1204,7 @@ export default function AdminPanel({
     setAdminProducts(current => current.filter(p => !ids.includes(p.id)));
     setProducts(current => current.filter(p => !ids.includes(p.id)));
     setSelectedProductIds(new Set());
-    alert(`Suppression terminée : ${deleted} produit(s) supprimé(s), ${failed} échec(s).`);
+    alert(`Masquage terminé : ${deleted} produit(s) retiré(s) de l’Admin, ${failed} échec(s).`);
   };
 
   const handleBulkPublishProducts = async () => {
@@ -1466,12 +1434,6 @@ export default function AdminPanel({
         {activeTab === 'customers' && <AdminCustomersWorkspace orders={orders} language={language} />}
 
         {activeTab === 'marketing' && <AdminTrackingWorkspace language={language} />}
-        {activeTab === 'operations' && <AdminOperationsWorkspace
-          language={language}
-          products={adminProducts} orders={orders} launchStatus={launchStatus}
-          onProducts={()=>setActiveTab('products')}
-          onOrders={()=>setActiveTab('orders')}
-          onReload={()=>void handleRefreshOrders()}/>}
 
 
       </div>
