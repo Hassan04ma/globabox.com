@@ -16,7 +16,7 @@ interface Props {
  handleStartEditProduct:(p:Product)=>void; handleDeleteProduct:(id:string)=>void;
  handleBulkPublishProducts:()=>void; handleBulkDeleteProducts:()=>void; clearProductSelection:()=>void;
  toggleSelectAllVisibleProducts:()=>void; toggleProductSelection:(id:string)=>void;
- exportProductsToJSON:()=>void; exportProductsToCSV:()=>void;
+ exportProductsToJSON:()=>void; exportProductsToCSV:()=>void; exportProductsToExcel:()=>void;
  importProductsFromJSON:(e:ChangeEvent<HTMLInputElement>)=>void;
  importProductsFromCSV:(e:ChangeEvent<HTMLInputElement>)=>void;
  uploadProductPhotos:(files:FileList|null)=>Promise<void>;
@@ -27,7 +27,7 @@ export default function AdminProductsWorkspace(p:Props){
  setEditingProduct,setIsAddingProduct,mediaUploading,tagsInput,setTagsInput,handleSaveProduct,
  handleStartAddProduct,handleStartEditProduct,handleDeleteProduct,handleBulkPublishProducts,
  handleBulkDeleteProducts,clearProductSelection,toggleSelectAllVisibleProducts,toggleProductSelection,
- exportProductsToJSON,exportProductsToCSV,importProductsFromJSON,importProductsFromCSV,uploadProductPhotos}=p;
+ exportProductsToJSON,exportProductsToCSV,exportProductsToExcel,importProductsFromJSON,importProductsFromCSV,uploadProductPhotos}=p;
  return (
 <div dir={language==='ar'?'rtl':'ltr'} lang={language} className="space-y-6">
 
@@ -41,6 +41,7 @@ export default function AdminProductsWorkspace(p:Props){
       
                       <button type="button" onClick={exportProductsToJSON} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-[#31584a] hover:bg-[#f2f8f4]">Exporter JSON</button>
       <button type="button" onClick={exportProductsToCSV} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-[#31584a] hover:bg-[#f2f8f4]">Exporter CSV</button>
+      <button type="button" onClick={exportProductsToExcel} className="rounded-lg border border-[#9fcbb0] bg-[#e5f4e9] px-4 py-2.5 text-xs font-extrabold text-[#145b3d] hover:bg-[#d8eddf]">Exporter Excel (.xlsx)</button>
       <label className="cursor-pointer rounded-lg border border-[#b9d7c2] bg-[#edf7f0] px-3 py-2.5 text-xs font-bold text-[#195c41] hover:bg-[#e0f1e5]">
         Importer JSON<input type="file" accept=".json,application/json" onChange={importProductsFromJSON} className="sr-only"/>
       </label>
