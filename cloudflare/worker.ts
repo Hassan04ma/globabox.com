@@ -506,6 +506,31 @@ export default {
         const pages = (rows.results || []).map((row:any) => ({id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,content:JSON.parse(row.content_json),status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}));
         return json({pages});
       }
+      if (path === '/api/admin/landing-pages/draft' && method === 'POST') {
+        if (!await auth(request, env)) return json({error:'Unauthorized'},401);
+        const body=await readBody(request), mediaId=typeof body?.mediaId==='string'?body.mediaId:'';
+        const productName=typeof body?.productName==='string'?body.productName.trim().slice(0,120):'';
+        const sellingPrice=body?.sellingPrice==null?null:Number(body.sellingPrice), compareAtPrice=body?.compareAtPrice==null?null:Number(body.compareAtPrice);
+        if (!/^[a-f0-9-]{36}$/i.test(mediaId)) return json({error:'Upload a valid product image first.'},400);
+        if (sellingPrice!==null&&(!Number.isFinite(sellingPrice)||sellingPrice<=0||sellingPrice>1000000)) return json({error:'Invalid selling price.'},400);
+        if (compareAtPrice!==null&&(!Number.isFinite(compareAtPrice)||compareAtPrice<=0||compareAtPrice>1000000)) return json({error:'Invalid comparison price.'},400);
+        if (sellingPrice!==null&&compareAtPrice!==null&&compareAtPrice<=sellingPrice) return json({error:'Comparison price must be higher than selling price.'},400);
+        const media=await env.DB.prepare('SELECT content_type FROM product_media WHERE id=?').bind(mediaId).first<{content_type:string}>();
+        if (!media||!['image/jpeg','image/png','image/webp'].includes(media.content_type)) return json({error:'Product image not found. Upload it again.'},404);
+        const title=productName||'Produit GLOBABOX';
+        const slugBase=title.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,54)||'produit';
+        const slug=slugBase+'-'+crypto.randomUUID().slice(0,6);
+        const id=crypto.randomUUID(),imageUrl=new URL('/api/product-media/'+mediaId,request.url).href;
+        const content={
+          ar:{headline:'اكتشف '+title,subheadline:'تعرّف على المنتج من خلال الصور والمعلومات المتوفرة.',description:'هذه صفحة تعريفية بالمنتج. أضف التفاصيل المؤكدة قبل نشرها.',benefits:[],limitations:['يرجى تأكيد خصائص المنتج ومحتوياته قبل النشر.'],faq:[],cta:'اطلب الآن'},
+          fr:{headline:'Découvrez '+title,subheadline:'Consultez les photos et les informations disponibles sur ce produit.',description:'Cette page présente le produit. Ajoutez les détails vérifiés avant publication.',benefits:[],limitations:['Veuillez vérifier les caractéristiques et le contenu du produit avant publication.'],faq:[],cta:'Commander maintenant'},
+          en:{headline:'Discover '+title,subheadline:'Explore the product photos and the information provided.',description:'This page introduces the product. Add verified details before publishing.',benefits:[],limitations:['Please verify product specifications and package contents before publishing.'],faq:[],cta:'Order now'}
+        };
+        const written=await env.DB.prepare('INSERT INTO landing_pages (id,slug,title,image_url,media_id,price_mad,compare_at_price_mad,content_json,status) VALUES (?,?,?,?,?,?,?,?,?)').bind(id,slug,title,imageUrl,mediaId,sellingPrice,compareAtPrice,JSON.stringify(content),'draft').run();
+        if(!written.success||written.meta?.changes!==1)return json({error:'Draft could not be saved to the database.'},503);
+        console.info('[GLOBABOX] Template landing page draft created',id);
+        return json({page:{id,slug,title,imageUrl,price:sellingPrice,compareAtPrice,content,status:'draft',productId:null}},201);
+      }
       if (path === '/api/admin/landing-pages/generate' && method === 'POST') {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
         if (!env.GEMINI_API_KEY) return json({error:'AI service is not configured. Add GEMINI_API_KEY as a Cloudflare secret.'},503);
