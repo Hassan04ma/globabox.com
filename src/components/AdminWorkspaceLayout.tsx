@@ -24,7 +24,8 @@ const navigation=[
  {id:'customers' as const,label:'Clients',description:'Historique et fidélité',icon:Users,group:'VENTES'},
  {id:'products' as const,label:'Produits',description:'Catalogue et inventaire',icon:Package,group:'VENTES'},
  {id:'categories' as const,label:'Collections',description:'Rayons et catégories',icon:Tags,group:'VENTES'},
- {id:'marketing' as const,label:'Marketing',description:'Pixels et acquisition',icon:BarChart3,group:'CROISSANCE'}
+ {id:'marketing' as const,label:'Marketing',description:'Pixels et acquisition',icon:BarChart3,group:'CROISSANCE'},
+ {id:'landing-pages' as const,label:'Landing Pages',description:'Pages de vente assistées par IA',icon:Sparkles,group:'CROISSANCE'}
 ];
 const subtitles:Record<AdminTab,string>={
  dashboard:'Vue globale de votre activité commerciale',
@@ -32,7 +33,7 @@ const subtitles:Record<AdminTab,string>={
  customers:'Retrouvez les clients à partir de leurs commandes et de leur historique',
  products:'Gérez vos fiches, vos prix et vos disponibilités',
  categories:'Organisez les rayons et la navigation de la boutique',
- marketing:'Configurez les outils de mesure et de publicité', 'landing-pages':'Créez des pages de vente avec l’IA', 'landing-pages':'Créez des pages de vente avec l’intelligence artificielle'
+ marketing:'Configurez les outils de mesure et de publicité', 'landing-pages':'Créez des pages de vente avec l’intelligence artificielle'
 };
 export default function AdminWorkspaceLayout({
  language,activeTab,onTabChange,onClose,onLogout,ordersCount,pendingOrders,productsCount,
@@ -41,14 +42,14 @@ export default function AdminWorkspaceLayout({
  const copy=language==='ar'?{
  groups:['متجرك','المبيعات','النمو'],
  labels:{dashboard:'نظرة عامة',orders:'الطلبات',customers:'العملاء',products:'المنتجات',categories:'التصنيفات',marketing:'التسويق'},
- descriptions:{dashboard:'نشاط المتجر والمؤشرات',orders:'تتبع ومعالجة الطلبات',customers:'سجل العملاء والوفاء',products:'الكتالوج والمخزون',categories:'الأقسام والتصنيفات',marketing:'القياس والإعلانات'},
+ descriptions:{dashboard:'نشاط المتجر والمؤشرات',orders:'تتبع ومعالجة الطلبات',customers:'سجل العملاء والوفاء',products:'الكتالوج والمخزون',categories:'الأقسام والتصنيفات',marketing:'القياس والإعلانات','landing-pages':'منشئ صفحات البيع بالذكاء الاصطناعي'},
  subtitles:{dashboard:'نظرة شاملة على نشاطك التجاري',orders:'راجع طلبات العملاء وأكدها وتابع توصيلها',customers:'بيانات العملاء المستخرجة من الطلبات',products:'أدر المنتجات والأسعار والتوفر',categories:'نظم أقسام المتجر وتصفحه',marketing:'إعداد أدوات القياس والإعلانات', 'landing-pages':'صفحات البيع بالذكاء الاصطناعي'},
  store:'متجري',admin:'إدارة المتجر',quick:'بحث سريع في الأقسام…',quickTitle:'التنقل السريع',noResults:'لا توجد نتائج',db:['قاعدة البيانات متصلة','يجب التحقق من قاعدة البيانات','لم يتم التحقق من القاعدة'],view:'عرض المتجر',newProduct:'منتج جديد',toProcess:'طلبات قيد المعالجة',secure:'جلسة آمنة',administrator:'المسؤول',logout:'تسجيل الخروج',shipping:'التوصيل اليدوي',nonePending:'لا توجد طلبات تنتظر المعالجة',attention:'طلب يحتاج إلى متابعة',openOrders:'فتح الطلبات',merchant:'مساحة التاجر',menu:'فتح القائمة',closeMenu:'إغلاق القائمة'
 }:language==='en'?{
  groups:['YOUR STORE','SALES','GROWTH'],
  labels:{dashboard:'Overview',orders:'Orders',customers:'Customers',products:'Products',categories:'Collections',marketing:'Marketing'},
  descriptions:{dashboard:'Store activity and metrics',orders:'Track and process orders',customers:'Customer history and loyalty',products:'Catalog and inventory',categories:'Store departments and navigation',marketing:'Analytics and advertising'},
- subtitles:{dashboard:'A complete view of your store activity',orders:'Review, confirm and track customer orders',customers:'Customer records derived from orders',products:'Manage product listings, prices and availability',categories:'Organize your store departments',marketing:'Configure analytics and advertising tools'},
+ subtitles:{dashboard:'A complete view of your store activity',orders:'Review, confirm and track customer orders',customers:'Customer records derived from orders',products:'Manage product listings, prices and availability',categories:'Organize your store departments',marketing:'Configure analytics and advertising tools','landing-pages':'Create professional sales pages with AI'},
  store:'My store',admin:'STORE ADMIN',quick:'Search sections…',quickTitle:'QUICK NAVIGATION',noResults:'No results found',db:['Database connected','Database needs checking','Database not verified'],view:'View store',newProduct:'New product',toProcess:'Orders to process',secure:'Secure session',administrator:'Administrator',logout:'Log out',shipping:'Manual shipping',nonePending:'No orders need attention.',attention:'order(s) need attention.',openOrders:'Open orders',merchant:'Merchant workspace',menu:'Open menu',closeMenu:'Close menu'
 }:{
  groups:['VOTRE BOUTIQUE','VENTES','CROISSANCE'],
