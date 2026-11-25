@@ -589,9 +589,31 @@ export default {
           const raw=typeof aiResult?.response==='string'?aiResult.response:
             typeof aiResult?.result==='string'?aiResult.result:'';
           if(!raw.trim())return json({error:'Cloudflare AI returned an empty response. Please retry.'},502);
-          const cleaned=raw.trim().replace(/^\`\`\`(?:json)?\s*/i,'').replace(/\s*\`\`\`$/,'');
-          try { generated=JSON.parse(cleaned); }
-          catch { return json({error:'Cloudflare AI returned content that could not be validated. Please retry.'},502); }
+          const cleaned=raw.trim()
+            .replace(/^\`\`\`(?:json)?\s*/i,'')
+            .replace(/\s*\`\`\`$/,'');
+          // Some vision-model responses wrap valid JSON in a short explanation.
+          // First parse the complete response, then safely try its outermost JSON object.
+          try {
+            generated=JSON.parse(cleaned);
+          } catch {
+            const firstBrace=cleaned.indexOf('{');
+            const lastBrace=cleaned.lastIndexOf('}');
+            if(firstBrace<0||lastBrace<=firstBrace){
+              console.error('[GLOBABOX] AI response is not a JSON object. Response length:',raw.length);
+              return json({error:'Cloudflare AI did not return a valid page structure. Please retry.'},502);
+            }
+            try {
+              generated=JSON.parse(cleaned.slice(firstBrace,lastBrace+1));
+            } catch(parseError) {
+              console.error('[GLOBABOX] AI JSON parsing failed. Response length:',raw.length,'JSON candidate length:',lastBrace-firstBrace+1);
+              return json({error:'Cloudflare AI returned an invalid page structure. Please retry.'},502);
+            }
+          }
+          if(!generated||typeof generated!=='object'||Array.isArray(generated)||!generated.content||typeof generated.content!=='object'){
+            console.error('[GLOBABOX] AI response JSON is missing the required content object.');
+            return json({error:'Cloudflare AI returned an incomplete page structure. Please retry.'},502);
+          }
         } catch (error) {
           console.error('[GLOBABOX] Cloudflare Workers AI generation failed',error);
           return json({error:'Cloudflare AI is temporarily unavailable or its model license has not been accepted. Please check Workers AI settings and retry.'},502);
