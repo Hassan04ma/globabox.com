@@ -53,7 +53,7 @@ export interface Order {
   date: string;
   /** Optional original creation timestamp for migrated and D1-backed records. */
   createdAt?: string;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'no_answer' | 'confirmed' | 'processing' | 'picked_up' | 'shipped' | 'out_for_delivery' | 'delivered' | 'returned' | 'cancelled';
   paymentMethod?: string;
   /** Manual carrier/shipping reference recorded by the merchant in D1. */
   shipping?: {
