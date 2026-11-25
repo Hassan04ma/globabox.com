@@ -49,7 +49,7 @@ export default function AdminLandingPagesWorkspace({language='ar'}:{language?:La
  const saved=await fetch('/api/admin/landing-pages',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({...current,images:current.images||[],imageOrigins:current.imageOrigins||[]})});
  const savedData:any=await saved.json();if(!saved.ok)throw new Error(savedData.error||t.error);
  let page:Page=savedData.page;
- const publishNow=publish||(current.productId!==null&&current.priceConfirmed===true&&(current.compareAtPrice===null||current.comparePriceConfirmed===true));
+ const publishNow=publish||(current.productId!==null&&current.priceConfirmed===true&&(current.compareAtPrice===null||current.comparePriceConfirmed===true)&&current.imageOrigins?.includes('ai_generated')===true);
  if(publishNow){const response=await fetch('/api/admin/landing-pages/'+encodeURIComponent(current.id)+'/publish',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'}});
  const data:any=await response.json();if(!response.ok)throw new Error(data.error||t.error);page=data.page;setNotice('تم نشر الصفحة: '+data.url);}
  else setNotice(t.saved+' · النشر التلقائي ينتظر ربط منتج وتأكيد الثمن وإنشاء الصور التسويقية والتحقق من المحتوى.');
