@@ -509,7 +509,7 @@ export default {
       if (path === '/api/admin/landing-pages' && method === 'GET') {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
         const rows = await env.DB.prepare('SELECT id,slug,title,product_id,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages ORDER BY updated_at DESC').all<any>();
-        const pages = (rows.results || []).map((row:any) => {const stored=JSON.parse(row.content_json);const images=Array.isArray(stored._gallery)?stored._gallery:[row.image_url];const priceConfirmed=stored._priceConfirmed===true,comparePriceConfirmed=stored._comparePriceConfirmed===true;delete stored._gallery;delete stored._priceConfirmed;delete stored._comparePriceConfirmed;return {id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,images,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,priceConfirmed,comparePriceConfirmed,content:stored,status:row.status,createdAt:row.created_at,updatedAt:row.updated_at};});
+        const pages = (rows.results || []).map((row:any) => {const stored=JSON.parse(row.content_json);const images=Array.isArray(stored._gallery)?stored._gallery:[row.image_url];const imageOrigins=Array.isArray(stored._galleryOrigins)?stored._galleryOrigins:images.map(()=> 'merchant_upload');const priceConfirmed=stored._priceConfirmed===true,comparePriceConfirmed=stored._comparePriceConfirmed===true;delete stored._gallery;delete stored._galleryOrigins;delete stored._priceConfirmed;delete stored._comparePriceConfirmed;return {id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,images,imageOrigins,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,priceConfirmed,comparePriceConfirmed,content:stored,status:row.status,createdAt:row.created_at,updatedAt:row.updated_at};});
         return json({pages});
       }
       if (path === '/api/admin/landing-pages/draft' && method === 'POST') {
@@ -529,7 +529,7 @@ export default {
         const slugBase=title.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,54)||'produit';
         const slug=slugBase+'-'+crypto.randomUUID().slice(0,6);
         const id=crypto.randomUUID(),imageUrl=new URL('/api/product-media/'+mediaId,request.url).href;
-        const content:any={_gallery:images,
+        const content:any={_gallery:images,_galleryOrigins:images.map(()=> 'merchant_upload'),
           ar:{headline:'اكتشف '+title,subheadline:'تعرّف على المنتج من خلال الصور والمعلومات المتوفرة.',description:'هذه صفحة تعريفية بالمنتج. أضف التفاصيل المؤكدة قبل نشرها.',benefits:[],limitations:['يرجى تأكيد خصائص المنتج ومحتوياته قبل النشر.'],faq:[],cta:'اطلب الآن'},
           fr:{headline:'Découvrez '+title,subheadline:'Consultez les photos et les informations disponibles sur ce produit.',description:'Cette page présente le produit. Ajoutez les détails vérifiés avant publication.',benefits:[],limitations:['Veuillez vérifier les caractéristiques et le contenu du produit avant publication.'],faq:[],cta:'Commander maintenant'},
           en:{headline:'Discover '+title,subheadline:'Explore the product photos and the information provided.',description:'This page introduces the product. Add verified details before publishing.',benefits:[],limitations:['Please verify product specifications and package contents before publishing.'],faq:[],cta:'Order now'}
@@ -678,7 +678,7 @@ export default {
         const designRaw=generated?.design||{};
         const safeDesignColor=(v:any,f:string)=>typeof v==='string'&&/^#[0-9a-fA-F]{6}$/.test(v)?v:f;
         const design={layout:['split-editorial','centered-product','bold-commerce'].includes(designRaw.layout)?designRaw.layout:'split-editorial',primary:safeDesignColor(designRaw.primary,'#104d43'),accent:safeDesignColor(designRaw.accent,'#d69b43'),background:safeDesignColor(designRaw.background,'#f6f8f7'),surface:safeDesignColor(designRaw.surface,'#ffffff'),text:safeDesignColor(designRaw.text,'#172b27'),heroStyle:['contained','cover'].includes(designRaw.heroStyle)?designRaw.heroStyle:'contained'};
-        const content={ar:cleanCopy('ar'),fr:cleanCopy('fr'),en:cleanCopy('en'),design};
+        const content={ar:cleanCopy('ar'),fr:cleanCopy('fr'),en:cleanCopy('en'),design,_gallery:images,_galleryOrigins:images.map(()=> 'merchant_upload')};
         if(!content.ar.headline||!content.fr.headline||!content.en.headline)return json({error:'Cloudflare AI content is incomplete. Please generate again.'},502);
         const title=cleanText(generated.title,120)||productName||'New product';
         const rawSlug=cleanText(generated.slug,80).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -688,6 +688,35 @@ export default {
         if(!written.success||written.meta?.changes!==1)return json({error:'Draft could not be saved to the database.'},503);
         console.info('[GLOBABOX] Landing page generated successfully.');
         return json({page:{id,slug,title,imageUrl,images,price:sellingPrice,compareAtPrice,content,status:'draft',productId:null}},201);
+      }
+      const landingVisualMatch=path.match(/^\/api\/admin\/landing-pages\/([a-f0-9-]{36})\/generate-visual$/i);
+      if(landingVisualMatch&&method==='POST'){
+        if(!await auth(request,env))return json({error:'Unauthorized'},401);
+        if(!env.OPENAI_API_KEY)return json({error:'AI marketing image generation requires the OPENAI_API_KEY Cloudflare secret.'},503);
+        const row=await env.DB.prepare('SELECT title,image_url,content_json FROM landing_pages WHERE id=? LIMIT 1').bind(landingVisualMatch[1]).first<{title:string;image_url:string;content_json:string}>();
+        if(!row)return json({error:'Landing page not found.'},404);
+        const content=JSON.parse(row.content_json||'{}');
+        const already=Array.isArray(content._galleryOrigins)&&content._galleryOrigins.includes('ai_generated');
+        if(already)return json({success:true,alreadyGenerated:true});
+        const direction=['ar','fr','en'].map((l:string)=>content[l]?.visualDirection||'').filter(Boolean).join(' | ').slice(0,1200);
+        const prompt='Create one premium, photorealistic editorial marketing illustration for a Moroccan ecommerce landing page. Product category/title: '+row.title+'. Art direction: '+direction+'. IMPORTANT: this is a SUPPORTING CONCEPTUAL LIFESTYLE/BACKGROUND IMAGE ONLY. Do not depict, recreate, invent, alter or imitate the actual product. Do not add text, logos, labels, prices, packaging, brand marks, watermarks, people holding an unidentified product, or claims. Compose an elegant relevant environment with tasteful lighting and ample negative space; 1:1 square composition. This image must be labeled AI-generated and must never be presented as an authentic product photo.';
+        const response=await fetch('https://api.openai.com/v1/images/generations',{method:'POST',headers:{'Authorization':'Bearer '+env.OPENAI_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({model:'gpt-image-1',prompt,size:'1024x1024',quality:'low',output_format:'png',n:1})});
+        if(!response.ok){console.error('[GLOBABOX] AI marketing image generation failed',response.status);return json({error:response.status===401?'OpenAI API key is invalid for image generation.':'OpenAI image generation is unavailable. Keep this page as a draft and retry later.'},502);}
+        const result:any=await response.json(),encoded=result?.data?.[0]?.b64_json;
+        if(typeof encoded!=='string'||!encoded)return json({error:'Image service returned no image. Keep the page as a draft.'},502);
+        const binary=atob(encoded),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+        if(!bytes.length||bytes.length>5000000)return json({error:'Generated image exceeded the safe storage limit.'},413);
+        const mediaId=crypto.randomUUID();
+        await env.DB.prepare('CREATE TABLE IF NOT EXISTS product_media (id TEXT PRIMARY KEY, content_type TEXT NOT NULL, body BLOB NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run();
+        const stored=await env.DB.prepare('INSERT INTO product_media (id,content_type,body) VALUES (?,?,?)').bind(mediaId,'image/png',bytes).run();
+        if(!stored.success||stored.meta?.changes!==1)return json({error:'Generated image could not be saved.'},503);
+        const imageUrl=new URL('/api/product-media/'+mediaId,request.url).href;
+        const gallery=Array.isArray(content._gallery)?content._gallery:[row.image_url];
+        const origins=Array.isArray(content._galleryOrigins)?content._galleryOrigins:gallery.map(()=> 'merchant_upload');
+        gallery.push(imageUrl);origins.push('ai_generated');
+        const saved=await env.DB.prepare('UPDATE landing_pages SET content_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(JSON.stringify({...content,_gallery:gallery.slice(0,10),_galleryOrigins:origins.slice(0,10)}),landingVisualMatch[1]).run();
+        if(!saved.success||saved.meta?.changes!==1)return json({error:'Image saved but could not be linked to the landing page.'},503);
+        return json({success:true,url:imageUrl,origin:'ai_generated',images:gallery.slice(0,10),imageOrigins:origins.slice(0,10)});
       }
       if (path === '/api/admin/landing-pages' && method === 'POST') {
         if(!await auth(request,env))return json({error:'Unauthorized'},401);
@@ -708,12 +737,14 @@ export default {
           if(product.isActive===false||product.inStock!==true||product.stockStatus==='out_of_stock'||!Number.isFinite(product.price)||product.price<=0)return json({error:'The selected product must have a verified price and available stock.'},409);
         }
         const priceConfirmed=body.priceConfirmed===true,comparePriceConfirmed=body.comparePriceConfirmed===true;
-        const updated=await env.DB.prepare('UPDATE landing_pages SET title=?,product_id=?,price_mad=?,compare_at_price_mad=?,content_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(title,productId,price,compare,JSON.stringify({...content,_gallery:safeImages.length?safeImages:undefined,_priceConfirmed:priceConfirmed,_comparePriceConfirmed:comparePriceConfirmed}),id).run();
+        const suppliedOrigins=Array.isArray(body.imageOrigins)?body.imageOrigins.slice(0,10):safeImages.map(()=> 'merchant_upload');
+        if(suppliedOrigins.length!==safeImages.length||suppliedOrigins.some((x:string)=>!['merchant_upload','ai_generated'].includes(x)))return json({error:'Invalid image provenance metadata.'},400);
+        const updated=await env.DB.prepare('UPDATE landing_pages SET title=?,product_id=?,price_mad=?,compare_at_price_mad=?,content_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(title,productId,price,compare,JSON.stringify({...content,_gallery:safeImages.length?safeImages:undefined,_galleryOrigins:suppliedOrigins,_priceConfirmed:priceConfirmed,_comparePriceConfirmed:comparePriceConfirmed}),id).run();
         if(!updated.success||updated.meta?.changes!==1)return json({error:'Landing page not found or not saved.'},404);
         const row=await env.DB.prepare('SELECT id,slug,title,product_id,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages WHERE id=?').bind(id).first<any>();
-        const storedContent=JSON.parse(row.content_json),images=Array.isArray(storedContent._gallery)?storedContent._gallery:[row.image_url];delete storedContent._gallery;
+        const storedContent=JSON.parse(row.content_json),images=Array.isArray(storedContent._gallery)?storedContent._gallery:[row.image_url],imageOrigins=Array.isArray(storedContent._galleryOrigins)?storedContent._galleryOrigins:images.map(()=> 'merchant_upload');delete storedContent._gallery;delete storedContent._galleryOrigins;
         const priceConfirmed=storedContent._priceConfirmed===true,comparePriceConfirmed=storedContent._comparePriceConfirmed===true;delete storedContent._priceConfirmed;delete storedContent._comparePriceConfirmed;
-        return json({page:{id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,images,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,priceConfirmed,comparePriceConfirmed,content:storedContent,status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}});
+        return json({page:{id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,images,imageOrigins,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,priceConfirmed,comparePriceConfirmed,content:storedContent,status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}});
       }
       const landingPublishMatch=path.match(/^\/api\/admin\/landing-pages\/([a-f0-9-]{36})\/publish$/i);
       if(landingPublishMatch&&method==='POST'){
@@ -724,6 +755,8 @@ export default {
         const savedContent=JSON.parse(row.content_json||'{}');
         if(savedContent._priceConfirmed!==true)return json({error:'Confirm the selling price manually before publishing.'},409);
         if(row.compare_at_price_mad!==null&&savedContent._comparePriceConfirmed!==true)return json({error:'Confirm the comparison price separately before publishing, or remove it.'},409);
+        for(const lang of ['ar','fr','en']){const copy=savedContent[lang];if(!copy||typeof copy.headline!=='string'||copy.headline.trim().length<5||typeof copy.description!=='string'||copy.description.trim().length<20||!Array.isArray(copy.benefits)||copy.benefits.length<2||!Array.isArray(copy.faq)||copy.faq.length<2)return json({error:'Complete and review the headline, description, benefits and FAQ in Arabic, French and English before publication.'},409);}
+        if(!Array.isArray(savedContent._galleryOrigins)||!savedContent._galleryOrigins.includes('merchant_upload')||!savedContent._galleryOrigins.includes('ai_generated'))return json({error:'Both genuine product photos and clearly identified AI-generated marketing imagery are required before publication.'},409);
         const productRow=await env.DB.prepare('SELECT data_json,active FROM products WHERE id=? LIMIT 1').bind(row.product_id).first<{data_json:string;active:number}>();
         if(!productRow||productRow.active!==1)return json({error:'The mapped product is not published.'},409);
         const product=JSON.parse(productRow.data_json);
@@ -732,7 +765,8 @@ export default {
         const updated=await env.DB.prepare("UPDATE landing_pages SET status='published',updated_at=CURRENT_TIMESTAMP,published_at=CURRENT_TIMESTAMP WHERE id=?").bind(landingPublishMatch[1]).run();
         if(!updated.success||updated.meta?.changes!==1)return json({error:'Publication was not confirmed by D1.'},503);
         const published=await env.DB.prepare('SELECT id,slug,title,product_id,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages WHERE id=?').bind(landingPublishMatch[1]).first<any>();
-        return json({success:true,page:{id:published.id,slug:published.slug,title:published.title,productId:published.product_id,imageUrl:published.image_url,price:published.price_mad,compareAtPrice:published.compare_at_price_mad,content:JSON.parse(published.content_json),status:published.status,createdAt:published.created_at,updatedAt:published.updated_at},url:new URL('/lp/'+published.slug,request.url).href});
+        const publishedContent=JSON.parse(published.content_json),publishedImages=Array.isArray(publishedContent._gallery)?publishedContent._gallery:[published.image_url],publishedOrigins=Array.isArray(publishedContent._galleryOrigins)?publishedContent._galleryOrigins:publishedImages.map(()=> 'merchant_upload');delete publishedContent._gallery;delete publishedContent._galleryOrigins;delete publishedContent._priceConfirmed;delete publishedContent._comparePriceConfirmed;
+        return json({success:true,page:{id:published.id,slug:published.slug,title:published.title,productId:published.product_id,imageUrl:published.image_url,images:publishedImages,imageOrigins:publishedOrigins,price:published.price_mad,compareAtPrice:published.compare_at_price_mad,content:publishedContent,status:published.status,createdAt:published.created_at,updatedAt:published.updated_at},url:new URL('/lp/'+published.slug,request.url).href});
       }
       const landingOrderMatch=path.match(/^\/api\/landing-pages\/([a-z0-9-]{1,80})\/order$/);
       if(landingOrderMatch&&method==='POST'){
