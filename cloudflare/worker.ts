@@ -509,7 +509,7 @@ export default {
       if (path === '/api/admin/landing-pages' && method === 'GET') {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
         const rows = await env.DB.prepare('SELECT id,slug,title,product_id,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages ORDER BY updated_at DESC').all<any>();
-        const pages = (rows.results || []).map((row:any) => {const stored=JSON.parse(row.content_json);const images=Array.isArray(stored._gallery)?stored._gallery:[row.image_url];delete stored._gallery;return {id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,images,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,content:stored,status:row.status,createdAt:row.created_at,updatedAt:row.updated_at};});
+        const pages = (rows.results || []).map((row:any) => {const stored=JSON.parse(row.content_json);const images=Array.isArray(stored._gallery)?stored._gallery:[row.image_url];const priceConfirmed=stored._priceConfirmed===true,comparePriceConfirmed=stored._comparePriceConfirmed===true;delete stored._gallery;delete stored._priceConfirmed;delete stored._comparePriceConfirmed;return {id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,images,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,priceConfirmed,comparePriceConfirmed,content:stored,status:row.status,createdAt:row.created_at,updatedAt:row.updated_at};});
         return json({pages});
       }
       if (path === '/api/admin/landing-pages/draft' && method === 'POST') {
@@ -707,23 +707,30 @@ export default {
           const product=JSON.parse(productRow.data_json);
           if(product.isActive===false||product.inStock!==true||product.stockStatus==='out_of_stock'||!Number.isFinite(product.price)||product.price<=0)return json({error:'The selected product must have a verified price and available stock.'},409);
         }
-        const updated=await env.DB.prepare('UPDATE landing_pages SET title=?,product_id=?,price_mad=?,compare_at_price_mad=?,content_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(title,productId,price,compare,JSON.stringify({...content,_gallery:safeImages.length?safeImages:undefined}),id).run();
+        const priceConfirmed=body.priceConfirmed===true,comparePriceConfirmed=body.comparePriceConfirmed===true;
+        if(compare!==null&&!comparePriceConfirmed)return json({error:'Confirm the comparison price separately, or remove it before saving for publication.'},409);
+        const updated=await env.DB.prepare('UPDATE landing_pages SET title=?,product_id=?,price_mad=?,compare_at_price_mad=?,content_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(title,productId,price,compare,JSON.stringify({...content,_gallery:safeImages.length?safeImages:undefined,_priceConfirmed:priceConfirmed,_comparePriceConfirmed:comparePriceConfirmed}),id).run();
         if(!updated.success||updated.meta?.changes!==1)return json({error:'Landing page not found or not saved.'},404);
         const row=await env.DB.prepare('SELECT id,slug,title,product_id,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages WHERE id=?').bind(id).first<any>();
         const storedContent=JSON.parse(row.content_json),images=Array.isArray(storedContent._gallery)?storedContent._gallery:[row.image_url];delete storedContent._gallery;
-        return json({page:{id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,images,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,content:storedContent,status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}});
+        const priceConfirmed=storedContent._priceConfirmed===true,comparePriceConfirmed=storedContent._comparePriceConfirmed===true;delete storedContent._priceConfirmed;delete storedContent._comparePriceConfirmed;
+        return json({page:{id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,images,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,priceConfirmed,comparePriceConfirmed,content:storedContent,status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}});
       }
       const landingPublishMatch=path.match(/^\/api\/admin\/landing-pages\/([a-f0-9-]{36})\/publish$/i);
       if(landingPublishMatch&&method==='POST'){
         if(!await auth(request,env))return json({error:'Unauthorized'},401);
-        const row=await env.DB.prepare('SELECT product_id FROM landing_pages WHERE id=? LIMIT 1').bind(landingPublishMatch[1]).first<{product_id:string|null}>();
+        const row=await env.DB.prepare('SELECT product_id,price_mad,compare_at_price_mad,content_json FROM landing_pages WHERE id=? LIMIT 1').bind(landingPublishMatch[1]).first<{product_id:string|null;price_mad:number|null;compare_at_price_mad:number|null;content_json:string}>();
         if(!row)return json({error:'Landing page not found.'},404);
         if(!row.product_id)return json({error:'Map this page to a real store product before publishing.'},409);
+        const savedContent=JSON.parse(row.content_json||'{}');
+        if(savedContent._priceConfirmed!==true)return json({error:'Confirm the selling price manually before publishing.'},409);
+        if(row.compare_at_price_mad!==null&&savedContent._comparePriceConfirmed!==true)return json({error:'Confirm the comparison price separately before publishing, or remove it.'},409);
         const productRow=await env.DB.prepare('SELECT data_json,active FROM products WHERE id=? LIMIT 1').bind(row.product_id).first<{data_json:string;active:number}>();
         if(!productRow||productRow.active!==1)return json({error:'The mapped product is not published.'},409);
         const product=JSON.parse(productRow.data_json);
         if(product.isActive===false||product.inStock!==true||product.stockStatus==='out_of_stock'||!Number.isFinite(product.price)||product.price<=0)return json({error:'The mapped product must have a verified price and available stock.'},409);
-        const updated=await env.DB.prepare("UPDATE landing_pages SET status='published',price_mad=?,updated_at=CURRENT_TIMESTAMP,published_at=CURRENT_TIMESTAMP WHERE id=?").bind(product.price,landingPublishMatch[1]).run();
+        if(!Number.isFinite(row.price_mad)||row.price_mad<=0||row.price_mad!==product.price)return json({error:'The manually confirmed landing-page price must exactly match the mapped store product price. Update and confirm it again.'},409);
+        const updated=await env.DB.prepare("UPDATE landing_pages SET status='published',updated_at=CURRENT_TIMESTAMP,published_at=CURRENT_TIMESTAMP WHERE id=?").bind(landingPublishMatch[1]).run();
         if(!updated.success||updated.meta?.changes!==1)return json({error:'Publication was not confirmed by D1.'},503);
         const published=await env.DB.prepare('SELECT id,slug,title,product_id,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages WHERE id=?').bind(landingPublishMatch[1]).first<any>();
         return json({success:true,page:{id:published.id,slug:published.slug,title:published.title,productId:published.product_id,imageUrl:published.image_url,price:published.price_mad,compareAtPrice:published.compare_at_price_mad,content:JSON.parse(published.content_json),status:published.status,createdAt:published.created_at,updatedAt:published.updated_at},url:new URL('/lp/'+published.slug,request.url).href});
