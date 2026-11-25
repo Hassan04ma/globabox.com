@@ -25,6 +25,22 @@ export default function AdminLandingPagesWorkspace({language='ar'}:{language?:La
  const data:any=await response.json();if(!response.ok)throw new Error(data.error||t.error);
  const p:Page={...data.page,status:'draft'};setCurrent(p);setActiveLang('ar');setNotice('AI draft generated. '+t.review);
  }catch(e:any){setError(e.message||t.error);}finally{setBusy(false);}};
+ const createDraft=async()=>{
+  setError('');setNotice('');
+  if(!file&&!mediaId){setError(t.image+': choose a product image.');return;}
+  setBusy(true);
+  try{
+   let id=mediaId;
+   if(file&&!id){const uploaded=await upload(file);id=uploaded.id;}
+   const response=await fetch('/api/admin/landing-pages/draft',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({mediaId:id,productName,sellingPrice:price?Number(price):null,compareAtPrice:compare?Number(compare):null})});
+   const data:any=await response.json();
+   if(!response.ok)throw new Error(data.error||t.error);
+   const p:Page={...data.page,status:'draft'};
+   setCurrent(p);setActiveLang('ar');setNotice(language==='fr'?'Brouillon créé sans IA. Vous pouvez maintenant modifier le contenu.':language==='en'?'Draft created without AI. You can now edit the content.':'تم إنشاء المسودة بدون ذكاء اصطناعي. يمكنك الآن تعديل المحتوى.');
+   await load();
+  }catch(e:any){setError(e.message||t.error);}
+  finally{setBusy(false);}
+ };
  const save=async(publish=false)=>{if(!current)return;setBusy(true);setError('');setNotice('');try{
  const saved=await fetch('/api/admin/landing-pages',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(current)});
  const savedData:any=await saved.json();if(!saved.ok)throw new Error(savedData.error||t.error);
@@ -47,7 +63,8 @@ export default function AdminLandingPagesWorkspace({language='ar'}:{language?:La
      <label className="flex min-h-52 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 text-center hover:border-emerald-500">{imageUrl?<img src={imageUrl} alt="Product" className="max-h-64 w-full object-contain"/>:<><ImagePlus size={34} className="mb-3 text-emerald-700"/><span className="font-bold text-slate-700">{t.upload}</span><span className="mt-1 text-xs text-slate-400">JPG, PNG, WebP · max 700 KB</span></>}<input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={e=>{const f=e.target.files?.[0];if(f){setFile(f);setMediaId('');setImageUrl(URL.createObjectURL(f));}}}/></label>
      <div className="mt-5 grid gap-4 sm:grid-cols-2"><label className="text-sm font-semibold text-slate-700">{t.name}<input value={productName} onChange={e=>setProductName(e.target.value)} className="mt-2 h-11 w-full rounded-xl border border-slate-200 px-3 outline-none focus:border-emerald-600"/></label><label className="text-sm font-semibold text-slate-700">{t.price}<input type="number" min="0" value={price} onChange={e=>setPrice(e.target.value)} className="mt-2 h-11 w-full rounded-xl border border-slate-200 px-3 outline-none focus:border-emerald-600"/></label><label className="text-sm font-semibold text-slate-700">{t.compare}<input type="number" min="0" value={compare} onChange={e=>setCompare(e.target.value)} className="mt-2 h-11 w-full rounded-xl border border-slate-200 px-3 outline-none focus:border-emerald-600"/></label></div>
      <div className="mt-5 rounded-xl bg-amber-50 p-3 text-xs leading-6 text-amber-900"><p className="flex items-center gap-2 font-bold"><AlertTriangle size={15}/>{t.aiNote}</p><p>{t.priceNote}</p></div>
-     <button disabled={busy||!file&&!mediaId} onClick={generate} className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#104d43] px-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50">{busy?<><LoaderCircle className="animate-spin" size={18}/>{t.generating}</>:<><Sparkles size={18}/>{t.generate}</>}</button>
+     <button disabled={busy||!file&&!mediaId} onClick={createDraft} className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#104d43] px-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50">{busy?<><LoaderCircle className="animate-spin" size={18}/>{language==='fr'?'Création…':language==='en'?'Creating…':'جاري الإنشاء…'}</>:<><Plus size={18}/>{language==='fr'?'Créer une page sans IA':language==='en'?'Create page without AI':'إنشاء الصفحة بدون ذكاء اصطناعي'}</>}</button>
+     <button disabled={busy||!file&&!mediaId} onClick={generate} className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"><Sparkles size={17}/>{t.generate}</button>
     </>:<div className="space-y-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-extrabold text-slate-900">{current.title||productName||'Landing page draft'}</h2><p className="mt-1 text-xs text-slate-500">{t.review}</p></div><button onClick={startNew} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600"><Plus size={14} className="inline me-1"/>{t.create}</button></div>
       <div className="flex flex-wrap items-center gap-2"><Languages size={16} className="text-slate-500"/>{(['ar','fr','en'] as Lang[]).map(l=><button key={l} onClick={()=>setActiveLang(l)} className={'rounded-lg px-4 py-2 text-xs font-bold '+(activeLang===l?'bg-[#104d43] text-white':'bg-slate-100 text-slate-600')}>{l==='ar'?'العربية':l==='fr'?'Français':'English'}</button>)}</div>
       <label className="block text-sm font-bold text-slate-700">اسم الصفحة<input value={current.title} onChange={e=>setCurrent({...current,title:e.target.value})} maxLength={120} className="mt-2 h-11 w-full rounded-xl border border-slate-200 px-3"/></label>
