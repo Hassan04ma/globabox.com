@@ -1241,13 +1241,27 @@ Merci de confirmer la disponibilité et la livraison.`;
 
       {!isAdminOpen && <CookieConsent language={language}/>}
 
+      {/* Persistent WhatsApp shortcut, kept separate from the return-to-top control. */}
+      {!isAdminOpen && (
+        <a
+          href={WHATSAPP_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={language === 'ar' ? 'تواصل معنا عبر واتساب' : language === 'en' ? 'Contact us on WhatsApp' : 'Contacter GLOBABOX sur WhatsApp'}
+          title={language === 'ar' ? 'تواصل معنا عبر واتساب' : language === 'en' ? 'Contact us on WhatsApp' : 'Contacter GLOBABOX sur WhatsApp'}
+          className="fixed bottom-5 end-5 z-50 flex h-14 w-14 items-center justify-center rounded-full border-2 border-white bg-[#25D366] text-white shadow-[0_8px_26px_rgba(37,211,102,.38)] transition duration-200 hover:-translate-y-1 hover:bg-[#1ebe5d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#128C7E] sm:bottom-6 sm:end-6"
+        >
+          <WhatsAppIcon className="h-7 w-7" />
+        </a>
+      )}
+
       {/* Small, unobtrusive return-to-top action after the user scrolls down. */}
       {showScrollTop && !isCartOpen && !isTrackingOpen && !isSuccessModalOpen && !selectedProduct && !isAdminOpen && (
         <button type="button"
           onClick={() => window.scrollTo({top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})}
           aria-label={language === 'ar' ? 'الرجوع لأعلى الصفحة' : language === 'en' ? 'Back to top' : 'Retour en haut'}
           title={language === 'ar' ? 'الرجوع للفوق' : language === 'en' ? 'Back to top' : 'Retour en haut'}
-          className="fixed bottom-5 end-5 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-[#b9dbc7] bg-[#104d43] text-white shadow-[0_6px_24px_rgba(11,48,39,.25)] transition-colors hover:bg-[#0b382f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#104d43] sm:bottom-7 sm:end-7">
+          className="fixed bottom-24 end-6 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-[#b9dbc7] bg-[#104d43] text-white shadow-[0_6px_24px_rgba(11,48,39,.25)] transition-colors hover:bg-[#0b382f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#104d43] sm:bottom-24 sm:end-7">
           <ArrowUp size={21} strokeWidth={2.5}/>
         </button>
       )}
