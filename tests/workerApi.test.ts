@@ -3,6 +3,7 @@ import worker from '../cloudflare/worker';
 import {validateTrackingConfig,DEFAULT_TRACKING_CONFIG} from '../src/trackingConfig';
 
 const savedOrders: any[] = [];
+const savedProducts: any[] = [];
 let savedTrackingConfig:string|null=null;
 const db = {
   prepare(sql: string) {
@@ -17,11 +18,15 @@ const db = {
           const matched=savedOrders.find(o=>o.id===params[0]);
           return matched ? {data_json:JSON.stringify(matched)} : null;
         }
+        if (sql.includes('FROM products WHERE id=?')) {
+          const matched=savedProducts.find(p=>p.id===params[0]);
+          return matched ? {id:matched.id,data_json:JSON.stringify(matched),active:matched.isActive===true?1:0} : null;
+        }
         return null;
       },
       async all() {
         if (sql.includes('FROM category_overrides')) return { results: [] };
-        if (sql.includes('FROM products')) return { results: [] };
+        if (sql.includes('FROM products')) return { results: savedProducts.map(product => ({id:product.id,active:product.isActive===true?1:0,data_json:JSON.stringify(product)})) };
         if (sql.includes('FROM orders')) return { results: savedOrders.filter(order => !order.adminDeletedAt).map(order => ({data_json: JSON.stringify(order)})) };
         throw new Error('Unexpected all(): ' + sql);
       },
@@ -44,7 +49,11 @@ const db = {
           if(i>=0)savedOrders[i]=JSON.parse(params[1] as string);
           return {success:true,meta:{changes:i>=0?1:0}};
         }
-        if (sql.startsWith('INSERT INTO products')) return {success:true,meta:{changes:1}};
+        if (sql.startsWith('INSERT INTO products')) {
+          const product=JSON.parse(params[8] as string);
+          savedProducts.push(product);
+          return {success:true,meta:{changes:1}};
+        }
         if (sql.startsWith('INSERT INTO orders')) {
           savedOrders.push(JSON.parse(params[3] as string));
           return { success: true, meta: { changes: 1 } };
@@ -208,6 +217,10 @@ assert.equal((await track({reference:'GB-123',phone:'0612345678'})).status,400,'
 assert.equal((await track({reference:savedRef,phone:'not-phone'})).status,400,'Invalid telephone rejected');
 assert.equal((await track({reference:savedRef,phone:'0612345678'}, {...env,CHECKOUT_RATE_LIMITER:undefined})).status,503,
   'Without rate limiting binding, public tracking fails closed');
+const reviewRateLimited = await worker.fetch(new Request('https://preview.example.test/api/products/test-product/reviews',{
+  method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rating:5,comment:'Test'})
+}),{...env,CHECKOUT_RATE_LIMITER:{limit:async()=>({success:false})}});
+assert.equal(reviewRateLimited.status,429,'Public review submissions are rate limited');
 assert.equal((await request('/api/track-order')).status,404,'GET tracking endpoint is not exposed');
 
 // A trusted admin creating a product cannot make it public in a single POST.
@@ -266,4 +279,13 @@ const draft = await worker.fetch(new Request('https://preview.example.test/api/p
 assert.equal(draft.status,200);
 const draftPayload = await draft.json() as any;
 assert.equal(draftPayload.product.isActive,false,'New admin products cannot auto-publish');
-console.log('Worker API smoke tests passed: admin protection, tampering, persisted checkout, free delivery and draft creation, privacy-safe customer tracking');
+const adminCatalogResponse = await worker.fetch(new Request('https://preview.example.test/api/admin/products',{headers:adminHeaders}),adminEnv);
+assert.equal(adminCatalogResponse.status,200,'Authenticated admin can load the product catalogue');
+const adminCatalog = await adminCatalogResponse.json() as any[];
+assert.equal(adminCatalog.some(product=>product.id==='safe-demo-draft' && product.isActive===false),true,
+  'Admin catalogue includes unpublished drafts saved in D1');
+const publicCatalog = await request('/api/products');
+const publicProducts = await publicCatalog.json() as any[];
+assert.equal(publicProducts.some(product=>product.id==='safe-demo-draft'),false,
+  'Unpublished drafts never appear in the public catalogue');
+console.log('Worker API smoke tests passed: admin protection, draft visibility, public draft isolation, tampering, persisted checkout, free delivery and privacy-safe customer tracking');

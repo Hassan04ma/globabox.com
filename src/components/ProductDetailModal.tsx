@@ -698,8 +698,9 @@ function ProductReviews({ productId, product, language }: { productId: string; p
     }
   };
 
-  const avg = reviews.length ? reviews.reduce((sum, item) => sum + item.rating, 0) / reviews.length : Number(product.rating || 0);
-  const count = reviews.length || Number(product.reviewsCount || 0);
+  // Never fall back to seeded catalogue ratings: only persisted customer reviews count.
+  const avg = reviews.length ? reviews.reduce((sum, item) => sum + item.rating, 0) / reviews.length : 0;
+  const count = reviews.length;
 
   return (
     <section id="product-reviews" className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" aria-label={language === 'ar' ? 'آراء العملاء' : language === 'en' ? 'Customer reviews' : 'Avis clients'}>
@@ -709,8 +710,8 @@ function ProductReviews({ productId, product, language }: { productId: string; p
             {language === 'ar' ? 'آراء العملاء' : language === 'en' ? 'Customer reviews' : 'Avis clients'}
           </p>
           <div className="mt-1 flex items-center gap-2">
-            <span className="text-lg font-black text-slate-900">{avg.toFixed(1)}</span>
-            <div className="flex items-center gap-0.5" aria-label={`Rating ${avg.toFixed(1)} out of 5`}>
+            <span className="text-lg font-black text-slate-900">{count ? avg.toFixed(1) : '—'}</span>
+            <div className="flex items-center gap-0.5" aria-label={count ? `Rating ${avg.toFixed(1)} out of 5` : (language === 'ar' ? 'لا توجد تقييمات بعد' : language === 'en' ? 'No reviews yet' : 'Aucun avis pour le moment')}>
               {[1,2,3,4,5].map(star => (
                 <Star key={star} size={14} className={star <= Math.round(avg) ? 'fill-[#176b5c] text-[#176b5c]' : 'text-slate-300'} />
               ))}
