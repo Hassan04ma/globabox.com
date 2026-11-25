@@ -531,19 +531,30 @@ export default {
           'Benefits must be cautious use-case suggestions and flagged for merchant verification when uncertain. List limitations and facts to verify. Never invent testimonials, ratings, guarantees or crossed-out prices.',
           'Return ONLY valid JSON with shape {"title":"short product title","slug":"latin-url-slug","content":{"ar":{"headline":"","subheadline":"","description":"","benefits":[""],"limitations":[""],"faq":[{"question":"","answer":""}],"cta":"اطلب الآن"},"fr":{"headline":"","subheadline":"","description":"","benefits":[""],"limitations":[""],"faq":[{"question":"","answer":""}],"cta":"Commander maintenant"},"en":{"headline":"","subheadline":"","description":"","benefits":[""],"limitations":[""],"faq":[{"question":"","answer":""}],"cta":"Order now"}}}. Use 3-5 concise benefits and 3 FAQs per language. Price values are controlled by merchant input, not generated.'
         ].join('\n');
-        const upstream=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+encodeURIComponent(env.GEMINI_API_KEY),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt},{inline_data:{mime_type:media.content_type,data:btoa(binary)}}]}],generationConfig:{temperature:0.55,responseMimeType:'application/json',maxOutputTokens:5000}})});
-        if(!upstream.ok){
-          const errorBody = await upstream.text();
+        const geminiUrl='https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+encodeURIComponent(env.GEMINI_API_KEY);
+        const geminiBody=JSON.stringify({contents:[{parts:[{text:prompt},{inline_data:{mime_type:media.content_type,data:btoa(binary)}}]}],generationConfig:{temperature:0.55,responseMimeType:'application/json',maxOutputTokens:5000}});
+        let upstream:Response;
+        for(let attempt=0;attempt<4;attempt++){
+          upstream=await fetch(geminiUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:geminiBody});
+          if(upstream.ok||(upstream.status!==503&&upstream.status!==429)||attempt===3)break;
+          const delayMs=1000*Math.pow(2,attempt);
+          console.warn('[GLOBABOX] Gemini temporarily unavailable; retrying',upstream.status,'attempt',attempt+1,'of 3 after',delayMs,'ms');
+          await new Promise(resolve=>setTimeout(resolve,delayMs));
+        }
+        if(!upstream!.ok){
+          const errorBody = await upstream!.text();
           console.error(
             '[GLOBABOX] Gemini generation failed',
-            upstream.status,
+            upstream!.status,
             errorBody.slice(0, 1200)
           );
           return json({
             error:
-              upstream.status === 401 || upstream.status === 403
+              upstream!.status === 401 || upstream!.status === 403
                 ? 'AI credentials were rejected. Check the server secret.'
-                : 'AI generation failed. Please retry.'
+                : upstream!.status === 503 || upstream!.status === 429
+                  ? 'The AI service is temporarily busy. Please wait a moment and try again.'
+                  : 'AI generation failed. Please retry.'
           }, 502);
         }
         const result:any=await upstream.json(),raw=result?.candidates?.[0]?.content?.parts?.map((p:any)=>p.text||'').join('');
