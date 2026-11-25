@@ -1386,6 +1386,7 @@ export default function AdminPanel({
             onProducts={() => setActiveTab('products')}
             onNewProduct={() => { handleStartAddProduct(); setActiveTab('products'); }}
             onPendingOrders={() => { setOrderStatusFilter('pending'); setActiveTab('orders'); }}
+            onStatusFilter={(status) => { setOrderStatusFilter(status); setActiveTab('orders'); }}
             onRefresh={handleRefreshOrders}
             refreshing={isRefreshing}
           />
