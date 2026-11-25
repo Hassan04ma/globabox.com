@@ -560,7 +560,7 @@ export default function AdminPanel({
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = "";
-    if (!/\\.xlsx?$/i.test(file.name)) {
+    if (!file.name.toLowerCase().endsWith(".xlsx") && !file.name.toLowerCase().endsWith(".xls")) {
       alert("Choisissez un fichier Excel .xlsx ou .xls.");
       return;
     }
@@ -591,7 +591,7 @@ export default function AdminPanel({
           const image = value(row, "Image Principale");
           if (!/^[a-zA-Z0-9_-]{1,100}$/.test(id) || !nameFr ||
               !Number.isFinite(price) || price <= 0 || !category ||
-              (image && !/^https:\\/\\//i.test(image))) {
+              (image && !image.toLowerCase().startsWith("https://"))) {
             invalid++;
             continue;
           }
@@ -600,7 +600,7 @@ export default function AdminPanel({
             continue;
           }
           seenIds.add(id);
-          const gallery = list(value(row, "Images Galerie")).filter(url => /^https:\\/\\//i.test(url));
+          const gallery = list(value(row, "Images Galerie")).filter(url => url.toLowerCase().startsWith("https://"));
           const rawStock = value(row, "Etat Stock");
           const stockStatus = (["in_stock","out_of_stock","limited"].includes(rawStock) ? rawStock : "in_stock") as Product["stockStatus"];
           const descFr = value(row, "Description FR");
