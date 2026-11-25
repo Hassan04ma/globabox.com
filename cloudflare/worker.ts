@@ -4,7 +4,7 @@ import { DEFAULT_TRACKING_CONFIG, validateTrackingConfig } from '../src/tracking
 import { isAdmin, handleAdminAuth } from './auth';
 import { quoteOrder } from './orderQuote';
 
-interface Env { ADMIN_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; CHECKOUT_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string; STORE_DEMO_CATALOG?: string; AMEEX_API_ID?: string; AMEEX_API_KEY_TEST?: string; AI: Ai }
+interface Env { ADMIN_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; CHECKOUT_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string; STORE_DEMO_CATALOG?: string; AMEEX_API_ID?: string; AMEEX_API_KEY_TEST?: string; OPENAI_API_KEY?: string; AI?: Ai }
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const MAX_JSON_BYTES = 64 * 1024;
 const readBody = async (request: Request) => {
@@ -570,61 +570,97 @@ export default {
         ].join('\n');
         let generated:any;
         try {
-          const model='@cf/meta/llama-3.2-11b-vision-instruct';
-          let aiResult:any;
-          try {
-            aiResult=await env.AI.run(model,{
-              prompt,
-              image:imageData,
-              max_tokens:5000,
-              temperature:0.45
+          if (env.OPENAI_API_KEY) {
+            // OpenAI vision + Structured Outputs: schema-constrained JSON prevents
+            // malformed model responses from breaking the landing-page workflow.
+            const schema = {
+              type: 'object', additionalProperties: false,
+              required: ['title','slug','content'],
+              properties: {
+                title: {type:'string'},
+                slug: {type:'string'},
+                content: {
+                  type:'object', additionalProperties:false, required:['ar','fr','en'],
+                  properties: Object.fromEntries(['ar','fr','en'].map((lang:string)=>[lang,{
+                    type:'object',additionalProperties:false,
+                    required:['headline','subheadline','description','benefits','limitations','faq','cta','visualDirection'],
+                    properties:{
+                      headline:{type:'string'},subheadline:{type:'string'},description:{type:'string'},
+                      benefits:{type:'array',items:{type:'string'}},
+                      limitations:{type:'array',items:{type:'string'}},
+                      faq:{type:'array',items:{type:'object',additionalProperties:false,required:['question','answer'],properties:{question:{type:'string'},answer:{type:'string'}}}},
+                      cta:{type:'string'},visualDirection:{type:'string'}
+                    }
+                  }]))
+                }
+              }
+            };
+            const openAiPrompt = [
+              'You are GLOBABOX AI, a senior Moroccan ecommerce creative director and conversion copywriter.',
+              'Analyze the attached product photo and create a polished, mobile-first sales page brief for a modern Moroccan online store.',
+              'Write natural Modern Standard Arabic for Moroccan shoppers, polished French, and clear English.',
+              'Product name supplied by merchant: '+(productName||'Not supplied; identify only what is clearly visible.'),
+              'Selling price MAD: '+(sellingPrice===null?'Not supplied; do not invent.':String(sellingPrice)),
+              'Compare-at price MAD: '+(compareAtPrice===null?'Not supplied; do not invent.':String(compareAtPrice)),
+              'Never invent specifications, materials, dimensions, compatibility, certifications, medical/cosmetic results, warranty, reviews, testimonials, delivery promises, scarcity or discounts.',
+              'Only state facts supplied by merchant or unmistakably visible. Put uncertain claims in limitations as questions for merchant verification.',
+              'Create a persuasive but honest headline, subheadline, useful product story, 3-5 grounded benefits/use cases, 2-4 useful FAQs, CTA and visual art direction.',
+              'Use concise, natural, culturally appropriate copy. Do not mention AI. The result will be edited by the merchant before publication.'
+            ].join('\\n');
+            const aiResponse = await fetch('https://api.openai.com/v1/responses', {
+              method:'POST',
+              headers:{'Authorization':'Bearer '+env.OPENAI_API_KEY,'Content-Type':'application/json'},
+              body:JSON.stringify({
+                model:'gpt-5.5',
+                input:[{role:'user',content:[
+                  {type:'input_text',text:openAiPrompt},
+                  {type:'input_image',image_url:imageData,detail:'high'}
+                ]}],
+                text:{format:{type:'json_schema',name:'globabox_landing_page',strict:true,schema}},
+                max_output_tokens:5000
+              })
             });
-          } catch (firstError) {
-            // The merchant has explicitly accepted Meta's license in the setup flow.
-            // Cloudflare requires a one-time initial "agree" request before inference.
-            const message=String(firstError);
-            if (!message.includes('Prior to using this model') &&
-                !message.includes('must submit the prompt')) throw firstError;
-            console.info('[GLOBABOX] Submitting the user-approved one-time Meta model license acceptance.');
-            await env.AI.run(model,{prompt:'agree'});
-            aiResult=await env.AI.run(model,{
-              prompt,
-              image:imageData,
-              max_tokens:5000,
-              temperature:0.45
-            });
-          }
-          const raw=typeof aiResult?.response==='string'?aiResult.response:
-            typeof aiResult?.result==='string'?aiResult.result:'';
-          if(!raw.trim())return json({error:'Cloudflare AI returned an empty response. Please retry.'},502);
-          const cleaned=raw.trim()
-            .replace(/^\`\`\`(?:json)?\s*/i,'')
-            .replace(/\s*\`\`\`$/,'');
-          // Some vision-model responses wrap valid JSON in a short explanation.
-          // First parse the complete response, then safely try its outermost JSON object.
-          try {
-            generated=JSON.parse(cleaned);
-          } catch {
-            const firstBrace=cleaned.indexOf('{');
-            const lastBrace=cleaned.lastIndexOf('}');
-            if(firstBrace<0||lastBrace<=firstBrace){
-              console.error('[GLOBABOX] AI response is not a JSON object. Response length:',raw.length);
-              return json({error:'Cloudflare AI did not return a valid page structure. Please retry.'},502);
+            if(!aiResponse.ok){
+              console.error('[GLOBABOX] OpenAI generation request failed with HTTP status',aiResponse.status);
+              return json({error:aiResponse.status===401?'OpenAI API key is invalid. Check the OPENAI_API_KEY secret.':aiResponse.status===429?'OpenAI API quota or rate limit reached. Check API billing and usage limits.':'OpenAI AI service could not generate the page. Check API access and try again.'},502);
             }
+            const payload:any=await aiResponse.json();
+            const outputText=typeof payload.output_text==='string'?payload.output_text:
+              (Array.isArray(payload.output)?payload.output.flatMap((item:any)=>Array.isArray(item.content)?item.content:[]).filter((part:any)=>part.type==='output_text'&&typeof part.text==='string').map((part:any)=>part.text).join(''):'');
+            if(!outputText.trim())return json({error:'OpenAI returned no page content. Please retry.'},502);
+            try { generated=JSON.parse(outputText); }
+            catch { console.error('[GLOBABOX] OpenAI structured response was not parseable JSON.'); return json({error:'OpenAI returned an unreadable page structure. Please retry.'},502); }
+          } else {
+            if (!env.AI) return json({error:'AI is not configured. Add OPENAI_API_KEY as a Cloudflare secret, or bind Cloudflare Workers AI.'},503);
+            const model='@cf/meta/llama-3.2-11b-vision-instruct';
+            let aiResult:any;
             try {
-              generated=JSON.parse(cleaned.slice(firstBrace,lastBrace+1));
-            } catch(parseError) {
-              console.error('[GLOBABOX] AI JSON parsing failed. Response length:',raw.length,'JSON candidate length:',lastBrace-firstBrace+1);
-              return json({error:'Cloudflare AI returned an invalid page structure. Please retry.'},502);
+              aiResult=await env.AI.run(model,{prompt,image:imageData,max_tokens:5000,temperature:0.45});
+            } catch (firstError) {
+              const message=String(firstError);
+              if (!message.includes('Prior to using this model') && !message.includes('must submit the prompt')) throw firstError;
+              console.info('[GLOBABOX] Submitting the user-approved one-time Meta model license acceptance.');
+              await env.AI.run(model,{prompt:'agree'});
+              aiResult=await env.AI.run(model,{prompt,image:imageData,max_tokens:5000,temperature:0.45});
+            }
+            const raw=typeof aiResult?.response==='string'?aiResult.response:typeof aiResult?.result==='string'?aiResult.result:'';
+            if(!raw.trim())return json({error:'Cloudflare AI returned an empty response. Please retry.'},502);
+            const cleaned=raw.trim().replace(/^\`\`\`(?:json)?\\s*/i,'').replace(/\\s*\`\`\`$/,'');
+            try { generated=JSON.parse(cleaned); }
+            catch {
+              const firstBrace=cleaned.indexOf('{'),lastBrace=cleaned.lastIndexOf('}');
+              if(firstBrace<0||lastBrace<=firstBrace){console.error('[GLOBABOX] Cloudflare AI response is not JSON. Length:',raw.length);return json({error:'Cloudflare AI did not return a valid page structure. Please retry.'},502);}
+              try { generated=JSON.parse(cleaned.slice(firstBrace,lastBrace+1)); }
+              catch { console.error('[GLOBABOX] Cloudflare AI JSON parsing failed.');return json({error:'Cloudflare AI returned an invalid page structure. Please retry.'},502); }
             }
           }
           if(!generated||typeof generated!=='object'||Array.isArray(generated)||!generated.content||typeof generated.content!=='object'){
             console.error('[GLOBABOX] AI response JSON is missing the required content object.');
-            return json({error:'Cloudflare AI returned an incomplete page structure. Please retry.'},502);
+            return json({error:'AI returned an incomplete page structure. Please retry.'},502);
           }
         } catch (error) {
-          console.error('[GLOBABOX] Cloudflare Workers AI generation failed',error);
-          return json({error:'Cloudflare AI is temporarily unavailable or its model license has not been accepted. Please check Workers AI settings and retry.'},502);
+          console.error('[GLOBABOX] AI landing-page generation failed',error);
+          return json({error:'AI service is temporarily unavailable. Check the configured API secret and retry.'},502);
         }
         const cleanText=(v:any,max=1200)=>typeof v==='string'?v.trim().slice(0,max):'';
         const cleanCopy=(lang:'ar'|'fr'|'en')=>{const c=generated?.content?.[lang]||{};return{
