@@ -81,11 +81,15 @@ export default function AdminOrdersWorkspace(p:Props){
     <select value={orderStatusFilter} onChange={e=>setOrderStatusFilter(e.target.value)} aria-label="Filtrer par statut"
       className="min-h-11 w-full rounded-xl border border-slate-200 bg-[#fafcfa] px-3 text-sm font-semibold text-[#193e38] outline-none focus:border-[#104d43]">
       <option value="all">Tous les statuts</option>
-      <option value="pending">En attente</option>
+      <option value="pending">En attente / nouvel appel</option>
+      <option value="no_answer">Client sans réponse</option>
       <option value="confirmed">Confirmées</option>
       <option value="processing">En préparation</option>
+      <option value="picked_up">Colis récupéré par le transporteur</option>
       <option value="shipped">Expédiées</option>
+      <option value="out_for_delivery">En cours de livraison</option>
       <option value="delivered">Livrées</option>
+      <option value="returned">Retournées</option>
       <option value="cancelled">Annulées</option>
     </select>
     <select value={orderCityFilter} onChange={e=>setOrderCityFilter(e.target.value)} aria-label="Filtrer par ville"
@@ -164,9 +168,11 @@ export default function AdminOrdersWorkspace(p:Props){
               <select value={order.status} onChange={e=>void handleUpdateOrderStatus(order.id,e.target.value as Order['status'])}
                 aria-label={'État commande '+order.reference}
                 className={'min-h-10 rounded-xl border px-3 text-xs font-extrabold outline-none '+(order.status==='delivered'?'border-[#b9e3c7] bg-[#eff9f2] text-[#16744a]':order.status==='cancelled'?'border-red-200 bg-red-50 text-red-700':'border-[#d7e4d9] bg-[#f6f9f7] text-[#193e38]')}>
-                <option value="pending">En attente</option><option value="confirmed">Confirmée</option>
-                <option value="processing">En préparation</option><option value="shipped">Expédiée</option>
-                <option value="delivered">Livrée</option><option value="cancelled">Annulée</option>
+                <option value="pending">En attente / nouvel appel</option><option value="no_answer">Client sans réponse</option>
+                <option value="confirmed">Confirmée</option><option value="processing">En préparation</option>
+                <option value="picked_up">Colis récupéré</option><option value="shipped">Expédiée</option>
+                <option value="out_for_delivery">En cours de livraison</option><option value="delivered">Livrée</option>
+                <option value="returned">Retournée</option><option value="cancelled">Annulée</option>
               </select>
             </div>
           </div>
