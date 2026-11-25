@@ -747,8 +747,8 @@ export default {
         if(!updated.success||updated.meta?.changes!==1)return json({error:'Landing page not found or not saved.'},404);
         const row=await env.DB.prepare('SELECT id,slug,title,product_id,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages WHERE id=?').bind(id).first<any>();
         const storedContent=JSON.parse(row.content_json),images=Array.isArray(storedContent._gallery)?storedContent._gallery:[row.image_url],imageOrigins=Array.isArray(storedContent._galleryOrigins)?storedContent._galleryOrigins:images.map(()=> 'merchant_upload');delete storedContent._gallery;delete storedContent._galleryOrigins;
-        const priceConfirmed=storedContent._priceConfirmed===true,comparePriceConfirmed=storedContent._comparePriceConfirmed===true;delete storedContent._priceConfirmed;delete storedContent._comparePriceConfirmed;
-        return json({page:{id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,images,imageOrigins,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,priceConfirmed,comparePriceConfirmed,content:storedContent,status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}});
+        const savedPriceConfirmed=storedContent._priceConfirmed===true,savedComparePriceConfirmed=storedContent._comparePriceConfirmed===true;delete storedContent._priceConfirmed;delete storedContent._comparePriceConfirmed;
+        return json({page:{id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,images,imageOrigins,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,priceConfirmed:savedPriceConfirmed,comparePriceConfirmed:savedComparePriceConfirmed,content:storedContent,status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}});
       }
       const landingPublishMatch=path.match(/^\/api\/admin\/landing-pages\/([a-f0-9-]{36})\/publish$/i);
       if(landingPublishMatch&&method==='POST'){
