@@ -708,7 +708,6 @@ export default {
           if(product.isActive===false||product.inStock!==true||product.stockStatus==='out_of_stock'||!Number.isFinite(product.price)||product.price<=0)return json({error:'The selected product must have a verified price and available stock.'},409);
         }
         const priceConfirmed=body.priceConfirmed===true,comparePriceConfirmed=body.comparePriceConfirmed===true;
-        if(compare!==null&&!comparePriceConfirmed)return json({error:'Confirm the comparison price separately, or remove it before saving for publication.'},409);
         const updated=await env.DB.prepare('UPDATE landing_pages SET title=?,product_id=?,price_mad=?,compare_at_price_mad=?,content_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(title,productId,price,compare,JSON.stringify({...content,_gallery:safeImages.length?safeImages:undefined,_priceConfirmed:priceConfirmed,_comparePriceConfirmed:comparePriceConfirmed}),id).run();
         if(!updated.success||updated.meta?.changes!==1)return json({error:'Landing page not found or not saved.'},404);
         const row=await env.DB.prepare('SELECT id,slug,title,product_id,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages WHERE id=?').bind(id).first<any>();
