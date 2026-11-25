@@ -235,6 +235,15 @@ assert.equal(savedOrders.filter(o=>!o.adminDeletedAt).some(o=>o.id===data.order.
 const savedShipping=await changeShipping({carrier:'Livraison interne',trackingNumber:'GB-TRACK-0001',internalNote:'Internal call note'});
 assert.equal(savedShipping.status,200,'Authorized admin can save manual shipment metadata');
 assert.equal(savedOrders.find(o=>o.id===data.order.id)?.shipping?.trackingNumber,'GB-TRACK-0001');
+// The operational dashboard lifecycle statuses must be accepted and persisted by the authenticated API.
+for (const status of ['no_answer','confirmed','processing','picked_up','shipped','out_for_delivery','delivered','returned','cancelled']) {
+  const statusResponse=await worker.fetch(new Request(
+    'https://preview.example.test/api/orders/'+encodeURIComponent(data.order.id),{
+      method:'PUT',headers:adminHeaders,body:JSON.stringify({status})
+    }),adminEnv);
+  assert.equal(statusResponse.status,200,'Admin can save lifecycle status '+status);
+  assert.equal(savedOrders.find(o=>o.id===data.order.id)?.status,status,'Lifecycle status persisted: '+status);
+}
 const afterShipping=await track({reference:savedRef,phone:'0612345678'});
 assert.equal(afterShipping.status,200);
 const customerShipping=await afterShipping.json() as any;
