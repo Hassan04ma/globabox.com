@@ -243,6 +243,12 @@ for (const status of ['no_answer','confirmed','processing','picked_up','shipped'
     }),adminEnv);
   assert.equal(statusResponse.status,200,'Admin can save lifecycle status '+status);
   assert.equal(savedOrders.find(o=>o.id===data.order.id)?.status,status,'Lifecycle status persisted: '+status);
+  const customerStatus=await track({reference:savedRef,phone:'0612345678'});
+  assert.equal(customerStatus.status,200,'Customer can retrieve lifecycle status '+status);
+  const customerStatusPayload=await customerStatus.json() as any;
+  assert.equal(customerStatusPayload.tracking.status,status,'Customer tracking reflects Admin status '+status);
+  assert.equal(JSON.stringify(customerStatusPayload).includes('Internal call note'),false,
+    'Internal shipping notes remain private for '+status);
 }
 const afterShipping=await track({reference:savedRef,phone:'0612345678'});
 assert.equal(afterShipping.status,200);
