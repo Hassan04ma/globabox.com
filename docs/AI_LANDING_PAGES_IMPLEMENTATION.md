@@ -1,51 +1,48 @@
-# GLOBABOX AI Landing Pages — implementation plan
+# GLOBABOX AI Landing Pages — implementation and release status
 
 ## Goal
-Add an AI-assisted landing-page studio inside the existing authenticated Admin. The merchant can upload a product photo, optionally provide a product name, sale price and comparison price, and ask AI to prepare a professional sales page in Arabic, French and English.
+Add an AI-assisted landing-page studio inside the existing authenticated Admin. The merchant can upload product photos, optionally provide a product name and known prices, and generate an editable Arabic, French and English sales-page draft.
+
+## Implemented in the feature branch
+- Dedicated Landing Pages workspace in the authenticated Admin.
+- Upload and store 1–10 product photos through the existing authenticated media endpoint.
+- Server-side OpenAI Responses API vision generation using the `OPENAI_API_KEY` Cloudflare secret, with Workers AI binding as a fallback.
+- Structured JSON output for Arabic, French and English copy, FAQs, benefits, limitations and visual design tokens.
+- Draft creation, editing, language switching, mobile/desktop preview and explicit save/publish actions.
+- Additive D1 `landing_pages` migration; existing product and order tables are not replaced.
+- Public `/lp/<slug>` rendering for published pages only, with product status/stock/price rechecked at request time.
+- COD order submission through the existing server-side quote and D1 order persistence path, with page attribution recorded on the order.
+- Publishing requires a mapped active product with available stock; customer details are not rendered in public page HTML.
 
 ## Merchant workflow
-1. Upload a product image (reuse the existing authenticated `POST /api/admin/media` endpoint).
-2. Enter any known facts: product name, selling price, comparison price, stock/product record, target audience and campaign notes. Unknown values remain suggestions, never facts.
-3. Generate a first draft with AI. The draft contains:
-   - Three-language headline, subheadline, CTA, product description and FAQ.
-   - Benefits and differentiators grounded in supplied facts.
-   - A clearly labelled "points to verify / limitations" section. Do not invent product specifications, guarantees, certifications, reviews, delivery promises or scarcity.
-   - Suggested sale price and comparison price only as optional recommendations, with a clear "merchant approval required" state.
-   - Mobile-first section order, image placement, trust and COD form copy.
-4. Edit the generated copy and layout, preview each language, save as draft, and explicitly publish.
-5. Publish under `https://globabox.com/lp/<slug>`. The page includes an Arabic / Français / English selector and a COD form.
-6. The order form must use the existing order-validation and D1 orders pipeline, require a mapped active product with verified price and stock, and preserve order reference + phone-based customer tracking. The page slug / campaign attribution is stored as order source metadata.
+1. Upload product photos and optionally enter a known name and prices.
+2. Generate a multilingual draft. AI output remains a draft and must be checked by the merchant.
+3. Edit copy, FAQ, benefits, limitations and design; preview Arabic/French/English and mobile/desktop.
+4. Map the page to an active, in-stock store product.
+5. Save as draft or explicitly publish.
+6. Customers submit the COD form; server-side order pricing and shipping are calculated from the mapped product, not trusted from the browser.
 
-## Admin workspace
-Add a dedicated "Landing Pages" navigation item, separate from the existing Marketing / Pixel settings. The builder should include:
-- AI creation from image and optional merchant inputs.
-- Draft / published / paused states.
-- Page list, preview, edit, duplicate and unpublish.
-- Language tabs with RTL Arabic and LTR French / English.
-- A product mapping control. A page may be designed without a product mapping, but its order form cannot be activated until it maps to a published, in-stock product.
-- UTM and campaign attribution fields.
-- Page analytics (views, form starts, submitted orders) only after event collection is implemented and privacy/cookie requirements are reviewed.
-
-## AI integration and security
-- Use a server-side Gemini API integration (the project already includes `@google/genai`; the Cloudflare Worker must use a server-only `GEMINI_API_KEY` secret or a supported server-side REST call).
-- Never expose the API key to React, HTML, client bundles, logs, or Git.
-- If the key is missing, show a clear Admin-only configuration error; manual page editing remains available.
-- Treat image and merchant text as untrusted input. Validate model JSON and lengths before saving.
-- AI output is always a draft. No automatic publication or automatic price/stock change.
-- Limit image size/type, generation rate and request size. Do not fetch arbitrary external image URLs from the Worker (SSRF protection).
+## AI truthfulness and security
+- The current Worker implementation uses `OPENAI_API_KEY` or the Cloudflare Workers AI binding. It does not use `GEMINI_API_KEY`.
+- Keep provider credentials server-side only. Never expose keys in React, HTML, client bundles, logs or Git.
+- Treat image and merchant text as untrusted input. Validate model output and field lengths before saving.
+- Do not invent product specifications, certifications, guarantees, reviews, delivery promises, scarcity or unverified discounts.
+- AI output is always a draft. It must not publish automatically or change product price/stock.
+- Keep image type/size, request size and generation rate bounded. Do not fetch arbitrary external image URLs from the Worker.
 
 ## Storage and order safety
-- Add a new D1 `landing_pages` table through an additive migration only. Do not modify or replace existing products, orders, tracking, or customer tables.
-- Store page content and publication state separately from product records.
-- Do not create a second order database. Use the existing `orders` table and existing server-side order quote/validation path.
-- Customer tracking continues to use the existing order reference + phone verification. Public page responses must never expose customer PII or admin draft content.
-- Record `source='landing-page'`, page slug and permitted UTM values on the order without changing the order total calculation.
-- Include a staging-only end-to-end test: generate/save draft, publish, language switch, invalid form rejection, valid COD order, Admin visibility, and customer tracking. Verify existing order counts and records are unchanged by migrations.
+- Apply `0002_landing_pages.sql` additively only. Never delete or rewrite existing products, orders, tracking or customer records.
+- Use the existing `orders` table and server-side order quote/validation path; do not create a second order database.
+- Customer tracking continues through the existing order reference and phone verification.
+- Public pages must not expose customer PII or unpublished draft content.
+- Order totals and shipping must be derived server-side. The page slug is stored as order attribution.
 
-## Release gates
-- TypeScript and production build pass.
-- Worker endpoint auth tests pass; all write/admin routes require the existing server-side admin session.
-- Gemini secret is configured as a Cloudflare secret in staging first.
-- D1 migration is applied to staging only first; production D1 remains untouched until explicit release approval.
-- Page publishing, order creation, and tracking are verified on staging before a production deployment.
-- Do not merge or deploy to production automatically.
+## Verification status
+- Latest verified GitHub Actions run #393 completed successfully, including lint, order quote tests, Worker API tests, Cloudflare build, local D1 migration test and Wrangler deploy dry-run.
+- These checks do not prove a deployed staging end-to-end flow.
+- Still required before production: apply the additive migration to staging; verify Admin session and AI provider configuration; run generate → edit → map product → publish → language switch → invalid/valid COD form → Admin order visibility → customer tracking; verify mobile/accessibility and production data preservation.
+- Visual section reordering and analytics/conversion recommendations are not complete in this branch and must not be represented as implemented.
+
+## Release policy
+- Keep the feature on its branch until staging end-to-end verification passes.
+- Do not run the migration against Production or deploy to the live store until staging blockers are closed and the merchant approves the release.
