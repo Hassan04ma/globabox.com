@@ -15,16 +15,16 @@ export default function AdminLandingPagesWorkspace({language='ar'}:{language?:La
  const t=labels[language]||labels.ar;
  const dir=activeLang==='ar'?'rtl':'ltr';
  const copy=current?.content?.[activeLang]||blankCopy;
- const load=async()=>{try{const r=await fetch('/api/admin/landing-pages',{credentials:'same-origin',cache:'no-store'});if(r.ok){const d=await r.json();setPages(Array.isArray(d.pages)?d.pages:[]);}}catch{}};
+ const load=async()=>{try{const r=await fetch('/api/admin/landing-pages',{credentials:'same-origin',cache:'no-store'});if(r.ok){const d:any=await r.json();setPages(Array.isArray(d.pages)?d.pages:[]);}}catch{}};
  useEffect(()=>{void load();},[]);
- const upload=async(f:File)=>{if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>700000)throw new Error('Use JPG, PNG or WebP under 700 KB.');const r=await fetch('/api/admin/media',{method:'POST',headers:{'Content-Type':f.type},body:f,credentials:'same-origin'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Image upload failed');setImageUrl(d.url);setMediaId(d.id);return d as {id:string;url:string};};
+ const upload=async(f:File)=>{if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>700000)throw new Error('Use JPG, PNG or WebP under 700 KB.');const r=await fetch('/api/admin/media',{method:'POST',headers:{'Content-Type':f.type},body:f,credentials:'same-origin'});const d:any=await r.json();if(!r.ok)throw new Error(d.error||'Image upload failed');setImageUrl(d.url);setMediaId(d.id);return d as {id:string;url:string};};
  const updateCopy=(key:keyof Copy,value:any)=>{if(!current)return;setCurrent({...current,content:{...current.content,[activeLang]:{...current.content[activeLang], [key]:value}}});};
  const generate=async()=>{setError('');setNotice('');if(!file&&!mediaId){setError(t.image+': choose a product image.');return;}setBusy(true);try{let id=mediaId;if(file&&!id){const uploaded=await upload(file);id=uploaded.id;}
  const response=await fetch('/api/admin/landing-pages/generate',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({mediaId:id,productName,sellingPrice:price?Number(price):null,compareAtPrice:compare?Number(compare):null})});
- const data=await response.json();if(!response.ok)throw new Error(data.error||t.error);
+ const data:any=await response.json();if(!response.ok)throw new Error(data.error||t.error);
  const p:Page={...data.page,status:'draft'};setCurrent(p);setActiveLang('ar');setNotice('AI draft generated. '+t.review);
  }catch(e:any){setError(e.message||t.error);}finally{setBusy(false);}};
- const save=async(publish=false)=>{if(!current)return;setBusy(true);setError('');setNotice('');try{const r=await fetch('/api/admin/landing-pages'+(publish?'/'+encodeURIComponent(current.id)+'/publish':''),{method:publish?'POST':'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(current)});const d=await r.json();if(!r.ok)throw new Error(d.error||t.error);setCurrent(d.page);setNotice(publish?'Page published.':t.saved);await load();}catch(e:any){setError(e.message||t.error);}finally{setBusy(false);}};
+ const save=async(publish=false)=>{if(!current)return;setBusy(true);setError('');setNotice('');try{const r=await fetch('/api/admin/landing-pages'+(publish?'/'+encodeURIComponent(current.id)+'/publish':''),{method:publish?'POST':'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(current)});const d:any=await r.json();if(!r.ok)throw new Error(d.error||t.error);setCurrent(d.page);setNotice(publish?'Page published.':t.saved);await load();}catch(e:any){setError(e.message||t.error);}finally{setBusy(false);}};
  const startNew=()=>{setCurrent(null);setFile(null);setImageUrl('');setMediaId('');setProductName('');setPrice('');setCompare('');setError('');setNotice('');};
  const preview=useMemo(()=>current?.content?.[activeLang]||blankCopy,[current,activeLang]);
  return <div className="mx-auto max-w-[1500px] space-y-6" dir={language==='ar'?'rtl':'ltr'}>
