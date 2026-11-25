@@ -150,7 +150,7 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url), path = url.pathname, method = request.method;
     if (!path.startsWith('/api/')) return env.ASSETS.fetch(request);
-    const reviewSubmission = method === 'POST' && /^\\/api\\/products\\/[^/]+\\/reviews$/.test(path);
+    const reviewSubmission = method === 'POST' && path.startsWith('/api/products/') && path.endsWith('/reviews') && path.split('/').length === 5;
     if (method === 'POST' && (path === '/api/admin/login' || path === '/api/orders' || path === '/api/track-order' || reviewSubmission)) {
       const limiter = path === '/api/admin/login' ? env.ADMIN_RATE_LIMITER : env.CHECKOUT_RATE_LIMITER;
       // Fail closed for public write endpoints when the anti-abuse binding is missing.
