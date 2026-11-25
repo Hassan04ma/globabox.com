@@ -569,8 +569,8 @@ export default {
         }
         const updated=await env.DB.prepare('UPDATE landing_pages SET title=?,product_id=?,price_mad=?,compare_at_price_mad=?,content_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(title,productId,price,compare,JSON.stringify(content),id).run();
         if(!updated.success||updated.meta?.changes!==1)return json({error:'Landing page not found or not saved.'},404);
-        const row=await env.DB.prepare('SELECT id,slug,title,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages WHERE id=?').bind(id).first<any>();
-        return json({page:{id:row.id,slug:row.slug,title:row.title,imageUrl:row.image_url,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,content:JSON.parse(row.content_json),status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}});
+        const row=await env.DB.prepare('SELECT id,slug,title,product_id,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages WHERE id=?').bind(id).first<any>();
+        return json({page:{id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,content:JSON.parse(row.content_json),status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}});
       }
       const landingPublishMatch=path.match(/^\/api\/admin\/landing-pages\/([a-f0-9-]{36})\/publish$/i);
       if(landingPublishMatch&&method==='POST'){
