@@ -544,6 +544,135 @@ export default function AdminPanel({
     XLSX.writeFile(workbook, `globabox_produits_${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
+
+  // Download a workbook template that matches the product export columns.
+  const downloadProductsExcelTemplate = () => {
+    const headers = ["ID","Nom FR","Nom AR","Nom EN","Prix","Ancien Prix","Categorie","Sous-categorie","Image Principale","Images Galerie","Etat Stock","Meilleure Vente","Nouveaute","En Vedette","Publie","SKU","Code-barres","Tags","Description FR","Description AR","Description EN","Caracteristiques FR","Caracteristiques AR","Caracteristiques EN","SEO Titre","SEO Description"];
+    const sheet = XLSX.utils.aoa_to_sheet([headers]);
+    sheet["!cols"] = headers.map(() => ({ wch: 22 }));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, sheet, "Produits");
+    XLSX.writeFile(workbook, "modele_import_produits_globabox.xlsx");
+  };
+
+  // Import Excel rows as unpublished drafts. Existing IDs are never overwritten.
+  const importProductsFromExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+    if (!/\\.xlsx?$/i.test(file.name)) {
+      alert("Choisissez un fichier Excel .xlsx ou .xls.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async event => {
+      try {
+        const workbook = XLSX.read(event.target?.result, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        if (!sheet) { alert("Le fichier Excel ne contient aucune feuille."); return; }
+        const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "", raw: false });
+        if (!rows.length || rows.length > 200) {
+          alert("Le fichier doit contenir entre 1 et 200 lignes de produits.");
+          return;
+        }
+        const value = (row: Record<string, unknown>, key: string) => String(row[key] ?? "").trim();
+        const existingIds = new Set(adminProducts.map(product => product.id));
+        const seenIds = new Set<string>();
+        const parsed: Product[] = [];
+        let invalid = 0, duplicate = 0;
+        const list = (raw: string) => raw.split(";").map(item => item.trim()).filter(Boolean);
+        const truthy = (raw: string) => /^(true|1|oui|yes)$/i.test(raw);
+
+        for (const row of rows) {
+          const id = value(row, "ID");
+          const nameFr = value(row, "Nom FR");
+          const price = Number(value(row, "Prix").replace(",", "."));
+          const category = value(row, "Categorie");
+          const image = value(row, "Image Principale");
+          if (!/^[a-zA-Z0-9_-]{1,100}$/.test(id) || !nameFr ||
+              !Number.isFinite(price) || price <= 0 || !category ||
+              (image && !/^https:\\/\\//i.test(image))) {
+            invalid++;
+            continue;
+          }
+          if (existingIds.has(id) || seenIds.has(id)) {
+            duplicate++;
+            continue;
+          }
+          seenIds.add(id);
+          const gallery = list(value(row, "Images Galerie")).filter(url => /^https:\\/\\//i.test(url));
+          const rawStock = value(row, "Etat Stock");
+          const stockStatus = (["in_stock","out_of_stock","low_stock"].includes(rawStock) ? rawStock : "in_stock") as Product["stockStatus"];
+          const descFr = value(row, "Description FR");
+          const descAr = value(row, "Description AR") || descFr;
+          const descEn = value(row, "Description EN") || descFr;
+          const originalPriceValue = Number(value(row, "Ancien Prix").replace(",", "."));
+          parsed.push({
+            id,
+            name: { fr: nameFr, ar: value(row, "Nom AR") || nameFr, en: value(row, "Nom EN") || nameFr },
+            price,
+            ...(Number.isFinite(originalPriceValue) && originalPriceValue > 0 ? { originalPrice: originalPriceValue } : {}),
+            category,
+            subcategory: value(row, "Sous-categorie"),
+            image,
+            images: [image, ...gallery].filter(Boolean),
+            additionalImages: gallery,
+            inStock: stockStatus !== "out_of_stock",
+            stockStatus,
+            bestSeller: truthy(value(row, "Meilleure Vente")),
+            newArrival: truthy(value(row, "Nouveaute")),
+            featured: truthy(value(row, "En Vedette")),
+            description: { fr: descFr, ar: descAr, en: descEn },
+            features: {
+              fr: list(value(row, "Caracteristiques FR")),
+              ar: list(value(row, "Caracteristiques AR")),
+              en: list(value(row, "Caracteristiques EN"))
+            },
+            tags: list(value(row, "Tags")),
+            sku: value(row, "SKU"),
+            barcode: value(row, "Code-barres"),
+            seoTitle: value(row, "SEO Titre"),
+            seoDescription: value(row, "SEO Description"),
+            rating: 0,
+            reviewsCount: 0,
+            isActive: false
+          } as Product);
+        }
+
+        if (!parsed.length) {
+          alert("Aucun produit valide. Vérifiez les colonnes ID, Nom FR, Prix et Categorie. Les identifiants déjà présents sont ignorés.");
+          return;
+        }
+        if (!window.confirm("Importer " + parsed.length + " produit(s) comme BROUILLON(S) dans D1 ? Aucun produit ne sera publié ni remplacé.")) return;
+
+        let created = 0, failed = 0;
+        for (const product of parsed) {
+          try {
+            const response = await fetch("/api/products", {
+              method: "POST",
+              credentials: "same-origin",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ ...product, isActive: false, visibilityChanged: false })
+            });
+            if (response.ok) created++;
+            else if (response.status === 409) duplicate++;
+            else failed++;
+          } catch { failed++; }
+        }
+        const refreshed = await fetch("/api/admin/products", { credentials: "same-origin", cache: "no-store" });
+        if (refreshed.ok) {
+          const latest = await refreshed.json();
+          if (Array.isArray(latest)) setAdminProducts(latest);
+        }
+        alert("Import terminé : " + created + " brouillon(s) enregistré(s), " + duplicate + " doublon(s) ignoré(s), " + (invalid + failed) + " ligne(s) invalide(s) ou rejetée(s).");
+      } catch (error) {
+        console.error("[GLOBABOX] Excel import failed", error);
+        alert("Impossible de lire le fichier Excel. Utilisez le modèle GLOBABOX.");
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
   // Export products as JSON backup
   const exportProductsToJSON = () => {
     if (adminProducts.length === 0) {
@@ -1462,6 +1591,8 @@ export default function AdminPanel({
             exportProductsToExcel={exportProductsToExcel}
             importProductsFromJSON={importProductsFromJSON}
             importProductsFromCSV={importProductsFromCSV}
+            importProductsFromExcel={importProductsFromExcel}
+            downloadProductsExcelTemplate={downloadProductsExcelTemplate}
             uploadProductPhotos={uploadProductPhotos}
           />
         )}
