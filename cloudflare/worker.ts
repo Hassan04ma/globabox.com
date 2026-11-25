@@ -4,7 +4,7 @@ import { DEFAULT_TRACKING_CONFIG, validateTrackingConfig } from '../src/tracking
 import { isAdmin, handleAdminAuth } from './auth';
 import { quoteOrder } from './orderQuote';
 
-interface Env { ADMIN_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; CHECKOUT_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string; STORE_DEMO_CATALOG?: string; AMEEX_API_ID?: string; AMEEX_API_KEY_TEST?: string; GEMINI_API_KEY?: string }
+interface Env { ADMIN_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; CHECKOUT_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string; STORE_DEMO_CATALOG?: string; AMEEX_API_ID?: string; AMEEX_API_KEY_TEST?: string; AI: Ai }
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const MAX_JSON_BYTES = 64 * 1024;
 const readBody = async (request: Request) => {
@@ -533,7 +533,7 @@ export default {
       }
       if (path === '/api/admin/landing-pages/generate' && method === 'POST') {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
-        if (!env.GEMINI_API_KEY) return json({error:'AI service is not configured. Add GEMINI_API_KEY as a Cloudflare secret.'},503);
+        if (!env.AI) return json({error:'Cloudflare Workers AI is not bound to this Worker. Add the AI binding and redeploy.'},503);
         const body=await readBody(request), mediaId=typeof body?.mediaId==='string'?body.mediaId:'';
         const productName=typeof body?.productName==='string'?body.productName.trim().slice(0,120):'';
         const sellingPrice=body?.sellingPrice==null?null:Number(body.sellingPrice), compareAtPrice=body?.compareAtPrice==null?null:Number(body.compareAtPrice);
@@ -546,66 +546,55 @@ export default {
         const bytes=media.body instanceof Uint8Array?media.body:new Uint8Array(media.body as any);
         if (!bytes.length||bytes.length>750000) return json({error:'Image exceeds the allowed size.'},413);
         let binary=''; for(let i=0;i<bytes.length;i+=0x8000) binary+=String.fromCharCode(...bytes.subarray(i,i+0x8000));
+        const imageData='data:'+media.content_type+';base64,'+btoa(binary);
         const prompt=[
-          'You are a senior global ecommerce conversion copywriter for a Moroccan online store.',
-          'Analyze the product photo. Create polished, honest, mobile-first landing page copy in Arabic (Modern Standard Arabic, natural for Morocco), French and English.',
-          'Product name: '+(productName||'Not supplied; suggest a cautious descriptive name based only on visible evidence'),
-          'Selling price MAD: '+(sellingPrice===null?'Not supplied; do not invent a price; return null':String(sellingPrice)),
-          'Comparison price MAD: '+(compareAtPrice===null?'Not supplied; return null':String(compareAtPrice)),
-          'Do not infer hidden specs, materials, dimensions, compatibility, certifications, medical benefits, warranties, reviews, delivery times, scarcity or discounts from appearance alone.',
-          'Benefits must be cautious use-case suggestions and flagged for merchant verification when uncertain. List limitations and facts to verify. Never invent testimonials, ratings, guarantees or crossed-out prices.',
-          'Return ONLY valid JSON with shape {"title":"short product title","slug":"latin-url-slug","content":{"ar":{"headline":"","subheadline":"","description":"","benefits":[""],"limitations":[""],"faq":[{"question":"","answer":""}],"cta":"اطلب الآن"},"fr":{"headline":"","subheadline":"","description":"","benefits":[""],"limitations":[""],"faq":[{"question":"","answer":""}],"cta":"Commander maintenant"},"en":{"headline":"","subheadline":"","description":"","benefits":[""],"limitations":[""],"faq":[{"question":"","answer":""}],"cta":"Order now"}}}. Use 3-5 concise benefits and 3 FAQs per language. Price values are controlled by merchant input, not generated.'
+          'You are GLOBABOX AI, a senior Moroccan ecommerce creative director and conversion copywriter.',
+          'Study the attached product image and create a polished, premium, brand-consistent sales page brief for a modern Moroccan online store.',
+          'Write natural Modern Standard Arabic suitable for Moroccan shoppers, polished French, and clear English.',
+          'Product name supplied by merchant: '+(productName||'Not supplied; identify only what is clearly visible in the photo.'),
+          'Selling price in MAD: '+(sellingPrice===null?'Not supplied; return null and never invent a price.':String(sellingPrice)),
+          'Comparison price in MAD: '+(compareAtPrice===null?'Not supplied; return null and never invent a price.':String(compareAtPrice)),
+          'Never invent product specifications, materials, dimensions, compatibility, certifications, medical benefits, warranties, reviews, testimonials, delivery times, scarcity or discounts.',
+          'Do not claim a feature unless it is explicitly supplied by the merchant or unmistakably visible. Separate safe visual observations from facts requiring merchant verification.',
+          'Create a strong but honest headline, concise subheadline, persuasive product story, 3-5 cautious benefits/use cases, 3 useful FAQs, a clear call to action, and a short visual art direction for a premium product page.',
+          'Return ONLY valid JSON with this exact shape: {"title":"short product title","slug":"latin-url-slug","content":{"ar":{"headline":"","subheadline":"","description":"","benefits":[""],"limitations":[""],"faq":[{"question":"","answer":""}],"cta":"اطلب الآن","visualDirection":""},"fr":{"headline":"","subheadline":"","description":"","benefits":[""],"limitations":[""],"faq":[{"question":"","answer":""}],"cta":"Commander maintenant","visualDirection":""},"en":{"headline":"","subheadline":"","description":"","benefits":[""],"limitations":[""],"faq":[{"question":"","answer":""}],"cta":"Order now","visualDirection":""}}}.',
+          'Use 3-5 concise benefits and 3 FAQs per language. Prices are controlled by merchant input. No markdown fences or extra text.'
         ].join('\n');
-        const geminiBody=JSON.stringify({contents:[{parts:[{text:prompt},{inline_data:{mime_type:media.content_type,data:btoa(binary)}}]}],generationConfig:{temperature:0.55,responseMimeType:'application/json',maxOutputTokens:5000}});
-        let upstream:Response|undefined;
-        let activeModel='';
-        for(const model of ['gemini-3.8-flash','gemini-3.5-flash-lite']){
-          const geminiUrl='https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+encodeURIComponent(env.GEMINI_API_KEY);
-          for(let attempt=0;attempt<3;attempt++){
-            upstream=await fetch(geminiUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:geminiBody});
-            if(upstream.ok||(upstream.status!==503&&upstream.status!==429)||attempt===2)break;
-            const delayMs=1000*Math.pow(2,attempt);
-            console.warn('[GLOBABOX] Gemini temporarily unavailable; retrying',model,upstream.status,'attempt',attempt+1,'of 2 after',delayMs,'ms');
-            await new Promise(resolve=>setTimeout(resolve,delayMs));
-          }
-          if(upstream?.ok){activeModel=model;break;}
-          if(upstream&&upstream.status!==503&&upstream.status!==429)break;
-          if(model==='gemini-3.8-flash')console.warn('[GLOBABOX] Primary Gemini model unavailable; switching to fallback gemini-3.5-flash-lite');
+        let generated:any;
+        try {
+          const aiResult:any=await env.AI.run('@cf/meta/llama-3.2-11b-vision-instruct',{
+            prompt,
+            image:imageData,
+            max_tokens:5000,
+            temperature:0.45
+          });
+          const raw=typeof aiResult?.response==='string'?aiResult.response:
+            typeof aiResult?.result==='string'?aiResult.result:'';
+          if(!raw.trim())return json({error:'Cloudflare AI returned an empty response. Please retry.'},502);
+          const cleaned=raw.trim().replace(/^\`\`\`(?:json)?\s*/i,'').replace(/\s*\`\`\`$/,'');
+          try { generated=JSON.parse(cleaned); }
+          catch { return json({error:'Cloudflare AI returned content that could not be validated. Please retry.'},502); }
+        } catch (error) {
+          console.error('[GLOBABOX] Cloudflare Workers AI generation failed',error);
+          return json({error:'Cloudflare AI is temporarily unavailable or its model license has not been accepted. Please check Workers AI settings and retry.'},502);
         }
-        if(!upstream?.ok){
-          const errorBody = upstream ? await upstream.text() : 'No response from Gemini API';
-          console.error(
-            '[GLOBABOX] Gemini generation failed',
-            upstream?.status||'NO_RESPONSE',
-            errorBody.slice(0, 1200)
-          );
-          return json({
-            error:
-              upstream?.status === 401 || upstream?.status === 403
-                ? 'AI credentials were rejected. Check the server secret.'
-                : upstream?.status === 503 || upstream?.status === 429
-                  ? 'Both AI models are temporarily busy. Please wait a moment and try again.'
-                  : 'AI generation failed. Please retry.'
-          }, 502);
-        }
-        console.info('[GLOBABOX] Landing page generated with',activeModel);
-        const result:any=await upstream.json(),raw=result?.candidates?.[0]?.content?.parts?.map((p:any)=>p.text||'').join('');
-        if(typeof raw!=='string'||!raw.trim())return json({error:'AI returned an empty response.'},502);
-        let generated:any;try{generated=JSON.parse(raw);}catch{return json({error:'AI response could not be validated. Please retry.'},502);}
         const cleanText=(v:any,max=1200)=>typeof v==='string'?v.trim().slice(0,max):'';
         const cleanCopy=(lang:'ar'|'fr'|'en')=>{const c=generated?.content?.[lang]||{};return{
           headline:cleanText(c.headline,180),subheadline:cleanText(c.subheadline,240),description:cleanText(c.description,1800),
           benefits:Array.isArray(c.benefits)?c.benefits.slice(0,6).map((x:any)=>cleanText(x,240)).filter(Boolean):[],
           limitations:Array.isArray(c.limitations)?c.limitations.slice(0,8).map((x:any)=>cleanText(x,240)).filter(Boolean):[],
-          faq:Array.isArray(c.faq)?c.faq.slice(0,5).map((x:any)=>({question:cleanText(x?.question,180),answer:cleanText(x?.answer,400)})).filter((x:any)=>x.question&&x.answer):[],cta:cleanText(c.cta,80)};};
+          faq:Array.isArray(c.faq)?c.faq.slice(0,5).map((x:any)=>({question:cleanText(x?.question,180),answer:cleanText(x?.answer,400)})).filter((x:any)=>x.question&&x.answer):[],
+          cta:cleanText(c.cta,80),visualDirection:cleanText(c.visualDirection,500)
+        };};
         const content={ar:cleanCopy('ar'),fr:cleanCopy('fr'),en:cleanCopy('en')};
-        if(!content.ar.headline||!content.fr.headline||!content.en.headline)return json({error:'AI content is incomplete. Please generate again.'},502);
+        if(!content.ar.headline||!content.fr.headline||!content.en.headline)return json({error:'Cloudflare AI content is incomplete. Please generate again.'},502);
         const title=cleanText(generated.title,120)||productName||'New product';
         const rawSlug=cleanText(generated.slug,80).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
         const slug=(rawSlug.replace(/[^a-z0-9-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,64)||'produit')+'-'+crypto.randomUUID().slice(0,6);
         const id=crypto.randomUUID(),imageUrl=new URL('/api/product-media/'+mediaId,request.url).href;
         const written=await env.DB.prepare('INSERT INTO landing_pages (id,slug,title,image_url,media_id,price_mad,compare_at_price_mad,content_json,status) VALUES (?,?,?,?,?,?,?,?,?)').bind(id,slug,title,imageUrl,mediaId,sellingPrice,compareAtPrice,JSON.stringify(content),'draft').run();
         if(!written.success||written.meta?.changes!==1)return json({error:'Draft could not be saved to the database.'},503);
+        console.info('[GLOBABOX] Landing page generated with Cloudflare Workers AI');
         return json({page:{id,slug,title,imageUrl,price:sellingPrice,compareAtPrice,content,status:'draft',productId:null}},201);
       }
       if (path === '/api/admin/landing-pages' && method === 'POST') {
