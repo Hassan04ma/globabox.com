@@ -150,12 +150,14 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url), path = url.pathname, method = request.method;
     if (!path.startsWith('/api/')) return env.ASSETS.fetch(request);
-    if (method === 'POST' && (path === '/api/admin/login' || path === '/api/orders' || path === '/api/track-order')) {
+    const reviewSubmission = method === 'POST' && /^\\/api\\/products\\/[^/]+\\/reviews$/.test(path);
+    if (method === 'POST' && (path === '/api/admin/login' || path === '/api/orders' || path === '/api/track-order' || reviewSubmission)) {
       const limiter = path === '/api/admin/login' ? env.ADMIN_RATE_LIMITER : env.CHECKOUT_RATE_LIMITER;
-      // Fail closed for production request endpoints when the anti-abuse binding is missing.
+      // Fail closed for public write endpoints when the anti-abuse binding is missing.
       if (!limiter) return json({error:'Service temporarily unavailable'},503);
       const ip = request.headers.get('cf-connecting-ip') || 'unknown';
-      const result = await limiter.limit({key: path === '/api/track-order' ? 'tracking:' + ip : ip});
+      const key = path === '/api/track-order' ? 'tracking:' + ip : reviewSubmission ? 'review:' + ip : ip;
+      const result = await limiter.limit({key});
       if (!result.success) return json({error:'Too many requests. Try again later.'},429);
     }
     // Image uploads use a separate 750 KB limit and never go through JSON parsing.
