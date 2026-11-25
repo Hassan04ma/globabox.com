@@ -4,7 +4,7 @@ import { DEFAULT_TRACKING_CONFIG, validateTrackingConfig } from '../src/tracking
 import { isAdmin, handleAdminAuth } from './auth';
 import { quoteOrder } from './orderQuote';
 
-interface Env { ADMIN_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; CHECKOUT_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string; STORE_DEMO_CATALOG?: string; AMEEX_API_ID?: string; AMEEX_API_KEY_TEST?: string }
+interface Env { ADMIN_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; CHECKOUT_RATE_LIMITER?: {limit: (options:{key:string}) => Promise<{success:boolean}>}; DB: D1Database; ASSETS: Fetcher; ADMIN_USERNAME?: string; ADMIN_PASSWORD?: string; ADMIN_SESSION_SECRET?: string; ADMIN_API_KEY?: string; STORE_ACCEPTING_ORDERS?: string; STORE_DEMO_CATALOG?: string; AMEEX_API_ID?: string; AMEEX_API_KEY_TEST?: string; GEMINI_API_KEY?: string }
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const MAX_JSON_BYTES = 64 * 1024;
 const readBody = async (request: Request) => {
