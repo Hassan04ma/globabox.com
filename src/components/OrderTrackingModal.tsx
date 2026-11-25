@@ -5,10 +5,10 @@ import { ORDER_SUPPORT_NUMBER, WHATSAPP_NUMBER } from '../data';
 import WhatsAppIcon from './WhatsAppIcon';
 
 interface Props {isOpen:boolean;onClose:()=>void;language:Language;}
-type Stage='pending'|'confirmed'|'processing'|'shipped'|'delivered'|'cancelled';
+type Stage='pending'|'no_answer'|'confirmed'|'processing'|'picked_up'|'shipped'|'out_for_delivery'|'delivered'|'returned'|'cancelled';
 interface TrackingResult {reference:string;status:Stage;date:string|null;total:number|null;itemCount:number;source:'store';courierTrackingAvailable:boolean;carrier?:string;trackingNumber?:string;}
 
-const stages:Exclude<Stage,'cancelled'>[]=['pending','confirmed','processing','shipped','delivered'];
+const stages:Exclude<Stage,'cancelled'>[]=['pending','no_answer','confirmed','processing','picked_up','shipped','out_for_delivery','delivered','returned'];
 const labels={
  fr:{
   title:'Suivi de commande',intro:'Retrouvez les informations de votre commande GLOBABOX.',
@@ -23,7 +23,7 @@ const labels={
   noCourier:'Ce statut est mis à jour par GLOBABOX. Le suivi GPS du transporteur n’est pas disponible ici.',
   contact:'Besoin d’aide ?',whatsapp:'Nous écrire sur WhatsApp',call:'Appeler',again:'Nouvelle recherche',
   privacy:'Vos coordonnées et votre adresse ne sont pas affichées.',
-  pending:'En attente',confirmed:'Confirmée',processing:'En préparation',shipped:'Expédiée',delivered:'Livrée',cancelled:'Annulée',
+  pending:'En attente',no_answer:'Client injoignable',confirmed:'Confirmée',processing:'En préparation',picked_up:'Pris en charge par le transporteur',shipped:'Expédiée',out_for_delivery:'En cours de livraison',delivered:'Livrée',returned:'Retournée',cancelled:'Annulée',
   dateUnknown:'Date indisponible'
  },
  ar:{
@@ -39,7 +39,7 @@ const labels={
   noCourier:'هاد الحالة كيتحكم فيها فريق GLOBABOX، وماشي تتبع مباشر GPS ديال شركة التوصيل.',
   contact:'محتاج مساعدة؟',whatsapp:'تواصل عبر واتساب',call:'اتصل بنا',again:'بحث جديد',
   privacy:'ما كنظهروش العنوان والمعلومات الشخصية ديالك.',
-  pending:'في انتظار التأكيد',confirmed:'تم التأكيد',processing:'قيد التجهيز',shipped:'تم الشحن',delivered:'تم التسليم',cancelled:'ملغاة',
+  pending:'في انتظار التأكيد',no_answer:'لم يتم الرد على الهاتف',confirmed:'تم التأكيد',processing:'قيد التجهيز',picked_up:'تسلّمتها شركة الشحن',shipped:'تم الشحن',out_for_delivery:'خرجت للتوصيل',delivered:'تم التسليم',returned:'تم إرجاع الطلبية',cancelled:'ملغاة',
   dateUnknown:'التاريخ غير متوفر'
  },
  en:{
@@ -55,11 +55,11 @@ const labels={
   noCourier:'This status is updated by GLOBABOX. Live courier GPS tracking is not available here.',
   contact:'Need help?',whatsapp:'Message us on WhatsApp',call:'Call support',again:'New search',
   privacy:'Your address and private contact details are not shown.',
-  pending:'Pending',confirmed:'Confirmed',processing:'Preparing',shipped:'Shipped',delivered:'Delivered',cancelled:'Cancelled',
+  pending:'Pending',no_answer:'No answer by phone',confirmed:'Confirmed',processing:'Preparing',picked_up:'Received by courier',shipped:'Shipped',out_for_delivery:'Out for delivery',delivered:'Delivered',returned:'Returned',cancelled:'Cancelled',
   dateUnknown:'Date unavailable'
  }
 } as const;
-const icons={pending:Clock3,confirmed:CheckCircle2,processing:Package,shipped:Truck,delivered:PackageCheck};
+const icons={pending:Clock3,no_answer:PhoneCall,confirmed:CheckCircle2,processing:Package,picked_up:Truck,shipped:Truck,out_for_delivery:Truck,delivered:PackageCheck,returned:ArrowLeft};
 const validPhone=(value:string)=>/^(?:(?:\+|00)212|0)[5-7][0-9]{8}$/.test(value.replace(/[.\s-]/g,''));
 
 export default function OrderTrackingModal({isOpen,onClose,language}:Props){
