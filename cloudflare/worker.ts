@@ -646,7 +646,7 @@ export default {
             }
             const raw=typeof aiResult?.response==='string'?aiResult.response:typeof aiResult?.result==='string'?aiResult.result:'';
             if(!raw.trim())return json({error:'Cloudflare AI returned an empty response. Please retry.'},502);
-            const cleaned=raw.trim().replace(/^\`\`\`(?:json)?\\s*/i,'').replace(/\\s*\`\`\`$/,'');
+            const cleaned=raw.trim().replace(/^\`\`\`(?:json)?\s*/i,'').replace(/\s*\`\`\`$/,'');
             try { generated=JSON.parse(cleaned); }
             catch {
               const firstBrace=cleaned.indexOf('{'),lastBrace=cleaned.lastIndexOf('}');
