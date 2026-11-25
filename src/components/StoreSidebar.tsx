@@ -36,11 +36,11 @@ export default function StoreSidebar({language,categories,selectedCategory,selec
     return <div key={category.id} className={'overflow-hidden rounded-xl border transition-colors '+(active?'border-[#97bead] bg-[#f3f8f4]':'border-slate-100 bg-white')}>
       <div className="flex items-center gap-1.5 p-1.5">
        <button type="button" onClick={()=>{onSelect(category.id);setExpanded(category.id);}}
-        className="group flex min-w-0 flex-1 items-center gap-2.5 rounded-lg p-1 text-start hover:bg-[#edf6f1]" aria-current={active?'page':undefined}>
-        <img src={category.image} alt="" loading="lazy" className="h-[46px] w-[49px] shrink-0 rounded-lg bg-slate-100 object-cover"/>
+        className="group flex min-w-0 flex-1 items-center gap-3 rounded-lg p-1.5 text-start hover:bg-[#edf6f1]" aria-current={active?'page':undefined}>
+        <img src={category.image} alt="" loading="lazy" className="h-16 w-16 shrink-0 rounded-xl bg-slate-100 object-cover ring-1 ring-[#e6eee8] sm:h-[68px] sm:w-[68px]"/>
         <span className="min-w-0 flex-1">
-          <span className={'block text-[11px] font-bold leading-4 sm:text-xs '+(active?'text-[#104d43]':'text-[#263d36]')}>{category.name[language]||category.name.fr}</span>
-          <span className="mt-1 block text-[10px] text-slate-500">{countFor(category.id)} {t.items}</span>
+          <span className={'block text-xs font-bold leading-5 sm:text-[13px] '+(active?'text-[#104d43]':'text-[#263d36]')}>{category.name[language]||category.name.fr}</span>
+          <span className="mt-1 block text-[11px] text-slate-500">{countFor(category.id)} {t.items}</span>
         </span>
        </button>
        {subs.length>0&&<button type="button" onClick={()=>setExpanded(open?null:category.id)} aria-label={(open?'Collapse ':'Expand ')+(category.name[language]||category.name.fr)}
@@ -63,7 +63,7 @@ export default function StoreSidebar({language,categories,selectedCategory,selec
    })}
   </div>
  );
- return <aside className="w-full shrink-0 lg:w-[278px] xl:w-[294px] 2xl:w-[312px]" dir={language==='ar'?'rtl':'ltr'} aria-label={t.title}>
+ return <aside className="w-full shrink-0 lg:w-[320px] xl:w-[340px] 2xl:w-[360px]" dir={language==='ar'?'rtl':'ltr'} aria-label={t.title}>
    <div className="hidden rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_6px_24px_rgba(0,0,0,.035)] lg:sticky lg:top-[115px] lg:block">
     <div className="mb-4 flex items-center gap-2 border-b border-slate-100 pb-4 text-[#104d43]"><Grid2X2 size={19}/><div><h2 className="text-sm font-black">{t.title}</h2><span className="text-[11px] text-slate-500">{t.subtitle}</span></div></div>
     <div className="max-h-[min(70vh,760px)] overflow-y-auto pe-1">{section()}</div>
