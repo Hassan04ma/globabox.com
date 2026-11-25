@@ -1,98 +1,135 @@
-
 import { useEffect, useState } from 'react';
-import { ArrowDown, Banknote, ChevronLeft, ChevronRight, PackageCheck, Pause, Play, ShoppingBag, Truck } from 'lucide-react';
+import { ArrowDownRight, ArrowUpLeft, Banknote, PackageCheck, ShoppingBag, Truck } from 'lucide-react';
 import type { Language, Category } from '../types';
 import { STORE_DEPARTMENTS } from '../storefrontDepartments';
 
-interface Props { language:Language; categories:Category[]; onShopAll:()=>void; onSelectDepartment:(id:string)=>void; }
-type Text = {tag:string;title:string;description:string;button:string;all:string;discover:string};
-type Slide = {id:string;destination:string|null;categories:string[];theme:'dark'|'light'|'blue';copy:Record<Language,Text>};
+interface Props {
+  language: Language;
+  categories: Category[];
+  onShopAll: () => void;
+  onSelectDepartment: (id: string) => void;
+}
 
+type SlideCopy = { eyebrow: string; title: string; description: string; primary: string; secondary: string; collection: string };
+type Slide = { id: string; categories: string[]; copy: Record<Language, SlideCopy> };
 
-/**
- * Each of the 13 public departments appears in exactly one slide.
- * The images below represent categories, not products or offers.
- */
 const slides: Slide[] = [
- {id:'home',destination:null,categories:['maison','cuisine','eclairage','entretien'],theme:'dark',copy:{
-   fr:{tag:'GLOBABOX · BOUTIQUE MULTI-CATÉGORIES AU MAROC',title:'Maison, cuisine & vie quotidienne.',description:'Découvrez notre boutique en ligne : maison et décoration, cuisine, éclairage et entretien. Chaque image mène directement à son rayon.',button:'Tous les produits',all:'Découvrir la maison',discover:'Rayons maison'},
-   ar:{tag:'GLOBABOX · متجر إلكتروني عام بالمغرب',title:'منتجات المنزل والمطبخ والحياة اليومية.',description:'جلوبابوكس متجر عام فيه المنزل والديكور، المطبخ، الإنارة والتنظيف. كل صورة كتوصلك مباشرة للقسم ديالها.',button:'جميع المنتجات',all:'قسم المنزل',discover:'أقسام المنزل'},
-   en:{tag:'GLOBABOX · MULTI-CATEGORY ONLINE STORE',title:'Everything for home and everyday living.',description:'Discover home decor, kitchen essentials, lighting and cleaning. Select any category image to explore its products.',button:'All products',all:'Explore home',discover:'Home categories'}
- }},
- {id:'tech',destination:null,categories:['technologie','beaute','mode'],theme:'light',copy:{
-   fr:{tag:'ÉLECTRONIQUE · BEAUTÉ · MODE',title:'Tech, beauté et accessoires.',description:'Des catégories pour les achats du quotidien : électronique, soin et mode. Choisissez une image pour ouvrir le bon rayon.',button:'Tous les produits',all:'Explorer la technologie',discover:'Rayons tech & lifestyle'},
-   ar:{tag:'الإلكترونيات · الجمال · الموضة',title:'التكنولوجيا، الجمال والإكسسوارات.',description:'من الأجهزة والإلكترونيات للعناية الشخصية والموضة. ضغط على الصورة باش تمشي مباشرة للتصنيف.',button:'جميع المنتجات',all:'قسم الإلكترونيات',discover:'أقسام متنوعة'},
-   en:{tag:'ELECTRONICS · BEAUTY · FASHION',title:'Technology, beauty and style.',description:'Discover electronics, personal care and fashion. Every category image takes you directly to its product listings.',button:'All products',all:'Explore electronics',discover:'Tech & lifestyle categories'}
- }},
- {id:'family',destination:null,categories:['automobile','sport_loisirs','enfants'],theme:'blue',copy:{
-   fr:{tag:'AUTO · SPORT · ENFANTS',title:'Des trouvailles pour toutes vos activités.',description:'Explorez les accessoires automobiles, le sport et les articles pour les enfants. Un clic sur une image ouvre sa catégorie.',button:'Tous les produits',all:'Explorer les accessoires auto',discover:'Rayons auto, sport & famille'},
-   ar:{tag:'السيارات · الرياضة · الأطفال',title:'منتجات للسيارات والرياضة والعائلة.',description:'إكسسوارات السيارات، اللياقة، ومستلزمات الأطفال. كل صورة كتديك لمنتجات القسم مباشرة.',button:'جميع المنتجات',all:'قسم السيارات',discover:'أقسام السيارات والعائلة'},
-   en:{tag:'AUTO · SPORTS · KIDS',title:'Useful finds for active families.',description:'Explore car accessories, sport and fitness, and kids essentials. Open any category by selecting its image.',button:'All products',all:'Explore car accessories',discover:'Auto, sport & family'}
- }},
- {id:'discover',destination:null,categories:['jardin','bureau','animaux'],theme:'light',copy:{
-   fr:{tag:'JARDIN · BUREAU · ANIMAUX',title:'Pour le jardin, le bureau et vos compagnons.',description:'Découvrez les accessoires de jardin, l’organisation du bureau et les articles pour animaux. Chaque visuel est un lien vers son rayon.',button:'Tous les produits',all:'Explorer le jardin',discover:'Autres univers'},
-   ar:{tag:'الحديقة · المكتب · الحيوانات الأليفة',title:'الحديقة، المكتب ومستلزمات الحيوانات.',description:'تسوق أقسام الحديقة، تنظيم المكتب ولوازم الحيوانات الأليفة. ضغط على أي صورة باش تشوف القسم.',button:'جميع المنتجات',all:'قسم الحديقة',discover:'باقي الأقسام'},
-   en:{tag:'GARDEN · OFFICE · PETS',title:'Explore more ways to shop.',description:'Browse garden accessories, office organisation and pet supplies. Tap any image to open its department.',button:'All products',all:'Explore garden',discover:'More departments'}
- }}
+  {
+    id: 'home',
+    categories: ['maison', 'cuisine', 'eclairage', 'entretien'],
+    copy: {
+      fr: { eyebrow: 'GLOBABOX · LE SHOPPING EN TOUTE SIMPLICITÉ', title: 'De belles idées pour chaque espace de votre maison.', description: 'Découvrez des essentiels pour la maison, la cuisine et le quotidien. Des univers à explorer, une expérience simple et des prix affichés clairement.', primary: 'Explorer la boutique', secondary: 'Voir la maison', collection: 'L’univers maison' },
+      ar: { eyebrow: 'GLOBABOX · تسوق أسهل كل يوم', title: 'أفكار جميلة لكل ركن في منزلك.', description: 'اكتشف اختيارات متنوعة للمنزل والمطبخ والحياة اليومية، مع تجربة تسوق سهلة وأثمنة واضحة.', primary: 'اكتشف المتجر', secondary: 'تسوق المنزل', collection: 'عالم المنزل' },
+      en: { eyebrow: 'GLOBABOX · SHOP WITH EASE', title: 'Fresh finds for every corner of your home.', description: 'Explore useful home, kitchen and everyday essentials in a simple store experience with clear prices.', primary: 'Explore the store', secondary: 'Shop home', collection: 'The home edit' }
+    }
+  },
+  {
+    id: 'tech',
+    categories: ['technologie', 'beaute', 'mode', 'bureau'],
+    copy: {
+      fr: { eyebrow: 'TECHNOLOGIE · BEAUTÉ · STYLE', title: 'Les accessoires qui font la différence.', description: 'Parcourez nos univers technologie, beauté, mode et bureau pour trouver les accessoires utiles à votre quotidien.', primary: 'Découvrir les produits', secondary: 'Explorer la technologie', collection: 'Tech & lifestyle' },
+      ar: { eyebrow: 'التكنولوجيا · الجمال · الأناقة', title: 'إكسسوارات صغيرة بتأثير كبير.', description: 'تصفح أقسام التكنولوجيا والجمال والموضة والمكتب واكتشف منتجات مفيدة لحياتك اليومية.', primary: 'اكتشف المنتجات', secondary: 'قسم التكنولوجيا', collection: 'التكنولوجيا ونمط الحياة' },
+      en: { eyebrow: 'TECH · BEAUTY · STYLE', title: 'Smart accessories. Everyday inspiration.', description: 'Browse technology, beauty, fashion and office essentials selected for everyday use.', primary: 'Discover products', secondary: 'Explore technology', collection: 'Tech & lifestyle' }
+    }
+  },
+  {
+    id: 'family',
+    categories: ['automobile', 'sport_loisirs', 'enfants', 'animaux'],
+    copy: {
+      fr: { eyebrow: 'AUTO · SPORT · FAMILLE', title: 'Prêt pour toutes vos envies et aventures.', description: 'Des accessoires auto aux loisirs et aux essentiels de la famille, explorez les catégories qui vous ressemblent.', primary: 'Voir tous les produits', secondary: 'Explorer le sport', collection: 'Pour vos activités' },
+      ar: { eyebrow: 'السيارات · الرياضة · العائلة', title: 'استعد لكل نشاط ومغامرة.', description: 'من إكسسوارات السيارات إلى الرياضة ومستلزمات العائلة، اكتشف الأقسام التي تناسب احتياجاتك.', primary: 'شاهد جميع المنتجات', secondary: 'اكتشف الرياضة', collection: 'لعالمك وأنشطتك' },
+      en: { eyebrow: 'AUTO · SPORT · FAMILY', title: 'Ready for the things you love to do.', description: 'From car accessories to sports, leisure and family essentials, explore collections made for everyday life.', primary: 'Shop all products', secondary: 'Explore sports', collection: 'For your everyday' }
+    }
+  },
+  {
+    id: 'discover',
+    categories: ['jardin', 'bureau', 'animaux', 'eclairage'],
+    copy: {
+      fr: { eyebrow: 'JARDIN · BUREAU · ANIMAUX', title: 'Encore plus d’univers à découvrir.', description: 'Inspirez-vous, explorez de nouvelles catégories et trouvez facilement les produits qui vous facilitent la vie.', primary: 'Parcourir la boutique', secondary: 'Explorer le jardin', collection: 'À découvrir aussi' },
+      ar: { eyebrow: 'الحديقة · المكتب · الحيوانات', title: 'عوالم أخرى تستحق الاكتشاف.', description: 'اكتشف أقساماً متنوعة ومنتجات عملية تساعدك في تفاصيل الحياة اليومية.', primary: 'تصفح المتجر', secondary: 'اكتشف الحديقة', collection: 'اكتشف المزيد' },
+      en: { eyebrow: 'GARDEN · OFFICE · PETS', title: 'There is always something more to discover.', description: 'Explore more categories and find practical products that make everyday moments easier.', primary: 'Browse the store', secondary: 'Explore garden', collection: 'More to explore' }
+    }
+  }
 ];
 
-const appearance={
- dark:{bg:'bg-[#103e35] border-[#235f51]',text:'text-white',sub:'text-white/80',tag:'bg-white/10 text-[#f4c75a] border-white/20',primary:'bg-[#f4c75a] text-[#153d35] hover:bg-yellow-300',secondary:'border-white/40 text-white hover:bg-white/10',hint:'text-white/70'},
- light:{bg:'bg-[#f8f3e7] border-[#e7e0ce]',text:'text-[#193e38]',sub:'text-[#52645d]',tag:'bg-white/70 text-[#856227] border-[#dbc79b]',primary:'bg-[#104d43] text-white hover:bg-[#0c3831]',secondary:'border-[#93b1a4] text-[#104d43] hover:bg-white',hint:'text-[#4b6459]'},
- blue:{bg:'bg-[#1b3947] border-[#244c5d]',text:'text-white',sub:'text-white/80',tag:'bg-white/10 text-[#f4c75a] border-white/20',primary:'bg-[#f4c75a] text-[#153d35] hover:bg-yellow-300',secondary:'border-white/40 text-white hover:bg-white/10',hint:'text-white/70'}
-} as const;
+export default function HomeBannerSlider({ language, categories, onShopAll, onSelectDepartment }: Props) {
+  const [active, setActive] = useState(0);
+  const rtl = language === 'ar';
 
-export default function HomeBannerSlider({language,categories,onShopAll,onSelectDepartment}:Props){
- const [active,setActive]=useState(0),[paused,setPaused]=useState(false);
- useEffect(()=>{
-   if(paused||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-   const timer=window.setInterval(()=>setActive(i=>(i+1)%slides.length),5500);
-   return ()=>window.clearInterval(timer);
- },[paused]);
- const slide=slides[active],c=slide.copy[language],palette=appearance[slide.theme];
- const rtl=language==='ar';
- const go=(id:string|null)=>id?onSelectDepartment(id):onShopAll();
- return <section className="w-full max-w-none px-4 pb-4 pt-6 sm:px-6 lg:px-8 2xl:px-10" dir={rtl?'rtl':'ltr'} aria-label={rtl?'عروض المتجر':'Découvrir GLOBABOX'}>
-  <div className={'relative isolate overflow-hidden rounded-[26px] border shadow-[0_10px_35px_rgba(16,50,43,.08)] '+palette.bg}>
-   <div className="relative grid min-h-[530px] items-center gap-8 px-6 pb-[88px] pt-10 sm:px-10 lg:min-h-[500px] lg:grid-cols-2 lg:gap-10 lg:px-12 lg:pt-8 2xl:gap-16 2xl:px-16">
-    <div className="max-w-[700px]">
-     <p className={'mb-5 inline-flex max-w-full rounded-full border px-4 py-2 text-[10px] font-extrabold leading-5 tracking-[.08em] sm:text-xs '+palette.tag}>{c.tag}</p>
-     <h1 className={'max-w-[700px] text-3xl font-black leading-[1.15] tracking-tight sm:text-5xl 2xl:text-[56px] '+palette.text}>{c.title}</h1>
-     <p className={'mt-5 max-w-[590px] text-sm leading-7 sm:text-base sm:leading-8 '+palette.sub}>{c.description}</p>
-     <div className="mt-8 flex flex-wrap gap-3">
-       <button type="button" onClick={()=>go(slide.destination)} className={'inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-5 text-sm font-extrabold shadow-sm transition '+palette.primary}><ShoppingBag size={18}/>{c.button}<ArrowDown size={17}/></button>
-       <button type="button" onClick={()=>go(slide.categories[0])} className={'inline-flex min-h-12 items-center justify-center rounded-xl border px-5 text-sm font-bold transition '+palette.secondary}>{c.all}</button>
-     </div>
-    </div>
-    <div className="relative">
-      <div className="mb-3 flex items-center justify-between"><span className={'text-[11px] font-extrabold tracking-widest '+palette.hint}>{c.discover}</span><span className={'text-[11px] font-semibold '+palette.hint}>{active+1} / {slides.length}</span></div>
-      <div className="grid grid-cols-2 gap-3 sm:gap-4">
-       {slide.categories.map((id,index)=>{
-        const cat=categories.find(d=>d.id===id) || STORE_DEPARTMENTS.find(d=>d.id===id);
-        if(!cat)return null;
-        return <a key={id} href={'/?category='+encodeURIComponent(id)} onClick={event=>{if(event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();go(id);}} aria-label={cat.name[language]} className={'group relative min-h-[138px] overflow-hidden rounded-[19px] border-2 border-white/75 bg-white text-start shadow-[0_7px_18px_rgba(0,0,0,.15)] transition hover:-translate-y-1 hover:shadow-xl sm:min-h-[168px] lg:min-h-[176px] '+(slide.categories.length===3&&index===2?'col-span-2 sm:col-span-2':'')}>
-         <img src={cat.image} loading={index<2?'eager':'lazy'} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"/>
-         <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#102b26]/95 via-[#102b26]/75 to-transparent px-3 pb-3 pt-10 text-[12px] font-extrabold leading-5 text-white sm:px-4 sm:pb-4 sm:text-sm">{cat.name[language]}</span>
-        </a>;
-       })}
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const timer = window.setInterval(() => setActive(index => (index + 1) % slides.length), 6200);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const slide = slides[active];
+  const copy = slide.copy[language] || slide.copy.fr;
+  const go = (id?: string) => id ? onSelectDepartment(id) : onShopAll();
+  const categoryData = slide.categories.map(id => {
+    const category = categories.find(item => item.id === id) || STORE_DEPARTMENTS.find(item => item.id === id);
+    return category ? { id, category } : null;
+  }).filter((item): item is { id: string; category: Category } => Boolean(item));
+
+  return (
+    <section className="w-full px-3 pb-5 pt-5 sm:px-5 lg:px-8 lg:pb-7" dir={rtl ? 'rtl' : 'ltr'} aria-label="GLOBABOX featured collections">
+      <div className="relative isolate mx-auto max-w-[1680px] overflow-hidden rounded-[28px] bg-[#102f2a] shadow-[0_22px_65px_rgba(15,55,45,.16)] sm:rounded-[34px]">
+        <div className="pointer-events-none absolute -start-28 -top-32 h-96 w-96 rounded-full bg-[#d6ae52]/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-40 end-1/4 h-96 w-96 rounded-full bg-[#5ba18a]/20 blur-3xl" />
+        <div key={slide.id} className="relative grid min-h-[620px] grid-cols-1 items-center gap-8 px-5 py-7 sm:px-8 sm:py-9 lg:min-h-[570px] lg:grid-cols-[.88fr_1.12fr] lg:gap-10 lg:px-12 lg:py-10 xl:px-16">
+          <div className="relative z-10 max-w-[620px] self-center text-white">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[10px] font-extrabold tracking-[.13em] text-[#f5d77e] shadow-sm sm:text-xs">
+              <span className="h-2 w-2 rounded-full bg-[#f5d77e] shadow-[0_0_12px_rgba(245,215,126,.8)]" />
+              {copy.eyebrow}
+            </div>
+            <h1 className="max-w-[650px] text-[34px] font-black leading-[1.12] tracking-[-.035em] sm:text-5xl lg:text-[54px] xl:text-[62px]">
+              {copy.title}
+            </h1>
+            <p className="mt-6 max-w-[530px] text-sm leading-7 text-white/75 sm:text-base sm:leading-8">{copy.description}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button type="button" onClick={onShopAll} className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#f2cf70] px-5 py-3 text-sm font-extrabold text-[#173a32] shadow-lg shadow-black/10 transition hover:-translate-y-0.5 hover:bg-[#ffdf8c] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                <ShoppingBag size={18} />{copy.primary}<ArrowDownRight size={17} className={rtl ? 'rotate-90' : ''}/>
+              </button>
+              <button type="button" onClick={() => go(slide.categories[0])} className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-white/30 bg-white/5 px-5 py-3 text-sm font-bold text-white transition hover:border-white/60 hover:bg-white/10">
+                {copy.secondary}<ArrowUpLeft size={17} className={rtl ? 'rotate-180' : ''}/>
+              </button>
+            </div>
+            <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-semibold text-white/65">
+              <span className="flex items-center gap-2"><Truck size={15}/>{rtl ? 'توصيل داخل المغرب' : language === 'en' ? 'Delivery across Morocco' : 'Livraison au Maroc'}</span>
+              <span className="flex items-center gap-2"><Banknote size={15}/>{rtl ? 'الدفع عند الاستلام' : language === 'en' ? 'Cash on delivery' : 'Paiement à la livraison'}</span>
+            </div>
+          </div>
+
+          <div className="relative min-w-0 self-stretch">
+            <div className="mb-3 flex items-center justify-between px-1 text-[10px] font-extrabold uppercase tracking-[.18em] text-white/60 sm:text-xs">
+              <span>{copy.collection}</span>
+              <span>{String(active + 1).padStart(2, '0')} <span className="text-white/35">/ {String(slides.length).padStart(2, '0')}</span></span>
+            </div>
+            <div className="grid h-[390px] grid-cols-2 grid-rows-3 gap-3 sm:h-[440px] sm:gap-4 lg:h-full lg:min-h-[440px]">
+              {categoryData.map(({ id, category }, index) => (
+                <a key={id} href={'/?category=' + encodeURIComponent(id)}
+                  onClick={event => { if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return; event.preventDefault(); go(id); }}
+                  aria-label={category.name[language] || category.name.fr}
+                  className={'group relative isolate min-h-0 overflow-hidden rounded-[20px] border border-white/20 bg-[#244d43] shadow-[0_12px_30px_rgba(0,0,0,.22)] transition duration-500 hover:-translate-y-1 hover:border-white/50 hover:shadow-2xl sm:rounded-[24px] ' + (index === 0 ? 'row-span-3' : 'row-span-1')}>
+                  <img src={category.image} alt="" loading={index === 0 ? 'eager' : 'lazy'} fetchPriority={index === 0 ? 'high' : 'auto'} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"/>
+                  <span className="absolute inset-0 bg-gradient-to-t from-[#081d18]/90 via-[#081d18]/15 to-transparent"/>
+                  <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3 text-white sm:p-4">
+                    <span className="text-sm font-extrabold leading-snug drop-shadow sm:text-base">{category.name[language] || category.name.fr}</span>
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/15 backdrop-blur transition group-hover:bg-[#f2cf70] group-hover:text-[#173a32]"><ArrowUpLeft size={16} className={rtl ? 'rotate-180' : ''}/></span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="absolute inset-x-0 bottom-0 h-[3px] overflow-hidden bg-white/10" aria-hidden="true">
+          <div key={active} className="h-full w-full origin-left bg-[#f2cf70] animate-globabox-progress" />
+        </div>
       </div>
-    </div>
-   </div>
-   <div className="absolute bottom-5 inset-x-6 z-10 flex items-center justify-between sm:inset-x-10 lg:inset-x-12 2xl:inset-x-16">
-      <div className="flex gap-2" role="group" aria-label="Slides">
-        {slides.map((s,i)=><button key={s.id} type="button" onClick={()=>setActive(i)} aria-current={active===i?'true':undefined} aria-label={(rtl?'السلايد ':'Slide ')+(i+1)} className={'h-2 rounded-full transition-all '+(active===i?'w-10 bg-[#f4c75a]':'w-5 bg-slate-400/60 hover:bg-[#f4c75a]/80')}/>)}
+      <div className="mx-auto mt-4 grid max-w-[1680px] grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="flex items-center gap-3 rounded-2xl border border-[#e5eee8] bg-white px-4 py-3 text-xs font-bold text-[#234b40] shadow-[0_3px_15px_rgba(18,55,43,.035)]"><Truck size={19}/>{rtl ? 'التوصيل داخل المغرب' : language === 'en' ? 'Delivery across Morocco' : 'Livraison au Maroc'}</div>
+        <div className="flex items-center gap-3 rounded-2xl border border-[#e5eee8] bg-white px-4 py-3 text-xs font-bold text-[#234b40] shadow-[0_3px_15px_rgba(18,55,43,.035)]"><Banknote size={19}/>{rtl ? 'الدفع عند الاستلام' : language === 'en' ? 'Cash on delivery' : 'Paiement à la livraison'}</div>
+        <div className="flex items-center gap-3 rounded-2xl border border-[#e5eee8] bg-white px-4 py-3 text-xs font-bold text-[#234b40] shadow-[0_3px_15px_rgba(18,55,43,.035)]"><PackageCheck size={19}/>{rtl ? 'مصاريف التوصيل واضحة' : language === 'en' ? 'Clear delivery fees' : 'Frais de livraison clairs'}</div>
       </div>
-      <div className="flex gap-2">
-       <button type="button" onClick={()=>setPaused(value=>!value)} aria-label={paused?(rtl?'تشغيل السلايدات تلقائياً':language==='en'?'Resume automatic slides':'Reprendre les diapositives automatiques'):(rtl?'إيقاف السلايدات مؤقتاً':language==='en'?'Pause automatic slides':'Mettre les diapositives en pause')} aria-pressed={paused} className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-[#104d43] shadow-sm transition hover:bg-[#f4c75a]">{paused?<Play size={19}/>:<Pause size={19}/>}</button>
-       <button type="button" onClick={()=>setActive(i=>(i+slides.length-1)%slides.length)} aria-label={rtl?'السلايد السابق':'Previous slide'} className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-[#104d43] shadow-sm transition hover:bg-[#f4c75a]"><ChevronLeft size={21}/></button>
-       <button type="button" onClick={()=>setActive(i=>(i+1)%slides.length)} aria-label={rtl?'السلايد التالي':'Next slide'} className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-[#104d43] shadow-sm transition hover:bg-[#f4c75a]"><ChevronRight size={21}/></button>
-      </div>
-   </div>
-  </div>
-  <div className="grid grid-cols-1 gap-3 pt-4 text-xs font-bold text-[#21463e] sm:grid-cols-3">
-    <div className="flex items-center gap-2 rounded-xl border border-slate-100 bg-[#f5f8f5] px-5 py-3"><Truck size={18}/>{rtl?'التوصيل داخل المغرب':language==='en'?'Delivery in Morocco':'Livraison au Maroc'}</div>
-    <div className="flex items-center gap-2 rounded-xl border border-slate-100 bg-[#f5f8f5] px-5 py-3"><Banknote size={18}/>{rtl?'الدفع عند الاستلام':language==='en'?'Cash on delivery':'Paiement à la livraison'}</div>
-    <div className="flex items-center gap-2 rounded-xl border border-slate-100 bg-[#f5f8f5] px-5 py-3"><PackageCheck size={18}/>{rtl?'ثمن التوصيل واضح قبل التأكيد':language==='en'?'Shipping fee shown before checkout':'Frais affichés avant validation'}</div>
-  </div>
- </section>;
+    </section>
+  );
 }
