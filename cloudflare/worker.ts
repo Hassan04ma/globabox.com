@@ -678,7 +678,7 @@ export default {
         const id=crypto.randomUUID(),imageUrl=new URL('/api/product-media/'+mediaId,request.url).href;
         const written=await env.DB.prepare('INSERT INTO landing_pages (id,slug,title,image_url,media_id,price_mad,compare_at_price_mad,content_json,status) VALUES (?,?,?,?,?,?,?,?,?)').bind(id,slug,title,imageUrl,mediaId,sellingPrice,compareAtPrice,JSON.stringify(content),'draft').run();
         if(!written.success||written.meta?.changes!==1)return json({error:'Draft could not be saved to the database.'},503);
-        console.info('[GLOBABOX] Landing page generated with Cloudflare Workers AI');
+        console.info('[GLOBABOX] Landing page generated successfully.');
         return json({page:{id,slug,title,imageUrl,images,price:sellingPrice,compareAtPrice,content,status:'draft',productId:null}},201);
       }
       if (path === '/api/admin/landing-pages' && method === 'POST') {
