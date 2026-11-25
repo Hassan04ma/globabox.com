@@ -701,7 +701,7 @@ export default {
         if(already)return json({success:true,alreadyGenerated:true});
         const direction=['ar','fr','en'].map((l:string)=>content[l]?.visualDirection||'').filter(Boolean).join(' | ').slice(0,1200);
         const prompt='Create one premium, photorealistic editorial marketing illustration for a Moroccan ecommerce landing page. Product category/title: '+row.title+'. Art direction: '+direction+'. IMPORTANT: this is a SUPPORTING CONCEPTUAL LIFESTYLE/BACKGROUND IMAGE ONLY. Do not depict, recreate, invent, alter or imitate the actual product. Do not add text, logos, labels, prices, packaging, brand marks, watermarks, people holding an unidentified product, or claims. Compose an elegant relevant environment with tasteful lighting and ample negative space; 1:1 square composition. This image must be labeled AI-generated and must never be presented as an authentic product photo.';
-        const response=await fetch('https://api.openai.com/v1/images/generations',{method:'POST',headers:{'Authorization':'Bearer '+env.OPENAI_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({model:'gpt-image-1',prompt,size:'1024x1024',quality:'low',output_format:'png',n:1})});
+        const response=await fetch('https://api.openai.com/v1/images/generations',{method:'POST',headers:{'Authorization':'Bearer '+env.OPENAI_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({model:'gpt-image-1',prompt,size:'1024x1024',quality:'low',output_format:'jpeg',n:1})});
         if(!response.ok){console.error('[GLOBABOX] AI marketing image generation failed',response.status);return json({error:response.status===401?'OpenAI API key is invalid for image generation.':'OpenAI image generation is unavailable. Keep this page as a draft and retry later.'},502);}
         const result:any=await response.json(),encoded=result?.data?.[0]?.b64_json;
         if(typeof encoded!=='string'||!encoded)return json({error:'Image service returned no image. Keep the page as a draft.'},502);
@@ -709,7 +709,7 @@ export default {
         if(!bytes.length||bytes.length>5000000)return json({error:'Generated image exceeded the safe storage limit.'},413);
         const mediaId=crypto.randomUUID();
         await env.DB.prepare('CREATE TABLE IF NOT EXISTS product_media (id TEXT PRIMARY KEY, content_type TEXT NOT NULL, body BLOB NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run();
-        const stored=await env.DB.prepare('INSERT INTO product_media (id,content_type,body) VALUES (?,?,?)').bind(mediaId,'image/png',bytes).run();
+        const stored=await env.DB.prepare('INSERT INTO product_media (id,content_type,body) VALUES (?,?,?)').bind(mediaId,'image/jpeg',bytes).run();
         if(!stored.success||stored.meta?.changes!==1)return json({error:'Generated image could not be saved.'},503);
         const imageUrl=new URL('/api/product-media/'+mediaId,request.url).href;
         const gallery=Array.isArray(content._gallery)?content._gallery:[row.image_url];
