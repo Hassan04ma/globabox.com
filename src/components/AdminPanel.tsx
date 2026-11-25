@@ -12,6 +12,7 @@ import AdminCustomersWorkspace from './AdminCustomersWorkspace';
 import AdminOrdersWorkspace from './AdminOrdersWorkspace';
 import AdminProductsWorkspace from './AdminProductsWorkspace';
 import AdminCategoriesWorkspace from './AdminCategoriesWorkspace';
+import AdminLandingPagesWorkspace from './AdminLandingPagesWorkspace';
 import { STORE_DEPARTMENTS, isPublicStoreCategory } from '../storefrontDepartments';
 import { getStoreSubcategories } from '../storefrontSubcategories';
 
@@ -49,7 +50,7 @@ export default function AdminPanel({
     }).format(date);
   };
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'customers' | 'products' | 'categories' | 'marketing'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'orders' | 'customers' | 'products' | 'categories' | 'marketing' | 'landing-pages'>('dashboard');
 
   const [launchStatus, setLaunchStatus] = useState<{databaseReady:boolean;adminConfigured:boolean;checkoutEnabled:boolean;checkoutVerified:boolean}|null>(null);
   const [d1ProbeStatus, setD1ProbeStatus] = useState<'idle'|'running'|'success'|'error'>('idle');
@@ -1609,6 +1610,7 @@ export default function AdminPanel({
         {activeTab === 'customers' && <AdminCustomersWorkspace orders={orders} language={language} />}
 
         {activeTab === 'marketing' && <AdminTrackingWorkspace language={language} />}
+        {activeTab === 'landing-pages' && <AdminLandingPagesWorkspace language={language} />}
 
 
       </div>
