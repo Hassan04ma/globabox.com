@@ -76,7 +76,7 @@ export default function HomeBannerSlider({ language, categories, onShopAll, onSe
         <div className="pointer-events-none absolute -start-28 -top-32 h-96 w-96 rounded-full bg-[#d6ae52]/15 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-40 end-1/4 h-96 w-96 rounded-full bg-[#5ba18a]/20 blur-3xl" />
         <div key={slide.id} className="relative grid min-h-[620px] grid-cols-1 items-center gap-8 px-5 py-7 sm:px-8 sm:py-9 lg:min-h-[570px] lg:grid-cols-[.88fr_1.12fr] lg:gap-10 lg:px-12 lg:py-10 xl:px-16">
-          <div className="relative z-10 max-w-[620px] self-center text-white">
+          <div className="relative z-10 max-w-[620px] self-center text-white animate-globabox-enter">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[10px] font-extrabold tracking-[.13em] text-[#f5d77e] shadow-sm sm:text-xs">
               <span className="h-2 w-2 rounded-full bg-[#f5d77e] shadow-[0_0_12px_rgba(245,215,126,.8)]" />
               {copy.eyebrow}
@@ -99,7 +99,7 @@ export default function HomeBannerSlider({ language, categories, onShopAll, onSe
             </div>
           </div>
 
-          <div className="relative min-w-0 self-stretch">
+          <div className="relative min-w-0 self-stretch animate-globabox-enter">
             <div className="mb-3 flex items-center justify-between px-1 text-[10px] font-extrabold uppercase tracking-[.18em] text-white/60 sm:text-xs">
               <span>{copy.collection}</span>
               <span>{String(active + 1).padStart(2, '0')} <span className="text-white/35">/ {String(slides.length).padStart(2, '0')}</span></span>
@@ -109,7 +109,7 @@ export default function HomeBannerSlider({ language, categories, onShopAll, onSe
                 <a key={id} href={'/?category=' + encodeURIComponent(id)}
                   onClick={event => { if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return; event.preventDefault(); go(id); }}
                   aria-label={category.name[language] || category.name.fr}
-                  className={'group relative isolate min-h-0 overflow-hidden rounded-[20px] border border-white/20 bg-[#244d43] shadow-[0_12px_30px_rgba(0,0,0,.22)] transition duration-500 hover:-translate-y-1 hover:border-white/50 hover:shadow-2xl sm:rounded-[24px] ' + (index === 0 ? 'row-span-3' : 'row-span-1')}>
+                  className={'group relative isolate min-h-0 overflow-hidden rounded-[20px] border border-white/20 bg-[#244d43] shadow-[0_12px_30px_rgba(0,0,0,.22)] transition duration-500 hover:-translate-y-1 hover:border-white/50 hover:shadow-2xl sm:rounded-[24px] ' + (index === 0 ? 'col-span-2 row-span-1 lg:col-span-1 lg:row-span-3' : 'row-span-1')}>
                   <img src={category.image} alt="" loading={index === 0 ? 'eager' : 'lazy'} fetchPriority={index === 0 ? 'high' : 'auto'} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"/>
                   <span className="absolute inset-0 bg-gradient-to-t from-[#081d18]/90 via-[#081d18]/15 to-transparent"/>
                   <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3 text-white sm:p-4">
