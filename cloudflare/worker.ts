@@ -503,25 +503,27 @@ export default {
       if (path === '/api/admin/landing-pages' && method === 'GET') {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
         const rows = await env.DB.prepare('SELECT id,slug,title,product_id,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages ORDER BY updated_at DESC').all<any>();
-        const pages = (rows.results || []).map((row:any) => ({id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,content:JSON.parse(row.content_json),status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}));
+        const pages = (rows.results || []).map((row:any) => {const stored=JSON.parse(row.content_json);const images=Array.isArray(stored._gallery)?stored._gallery:[row.image_url];delete stored._gallery;return {id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,images,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,content:stored,status:row.status,createdAt:row.created_at,updatedAt:row.updated_at};});
         return json({pages});
       }
       if (path === '/api/admin/landing-pages/draft' && method === 'POST') {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
         const body=await readBody(request), mediaId=typeof body?.mediaId==='string'?body.mediaId:'';
+        const mediaIds=Array.isArray(body?.mediaIds)?Array.from(new Set(body.mediaIds.filter((x:unknown)=>typeof x==='string'&&/^[a-f0-9-]{36}$/i.test(x as string)))).slice(0,10) as string[]:[mediaId];
         const productName=typeof body?.productName==='string'?body.productName.trim().slice(0,120):'';
         const sellingPrice=body?.sellingPrice==null?null:Number(body.sellingPrice), compareAtPrice=body?.compareAtPrice==null?null:Number(body.compareAtPrice);
-        if (!/^[a-f0-9-]{36}$/i.test(mediaId)) return json({error:'Upload a valid product image first.'},400);
+        if (!/^[a-f0-9-]{36}$/i.test(mediaId)||!mediaIds.length||mediaIds[0]!==mediaId) return json({error:'Upload between 1 and 10 valid product photos.'},400);
         if (sellingPrice!==null&&(!Number.isFinite(sellingPrice)||sellingPrice<=0||sellingPrice>1000000)) return json({error:'Invalid selling price.'},400);
         if (compareAtPrice!==null&&(!Number.isFinite(compareAtPrice)||compareAtPrice<=0||compareAtPrice>1000000)) return json({error:'Invalid comparison price.'},400);
         if (sellingPrice!==null&&compareAtPrice!==null&&compareAtPrice<=sellingPrice) return json({error:'Comparison price must be higher than selling price.'},400);
-        const media=await env.DB.prepare('SELECT content_type FROM product_media WHERE id=?').bind(mediaId).first<{content_type:string}>();
-        if (!media||!['image/jpeg','image/png','image/webp'].includes(media.content_type)) return json({error:'Product image not found. Upload it again.'},404);
+        const galleryRows=await Promise.all(mediaIds.map((id:string)=>env.DB.prepare('SELECT content_type FROM product_media WHERE id=?').bind(id).first<{content_type:string}>()));
+        if(galleryRows.some((m:any)=>!m||!['image/jpeg','image/png','image/webp'].includes(m.content_type)))return json({error:'One or more product photos are missing or invalid. Upload them again.'},404);
+        const images=mediaIds.map((id:string)=>new URL('/api/product-media/'+id,request.url).href);
         const title=productName||'Produit GLOBABOX';
         const slugBase=title.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,54)||'produit';
         const slug=slugBase+'-'+crypto.randomUUID().slice(0,6);
         const id=crypto.randomUUID(),imageUrl=new URL('/api/product-media/'+mediaId,request.url).href;
-        const content={
+        const content:any={_gallery:images,
           ar:{headline:'اكتشف '+title,subheadline:'تعرّف على المنتج من خلال الصور والمعلومات المتوفرة.',description:'هذه صفحة تعريفية بالمنتج. أضف التفاصيل المؤكدة قبل نشرها.',benefits:[],limitations:['يرجى تأكيد خصائص المنتج ومحتوياته قبل النشر.'],faq:[],cta:'اطلب الآن'},
           fr:{headline:'Découvrez '+title,subheadline:'Consultez les photos et les informations disponibles sur ce produit.',description:'Cette page présente le produit. Ajoutez les détails vérifiés avant publication.',benefits:[],limitations:['Veuillez vérifier les caractéristiques et le contenu du produit avant publication.'],faq:[],cta:'Commander maintenant'},
           en:{headline:'Discover '+title,subheadline:'Explore the product photos and the information provided.',description:'This page introduces the product. Add verified details before publishing.',benefits:[],limitations:['Please verify product specifications and package contents before publishing.'],faq:[],cta:'Order now'}
@@ -529,18 +531,22 @@ export default {
         const written=await env.DB.prepare('INSERT INTO landing_pages (id,slug,title,image_url,media_id,price_mad,compare_at_price_mad,content_json,status) VALUES (?,?,?,?,?,?,?,?,?)').bind(id,slug,title,imageUrl,mediaId,sellingPrice,compareAtPrice,JSON.stringify(content),'draft').run();
         if(!written.success||written.meta?.changes!==1)return json({error:'Draft could not be saved to the database.'},503);
         console.info('[GLOBABOX] Template landing page draft created',id);
-        return json({page:{id,slug,title,imageUrl,price:sellingPrice,compareAtPrice,content,status:'draft',productId:null}},201);
+        return json({page:{id,slug,title,imageUrl,images,price:sellingPrice,compareAtPrice,content,status:'draft',productId:null}},201);
       }
       if (path === '/api/admin/landing-pages/generate' && method === 'POST') {
         if (!await auth(request, env)) return json({error:'Unauthorized'},401);
         if (!env.AI) return json({error:'Cloudflare Workers AI is not bound to this Worker. Add the AI binding and redeploy.'},503);
         const body=await readBody(request), mediaId=typeof body?.mediaId==='string'?body.mediaId:'';
+        const mediaIds=Array.isArray(body?.mediaIds)?Array.from(new Set(body.mediaIds.filter((x:unknown)=>typeof x==='string'&&/^[a-f0-9-]{36}$/i.test(x as string)))).slice(0,10) as string[]:[mediaId];
         const productName=typeof body?.productName==='string'?body.productName.trim().slice(0,120):'';
         const sellingPrice=body?.sellingPrice==null?null:Number(body.sellingPrice), compareAtPrice=body?.compareAtPrice==null?null:Number(body.compareAtPrice);
-        if (!/^[a-f0-9-]{36}$/i.test(mediaId)) return json({error:'Upload a valid product image first.'},400);
+        if (!/^[a-f0-9-]{36}$/i.test(mediaId)||!mediaIds.length||mediaIds[0]!==mediaId) return json({error:'Upload between 1 and 10 valid product photos.'},400);
         if (sellingPrice!==null&&(!Number.isFinite(sellingPrice)||sellingPrice<=0||sellingPrice>1000000)) return json({error:'Invalid selling price.'},400);
         if (compareAtPrice!==null&&(!Number.isFinite(compareAtPrice)||compareAtPrice<=0||compareAtPrice>1000000)) return json({error:'Invalid comparison price.'},400);
         if (sellingPrice!==null&&compareAtPrice!==null&&compareAtPrice<=sellingPrice) return json({error:'Comparison price must be higher than selling price.'},400);
+        const galleryRows=await Promise.all(mediaIds.map((id:string)=>env.DB.prepare('SELECT content_type FROM product_media WHERE id=?').bind(id).first<{content_type:string}>()));
+        if(galleryRows.some((m:any)=>!m||!['image/jpeg','image/png','image/webp'].includes(m.content_type)))return json({error:'One or more product photos are missing or invalid. Upload them again.'},404);
+        const images=mediaIds.map((id:string)=>new URL('/api/product-media/'+id,request.url).href);
         const media=await env.DB.prepare('SELECT content_type,body FROM product_media WHERE id=?').bind(mediaId).first<{content_type:string;body:Uint8Array}>();
         if (!media||!media.body||!['image/jpeg','image/png','image/webp'].includes(media.content_type)) return json({error:'Product image not found. Upload it again.'},404);
         const bytes=media.body instanceof Uint8Array?media.body:new Uint8Array(media.body as any);
@@ -635,11 +641,14 @@ export default {
         const written=await env.DB.prepare('INSERT INTO landing_pages (id,slug,title,image_url,media_id,price_mad,compare_at_price_mad,content_json,status) VALUES (?,?,?,?,?,?,?,?,?)').bind(id,slug,title,imageUrl,mediaId,sellingPrice,compareAtPrice,JSON.stringify(content),'draft').run();
         if(!written.success||written.meta?.changes!==1)return json({error:'Draft could not be saved to the database.'},503);
         console.info('[GLOBABOX] Landing page generated with Cloudflare Workers AI');
-        return json({page:{id,slug,title,imageUrl,price:sellingPrice,compareAtPrice,content,status:'draft',productId:null}},201);
+        return json({page:{id,slug,title,imageUrl,images,price:sellingPrice,compareAtPrice,content,status:'draft',productId:null}},201);
       }
       if (path === '/api/admin/landing-pages' && method === 'POST') {
         if(!await auth(request,env))return json({error:'Unauthorized'},401);
         const body=await readBody(request),id=typeof body?.id==='string'?body.id:'',title=typeof body?.title==='string'?body.title.trim().slice(0,120):'',content=body?.content;
+        const imageUrls=Array.isArray(body?.images)?body.images.filter((x:unknown)=>typeof x==='string').slice(0,10) as string[]:[];
+        const safeImages:string[]=[];for(const value of imageUrls){try{const parsed=new URL(value);const match=parsed.origin===new URL(request.url).origin&&parsed.pathname.match(/^\/api\/product-media\/([a-f0-9-]{36})$/i);if(match){const exists=await env.DB.prepare('SELECT id FROM product_media WHERE id=?').bind(match[1]).first();if(exists)safeImages.push(parsed.href);}}catch{}}
+        if(imageUrls.length!==safeImages.length)return json({error:'Gallery contains an invalid or unavailable image.'},400);
         if(!/^[a-f0-9-]{36}$/i.test(id))return json({error:'Invalid landing page ID.'},400);
         if(!title||!content||!content.ar?.headline||!content.fr?.headline||!content.en?.headline)return json({error:'Complete all three language versions before saving.'},400);
         const price=body.price==null?null:Number(body.price),compare=body.compareAtPrice==null?null:Number(body.compareAtPrice);
@@ -652,10 +661,11 @@ export default {
           const product=JSON.parse(productRow.data_json);
           if(product.isActive===false||product.inStock!==true||product.stockStatus==='out_of_stock'||!Number.isFinite(product.price)||product.price<=0)return json({error:'The selected product must have a verified price and available stock.'},409);
         }
-        const updated=await env.DB.prepare('UPDATE landing_pages SET title=?,product_id=?,price_mad=?,compare_at_price_mad=?,content_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(title,productId,price,compare,JSON.stringify(content),id).run();
+        const updated=await env.DB.prepare('UPDATE landing_pages SET title=?,product_id=?,price_mad=?,compare_at_price_mad=?,content_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(title,productId,price,compare,JSON.stringify({...content,_gallery:safeImages.length?safeImages:undefined}),id).run();
         if(!updated.success||updated.meta?.changes!==1)return json({error:'Landing page not found or not saved.'},404);
         const row=await env.DB.prepare('SELECT id,slug,title,product_id,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages WHERE id=?').bind(id).first<any>();
-        return json({page:{id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,content:JSON.parse(row.content_json),status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}});
+        const storedContent=JSON.parse(row.content_json),images=Array.isArray(storedContent._gallery)?storedContent._gallery:[row.image_url];delete storedContent._gallery;
+        return json({page:{id:row.id,slug:row.slug,title:row.title,productId:row.product_id||null,imageUrl:row.image_url,images,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,content:storedContent,status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}});
       }
       const landingPublishMatch=path.match(/^\/api\/admin\/landing-pages\/([a-f0-9-]{36})\/publish$/i);
       if(landingPublishMatch&&method==='POST'){
