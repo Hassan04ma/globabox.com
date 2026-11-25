@@ -10,15 +10,16 @@ interface Props {
   onProducts: () => void;
   onNewProduct: () => void;
   onPendingOrders: () => void;
+  onStatusFilter: (status: string) => void;
   onRefresh: () => void;
   refreshing: boolean;
   language: 'ar' | 'fr' | 'en' | string;
 }
 const money = (value:number) => new Intl.NumberFormat('fr-MA',{maximumFractionDigits:0}).format(value) + ' DH';
 const dateOf = (order:Order) => { const d=new Date(order.createdAt || order.date); return Number.isNaN(d.getTime())?null:d; };
-const statusText:Record<string,string>={pending:'En attente',confirmed:'Confirmée',processing:'En préparation',shipped:'Expédiée',delivered:'Livrée',cancelled:'Annulée'};
-const statusClass:Record<string,string>={pending:'bg-amber-50 text-amber-700',confirmed:'bg-blue-50 text-blue-700',processing:'bg-violet-50 text-violet-700',shipped:'bg-cyan-50 text-cyan-700',delivered:'bg-emerald-50 text-emerald-700',cancelled:'bg-slate-100 text-slate-600'};
-export default function AdminDashboardWorkspace({orders,products,onOrders,onProducts,onNewProduct,onPendingOrders,onRefresh,refreshing,language}:Props){
+const statusText:Record<string,string>={pending:'En attente',no_answer:'Sans réponse',confirmed:'Confirmée',processing:'En préparation',picked_up:'Colis récupéré',shipped:'Expédiée',out_for_delivery:'En cours de livraison',delivered:'Livrée',returned:'Retour',cancelled:'Annulée'};
+const statusClass:Record<string,string>={pending:'bg-amber-50 text-amber-700',no_answer:'bg-orange-50 text-orange-700',confirmed:'bg-blue-50 text-blue-700',processing:'bg-violet-50 text-violet-700',picked_up:'bg-cyan-50 text-cyan-700',shipped:'bg-sky-50 text-sky-700',out_for_delivery:'bg-indigo-50 text-indigo-700',delivered:'bg-emerald-50 text-emerald-700',returned:'bg-rose-50 text-rose-700',cancelled:'bg-slate-100 text-slate-600'};
+export default function AdminDashboardWorkspace({orders,products,onOrders,onProducts,onNewProduct,onPendingOrders,onStatusFilter,onRefresh,refreshing,language}:Props){
  const [period,setPeriod]=useState<Period>('7d');
  const rtl=language==='ar';
  const now=new Date();
@@ -60,6 +61,23 @@ export default function AdminDashboardWorkspace({orders,products,onOrders,onProd
   </section>
   <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
    {[{title:label.orders,value:orders.length,sub:'Total enregistré',icon:ShoppingBag,tone:'text-blue-700 bg-blue-50',click:onOrders},{title:label.sales,value:money(revenue(orders)),sub:delivered+' livrées',icon:BarChart3,tone:'text-emerald-700 bg-emerald-50',click:onOrders},{title:label.waiting,value:pending,sub:'Action requise',icon:Clock3,tone:'text-amber-700 bg-amber-50',click:onPendingOrders},{title:label.published,value:published,sub:drafts+' '+label.drafts.toLowerCase(),icon:Package,tone:'text-violet-700 bg-violet-50',click:onProducts}].map(({title,value,sub,icon:Icon,tone,click})=><button key={title} onClick={click} className="rounded-xl border border-slate-200 bg-white p-4 text-start shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"><div className="flex items-center justify-between gap-2"><span className="text-xs font-semibold text-slate-500">{title}</span><span className={'rounded-lg p-2 '+tone}><Icon size={18}/></span></div><strong className="mt-4 block text-2xl font-bold tracking-tight text-slate-900">{value}</strong><span className="mt-1 block text-xs text-slate-400">{sub}</span></button>)}
+  </section>
+  <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+   <div className="mb-4 flex flex-wrap items-center justify-between gap-2"><div><h3 className="font-bold text-slate-900">{rtl?'تتبع جميع الطلبات':language==='en'?'Order lifecycle':'Suivi de toutes les commandes'}</h3><p className="mt-1 text-xs text-slate-500">{rtl?'اضغط على أي حالة لعرض طلباتها':language==='en'?'Select a status to open its orders':'Cliquez sur un statut pour afficher ses commandes'}</p></div><span className="text-xs font-semibold text-slate-400">{orders.length} {rtl?'طلب':'commandes'}</span></div>
+   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+    {[
+     {status:'pending',label:rtl?'طلبات جديدة':language==='en'?'New orders':'Nouvelles commandes',tone:'border-amber-200 bg-amber-50 text-amber-800'},
+     {status:'no_answer',label:rtl?'لم يتم الرد':language==='en'?'No answer':'Sans réponse',tone:'border-orange-200 bg-orange-50 text-orange-800'},
+     {status:'confirmed',label:rtl?'تم التأكيد':language==='en'?'Confirmed':'Confirmées',tone:'border-blue-200 bg-blue-50 text-blue-800'},
+     {status:'processing',label:rtl?'قيد التحضير':language==='en'?'Preparing':'En préparation',tone:'border-violet-200 bg-violet-50 text-violet-800'},
+     {status:'picked_up',label:rtl?'استلمتها شركة الشحن':language==='en'?'Picked up by courier':'Récupérées par transporteur',tone:'border-cyan-200 bg-cyan-50 text-cyan-800'},
+     {status:'shipped',label:rtl?'تم الشحن':language==='en'?'Shipped':'Expédiées',tone:'border-sky-200 bg-sky-50 text-sky-800'},
+     {status:'out_for_delivery',label:rtl?'خرجت للتوصيل':language==='en'?'Out for delivery':'En cours de livraison',tone:'border-indigo-200 bg-indigo-50 text-indigo-800'},
+     {status:'delivered',label:rtl?'تم التوصيل':language==='en'?'Delivered':'Livrées',tone:'border-emerald-200 bg-emerald-50 text-emerald-800'},
+     {status:'returned',label:rtl?'المرتجعات':language==='en'?'Returned':'Retours',tone:'border-rose-200 bg-rose-50 text-rose-800'},
+     {status:'cancelled',label:rtl?'ملغاة':language==='en'?'Cancelled':'Annulées',tone:'border-slate-200 bg-slate-100 text-slate-700'}
+    ].map(item=><button key={item.status} type="button" onClick={()=>onStatusFilter(item.status)} className={'rounded-xl border p-4 text-start transition hover:-translate-y-0.5 hover:shadow-sm '+item.tone}><span className="block min-h-9 text-xs font-bold leading-5">{item.label}</span><strong className="mt-2 block text-2xl font-black tabular-nums">{orders.filter(order=>order.status===item.status).length}</strong><span className="mt-1 block text-[10px] opacity-70">{rtl?'عرض الطلبات':language==='en'?'View orders':'Voir les commandes'} →</span></button>)}
+   </div>
   </section>
   <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
    <div className="flex flex-wrap items-center justify-between gap-3"><div><h3 className="font-bold text-slate-900">{label.performance}</h3><p className="mt-1 text-xs text-slate-500">Chiffre d’affaires des commandes livrées · DH</p></div><div className="flex rounded-lg bg-slate-100 p-1">{(['7d','30d','90d'] as Period[]).map((p,i)=><button key={p} onClick={()=>setPeriod(p)} className={'rounded-md px-3 py-2 text-xs font-semibold '+(period===p?'bg-white text-slate-900 shadow-sm':'text-slate-500')}>{label.periods[i]}</button>)}</div></div>
