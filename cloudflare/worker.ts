@@ -532,7 +532,20 @@ export default {
           'Return ONLY valid JSON with shape {"title":"short product title","slug":"latin-url-slug","content":{"ar":{"headline":"","subheadline":"","description":"","benefits":[""],"limitations":[""],"faq":[{"question":"","answer":""}],"cta":"اطلب الآن"},"fr":{"headline":"","subheadline":"","description":"","benefits":[""],"limitations":[""],"faq":[{"question":"","answer":""}],"cta":"Commander maintenant"},"en":{"headline":"","subheadline":"","description":"","benefits":[""],"limitations":[""],"faq":[{"question":"","answer":""}],"cta":"Order now"}}}. Use 3-5 concise benefits and 3 FAQs per language. Price values are controlled by merchant input, not generated.'
         ].join('\n');
         const upstream=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+encodeURIComponent(env.GEMINI_API_KEY),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt},{inline_data:{mime_type:media.content_type,data:btoa(binary)}}]}],generationConfig:{temperature:0.55,responseMimeType:'application/json',maxOutputTokens:5000}})});
-        if(!upstream.ok){console.error('[GLOBABOX] Gemini generation failed',upstream.status);return json({error:upstream.status===401||upstream.status===403?'AI credentials were rejected. Check the server secret.':'AI generation failed. Please retry.'},502);}
+        if(!upstream.ok){
+          const errorBody = await upstream.text();
+          console.error(
+            '[GLOBABOX] Gemini generation failed',
+            upstream.status,
+            errorBody.slice(0, 1200)
+          );
+          return json({
+            error:
+              upstream.status === 401 || upstream.status === 403
+                ? 'AI credentials were rejected. Check the server secret.'
+                : 'AI generation failed. Please retry.'
+          }, 502);
+        }
         const result:any=await upstream.json(),raw=result?.candidates?.[0]?.content?.parts?.map((p:any)=>p.text||'').join('');
         if(typeof raw!=='string'||!raw.trim())return json({error:'AI returned an empty response.'},502);
         let generated:any;try{generated=JSON.parse(raw);}catch{return json({error:'AI response could not be validated. Please retry.'},502);}
