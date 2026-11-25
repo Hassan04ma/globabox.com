@@ -217,6 +217,10 @@ assert.equal((await track({reference:'GB-123',phone:'0612345678'})).status,400,'
 assert.equal((await track({reference:savedRef,phone:'not-phone'})).status,400,'Invalid telephone rejected');
 assert.equal((await track({reference:savedRef,phone:'0612345678'}, {...env,CHECKOUT_RATE_LIMITER:undefined})).status,503,
   'Without rate limiting binding, public tracking fails closed');
+const reviewRateLimited = await worker.fetch(new Request('https://preview.example.test/api/products/test-product/reviews',{
+  method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rating:5,comment:'Test'})
+}),{...env,CHECKOUT_RATE_LIMITER:{limit:async()=>({success:false})}});
+assert.equal(reviewRateLimited.status,429,'Public review submissions are rate limited');
 assert.equal((await request('/api/track-order')).status,404,'GET tracking endpoint is not exposed');
 
 // A trusted admin creating a product cannot make it public in a single POST.
