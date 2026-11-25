@@ -146,17 +146,48 @@ async function persistValidatedOrder(db: D1Database, priced: Extract<ReturnType<
   return record;
 }
 
+
+const escapeHtml = (value: unknown) => String(value ?? '').replace(/[&<>"']/g, ch => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[ch] as string));
+function landingPageHtml(page:any, product:any) {
+  const content=page.content||{}, ar=content.ar||{};
+  const data=JSON.stringify({content,title:page.title,price:Number(product.price)})
+    .replace(/</g,'\\u003c').replace(/\\u2028/g,'\\u2028').replace(/\\u2029/g,'\\u2029');
+  const benefits=(ar.benefits||[]).slice(0,6).map((x:string)=>'<li>'+escapeHtml(x)+'</li>').join('');
+  return '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="'+escapeHtml(ar.subheadline||ar.description||page.title)+'"><title>'+escapeHtml(page.title)+' | GLOBABOX</title><style>'+
+  '*{box-sizing:border-box}body{margin:0;background:#f6f8f7;color:#172b27;font-family:Arial,Tahoma,sans-serif}.wrap{max-width:980px;margin:auto;padding:20px}.brand{font-weight:900;letter-spacing:.12em;color:#104d43;padding:12px 0}.langs{display:flex;gap:8px;flex-wrap:wrap}.langs button{border:1px solid #dce6e0;background:white;padding:9px 14px;border-radius:10px}.hero,.section{background:white;border:1px solid #e5ece8;border-radius:24px;overflow:hidden;box-shadow:0 12px 40px #1232;margin-top:16px}.hero img{width:100%;max-height:460px;object-fit:contain;background:#f7faf8}.body{padding:clamp(20px,5vw,48px)}h1{font-size:clamp(28px,5vw,48px);line-height:1.2;margin:12px 0}p{line-height:1.9;color:#53645e}.price{font-size:30px;font-weight:900;color:#104d43;margin:20px 0}.btn{display:block;width:100%;border:0;border-radius:14px;background:#104d43;color:white;padding:16px;font-size:17px;font-weight:800;text-align:center;text-decoration:none;cursor:pointer}.section{padding:24px}.form{display:grid;gap:12px}.form input{width:100%;padding:14px;border:1px solid #dbe5df;border-radius:12px;font-size:16px}.msg{padding:14px;border-radius:12px;background:#edf7f0;margin-top:12px}.foot{text-align:center;color:#71817a;padding:28px;font-size:12px}@media(min-width:700px){.hero{display:grid;grid-template-columns:1fr 1fr;align-items:center}.hero img{height:100%;max-height:620px}.body{padding:42px}}</style></head><body><main class="wrap"><div class="brand">GLOBABOX</div><div class="langs"><button type="button" data-lang="ar">العربية</button><button type="button" data-lang="fr">Français</button><button type="button" data-lang="en">English</button></div>'+
+  '<article class="hero"><img src="'+escapeHtml(page.image_url)+'" alt="'+escapeHtml(page.title)+'"><div class="body"><p>GLOBABOX · الدفع عند الاستلام</p><h1 id="headline">'+escapeHtml(ar.headline||page.title)+'</h1><p id="subheadline">'+escapeHtml(ar.subheadline||'')+'</p><div class="price">'+escapeHtml(product.price)+' DH</div><p id="description">'+escapeHtml(ar.description||'')+'</p><ul id="benefits">'+benefits+'</ul><a class="btn" href="#order" id="cta">'+escapeHtml(ar.cta||'اطلب الآن')+'</a></div></article>'+
+  '<section class="section"><h2 id="orderTitle">اطلب الآن والدفع عند الاستلام</h2><p>عمر المعلومات ديالك، وغادي نتواصلو معاك لتأكيد الطلب.</p><form id="order" class="form"><input name="fullName" required minlength="3" maxlength="120" placeholder="الاسم الكامل"><input name="phoneNumber" required inputmode="tel" maxlength="32" placeholder="رقم الهاتف"><input name="city" required maxlength="100" placeholder="المدينة"><input name="deliveryAddress" required minlength="5" maxlength="300" placeholder="العنوان بالتفصيل"><input name="notes" maxlength="500" placeholder="ملاحظة (اختياري)"><button class="btn" type="submit" id="submit">تأكيد الطلب</button></form><div id="message" class="msg" hidden></div></section><div class="foot">GLOBABOX · Maroc</div></main><script>'+
+  'const page='+data+';let lang="ar";const $=id=>document.getElementById(id);function showLanguage(next){lang=next;const c=page.content[next]||page.content.ar||{};document.documentElement.lang=next;document.documentElement.dir=next==="ar"?"rtl":"ltr";$("headline").textContent=c.headline||page.title;$("subheadline").textContent=c.subheadline||"";$("description").textContent=c.description||"";$("cta").textContent=c.cta||({ar:"اطلب الآن",fr:"Commander maintenant",en:"Order now"}[next]);$("benefits").replaceChildren(...(c.benefits||[]).map(x=>{const li=document.createElement("li");li.textContent=x;return li;}));$("orderTitle").textContent=({ar:"اطلب الآن والدفع عند الاستلام",fr:"Commander · Paiement à la livraison",en:"Order now · Cash on delivery"}[next]);$("submit").textContent=({ar:"تأكيد الطلب",fr:"Confirmer la commande",en:"Place order"}[next]);}document.querySelectorAll("[data-lang]").forEach(b=>b.addEventListener("click",()=>showLanguage(b.dataset.lang)));'+
+  '$("order").addEventListener("submit",async e=>{e.preventDefault();const form=e.currentTarget;const data=Object.fromEntries(new FormData(form).entries());const button=$("submit");button.disabled=true;button.textContent="…";$("message").hidden=true;try{const response=await fetch("/api/landing-pages/"+encodeURIComponent(location.pathname.split("/").pop())+"/order",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});const result=await response.json();if(!response.ok)throw new Error(result.error||"تعذر تسجيل الطلب");$("message").textContent=({ar:"تم تسجيل طلبك. رقم الطلب: ",fr:"Commande enregistrée. Référence : ",en:"Order received. Reference: "}[lang])+result.order.reference;$("message").hidden=false;form.reset();}catch(err){$("message").textContent=err.message||"حدث خطأ، حاول مرة أخرى";$("message").hidden=false;}finally{button.disabled=false;button.textContent=({ar:"تأكيد الطلب",fr:"Confirmer la commande",en:"Place order"}[lang]);}});'+
+  '</script></body></html>';
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url), path = url.pathname, method = request.method;
-    if (!path.startsWith('/api/')) return env.ASSETS.fetch(request);
+    if (!path.startsWith('/api/')) {
+      const match=path.match(/^\/lp\/([a-z0-9-]{1,80})$/);
+      if(!match)return env.ASSETS.fetch(request);
+      if(method!=='GET')return new Response('Method not allowed',{status:405,headers:{Allow:'GET'}});
+      try{
+        const row=await env.DB.prepare("SELECT id,slug,title,product_id,image_url,content_json,status FROM landing_pages WHERE slug=? AND status='published' LIMIT 1").bind(match[1]).first<any>();
+        if(!row||!row.product_id)return new Response('Page not found',{status:404});
+        const stored=await env.DB.prepare('SELECT data_json,active FROM products WHERE id=? LIMIT 1').bind(row.product_id).first<{data_json:string;active:number}>();
+        if(!stored||stored.active!==1)return new Response('Page not found',{status:404});
+        const product=JSON.parse(stored.data_json);
+        if(product.isActive===false||product.inStock!==true||product.stockStatus==='out_of_stock'||!Number.isFinite(product.price)||product.price<=0)return new Response('Product unavailable',{status:410});
+        return new Response(landingPageHtml({...row,content:JSON.parse(row.content_json)},product),{headers:{'Content-Type':'text/html; charset=utf-8','X-Content-Type-Options':'nosniff','Referrer-Policy':'strict-origin-when-cross-origin','Cache-Control':'public, max-age=60'}});
+      }catch(error){console.error('[GLOBABOX] Public landing page render failed',error);return new Response('Page temporarily unavailable',{status:503});}
+    }
     const reviewSubmission = method === 'POST' && path.startsWith('/api/products/') && path.endsWith('/reviews') && path.split('/').length === 5;
-    if (method === 'POST' && (path === '/api/admin/login' || path === '/api/orders' || path === '/api/track-order' || reviewSubmission)) {
+    if (method === 'POST' && (path === '/api/admin/login' || path === '/api/orders' || path === '/api/track-order' || (path.startsWith('/api/landing-pages/') && path.endsWith('/order')) || reviewSubmission)) {
       const limiter = path === '/api/admin/login' ? env.ADMIN_RATE_LIMITER : env.CHECKOUT_RATE_LIMITER;
       // Fail closed for public write endpoints when the anti-abuse binding is missing.
       if (!limiter) return json({error:'Service temporarily unavailable'},503);
       const ip = request.headers.get('cf-connecting-ip') || 'unknown';
-      const key = path === '/api/track-order' ? 'tracking:' + ip : reviewSubmission ? 'review:' + ip : ip;
+      const key = path === '/api/track-order' ? 'tracking:' + ip : reviewSubmission ? 'review:' + ip : path.startsWith('/api/landing-pages/') ? 'landing-order:' + ip : ip;
       const result = await limiter.limit({key});
       if (!result.success) return json({error:'Too many requests. Try again later.'},429);
     }
@@ -529,14 +560,51 @@ export default {
         const price=body.price==null?null:Number(body.price),compare=body.compareAtPrice==null?null:Number(body.compareAtPrice);
         if(price!==null&&(!Number.isFinite(price)||price<=0))return json({error:'Invalid selling price.'},400);
         if(compare!==null&&(!Number.isFinite(compare)||compare<=0||(price!==null&&compare<=price)))return json({error:'Invalid comparison price.'},400);
-        const updated=await env.DB.prepare('UPDATE landing_pages SET title=?,price_mad=?,compare_at_price_mad=?,content_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(title,price,compare,JSON.stringify(content),id).run();
+        const productId=typeof body.productId==='string'&&body.productId.trim()?body.productId.trim():null;
+        if(productId){
+          const productRow=await env.DB.prepare('SELECT data_json,active FROM products WHERE id=? LIMIT 1').bind(productId).first<{data_json:string;active:number}>();
+          if(!productRow||productRow.active!==1)return json({error:'Choose an active store product.'},409);
+          const product=JSON.parse(productRow.data_json);
+          if(product.isActive===false||product.inStock!==true||product.stockStatus==='out_of_stock'||!Number.isFinite(product.price)||product.price<=0)return json({error:'The selected product must have a verified price and available stock.'},409);
+        }
+        const updated=await env.DB.prepare('UPDATE landing_pages SET title=?,product_id=?,price_mad=?,compare_at_price_mad=?,content_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(title,productId,price,compare,JSON.stringify(content),id).run();
         if(!updated.success||updated.meta?.changes!==1)return json({error:'Landing page not found or not saved.'},404);
         const row=await env.DB.prepare('SELECT id,slug,title,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages WHERE id=?').bind(id).first<any>();
         return json({page:{id:row.id,slug:row.slug,title:row.title,imageUrl:row.image_url,price:row.price_mad,compareAtPrice:row.compare_at_price_mad,content:JSON.parse(row.content_json),status:row.status,createdAt:row.created_at,updatedAt:row.updated_at}});
       }
-      if(path.startsWith('/api/admin/landing-pages/')&&method==='POST'&&path.endsWith('/publish')){
+      const landingPublishMatch=path.match(/^\/api\/admin\/landing-pages\/([a-f0-9-]{36})\/publish$/i);
+      if(landingPublishMatch&&method==='POST'){
         if(!await auth(request,env))return json({error:'Unauthorized'},401);
-        return json({error:'Publishing is locked until the public landing-page renderer, product/stock validation and COD order hand-off pass staging end-to-end tests.'},409);
+        const row=await env.DB.prepare('SELECT product_id FROM landing_pages WHERE id=? LIMIT 1').bind(landingPublishMatch[1]).first<{product_id:string|null}>();
+        if(!row)return json({error:'Landing page not found.'},404);
+        if(!row.product_id)return json({error:'Map this page to a real store product before publishing.'},409);
+        const productRow=await env.DB.prepare('SELECT data_json,active FROM products WHERE id=? LIMIT 1').bind(row.product_id).first<{data_json:string;active:number}>();
+        if(!productRow||productRow.active!==1)return json({error:'The mapped product is not published.'},409);
+        const product=JSON.parse(productRow.data_json);
+        if(product.isActive===false||product.inStock!==true||product.stockStatus==='out_of_stock'||!Number.isFinite(product.price)||product.price<=0)return json({error:'The mapped product must have a verified price and available stock.'},409);
+        const updated=await env.DB.prepare("UPDATE landing_pages SET status='published',price_mad=?,updated_at=CURRENT_TIMESTAMP,published_at=CURRENT_TIMESTAMP WHERE id=?").bind(product.price,landingPublishMatch[1]).run();
+        if(!updated.success||updated.meta?.changes!==1)return json({error:'Publication was not confirmed by D1.'},503);
+        const published=await env.DB.prepare('SELECT id,slug,title,product_id,image_url,price_mad,compare_at_price_mad,content_json,status,created_at,updated_at FROM landing_pages WHERE id=?').bind(landingPublishMatch[1]).first<any>();
+        return json({success:true,page:{id:published.id,slug:published.slug,title:published.title,productId:published.product_id,imageUrl:published.image_url,price:published.price_mad,compareAtPrice:published.compare_at_price_mad,content:JSON.parse(published.content_json),status:published.status,createdAt:published.created_at,updatedAt:published.updated_at},url:new URL('/lp/'+published.slug,request.url).href});
+      }
+      const landingOrderMatch=path.match(/^\/api\/landing-pages\/([a-z0-9-]{1,80})\/order$/);
+      if(landingOrderMatch&&method==='POST'){
+        if(env.STORE_ACCEPTING_ORDERS!=='true')return json({error:'La boutique n’accepte pas encore les commandes.'},503);
+        const page=await env.DB.prepare("SELECT product_id FROM landing_pages WHERE slug=? AND status='published' LIMIT 1").bind(landingOrderMatch[1]).first<{product_id:string|null}>();
+        if(!page?.product_id)return json({error:'Cette page de vente n’est plus disponible.'},404);
+        const productRow=await env.DB.prepare('SELECT data_json,active FROM products WHERE id=? LIMIT 1').bind(page.product_id).first<{data_json:string;active:number}>();
+        if(!productRow||productRow.active!==1)return json({error:'Le produit n’est plus disponible.'},409);
+        const product=JSON.parse(productRow.data_json);
+        if(product.isActive===false||product.inStock!==true||product.stockStatus==='out_of_stock'||!Number.isFinite(product.price)||product.price<=0)return json({error:'Le produit n’est plus disponible.'},409);
+        const subtotal=Math.round(product.price*100)/100,shippingCost=subtotal>=500?0:35,total=subtotal+shippingCost;
+        const body=await readBody(request);
+        const quote=quoteOrder({...body,items:[{productId:page.product_id,quantity:1}],subtotal,shippingCost,total},[{...product,id:page.product_id,isActive:true}]);
+        if('error' in quote)return json({error:quote.error},quote.status);
+        const record=await persistValidatedOrder(env.DB,quote);
+        const attributed={...record,source:'landing-page',landingPageSlug:landingOrderMatch[1]};
+        const saved=await env.DB.prepare('UPDATE orders SET data_json=? WHERE id=?').bind(JSON.stringify(attributed),record.id).run();
+        if(!saved.success||saved.meta?.changes!==1)return json({error:'La commande a été créée mais son attribution n’a pas été confirmée. Contactez GLOBABOX avec la référence '+record.reference},503);
+        return json({success:true,order:attributed},201);
       }
       if (path === '/api/products' && method === 'GET') return json(await listProducts(env.DB, false, env.STORE_DEMO_CATALOG === 'true'));
       if (path === '/api/admin/products' && method === 'GET') {
