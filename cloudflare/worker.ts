@@ -562,12 +562,30 @@ export default {
         ].join('\n');
         let generated:any;
         try {
-          const aiResult:any=await env.AI.run('@cf/meta/llama-3.2-11b-vision-instruct',{
-            prompt,
-            image:imageData,
-            max_tokens:5000,
-            temperature:0.45
-          });
+          const model='@cf/meta/llama-3.2-11b-vision-instruct';
+          let aiResult:any;
+          try {
+            aiResult=await env.AI.run(model,{
+              prompt,
+              image:imageData,
+              max_tokens:5000,
+              temperature:0.45
+            });
+          } catch (firstError) {
+            // The merchant has explicitly accepted Meta's license in the setup flow.
+            // Cloudflare requires a one-time initial "agree" request before inference.
+            const message=String(firstError);
+            if (!message.includes('Prior to using this model') &&
+                !message.includes('must submit the prompt')) throw firstError;
+            console.info('[GLOBABOX] Submitting the user-approved one-time Meta model license acceptance.');
+            await env.AI.run(model,{prompt:'agree'});
+            aiResult=await env.AI.run(model,{
+              prompt,
+              image:imageData,
+              max_tokens:5000,
+              temperature:0.45
+            });
+          }
           const raw=typeof aiResult?.response==='string'?aiResult.response:
             typeof aiResult?.result==='string'?aiResult.result:'';
           if(!raw.trim())return json({error:'Cloudflare AI returned an empty response. Please retry.'},502);
