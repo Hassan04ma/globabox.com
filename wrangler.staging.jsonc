@@ -34,6 +34,7 @@
       }
     ]
   },
+  "ai": { "binding": "AI" },
   "build": {
     "command": "npm run build:cloudflare"
   },
