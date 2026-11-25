@@ -494,7 +494,7 @@ export default {
         // The same response is used for both an unknown reference and a phone mismatch.
         if(!order || normalisePhone(String(order.phoneNumber || ''))!==phone)
           return json({error:'Order not found. Verify your reference and telephone.'},404);
-        const status = ['pending','confirmed','processing','shipped','delivered','cancelled'].includes(order.status)
+        const status = ['pending','no_answer','confirmed','processing','picked_up','shipped','out_for_delivery','delivered','returned','cancelled'].includes(order.status)
           ? order.status : 'pending';
         return json({success:true,tracking:{
           reference, status,
@@ -560,7 +560,7 @@ export default {
           return json({success:true, archived:true, orderId:resolvedId});
         }
         const update = await readBody(request);
-        const allowed = ['pending','confirmed','processing','shipped','delivered','cancelled'];
+        const allowed = ['pending','no_answer','confirmed','processing','picked_up','shipped','out_for_delivery','delivered','returned','cancelled'];
         if (!update || typeof update!=='object' || Array.isArray(update)) return json({error:'Invalid order update'},400);
         if (update.status!==undefined && !allowed.includes(update.status)) return json({error:'Invalid order status'},400);
         if (update.status===undefined && update.shipping===undefined) return json({error:'Nothing to update'},400);
