@@ -69,6 +69,8 @@ export interface Product {
   warranty?: string;
   /** Extensible merchant-defined specifications (e.g. IP rating, connector, fit). */
   attributes?: Record<string, string>;
+  /** Optional sellable variants with per-option price, SKU and stock overrides. */
+  variants?: Array<{ option: string; value: string; sku?: string; price?: number; stock?: number; image?: string }>;
 }
 
 export interface Category {
