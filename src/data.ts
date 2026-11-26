@@ -51,6 +51,8 @@ export interface Product {
   createdAt?: string;
   sizes?: string[];
   colors?: string[];
+  /** Optional physical package/product measurements entered by the merchant. */
+  dimensions?: { length?: number; width?: number; height?: number; unit: 'mm' | 'cm' | 'm'; weight?: number; weightUnit: 'g' | 'kg' };
 }
 
 export interface Category {
