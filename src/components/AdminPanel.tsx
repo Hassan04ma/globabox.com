@@ -541,6 +541,28 @@ export default function AdminPanel({
       "Nom EN": p.name?.en || "",
       "Prix": p.price ?? "",
       "Ancien Prix": p.originalPrice ?? "",
+      "Couleurs": (p.colors||[]).join(", "),
+      "Tailles": (p.sizes||[]).join(", "),
+      "Marque": p.brand||"",
+      "Modèle": p.model||"",
+      "Matière": p.material||"",
+      "Capacité": p.capacity||"",
+      "Puissance": p.power||"",
+      "Tension": p.voltage||"",
+      "Compatibilité": p.compatibility||"",
+      "Genre": p.gender||"",
+      "Tranche d'âge": p.ageGroup||"",
+      "Motif": p.pattern||"",
+      "Style": p.style||"",
+      "Contenu du colis": p.packageContents||"",
+      "Garantie": p.warranty||"",
+      "Autres caractéristiques": Object.entries(p.attributes||{}).map(([k,v])=>k+"="+v).join("; "),
+      "Longueur": p.dimensions?.length??"",
+      "Largeur": p.dimensions?.width??"",
+      "Hauteur": p.dimensions?.height??"",
+      "Unité dimensions": p.dimensions?.unit??"",
+      "Poids": p.dimensions?.weight??"",
+      "Unité poids": p.dimensions?.weightUnit??"",
       "Categorie": p.category || "",
       "Sous-categorie": p.subcategory || "",
       "Image Principale": p.image || "",
@@ -1021,7 +1043,9 @@ export default function AdminPanel({
       featuresEn:['Advertised capacity 40 L','Multiple pockets','Adjustable padded straps','Breathable mesh back'],
       image:'',additionalImages:[],fallbackImage:'',fallbackImages:[],inStock:false,stockStatus:'out_of_stock',
       bestSeller:false,newArrival:false,featured:false,isActive:false,
-      tags:[],sku:'',barcode:'',seoTitle:'',seoDescription:''
+      tags:[],sku:'',barcode:'',seoTitle:'',seoDescription:'',
+      dimensionLength:0,dimensionWidth:0,dimensionHeight:0,dimensionUnit:'cm',weight:0,weightUnit:'g',
+      colorsInput:'Bleu, Orange',sizesInput:'',brand:'',model:'',material:'',capacity:'40 L',power:'',voltage:'',compatibility:'',gender:'',ageGroup:'',pattern:'',style:'',packageContents:'',warranty:'',customAttributesText:''
     });
     setIsAddingProduct(true);
   };
@@ -1202,7 +1226,7 @@ export default function AdminPanel({
       capacity:productForm.capacity.trim()||undefined,power:productForm.power.trim()||undefined,voltage:productForm.voltage.trim()||undefined,
       compatibility:productForm.compatibility.trim()||undefined,gender:productForm.gender.trim()||undefined,ageGroup:productForm.ageGroup.trim()||undefined,
       pattern:productForm.pattern.trim()||undefined,style:productForm.style.trim()||undefined,packageContents:productForm.packageContents.trim()||undefined,warranty:productForm.warranty.trim()||undefined,
-      attributes:(()=>{const entries=productForm.customAttributesText.split(/\\r?\\n/).map((line:string)=>{const split=line.indexOf('=');return split>0?[line.slice(0,split).trim(),line.slice(split+1).trim()] as const:null;}).filter((entry:any)=>entry&&entry[0]&&entry[1]);return entries.length?Object.fromEntries(entries):undefined;})(),
+      attributes:(()=>{const entries=productForm.customAttributesText.split(/\r?\n/).map((line:string)=>{const split=line.indexOf('=');return split>0?[line.slice(0,split).trim(),line.slice(split+1).trim()] as const:null;}).filter((entry:any)=>entry&&entry[0]&&entry[1]);return entries.length?Object.fromEntries(entries):undefined;})(),
       dimensions: (productForm.dimensionLength>0 || productForm.dimensionWidth>0 || productForm.dimensionHeight>0 || productForm.weight>0) ? {
         ...(productForm.dimensionLength>0?{length:Number(productForm.dimensionLength)}:{}),
         ...(productForm.dimensionWidth>0?{width:Number(productForm.dimensionWidth)}:{}),
