@@ -51,6 +51,26 @@ export interface Product {
   createdAt?: string;
   sizes?: string[];
   colors?: string[];
+  /** Optional physical package/product measurements entered by the merchant. */
+  dimensions?: { length?: number; width?: number; height?: number; unit: 'mm' | 'cm' | 'm'; weight?: number; weightUnit: 'g' | 'kg' };
+  /** Common optional product attributes; only verified values should be entered. */
+  brand?: string;
+  model?: string;
+  material?: string;
+  capacity?: string;
+  power?: string;
+  voltage?: string;
+  compatibility?: string;
+  gender?: string;
+  ageGroup?: string;
+  pattern?: string;
+  style?: string;
+  packageContents?: string;
+  warranty?: string;
+  /** Extensible merchant-defined specifications (e.g. IP rating, connector, fit). */
+  attributes?: Record<string, string>;
+  /** Optional sellable variants with per-option price, SKU and stock overrides. */
+  variants?: Array<{ option: string; value: string; sku?: string; price?: number; stock?: number; image?: string }>;
 }
 
 export interface Category {

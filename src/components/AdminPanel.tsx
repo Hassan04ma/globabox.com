@@ -373,6 +373,29 @@ export default function AdminPanel({
     readyToPublish: boolean;
     sourceUrl: string;
     supplier: string;
+    dimensionLength: number;
+    dimensionWidth: number;
+    dimensionHeight: number;
+    dimensionUnit: 'mm' | 'cm' | 'm';
+    weight: number;
+    weightUnit: 'g' | 'kg';
+    colorsInput: string;
+    sizesInput: string;
+    brand: string;
+    model: string;
+    material: string;
+    capacity: string;
+    power: string;
+    voltage: string;
+    compatibility: string;
+    gender: string;
+    ageGroup: string;
+    pattern: string;
+    style: string;
+    packageContents: string;
+    warranty: string;
+    customAttributesText: string;
+    variantsText: string;
   }>({
     id: '',
     nameFr: '',
@@ -400,6 +423,8 @@ export default function AdminPanel({
     featuresEn: [],
     tags: [],sku: '',barcode: '',seoTitle: '',seoDescription: '',
     needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
+    dimensionLength:0,dimensionWidth:0,dimensionHeight:0,dimensionUnit:'cm',weight:0,weightUnit:'g',
+    colorsInput:'',sizesInput:'',brand:'',model:'',material:'',capacity:'',power:'',voltage:'',compatibility:'',gender:'',ageGroup:'',pattern:'',style:'',packageContents:'',warranty:'',customAttributesText:'',variantsText:'',
   });
 
   // Persist before updating the visible order; never report an unsaved state as successful.
@@ -517,6 +542,29 @@ export default function AdminPanel({
       "Nom EN": p.name?.en || "",
       "Prix": p.price ?? "",
       "Ancien Prix": p.originalPrice ?? "",
+      "Couleurs": (p.colors||[]).join(", "),
+      "Tailles": (p.sizes||[]).join(", "),
+      "Marque": p.brand||"",
+      "Modèle": p.model||"",
+      "Matière": p.material||"",
+      "Capacité": p.capacity||"",
+      "Puissance": p.power||"",
+      "Tension": p.voltage||"",
+      "Compatibilité": p.compatibility||"",
+      "Genre": p.gender||"",
+      "Tranche d'âge": p.ageGroup||"",
+      "Motif": p.pattern||"",
+      "Style": p.style||"",
+      "Contenu du colis": p.packageContents||"",
+      "Garantie": p.warranty||"",
+      "Autres caractéristiques": Object.entries(p.attributes||{}).map(([k,v])=>k+"="+v).join("; "),
+      "Variantes": (p.variants||[]).map(v=>[v.option,v.value,v.sku||"",v.price??"",v.stock??"",v.image||""].join("|")).join("; "),
+      "Longueur": p.dimensions?.length??"",
+      "Largeur": p.dimensions?.width??"",
+      "Hauteur": p.dimensions?.height??"",
+      "Unité dimensions": p.dimensions?.unit??"",
+      "Poids": p.dimensions?.weight??"",
+      "Unité poids": p.dimensions?.weightUnit??"",
       "Categorie": p.category || "",
       "Sous-categorie": p.subcategory || "",
       "Image Principale": p.image || "",
@@ -548,7 +596,7 @@ export default function AdminPanel({
 
   // Download a workbook template that matches the product export columns.
   const downloadProductsExcelTemplate = () => {
-    const headers = ["ID","Nom FR","Nom AR","Nom EN","Prix","Ancien Prix","Categorie","Sous-categorie","Image Principale","Images Galerie","Etat Stock","Meilleure Vente","Nouveaute","En Vedette","Publie","SKU","Code-barres","Tags","Description FR","Description AR","Description EN","Caracteristiques FR","Caracteristiques AR","Caracteristiques EN","SEO Titre","SEO Description"];
+    const headers = ["ID","Nom FR","Nom AR","Nom EN","Prix","Ancien Prix","Categorie","Sous-categorie","Image Principale","Images Galerie","Etat Stock","Meilleure Vente","Nouveaute","En Vedette","Publie","SKU","Code-barres","Tags","Description FR","Description AR","Description EN","Caracteristiques FR","Caracteristiques AR","Caracteristiques EN","SEO Titre","SEO Description","Couleurs","Tailles","Marque","Modèle","Matière","Capacité","Puissance","Tension","Compatibilité","Genre","Tranche d'âge","Motif","Style","Contenu du colis","Garantie","Autres caractéristiques","Variantes","Longueur","Largeur","Hauteur","Unité dimensions","Poids","Unité poids"];
     const sheet = XLSX.utils.aoa_to_sheet([headers]);
     sheet["!cols"] = headers.map(() => ({ wch: 22 }));
     const workbook = XLSX.utils.book_new();
@@ -630,6 +678,24 @@ export default function AdminPanel({
               en: list(value(row, "Caracteristiques EN"))
             },
             tags: list(value(row, "Tags")),
+            colors: list(value(row, "Couleurs")),
+            sizes: list(value(row, "Tailles")),
+            brand: value(row, "Marque") || undefined,
+            model: value(row, "Modèle") || undefined,
+            material: value(row, "Matière") || undefined,
+            capacity: value(row, "Capacité") || undefined,
+            power: value(row, "Puissance") || undefined,
+            voltage: value(row, "Tension") || undefined,
+            compatibility: value(row, "Compatibilité") || undefined,
+            gender: value(row, "Genre") || undefined,
+            ageGroup: value(row, "Tranche d'âge") || undefined,
+            pattern: value(row, "Motif") || undefined,
+            style: value(row, "Style") || undefined,
+            packageContents: value(row, "Contenu du colis") || undefined,
+            warranty: value(row, "Garantie") || undefined,
+            attributes: Object.fromEntries(list(value(row, "Autres caractéristiques")).map((pair:string)=>{const i=pair.indexOf("=");return i>0?[pair.slice(0,i).trim(),pair.slice(i+1).trim()] as const:null}).filter((entry:any)=>entry&&entry[0]&&entry[1])),
+            variants: list(value(row, "Variantes")).map(line=>line.split("|").map(part=>part.trim())).filter(parts=>parts.length>=2&&parts[0]&&parts[1]).map(parts=>({option:parts[0],value:parts[1],...(parts[2]?{sku:parts[2]}:{}),...(parts[3]&&Number(parts[3])>0?{price:Number(parts[3])}:{}),...(parts[4]!==undefined&&parts[4]!==""&&Number(parts[4])>=0?{stock:Number(parts[4])}:{}),...(parts[5]?.startsWith("https://")?{image:parts[5]}:{})})),
+            dimensions: (()=>{const length=Number(value(row,"Longueur").replace(",",".")),width=Number(value(row,"Largeur").replace(",",".")),height=Number(value(row,"Hauteur").replace(",",".")),weight=Number(value(row,"Poids").replace(",",".")),unit=value(row,"Unité dimensions"),weightUnit=value(row,"Unité poids");return (length>0||width>0||height>0||weight>0)?{...(length>0?{length}:{}),...(width>0?{width}:{}),...(height>0?{height}:{}),unit:["mm","cm","m"].includes(unit)?unit:"cm",...(weight>0?{weight}:{}),weightUnit:weightUnit==="kg"?"kg":"g"}:undefined;})(),
             sku: value(row, "SKU"),
             barcode: value(row, "Code-barres"),
             seoTitle: value(row, "SEO Titre"),
@@ -997,7 +1063,9 @@ export default function AdminPanel({
       featuresEn:['Advertised capacity 40 L','Multiple pockets','Adjustable padded straps','Breathable mesh back'],
       image:'',additionalImages:[],fallbackImage:'',fallbackImages:[],inStock:false,stockStatus:'out_of_stock',
       bestSeller:false,newArrival:false,featured:false,isActive:false,
-      tags:[],sku:'',barcode:'',seoTitle:'',seoDescription:''
+      tags:[],sku:'',barcode:'',seoTitle:'',seoDescription:'',
+      dimensionLength:0,dimensionWidth:0,dimensionHeight:0,dimensionUnit:'cm',weight:0,weightUnit:'g',
+      colorsInput:'Bleu, Orange',sizesInput:'',brand:'',model:'',material:'',capacity:'40 L',power:'',voltage:'',compatibility:'',gender:'',ageGroup:'',pattern:'',style:'',packageContents:'',warranty:'',customAttributesText:'',variantsText:''
     });
     setIsAddingProduct(true);
   };
@@ -1053,6 +1121,7 @@ export default function AdminPanel({
       featuresEn: [],
       tags: [],sku:'',barcode:'',seoTitle:'',seoDescription:'',
       needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
+      dimensionLength:0,dimensionWidth:0,dimensionHeight:0,dimensionUnit:'cm',weight:0,weightUnit:'g',
     });
     setIsAddingProduct(true);
   };
@@ -1092,6 +1161,16 @@ export default function AdminPanel({
       imageRightsConfirmed:prod.imageRightsConfirmed === true,
       readyToPublish:prod.readyToPublish === true,
       sourceUrl:prod.sourceUrl || '',supplier:prod.supplier || '',
+      dimensionLength:prod.dimensions?.length || 0,
+      dimensionWidth:prod.dimensions?.width || 0,
+      dimensionHeight:prod.dimensions?.height || 0,
+      dimensionUnit:prod.dimensions?.unit || 'cm',
+      weight:prod.dimensions?.weight || 0,
+      weightUnit:prod.dimensions?.weightUnit || 'g',
+      colorsInput:(prod.colors||[]).join(', '),sizesInput:(prod.sizes||[]).join(', '),
+      brand:prod.brand||'',model:prod.model||'',material:prod.material||'',capacity:prod.capacity||'',power:prod.power||'',voltage:prod.voltage||'',compatibility:prod.compatibility||'',gender:prod.gender||'',ageGroup:prod.ageGroup||'',pattern:prod.pattern||'',style:prod.style||'',packageContents:prod.packageContents||'',warranty:prod.warranty||'',
+      customAttributesText:Object.entries(prod.attributes||{}).map(([key,value])=>key+' = '+value).join('\n'),
+      variantsText:(prod.variants||[]).map(v=>[v.option,v.value,v.sku||'',v.price??'',v.stock??'',v.image||''].join(' | ')).join('\n'),
     });
     setIsAddingProduct(false);
   };
@@ -1162,6 +1241,22 @@ export default function AdminPanel({
       readyToPublish:productForm.readyToPublish,
       sourceUrl:productForm.sourceUrl.trim() || undefined,
       supplier:productForm.supplier.trim() || undefined,
+      sizes:productForm.sizesInput.split(',').map((v:string)=>v.trim()).filter(Boolean),
+      colors:productForm.colorsInput.split(',').map((v:string)=>v.trim()).filter(Boolean),
+      brand:productForm.brand.trim()||undefined,model:productForm.model.trim()||undefined,material:productForm.material.trim()||undefined,
+      capacity:productForm.capacity.trim()||undefined,power:productForm.power.trim()||undefined,voltage:productForm.voltage.trim()||undefined,
+      compatibility:productForm.compatibility.trim()||undefined,gender:productForm.gender.trim()||undefined,ageGroup:productForm.ageGroup.trim()||undefined,
+      pattern:productForm.pattern.trim()||undefined,style:productForm.style.trim()||undefined,packageContents:productForm.packageContents.trim()||undefined,warranty:productForm.warranty.trim()||undefined,
+      attributes:(()=>{const entries=productForm.customAttributesText.split(/\r?\n/).map((line:string)=>{const split=line.indexOf('=');return split>0?[line.slice(0,split).trim(),line.slice(split+1).trim()] as const:null;}).filter((entry:any)=>entry&&entry[0]&&entry[1]);return entries.length?Object.fromEntries(entries):undefined;})(),
+      variants:(()=>{const rows=productForm.variantsText.split(/\r?\n/).map((line:string)=>line.split('|').map((part:string)=>part.trim())).filter((parts:string[])=>parts.length>=2&&parts[0]&&parts[1]);return rows.map((parts:string[])=>({option:parts[0],value:parts[1],...(parts[2]?{sku:parts[2]}:{}),...(parts[3]&&Number.isFinite(Number(parts[3]))&&Number(parts[3])>0?{price:Number(parts[3])}:{}),...(parts[4]!==undefined&&parts[4]!==''&&Number.isFinite(Number(parts[4]))&&Number(parts[4])>=0?{stock:Number(parts[4])}:{}),...(parts[5]&&/^https:\/\//.test(parts[5])?{image:parts[5]}:{})}));})(),
+      dimensions: (productForm.dimensionLength>0 || productForm.dimensionWidth>0 || productForm.dimensionHeight>0 || productForm.weight>0) ? {
+        ...(productForm.dimensionLength>0?{length:Number(productForm.dimensionLength)}:{}),
+        ...(productForm.dimensionWidth>0?{width:Number(productForm.dimensionWidth)}:{}),
+        ...(productForm.dimensionHeight>0?{height:Number(productForm.dimensionHeight)}:{}),
+        unit:productForm.dimensionUnit,
+        ...(productForm.weight>0?{weight:Number(productForm.weight)}:{}),
+        weightUnit:productForm.weightUnit,
+      } : undefined,
       image: productForm.image.trim(),
       images: [productForm.image.trim(), ...(productForm.additionalImages || [])].filter(Boolean),
       fallbackImage: productForm.fallbackImage || '',

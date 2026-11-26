@@ -125,6 +125,66 @@ export default function AdminProductsWorkspace(p:Props){
             <p className="mt-2 text-[11px] text-slate-500">Décrivez uniquement les caractéristiques vérifiées. Pas de promesses non confirmées.</p>
           </section>
           <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
+            <h4 className="mb-1 text-base font-black text-[#193e38]">Dimensions et poids · facultatif</h4>
+            <p className="mb-4 text-xs leading-5 text-slate-500">Entrez les mesures réelles du produit ou du colis. Les champs laissés vides ne seront pas affichés.</p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {([['dimensionLength','Longueur'],['dimensionWidth','Largeur'],['dimensionHeight','Hauteur']] as const).map(([field,label])=><label key={field} className="text-xs font-bold text-[#385647]">{label}
+                <input type="number" min="0" step="0.1" value={productForm[field]||''} onChange={e=>setProductForm({...productForm,[field]:Number(e.target.value)||0})} className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm"/>
+              </label>)}
+            </div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              <label className="text-xs font-bold text-[#385647]">Unité des dimensions
+                <select value={productForm.dimensionUnit} onChange={e=>setProductForm({...productForm,dimensionUnit:e.target.value as typeof productForm.dimensionUnit})} className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm"><option value="mm">mm</option><option value="cm">cm</option><option value="m">m</option></select>
+              </label>
+              <label className="text-xs font-bold text-[#385647]">Poids
+                <input type="number" min="0" step="0.01" value={productForm.weight||''} onChange={e=>setProductForm({...productForm,weight:Number(e.target.value)||0})} className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm"/>
+              </label>
+              <label className="text-xs font-bold text-[#385647]">Unité du poids
+                <select value={productForm.weightUnit} onChange={e=>setProductForm({...productForm,weightUnit:e.target.value as typeof productForm.weightUnit})} className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm"><option value="g">g</option><option value="kg">kg</option></select>
+              </label>
+            </div>
+          </section>
+          <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
+            <h4 className="mb-1 text-base font-black text-[#193e38]">Variantes et caractéristiques du produit · facultatif</h4>
+            <p className="mb-4 text-xs leading-5 text-slate-500">Ajoutez uniquement les valeurs confirmées par le fournisseur. Plusieurs couleurs ou tailles peuvent être séparées par des virgules.</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {([
+                ['colorsInput','Couleurs disponibles','Ex. Noir, Blanc, Bleu'],
+                ['sizesInput','Tailles / pointures / capacités','Ex. S, M, L, XL ou 38, 39, 40'],
+                ['brand','Marque','Nom de la marque'],
+                ['model','Modèle / référence fabricant','Référence exacte'],
+                ['material','Matière / composition','Ex. ABS, acier inoxydable, coton'],
+                ['capacity','Capacité','Ex. 40 L, 500 ml, 2 personnes'],
+                ['power','Puissance','Ex. 1200 W'],
+                ['voltage','Tension / alimentation','Ex. 5 V USB-C, 220 V'],
+                ['compatibility','Compatibilité','Appareils, modèles ou systèmes compatibles'],
+                ['gender','Genre','Homme, femme, unisexe ou sans objet'],
+                ['ageGroup','Tranche d’âge','Bébé, enfant, adulte'],
+                ['pattern','Motif','Uni, rayé, imprimé…'],
+                ['style','Style / finition','Sport, classique, mat…'],
+                ['packageContents','Contenu de la boîte','Éléments réellement inclus'],
+                ['warranty','Garantie','Durée et conditions confirmées']
+              ] as const).map(([field,label,placeholder])=><label key={field} className="text-xs font-bold text-[#385647]">{label}
+                <input value={productForm[field]||''} onChange={e=>setProductForm({...productForm,[field]:e.target.value})} placeholder={placeholder}
+                  className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-[#193e38]"/>
+              </label>)}
+            </div>
+            <label className="mt-4 block text-xs font-bold text-[#385647]">Autres caractéristiques personnalisées
+              <textarea rows={5} value={productForm.customAttributesText||''}
+                onChange={e=>setProductForm({...productForm,customAttributesText:e.target.value})}
+                placeholder={'Exemples — une caractéristique par ligne :\nIndice de protection = IPX5\nType de connecteur = USB-C\nNombre de pièces = 12\nCompatibilité = iPhone 15 / 16'}
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm leading-6 text-[#193e38]"/>
+              <span className="mt-1 block text-[11px] font-normal text-slate-500">Format : nom de la caractéristique = valeur. Vous pouvez ajouter autant de lignes que nécessaire.</span>
+            </label>
+            <label className="mt-4 block text-xs font-bold text-[#385647]">Variantes vendables · prix et stock par variante
+              <textarea rows={5} value={productForm.variantsText||''}
+                onChange={e=>setProductForm({...productForm,variantsText:e.target.value})}
+                placeholder={'Une variante par ligne : option | valeur | SKU | prix DH | stock | URL image\nCouleur | Noir | GB-001-N | 249 | 12 | https://...\nTaille | M | GB-001-M | 259 | 5 |'}
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm leading-6 text-[#193e38]"/>
+              <span className="mt-1 block text-[11px] font-normal text-slate-500">Les champs SKU, prix, stock et image sont facultatifs. Les lignes incomplètes sont ignorées.</span>
+            </label>
+          </section>
+          <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
             <h4 className="mb-4 text-base font-black text-[#193e38]">Prix et disponibilité</h4>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="text-xs font-bold text-[#385647]">Prix de vente (DH) *
@@ -378,6 +438,7 @@ export default function AdminProductsWorkspace(p:Props){
             <th className="px-4 py-4 text-start">Catégorie</th>
             <th className="px-4 py-4 text-start">Statut</th>
             <th className="px-4 py-4 text-start">Stock</th>
+            <th className="px-4 py-4 text-start">Variantes / détails</th>
             <th className="px-4 py-4 text-end">Prix</th>
             <th className="px-5 py-4 text-end">Actions</th>
           </tr>
@@ -417,6 +478,18 @@ export default function AdminProductsWorkspace(p:Props){
                 {!prod.inStock||prod.stockStatus==='out_of_stock'?'Rupture':prod.stockStatus==='limited'?'Stock limité':'En stock'}
               </span>
             </td>
+            <td className="px-4 py-4">
+              <div className="max-w-[220px] space-y-1 text-[11px] font-semibold text-[#385647]">
+                {prod.colors?.length ? <span className="block">Couleurs : {prod.colors.join(', ')}</span> : null}
+                {prod.sizes?.length ? <span className="block">Tailles : {prod.sizes.join(', ')}</span> : null}
+                {prod.dimensions && (prod.dimensions.length || prod.dimensions.width || prod.dimensions.height || prod.dimensions.weight) ? <span className="block">{[prod.dimensions.length,prod.dimensions.width,prod.dimensions.height].filter(Boolean).join(' × ')} {prod.dimensions.unit}{prod.dimensions.weight ? ' · '+prod.dimensions.weight+' '+prod.dimensions.weightUnit : ''}</span> : null}
+                {prod.brand ? <span className="block">Marque : {prod.brand}</span> : null}
+                {prod.material ? <span className="block">Matière : {prod.material}</span> : null}
+                {Object.keys(prod.attributes||{}).length ? <span className="block text-slate-500">+{Object.keys(prod.attributes||{}).length} caractéristique(s)</span> : null}
+                {prod.variants?.length ? <span className="block text-slate-500">{prod.variants.length} variante(s) configurée(s)</span> : null}
+                {!prod.colors?.length&&!prod.sizes?.length&&!prod.dimensions&&!prod.brand&&!prod.material&&!Object.keys(prod.attributes||{}).length ? <span className="text-[11px] text-slate-400">—</span> : null}
+              </div>
+            </td>
             <td className="px-4 py-4 text-end">
               <strong className="whitespace-nowrap text-sm text-[#193e38]">{prod.price.toFixed(2)} DH</strong>
               {prod.originalPrice&&prod.originalPrice>prod.price&&<span className="mt-1 block text-[11px] text-slate-400 line-through">{prod.originalPrice.toFixed(2)} DH</span>}
@@ -429,7 +502,7 @@ export default function AdminProductsWorkspace(p:Props){
               </div>
             </td>
           </tr>)}
-          {filteredProductsList.length===0&&<tr><td colSpan={7} className="px-5 py-16 text-center">
+          {filteredProductsList.length===0&&<tr><td colSpan={8} className="px-5 py-16 text-center">
             <Package size={33} className="mx-auto text-[#9db5a3]"/>
             <h4 className="mt-4 text-base font-black text-[#193e38]">Aucun produit trouvé</h4>
             <p className="mt-2 text-xs text-slate-500">{adminProducts.length===0?'Commencez par ajouter votre premier produit.':'Essayez un autre filtre ou une autre recherche.'}</p>
