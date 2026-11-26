@@ -176,6 +176,13 @@ export default function AdminProductsWorkspace(p:Props){
                 className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm leading-6 text-[#193e38]"/>
               <span className="mt-1 block text-[11px] font-normal text-slate-500">Format : nom de la caractéristique = valeur. Vous pouvez ajouter autant de lignes que nécessaire.</span>
             </label>
+            <label className="mt-4 block text-xs font-bold text-[#385647]">Variantes vendables · prix et stock par variante
+              <textarea rows={5} value={productForm.variantsText||''}
+                onChange={e=>setProductForm({...productForm,variantsText:e.target.value})}
+                placeholder={'Une variante par ligne : option | valeur | SKU | prix DH | stock | URL image\nCouleur | Noir | GB-001-N | 249 | 12 | https://...\nTaille | M | GB-001-M | 259 | 5 |'}
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm leading-6 text-[#193e38]"/>
+              <span className="mt-1 block text-[11px] font-normal text-slate-500">Les champs SKU, prix, stock et image sont facultatifs. Les lignes incomplètes sont ignorées.</span>
+            </label>
           </section>
           <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
             <h4 className="mb-4 text-base font-black text-[#193e38]">Prix et disponibilité</h4>
@@ -479,6 +486,7 @@ export default function AdminProductsWorkspace(p:Props){
                 {prod.brand ? <span className="block">Marque : {prod.brand}</span> : null}
                 {prod.material ? <span className="block">Matière : {prod.material}</span> : null}
                 {Object.keys(prod.attributes||{}).length ? <span className="block text-slate-500">+{Object.keys(prod.attributes||{}).length} caractéristique(s)</span> : null}
+                {prod.variants?.length ? <span className="block text-slate-500">{prod.variants.length} variante(s) configurée(s)</span> : null}
                 {!prod.colors?.length&&!prod.sizes?.length&&!prod.dimensions&&!prod.brand&&!prod.material&&!Object.keys(prod.attributes||{}).length ? <span className="text-[11px] text-slate-400">—</span> : null}
               </div>
             </td>
