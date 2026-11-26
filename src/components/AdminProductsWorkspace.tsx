@@ -431,7 +431,7 @@ export default function AdminProductsWorkspace(p:Props){
             <th className="px-4 py-4 text-start">Catégorie</th>
             <th className="px-4 py-4 text-start">Statut</th>
             <th className="px-4 py-4 text-start">Stock</th>
-            <th className="px-4 py-4 text-start">Dimensions / poids</th>
+            <th className="px-4 py-4 text-start">Variantes / détails</th>
             <th className="px-4 py-4 text-end">Prix</th>
             <th className="px-5 py-4 text-end">Actions</th>
           </tr>
