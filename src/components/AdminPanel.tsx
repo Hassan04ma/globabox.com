@@ -395,6 +395,7 @@ export default function AdminPanel({
     packageContents: string;
     warranty: string;
     customAttributesText: string;
+    variantsText: string;
   }>({
     id: '',
     nameFr: '',
@@ -423,7 +424,7 @@ export default function AdminPanel({
     tags: [],sku: '',barcode: '',seoTitle: '',seoDescription: '',
     needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
     dimensionLength:0,dimensionWidth:0,dimensionHeight:0,dimensionUnit:'cm',weight:0,weightUnit:'g',
-    colorsInput:'',sizesInput:'',brand:'',model:'',material:'',capacity:'',power:'',voltage:'',compatibility:'',gender:'',ageGroup:'',pattern:'',style:'',packageContents:'',warranty:'',customAttributesText:'',
+    colorsInput:'',sizesInput:'',brand:'',model:'',material:'',capacity:'',power:'',voltage:'',compatibility:'',gender:'',ageGroup:'',pattern:'',style:'',packageContents:'',warranty:'',customAttributesText:'',variantsText:'',
   });
 
   // Persist before updating the visible order; never report an unsaved state as successful.
@@ -1045,7 +1046,7 @@ export default function AdminPanel({
       bestSeller:false,newArrival:false,featured:false,isActive:false,
       tags:[],sku:'',barcode:'',seoTitle:'',seoDescription:'',
       dimensionLength:0,dimensionWidth:0,dimensionHeight:0,dimensionUnit:'cm',weight:0,weightUnit:'g',
-      colorsInput:'Bleu, Orange',sizesInput:'',brand:'',model:'',material:'',capacity:'40 L',power:'',voltage:'',compatibility:'',gender:'',ageGroup:'',pattern:'',style:'',packageContents:'',warranty:'',customAttributesText:''
+      colorsInput:'Bleu, Orange',sizesInput:'',brand:'',model:'',material:'',capacity:'40 L',power:'',voltage:'',compatibility:'',gender:'',ageGroup:'',pattern:'',style:'',packageContents:'',warranty:'',customAttributesText:'',variantsText:''
     });
     setIsAddingProduct(true);
   };
@@ -1150,6 +1151,7 @@ export default function AdminPanel({
       colorsInput:(prod.colors||[]).join(', '),sizesInput:(prod.sizes||[]).join(', '),
       brand:prod.brand||'',model:prod.model||'',material:prod.material||'',capacity:prod.capacity||'',power:prod.power||'',voltage:prod.voltage||'',compatibility:prod.compatibility||'',gender:prod.gender||'',ageGroup:prod.ageGroup||'',pattern:prod.pattern||'',style:prod.style||'',packageContents:prod.packageContents||'',warranty:prod.warranty||'',
       customAttributesText:Object.entries(prod.attributes||{}).map(([key,value])=>key+' = '+value).join('\n'),
+      variantsText:(prod.variants||[]).map(v=>[v.option,v.value,v.sku||'',v.price??'',v.stock??'',v.image||''].join(' | ')).join('\n'),
     });
     setIsAddingProduct(false);
   };
@@ -1227,6 +1229,7 @@ export default function AdminPanel({
       compatibility:productForm.compatibility.trim()||undefined,gender:productForm.gender.trim()||undefined,ageGroup:productForm.ageGroup.trim()||undefined,
       pattern:productForm.pattern.trim()||undefined,style:productForm.style.trim()||undefined,packageContents:productForm.packageContents.trim()||undefined,warranty:productForm.warranty.trim()||undefined,
       attributes:(()=>{const entries=productForm.customAttributesText.split(/\r?\n/).map((line:string)=>{const split=line.indexOf('=');return split>0?[line.slice(0,split).trim(),line.slice(split+1).trim()] as const:null;}).filter((entry:any)=>entry&&entry[0]&&entry[1]);return entries.length?Object.fromEntries(entries):undefined;})(),
+      variants:(()=>{const rows=productForm.variantsText.split(/\r?\n/).map((line:string)=>line.split('|').map((part:string)=>part.trim())).filter((parts:string[])=>parts.length>=2&&parts[0]&&parts[1]);return rows.map((parts:string[])=>({option:parts[0],value:parts[1],...(parts[2]?{sku:parts[2]}:{}),...(parts[3]&&Number.isFinite(Number(parts[3]))&&Number(parts[3])>0?{price:Number(parts[3])}:{}),...(parts[4]!==undefined&&parts[4]!==''&&Number.isFinite(Number(parts[4]))&&Number(parts[4])>=0?{stock:Number(parts[4])}:{}),...(parts[5]&&/^https:\/\//.test(parts[5])?{image:parts[5]}:{})}));})(),
       dimensions: (productForm.dimensionLength>0 || productForm.dimensionWidth>0 || productForm.dimensionHeight>0 || productForm.weight>0) ? {
         ...(productForm.dimensionLength>0?{length:Number(productForm.dimensionLength)}:{}),
         ...(productForm.dimensionWidth>0?{width:Number(productForm.dimensionWidth)}:{}),
