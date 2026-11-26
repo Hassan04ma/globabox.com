@@ -558,6 +558,7 @@ export default function AdminPanel({
       "Contenu du colis": p.packageContents||"",
       "Garantie": p.warranty||"",
       "Autres caractéristiques": Object.entries(p.attributes||{}).map(([k,v])=>k+"="+v).join("; "),
+      "Variantes": (p.variants||[]).map(v=>[v.option,v.value,v.sku||"",v.price??"",v.stock??"",v.image||""].join("|")).join("; "),
       "Longueur": p.dimensions?.length??"",
       "Largeur": p.dimensions?.width??"",
       "Hauteur": p.dimensions?.height??"",
@@ -595,7 +596,7 @@ export default function AdminPanel({
 
   // Download a workbook template that matches the product export columns.
   const downloadProductsExcelTemplate = () => {
-    const headers = ["ID","Nom FR","Nom AR","Nom EN","Prix","Ancien Prix","Categorie","Sous-categorie","Image Principale","Images Galerie","Etat Stock","Meilleure Vente","Nouveaute","En Vedette","Publie","SKU","Code-barres","Tags","Description FR","Description AR","Description EN","Caracteristiques FR","Caracteristiques AR","Caracteristiques EN","SEO Titre","SEO Description"];
+    const headers = ["ID","Nom FR","Nom AR","Nom EN","Prix","Ancien Prix","Categorie","Sous-categorie","Image Principale","Images Galerie","Etat Stock","Meilleure Vente","Nouveaute","En Vedette","Publie","SKU","Code-barres","Tags","Description FR","Description AR","Description EN","Caracteristiques FR","Caracteristiques AR","Caracteristiques EN","SEO Titre","SEO Description","Couleurs","Tailles","Marque","Modèle","Matière","Capacité","Puissance","Tension","Compatibilité","Genre","Tranche d'âge","Motif","Style","Contenu du colis","Garantie","Autres caractéristiques","Variantes","Longueur","Largeur","Hauteur","Unité dimensions","Poids","Unité poids"];
     const sheet = XLSX.utils.aoa_to_sheet([headers]);
     sheet["!cols"] = headers.map(() => ({ wch: 22 }));
     const workbook = XLSX.utils.book_new();
@@ -677,6 +678,24 @@ export default function AdminPanel({
               en: list(value(row, "Caracteristiques EN"))
             },
             tags: list(value(row, "Tags")),
+            colors: list(value(row, "Couleurs")),
+            sizes: list(value(row, "Tailles")),
+            brand: value(row, "Marque") || undefined,
+            model: value(row, "Modèle") || undefined,
+            material: value(row, "Matière") || undefined,
+            capacity: value(row, "Capacité") || undefined,
+            power: value(row, "Puissance") || undefined,
+            voltage: value(row, "Tension") || undefined,
+            compatibility: value(row, "Compatibilité") || undefined,
+            gender: value(row, "Genre") || undefined,
+            ageGroup: value(row, "Tranche d'âge") || undefined,
+            pattern: value(row, "Motif") || undefined,
+            style: value(row, "Style") || undefined,
+            packageContents: value(row, "Contenu du colis") || undefined,
+            warranty: value(row, "Garantie") || undefined,
+            attributes: Object.fromEntries(list(value(row, "Autres caractéristiques")).map((pair:string)=>{const i=pair.indexOf("=");return i>0?[pair.slice(0,i).trim(),pair.slice(i+1).trim()] as const:null}).filter((entry:any)=>entry&&entry[0]&&entry[1])),
+            variants: list(value(row, "Variantes")).map(line=>line.split("|").map(part=>part.trim())).filter(parts=>parts.length>=2&&parts[0]&&parts[1]).map(parts=>({option:parts[0],value:parts[1],...(parts[2]?{sku:parts[2]}:{}),...(parts[3]&&Number(parts[3])>0?{price:Number(parts[3])}:{}),...(parts[4]!==undefined&&parts[4]!==""&&Number(parts[4])>=0?{stock:Number(parts[4])}:{}),...(parts[5]?.startsWith("https://")?{image:parts[5]}:{})})),
+            dimensions: (()=>{const length=Number(value(row,"Longueur").replace(",",".")),width=Number(value(row,"Largeur").replace(",",".")),height=Number(value(row,"Hauteur").replace(",",".")),weight=Number(value(row,"Poids").replace(",",".")),unit=value(row,"Unité dimensions"),weightUnit=value(row,"Unité poids");return (length>0||width>0||height>0||weight>0)?{...(length>0?{length}:{}),...(width>0?{width}:{}),...(height>0?{height}:{}),unit:["mm","cm","m"].includes(unit)?unit:"cm",...(weight>0?{weight}:{}),weightUnit:weightUnit==="kg"?"kg":"g"}:undefined;})(),
             sku: value(row, "SKU"),
             barcode: value(row, "Code-barres"),
             seoTitle: value(row, "SEO Titre"),
