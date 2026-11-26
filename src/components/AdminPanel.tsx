@@ -373,6 +373,12 @@ export default function AdminPanel({
     readyToPublish: boolean;
     sourceUrl: string;
     supplier: string;
+    dimensionLength: number;
+    dimensionWidth: number;
+    dimensionHeight: number;
+    dimensionUnit: 'mm' | 'cm' | 'm';
+    weight: number;
+    weightUnit: 'g' | 'kg';
   }>({
     id: '',
     nameFr: '',
@@ -400,6 +406,7 @@ export default function AdminPanel({
     featuresEn: [],
     tags: [],sku: '',barcode: '',seoTitle: '',seoDescription: '',
     needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
+    dimensionLength:0,dimensionWidth:0,dimensionHeight:0,dimensionUnit:'cm',weight:0,weightUnit:'g',
   });
 
   // Persist before updating the visible order; never report an unsaved state as successful.
@@ -1053,6 +1060,7 @@ export default function AdminPanel({
       featuresEn: [],
       tags: [],sku:'',barcode:'',seoTitle:'',seoDescription:'',
       needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
+      dimensionLength:0,dimensionWidth:0,dimensionHeight:0,dimensionUnit:'cm',weight:0,weightUnit:'g',
     });
     setIsAddingProduct(true);
   };
@@ -1092,6 +1100,12 @@ export default function AdminPanel({
       imageRightsConfirmed:prod.imageRightsConfirmed === true,
       readyToPublish:prod.readyToPublish === true,
       sourceUrl:prod.sourceUrl || '',supplier:prod.supplier || '',
+      dimensionLength:prod.dimensions?.length || 0,
+      dimensionWidth:prod.dimensions?.width || 0,
+      dimensionHeight:prod.dimensions?.height || 0,
+      dimensionUnit:prod.dimensions?.unit || 'cm',
+      weight:prod.dimensions?.weight || 0,
+      weightUnit:prod.dimensions?.weightUnit || 'g',
     });
     setIsAddingProduct(false);
   };
@@ -1162,6 +1176,14 @@ export default function AdminPanel({
       readyToPublish:productForm.readyToPublish,
       sourceUrl:productForm.sourceUrl.trim() || undefined,
       supplier:productForm.supplier.trim() || undefined,
+      dimensions: (productForm.dimensionLength>0 || productForm.dimensionWidth>0 || productForm.dimensionHeight>0 || productForm.weight>0) ? {
+        ...(productForm.dimensionLength>0?{length:Number(productForm.dimensionLength)}:{}),
+        ...(productForm.dimensionWidth>0?{width:Number(productForm.dimensionWidth)}:{}),
+        ...(productForm.dimensionHeight>0?{height:Number(productForm.dimensionHeight)}:{}),
+        unit:productForm.dimensionUnit,
+        ...(productForm.weight>0?{weight:Number(productForm.weight)}:{}),
+        weightUnit:productForm.weightUnit,
+      } : undefined,
       image: productForm.image.trim(),
       images: [productForm.image.trim(), ...(productForm.additionalImages || [])].filter(Boolean),
       fallbackImage: productForm.fallbackImage || '',
