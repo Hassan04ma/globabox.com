@@ -1,7 +1,7 @@
-import { ArrowUpRight, ShoppingBag } from 'lucide-react';
 import { Product, Language } from '../types';
 import { TRANSLATIONS } from '../translations';
 import ProductImage from './ProductImage';
+import { ShoppingCart, Eye } from 'lucide-react';
 
 interface ProductCardProps {
   key?: string;
@@ -13,7 +13,7 @@ interface ProductCardProps {
   onWhatsAppOrder?: (params: any) => void;
 }
 
-export default function ProductCard({ product, language, onViewDetails }: ProductCardProps) {
+export default function ProductCard({ product, language, onViewDetails, onAddToCart }: ProductCardProps) {
   const isRtl = language === 'ar';
   const t = (key: string) => TRANSLATIONS[key]?.[language] || key;
   const discountPercent = product.originalPrice && product.originalPrice > product.price
@@ -21,34 +21,34 @@ export default function ProductCard({ product, language, onViewDetails }: Produc
     : 0;
 
   return (
-    <article id={`product-card-${product.id}`} dir={isRtl ? 'rtl' : 'ltr'}
-      className="group flex min-w-0 flex-col overflow-hidden rounded-[20px] border border-[#e8eee9] bg-white shadow-[0_3px_16px_rgba(20,55,43,.045)] transition duration-300 hover:-translate-y-1 hover:border-[#c6d9cd] hover:shadow-[0_16px_35px_rgba(20,55,43,.12)]">
-      <button type="button" onClick={() => onViewDetails(product)}
-        aria-label={`${t('btnViewingProduct')}: ${product.name[language] || product.name.fr || ''}`}
-        className="relative block w-full overflow-hidden bg-[#f8faf8] text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#104d43]">
-        <div className="aspect-square w-full overflow-hidden p-2 sm:p-3">
-          <ProductImage src={product.image} fallbackSrc={product.fallbackImage}
-            alt={product.name[language] || product.name.fr || 'GLOBABOX product'} loading="lazy"
-            language={language} className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-[1.045]"
-            containerClassName="h-full w-full"/>
+    <article id={'product-card-'+product.id} dir={isRtl?'rtl':'ltr'}
+      className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#cfe0d8] hover:shadow-[0_14px_36px_rgba(16,77,67,.12)]">
+      <button type="button" onClick={()=>onViewDetails(product)} aria-label={t('btnViewingProduct')+': '+(product.name[language]||product.name.fr||'')}
+        className="relative block w-full overflow-hidden bg-[#f7f8f7] text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#104d43]">
+        <div className="aspect-[1/1] w-full overflow-hidden">
+          <ProductImage src={product.image} fallbackSrc={product.fallbackImage} alt={product.name[language]||product.name.fr||'GLOBABOX product'}
+            loading="lazy" language={language} className="h-full w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105" containerClassName="h-full w-full"/>
         </div>
-        {discountPercent > 0 && <span className="absolute start-3 top-3 rounded-full bg-[#b94735] px-3 py-1.5 text-[10px] font-black tracking-wide text-white shadow-sm">-{discountPercent}%</span>}
-        <span className="absolute bottom-3 end-3 flex h-9 w-9 translate-y-2 items-center justify-center rounded-full bg-white/95 text-[#17483c] opacity-0 shadow-lg transition duration-300 group-hover:translate-y-0 group-hover:opacity-100"><ArrowUpRight size={17}/></span>
+        {discountPercent>0 && <span className="absolute start-3 top-3 rounded-full bg-[#104d43] px-2.5 py-1.5 text-[10px] font-black text-white">-{discountPercent}%</span>}
       </button>
-
-      <div className="flex flex-1 flex-col gap-2.5 p-3 sm:p-4">
-        <button type="button" onClick={() => onViewDetails(product)}
-          className="min-h-[2.7rem] text-start text-[13px] font-semibold leading-5 text-[#263d35] line-clamp-2 transition-colors hover:text-[#0e5949] focus-visible:outline-none focus-visible:underline sm:text-sm">
-          {product.name[language] || product.name.fr}
+      <div className="flex flex-1 flex-col gap-2.5 p-3.5 sm:p-4">
+        <button type="button" onClick={()=>onViewDetails(product)} className="min-h-[2.8rem] text-start text-sm font-bold leading-5 text-[#193e38] line-clamp-2 hover:text-[#104d43]">
+          {product.name[language]||product.name.fr}
         </button>
-        <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-1 border-t border-[#edf1ed] pt-3">
-          <span className="text-lg font-black tracking-tight text-[#123f34] sm:text-xl">{product.price.toLocaleString('fr-MA')} <small className="text-[11px] font-bold">DH</small></span>
-          {discountPercent > 0 && product.originalPrice && <del className="text-xs font-medium text-slate-400">{product.originalPrice.toLocaleString('fr-MA')} DH</del>}
+        <div className="flex items-end justify-between gap-2 border-t border-slate-100 pt-3">
+          <div>
+            <span className="text-xl font-black tracking-tight text-[#104d43]">{product.price.toLocaleString('fr-MA')} <small className="text-[11px] font-bold">DH</small></span>
+            {discountPercent>0&&product.originalPrice&&<del className="ms-2 text-xs font-medium text-slate-400">{product.originalPrice.toLocaleString('fr-MA')} DH</del>}
+          </div>
         </div>
-        <button type="button" onClick={() => onViewDetails(product)}
-          className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#edf5ef] px-3 py-2 text-xs font-extrabold text-[#17483c] transition-colors hover:bg-[#104d43] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#104d43] focus-visible:ring-offset-2">
-          <ShoppingBag size={15}/>{language === 'ar' ? 'اكتشف المنتج' : language === 'en' ? 'View product' : 'Voir le produit'}
-        </button>
+        <div className="grid grid-cols-2 gap-2">
+          <button type="button" onClick={()=>onViewDetails(product)} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2 text-[11px] font-extrabold text-slate-700 hover:border-[#104d43] hover:text-[#104d43]">
+            <Eye size={15}/>{language==='ar'?'التفاصيل':language==='en'?'Details':'Détails'}
+          </button>
+          <button type="button" onClick={()=>onAddToCart(product)} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-[#104d43] px-2 text-[11px] font-extrabold text-white hover:bg-[#0b3931]">
+            <ShoppingCart size={15}/>{language==='ar'?'أضف للسلة':language==='en'?'Add to cart':'Ajouter'}
+          </button>
+        </div>
       </div>
     </article>
   );
