@@ -379,6 +379,22 @@ export default function AdminPanel({
     dimensionUnit: 'mm' | 'cm' | 'm';
     weight: number;
     weightUnit: 'g' | 'kg';
+    colorsInput: string;
+    sizesInput: string;
+    brand: string;
+    model: string;
+    material: string;
+    capacity: string;
+    power: string;
+    voltage: string;
+    compatibility: string;
+    gender: string;
+    ageGroup: string;
+    pattern: string;
+    style: string;
+    packageContents: string;
+    warranty: string;
+    customAttributesText: string;
   }>({
     id: '',
     nameFr: '',
@@ -407,6 +423,7 @@ export default function AdminPanel({
     tags: [],sku: '',barcode: '',seoTitle: '',seoDescription: '',
     needsSupplierVerification:false,imageRightsConfirmed:false,readyToPublish:false,sourceUrl:'',supplier:'',
     dimensionLength:0,dimensionWidth:0,dimensionHeight:0,dimensionUnit:'cm',weight:0,weightUnit:'g',
+    colorsInput:'',sizesInput:'',brand:'',model:'',material:'',capacity:'',power:'',voltage:'',compatibility:'',gender:'',ageGroup:'',pattern:'',style:'',packageContents:'',warranty:'',customAttributesText:'',
   });
 
   // Persist before updating the visible order; never report an unsaved state as successful.
@@ -1106,6 +1123,9 @@ export default function AdminPanel({
       dimensionUnit:prod.dimensions?.unit || 'cm',
       weight:prod.dimensions?.weight || 0,
       weightUnit:prod.dimensions?.weightUnit || 'g',
+      colorsInput:(prod.colors||[]).join(', '),sizesInput:(prod.sizes||[]).join(', '),
+      brand:prod.brand||'',model:prod.model||'',material:prod.material||'',capacity:prod.capacity||'',power:prod.power||'',voltage:prod.voltage||'',compatibility:prod.compatibility||'',gender:prod.gender||'',ageGroup:prod.ageGroup||'',pattern:prod.pattern||'',style:prod.style||'',packageContents:prod.packageContents||'',warranty:prod.warranty||'',
+      customAttributesText:Object.entries(prod.attributes||{}).map(([key,value])=>key+' = '+value).join('\n'),
     });
     setIsAddingProduct(false);
   };
@@ -1176,6 +1196,13 @@ export default function AdminPanel({
       readyToPublish:productForm.readyToPublish,
       sourceUrl:productForm.sourceUrl.trim() || undefined,
       supplier:productForm.supplier.trim() || undefined,
+      sizes:productForm.sizesInput.split(',').map((v:string)=>v.trim()).filter(Boolean),
+      colors:productForm.colorsInput.split(',').map((v:string)=>v.trim()).filter(Boolean),
+      brand:productForm.brand.trim()||undefined,model:productForm.model.trim()||undefined,material:productForm.material.trim()||undefined,
+      capacity:productForm.capacity.trim()||undefined,power:productForm.power.trim()||undefined,voltage:productForm.voltage.trim()||undefined,
+      compatibility:productForm.compatibility.trim()||undefined,gender:productForm.gender.trim()||undefined,ageGroup:productForm.ageGroup.trim()||undefined,
+      pattern:productForm.pattern.trim()||undefined,style:productForm.style.trim()||undefined,packageContents:productForm.packageContents.trim()||undefined,warranty:productForm.warranty.trim()||undefined,
+      attributes:(()=>{const entries=productForm.customAttributesText.split(/\\r?\\n/).map((line:string)=>{const split=line.indexOf('=');return split>0?[line.slice(0,split).trim(),line.slice(split+1).trim()] as const:null;}).filter((entry:any)=>entry&&entry[0]&&entry[1]);return entries.length?Object.fromEntries(entries):undefined;})(),
       dimensions: (productForm.dimensionLength>0 || productForm.dimensionWidth>0 || productForm.dimensionHeight>0 || productForm.weight>0) ? {
         ...(productForm.dimensionLength>0?{length:Number(productForm.dimensionLength)}:{}),
         ...(productForm.dimensionWidth>0?{width:Number(productForm.dimensionWidth)}:{}),
