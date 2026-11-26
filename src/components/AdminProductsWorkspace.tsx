@@ -125,6 +125,26 @@ export default function AdminProductsWorkspace(p:Props){
             <p className="mt-2 text-[11px] text-slate-500">Décrivez uniquement les caractéristiques vérifiées. Pas de promesses non confirmées.</p>
           </section>
           <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
+            <h4 className="mb-1 text-base font-black text-[#193e38]">Dimensions et poids · facultatif</h4>
+            <p className="mb-4 text-xs leading-5 text-slate-500">Entrez les mesures réelles du produit ou du colis. Les champs laissés vides ne seront pas affichés.</p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {([['dimensionLength','Longueur'],['dimensionWidth','Largeur'],['dimensionHeight','Hauteur']] as const).map(([field,label])=><label key={field} className="text-xs font-bold text-[#385647]">{label}
+                <input type="number" min="0" step="0.1" value={productForm[field]||''} onChange={e=>setProductForm({...productForm,[field]:Number(e.target.value)||0})} className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm"/>
+              </label>)}
+            </div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              <label className="text-xs font-bold text-[#385647]">Unité des dimensions
+                <select value={productForm.dimensionUnit} onChange={e=>setProductForm({...productForm,dimensionUnit:e.target.value as typeof productForm.dimensionUnit})} className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm"><option value="mm">mm</option><option value="cm">cm</option><option value="m">m</option></select>
+              </label>
+              <label className="text-xs font-bold text-[#385647]">Poids
+                <input type="number" min="0" step="0.01" value={productForm.weight||''} onChange={e=>setProductForm({...productForm,weight:Number(e.target.value)||0})} className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm"/>
+              </label>
+              <label className="text-xs font-bold text-[#385647]">Unité du poids
+                <select value={productForm.weightUnit} onChange={e=>setProductForm({...productForm,weightUnit:e.target.value as typeof productForm.weightUnit})} className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm"><option value="g">g</option><option value="kg">kg</option></select>
+              </label>
+            </div>
+          </section>
+          <section className="rounded-2xl border border-[#dfe9e2] bg-white p-5 shadow-sm sm:p-6">
             <h4 className="mb-4 text-base font-black text-[#193e38]">Prix et disponibilité</h4>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="text-xs font-bold text-[#385647]">Prix de vente (DH) *
@@ -378,6 +398,7 @@ export default function AdminProductsWorkspace(p:Props){
             <th className="px-4 py-4 text-start">Catégorie</th>
             <th className="px-4 py-4 text-start">Statut</th>
             <th className="px-4 py-4 text-start">Stock</th>
+            <th className="px-4 py-4 text-start">Dimensions / poids</th>
             <th className="px-4 py-4 text-end">Prix</th>
             <th className="px-5 py-4 text-end">Actions</th>
           </tr>
@@ -417,6 +438,12 @@ export default function AdminProductsWorkspace(p:Props){
                 {!prod.inStock||prod.stockStatus==='out_of_stock'?'Rupture':prod.stockStatus==='limited'?'Stock limité':'En stock'}
               </span>
             </td>
+            <td className="px-4 py-4">
+              {prod.dimensions && (prod.dimensions.length || prod.dimensions.width || prod.dimensions.height || prod.dimensions.weight) ? <div className="space-y-1 text-[11px] font-semibold text-[#385647]">
+                {(prod.dimensions.length || prod.dimensions.width || prod.dimensions.height) && <span className="block whitespace-nowrap">{[prod.dimensions.length,prod.dimensions.width,prod.dimensions.height].map(v=>v||'—').join(' × ')} {prod.dimensions.unit}</span>}
+                {prod.dimensions.weight ? <span className="block text-slate-500">{prod.dimensions.weight} {prod.dimensions.weightUnit}</span> : null}
+              </div> : <span className="text-[11px] text-slate-400">—</span>}
+            </td>
             <td className="px-4 py-4 text-end">
               <strong className="whitespace-nowrap text-sm text-[#193e38]">{prod.price.toFixed(2)} DH</strong>
               {prod.originalPrice&&prod.originalPrice>prod.price&&<span className="mt-1 block text-[11px] text-slate-400 line-through">{prod.originalPrice.toFixed(2)} DH</span>}
@@ -429,7 +456,7 @@ export default function AdminProductsWorkspace(p:Props){
               </div>
             </td>
           </tr>)}
-          {filteredProductsList.length===0&&<tr><td colSpan={7} className="px-5 py-16 text-center">
+          {filteredProductsList.length===0&&<tr><td colSpan={8} className="px-5 py-16 text-center">
             <Package size={33} className="mx-auto text-[#9db5a3]"/>
             <h4 className="mt-4 text-base font-black text-[#193e38]">Aucun produit trouvé</h4>
             <p className="mt-2 text-xs text-slate-500">{adminProducts.length===0?'Commencez par ajouter votre premier produit.':'Essayez un autre filtre ou une autre recherche.'}</p>
